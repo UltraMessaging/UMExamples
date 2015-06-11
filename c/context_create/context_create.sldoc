@@ -1,0 +1,51 @@
+<html>
+  <head>
+    <title>Context Create Example</title>
+  </head>
+  <body>
+    <a href="../" target="_top">&lt;-Back</a>
+    <h1>Context Create Example</h1>
+    <p>This is example code demonstrating how to create and delete an Ultra Messaging context. An Ultra Messaging context is an object which encapsulates nearly all of 
+	Ultra Messaging objects and functionality. All publishers and subscribers must live within a context, and the processing for publishers and subscribers is done 
+	by the context itself. By default, creating a context spawns a new thread, known as the the context thread which is responsible for processing publishers and 
+	subscribers.</p>
+    <p>Typically, an application will only need a single context. However, mutliple contexts may be useful is situations where an applications needs to send and receive
+	messages on different topic resolution domains, or if the application is intelligently load balancing contexts for optimal performance. </p>
+    <p>There is one program source file:<br>
+    </p>
+    <ul>
+      <li><b><tt>=semlit,srcfile,context_create_c.slsrc,context_create.c=</tt></b>
+        - (right-click and save as "context_create.c") main program.</li>
+    </ul>
+
+    <h2>Program explanation: <tt>context_create.c</tt></h2>
+    <h4>Context Pointer</h4>
+	<p>Here is the declaration for the context variable. This will be used later when the context is created and initialized.</p>
+        =semlit,insert,declare=
+    <h4>Windows Only</h4>
+	<p>Windows applications must initialize the Winsock library to utilize sockets.</p>
+        =semlit,insert,windows=
+	<p>If this fails, the application should exit since sockets will not be operational.</p>
+    <h4>Create Context</h4>
+	<p>The first variable is the context object that was previously declared. The second parameter would be an attribute object
+	which is not covered in this sample, however it is <a>here</a>. The third parameter is only provided for backwards compatibility
+	and should always be set to NULL. Finally the fourth parameter is a context level client data object (clientd), which can be 
+	used as a reference in other functions. 
+        =semlit,insert,create=
+      	<p>It is very important to check the return code. If the context fails to create, the application will fail to create any objects
+	associated with this context, which is nearly all other Ultra Messaging objects (with the exception of the Event Queue). Use the 
+	API lbm_errmsg() to log the reason why the context failed to create.</p>
+    <h4>Delete Context</h4>
+	<p>Very simply, this deletes the Ultra Messaging context.</p>
+        =semlit,insert,delete=
+	<p>This API should only fail if the context passed in is NULL or invalid.</p>
+    <h4>Clean Windows Stuff</h4>
+	<p>It is a good idea to clean up the Winsock library before exiting the application as well. 
+        =semlit,insert,winclean=
+    <h4>Includes</h4>
+        =semlit,insert,includes=
+      <p>Note the differences in include files between Linux and Windows</p>
+
+  </body>
+</html>
+

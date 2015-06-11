@@ -1,0 +1,47 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Ultra Messaging Examples - Source Create</title>
+  </head>
+  <body>
+    <a href="../" target="_top">&lt;-Back</a>
+    <h1>Source Create</h1>
+    <p>This is an example application demonstrating how to create an Ultra Messaging source object (publisher). An Ultra Messaging source is
+       resposible for publishing messages to receivers on the topic that it is bounch to. Conceptually, a source object is contained within
+       a context object. A source object is only able to publish messages on a single topic and on a single transport.</p>
+    <p>A source transport is one of the UM transports provided, such as Reliable Multicast (LBTRM), Reliable Unicast (LBTRU), as well as TCP, 
+       and the inter-host transports IPC and SMX. Source transports are determined by the source attribute 
+       =semlit,tooltip,../../tooltips/source_transport.txt,transport=. No code changes are required to use the different transports, only the 
+       configuration attribute needs to be modified. By default, all sources are TCP.</p>
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt>=semlit,srcfile,source_create_c.slsrc,source_create.c=</tt></b></li>
+    </ul>
+    <h2>Program explanation: <tt>source_create.c</tt></h2>
+    <h4>Create the Context</h4>
+        <p>In this block of code, the application is creating a context attribute object and creating a context for the source to be contained in.</p>
+        =semlit,insert,init_create_context=
+    <h4>Source Attribute Create</h4>
+        <p>In this block, the API lbm_src_topic_attr_create() is called to initialize the attribute object that will be used when a topic is allocated</p>
+        =semlit,insert,attr_create=
+    <h4>Topic Allocation</h4>
+        <p>The lbm_src_topic_alloc() allocates a topic object which is used to create a source in the next step. The topic object contains the source
+           attributes that were initialized in the previous block as well as the topic string that the source will publish messages as</p>
+        =semlit,insert,topic_alloc=
+    <h4>Create Source</h4>
+        <p>lbm_src_create() is the API that is called to create the source object. The pointer to the source object is passed in first, followed by the 
+           context object that the source will be contained in, and the topic object that was previously allocated. The remaining parameters are optional.
+        =semlit,insert,src_create=
+    <h4>Delete the Attribute Object</h4>
+        <p>Once the topic is allocated, the application no longer needs the attribute object so it should be deleted. Note, the attribute object can 
+           be used to allocate other topic objects, so it may be worth keeping around if the application is creating multiple sources.</p>
+        =semlit,insert,attr_delete=
+    <h4>Delete the Source</h4>
+        <p>Once the application is done with a source object, it is a good idea to delete the source and free up any resources that were allocated
+           for the source, like the retransmission buffers for a reliale UDP transport for example</p>
+        =semlit,insert,delete_source=
+    <h4>Includes</h4>
+        <p>Include files for this application. Notice the Windows specific include files - these are not necessary for Linux only applications</p>
+        =semlit,insert,includes=
+  </body>
+</html>

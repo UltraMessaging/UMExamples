@@ -1,0 +1,335 @@
+<!DOCTYPE html><html><head><title>setting_attributes.c</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>setting_attributes.c</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+<a "setting_attributes.sldoc.html#includes_ref_1" target="doc">00003</a>
+<a "setting_attributes.sldoc.html#includes_ref_1" target="doc">00004</a>
+<a "setting_attributes.sldoc.html#includes_ref_1" target="doc">00005</a>
+<a "setting_attributes.sldoc.html#includes_ref_1" target="doc">00006</a>
+<a "setting_attributes.sldoc.html#includes_ref_1" target="doc">00007</a>
+<a "setting_attributes.sldoc.html#includes_ref_1" target="doc">00008</a>
+<a "setting_attributes.sldoc.html#includes_ref_1" target="doc">00009</a>
+<a "setting_attributes.sldoc.html#includes_ref_1" target="doc">00010</a>
+<a "setting_attributes.sldoc.html#includes_ref_1" target="doc">00011</a>
+<a "setting_attributes.sldoc.html#includes_ref_1" target="doc">00012</a>
+<a "setting_attributes.sldoc.html#includes_ref_1" target="doc">00013</a>
+<a "setting_attributes.sldoc.html#includes_ref_1" target="doc">00014</a>
+<a "setting_attributes.sldoc.html#includes_ref_1" target="doc">00015</a>
+<a "setting_attributes.sldoc.html#includes_ref_1" target="doc">00016</a>
+00017
+00018
+00019
+00020
+00021
+00022
+00023
+00024
+<a "setting_attributes.sldoc.html#topic_attr_ref_1" target="doc">00025</a>
+<a "setting_attributes.sldoc.html#topic_attr_ref_1" target="doc">00026</a>
+<a "setting_attributes.sldoc.html#ctx_attr_ref_1" target="doc">00027</a>
+<a "setting_attributes.sldoc.html#attr_settings_ref_1" target="doc">00028</a>
+<a "setting_attributes.sldoc.html#attr_settings_ref_1" target="doc">00029</a>
+00030
+00031
+00032
+00033
+00034
+00035
+00036
+00037
+00038
+00039
+00040
+00041
+00042
+<a "setting_attributes.sldoc.html#init_ctx_ref_1" target="doc">00043</a>
+<a "setting_attributes.sldoc.html#init_ctx_ref_1" target="doc">00044</a>
+<a "setting_attributes.sldoc.html#init_ctx_ref_1" target="doc">00045</a>
+<a "setting_attributes.sldoc.html#init_ctx_ref_1" target="doc">00046</a>
+<a "setting_attributes.sldoc.html#init_ctx_ref_1" target="doc">00047</a>
+<a "setting_attributes.sldoc.html#init_ctx_ref_1" target="doc">00048</a>
+00049
+<a "setting_attributes.sldoc.html#ctx_res_addr_ref_1" target="doc">00050</a>
+<a "setting_attributes.sldoc.html#ctx_res_addr_ref_1" target="doc">00051</a>
+<a "setting_attributes.sldoc.html#ctx_res_addr_ref_1" target="doc">00052</a>
+<a "setting_attributes.sldoc.html#ctx_res_addr_ref_1" target="doc">00053</a>
+<a "setting_attributes.sldoc.html#ctx_res_addr_ref_1" target="doc">00054</a>
+<a "setting_attributes.sldoc.html#ctx_res_addr_ref_1" target="doc">00055</a>
+00056
+<a "setting_attributes.sldoc.html#ctx_res_port_ref_1" target="doc">00057</a>
+<a "setting_attributes.sldoc.html#ctx_res_port_ref_1" target="doc">00058</a>
+<a "setting_attributes.sldoc.html#ctx_res_port_ref_1" target="doc">00059</a>
+<a "setting_attributes.sldoc.html#ctx_res_port_ref_1" target="doc">00060</a>
+<a "setting_attributes.sldoc.html#ctx_res_port_ref_1" target="doc">00061</a>
+<a "setting_attributes.sldoc.html#ctx_res_port_ref_1" target="doc">00062</a>
+<a "setting_attributes.sldoc.html#ctx_res_port_ref_1" target="doc">00063</a>
+00064
+<a "setting_attributes.sldoc.html#ctx_create_ref_1" target="doc">00065</a>
+<a "setting_attributes.sldoc.html#ctx_create_ref_1" target="doc">00066</a>
+<a "setting_attributes.sldoc.html#ctx_create_ref_1" target="doc">00067</a>
+<a "setting_attributes.sldoc.html#ctx_create_ref_1" target="doc">00068</a>
+<a "setting_attributes.sldoc.html#ctx_create_ref_1" target="doc">00069</a>
+<a "setting_attributes.sldoc.html#ctx_create_ref_1" target="doc">00070</a>
+<a "setting_attributes.sldoc.html#ctx_create_ref_1" target="doc">00071</a>
+00072
+<a "setting_attributes.sldoc.html#ctx_attr_del_ref_1" target="doc">00073</a>
+<a "setting_attributes.sldoc.html#ctx_attr_del_ref_1" target="doc">00074</a>
+00075
+<a "setting_attributes.sldoc.html#topic1_init_ref_1" target="doc">00076</a>
+<a "setting_attributes.sldoc.html#topic1_init_ref_1" target="doc">00077</a>
+<a "setting_attributes.sldoc.html#topic1_init_ref_1" target="doc">00078</a>
+<a "setting_attributes.sldoc.html#topic1_init_ref_1" target="doc">00079</a>
+<a "setting_attributes.sldoc.html#topic1_init_ref_1" target="doc">00080</a>
+<a "setting_attributes.sldoc.html#topic1_init_ref_1" target="doc">00081</a>
+00082
+<a "setting_attributes.sldoc.html#topic1_transport_ref_1" target="doc">00083</a>
+<a "setting_attributes.sldoc.html#topic1_transport_ref_1" target="doc">00084</a>
+<a "setting_attributes.sldoc.html#topic1_transport_ref_1" target="doc">00085</a>
+<a "setting_attributes.sldoc.html#topic1_transport_ref_1" target="doc">00086</a>
+<a "setting_attributes.sldoc.html#topic1_transport_ref_1" target="doc">00087</a>
+<a "setting_attributes.sldoc.html#topic1_transport_ref_1" target="doc">00088</a>
+00089
+<a "setting_attributes.sldoc.html#topic1_port_ref_1" target="doc">00090</a>
+<a "setting_attributes.sldoc.html#topic1_port_ref_1" target="doc">00091</a>
+<a "setting_attributes.sldoc.html#topic1_port_ref_1" target="doc">00092</a>
+<a "setting_attributes.sldoc.html#topic1_port_ref_1" target="doc">00093</a>
+<a "setting_attributes.sldoc.html#topic1_port_ref_1" target="doc">00094</a>
+<a "setting_attributes.sldoc.html#topic1_port_ref_1" target="doc">00095</a>
+<a "setting_attributes.sldoc.html#topic1_port_ref_1" target="doc">00096</a>
+00097
+<a "setting_attributes.sldoc.html#topic1_alloc_ref_1" target="doc">00098</a>
+<a "setting_attributes.sldoc.html#topic1_alloc_ref_1" target="doc">00099</a>
+<a "setting_attributes.sldoc.html#topic1_alloc_ref_1" target="doc">00100</a>
+<a "setting_attributes.sldoc.html#topic1_alloc_ref_1" target="doc">00101</a>
+<a "setting_attributes.sldoc.html#topic1_alloc_ref_1" target="doc">00102</a>
+<a "setting_attributes.sldoc.html#topic1_alloc_ref_1" target="doc">00103</a>
+<a "setting_attributes.sldoc.html#topic1_alloc_ref_1" target="doc">00104</a>
+00105
+<a "setting_attributes.sldoc.html#topic1_create_ref_1" target="doc">00106</a>
+<a "setting_attributes.sldoc.html#topic1_create_ref_1" target="doc">00107</a>
+<a "setting_attributes.sldoc.html#topic1_create_ref_1" target="doc">00108</a>
+<a "setting_attributes.sldoc.html#topic1_create_ref_1" target="doc">00109</a>
+<a "setting_attributes.sldoc.html#topic1_create_ref_1" target="doc">00110</a>
+<a "setting_attributes.sldoc.html#topic1_create_ref_1" target="doc">00111</a>
+<a "setting_attributes.sldoc.html#topic1_create_ref_1" target="doc">00112</a>
+00113
+<a "setting_attributes.sldoc.html#topic2_clone_ref_1" target="doc">00114</a>
+<a "setting_attributes.sldoc.html#topic2_clone_ref_1" target="doc">00115</a>
+<a "setting_attributes.sldoc.html#topic2_clone_ref_1" target="doc">00116</a>
+<a "setting_attributes.sldoc.html#topic2_clone_ref_1" target="doc">00117</a>
+<a "setting_attributes.sldoc.html#topic2_clone_ref_1" target="doc">00118</a>
+<a "setting_attributes.sldoc.html#topic2_clone_ref_1" target="doc">00119</a>
+00120
+<a "setting_attributes.sldoc.html#topic2_port_ref_1" target="doc">00121</a>
+<a "setting_attributes.sldoc.html#topic2_port_ref_1" target="doc">00122</a>
+<a "setting_attributes.sldoc.html#topic2_port_ref_1" target="doc">00123</a>
+<a "setting_attributes.sldoc.html#topic2_port_ref_1" target="doc">00124</a>
+<a "setting_attributes.sldoc.html#topic2_port_ref_1" target="doc">00125</a>
+<a "setting_attributes.sldoc.html#topic2_port_ref_1" target="doc">00126</a>
+<a "setting_attributes.sldoc.html#topic2_port_ref_1" target="doc">00127</a>
+00128
+<a "setting_attributes.sldoc.html#topic2_create_ref_1" target="doc">00129</a>
+<a "setting_attributes.sldoc.html#topic2_create_ref_1" target="doc">00130</a>
+<a "setting_attributes.sldoc.html#topic2_create_ref_1" target="doc">00131</a>
+<a "setting_attributes.sldoc.html#topic2_create_ref_1" target="doc">00132</a>
+<a "setting_attributes.sldoc.html#topic2_create_ref_1" target="doc">00133</a>
+<a "setting_attributes.sldoc.html#topic2_create_ref_1" target="doc">00134</a>
+<a "setting_attributes.sldoc.html#topic2_create_ref_1" target="doc">00135</a>
+<a "setting_attributes.sldoc.html#topic2_create_ref_1" target="doc">00136</a>
+<a "setting_attributes.sldoc.html#topic2_create_ref_1" target="doc">00137</a>
+<a "setting_attributes.sldoc.html#topic2_create_ref_1" target="doc">00138</a>
+<a "setting_attributes.sldoc.html#topic2_create_ref_1" target="doc">00139</a>
+<a "setting_attributes.sldoc.html#topic2_create_ref_1" target="doc">00140</a>
+<a "setting_attributes.sldoc.html#topic2_create_ref_1" target="doc">00141</a>
+<a "setting_attributes.sldoc.html#topic2_create_ref_1" target="doc">00142</a>
+<a "setting_attributes.sldoc.html#topic2_create_ref_1" target="doc">00143</a>
+00144
+<a "setting_attributes.sldoc.html#topic_attr_del_ref_1" target="doc">00145</a>
+<a "setting_attributes.sldoc.html#topic_attr_del_ref_1" target="doc">00146</a>
+<a "setting_attributes.sldoc.html#topic_attr_del_ref_1" target="doc">00147</a>
+00148
+<a "setting_attributes.sldoc.html#clean_ref_1" target="doc">00149</a>
+<a "setting_attributes.sldoc.html#clean_ref_1" target="doc">00150</a>
+<a "setting_attributes.sldoc.html#clean_ref_1" target="doc">00151</a>
+<a "setting_attributes.sldoc.html#clean_ref_1" target="doc">00152</a>
+00153
+00154
+00155
+00156
+00157
+00158
+</td><td>  /* Example on setting Ultra Messaging attributes */
+  
+<span name="includes" id="includes"></span>  #include &lt;stdio.h&gt;
+  
+  #if defined(_MSC_VER)
+  /* Windows-only includes */
+  #include &lt;winsock2.h&gt;
+  #define SLEEP(s) Sleep((s)*1000)
+  #else
+  /* Unix-only includes */
+  #include &lt;stdlib.h&gt;
+  #include &lt;unistd.h&gt;
+  #define SLEEP(s) sleep(s)
+  #endif
+  
+  #include &lt;lbm/lbm.h&gt;
+  
+  main()
+  {
+      lbm_context_t *ctx;             /* pointer to context object */
+      lbm_topic_t *topic_1;           /* pointer to topic object */
+      lbm_topic_t *topic_2;           /* pointer to topic object */
+      lbm_src_t *src_1;               /* pointer to source object */
+      lbm_src_t *src_2;               /* pointer to source object */
+<span name="topic_attr" id="topic_attr"></span>      lbm_src_topic_attr_t *tattr_1;  /* pointer to source attribute object */
+      lbm_src_topic_attr_t *tattr_2;  /* pointer to source attribute object */
+<span name="ctx_attr" id="ctx_attr"></span>      lbm_context_attr_t * cattr;     /* pointer to context attribute object */
+<span name="attr_settings" id="attr_settings"></span>      lbm_uint16_t res_port;          /* Int to set resolver port */
+      lbm_uint16_t des_port;          /* Int to set lbtrm destination port */
+      int err;                        /* return status of lbm functions (true=error) */
+  
+  #if defined(_MSC_VER)
+      /* windows-specific code */
+      WSADATA wsadata;
+      int wsStat = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
+      if (wsStat != 0)
+      {
+          printf("line %d: wsStat=%d\n",__LINE__,wsStat);
+          exit(1);
+      }
+  #endif
+  
+<span name="init_ctx" id="init_ctx"></span>      /* Initialize the defaults for the context attribute object */
+      if (lbm_context_attr_create(&amp;cattr) != 0)
+      {
+          fprintf(stderr, "lbm_context_attr_create: %s\n", lbm_errmsg());
+      exit(1);
+      }
+  
+<span name="ctx_res_addr" id="ctx_res_addr"></span>      /* Setting the resolver address using the string method */
+      if (lbm_context_attr_str_setopt(cattr, "resolver_multicast_address", "224.10.11.12") != 0) 
+      {
+          fprintf(stderr, "lbm_context_attr_str_setopt:resolver_multicast_address: %s\n", lbm_errmsg());
+          exit(1);
+      }
+  
+<span name="ctx_res_port" id="ctx_res_port"></span>      /* Setting the resolver port using the data-type value method */
+      res_port = 12345;
+      if (lbm_context_attr_setopt(cattr, "resolver_multicast_port", &amp;res_port, sizeof(lbm_uint16_t)) != 0 )
+      {
+      fprintf(stderr, "lbm_context_attr_setopt:resolver_mutlicast_port: %s\n", lbm_errmsg());
+          exit(1);
+      }
+  
+<span name="ctx_create" id="ctx_create"></span>      /* Creating the context */
+      err = lbm_context_create(&amp;ctx, cattr, NULL, NULL);
+      if (err)
+      {
+          printf("line %d: %s\n", __LINE__, lbm_errmsg());
+          exit(1);
+      }
+  
+<span name="ctx_attr_del" id="ctx_attr_del"></span>      /* Delete the context attribute object */
+      lbm_context_attr_delete(cattr);
+  
+<span name="topic1_init" id="topic1_init"></span>      /* Initializing the source attribute object */
+      if (lbm_src_topic_attr_create(&amp;tattr_1) != 0)
+      {
+          fprintf(stderr, "lbm_src_topic_attr_create: %s\n", lbm_errmsg());
+          exit(1);
+      }
+  
+<span name="topic1_transport" id="topic1_transport"></span>      /* Setting the transport via the source topic string method */
+      if (lbm_src_topic_attr_str_setopt(tattr_1, "transport", "lbtrm") != 0 )
+      {
+          fprintf(stderr, "lbm_src_topic_attr_str_setopt:transport: %s\n", lbm_errmsg());
+          exit(1);
+      }
+  
+<span name="topic1_port" id="topic1_port"></span>      /* Setting the lbtrm destination port via the direct value set method */
+      des_port = 14001;
+      if (lbm_src_topic_attr_setopt(tattr_1, "transport_lbtrm_destination_port", &amp;des_port, sizeof(lbm_uint16_t)) != 0 )
+      {
+          fprintf(stderr, "lbm_src_topic_attr_setopt:transport_lbtrm_destination_port: %s\n", lbm_errmsg());
+          exit(1);
+      }
+  
+<span name="topic1_alloc" id="topic1_alloc"></span>      /* Allocating the topic */
+      err = lbm_src_topic_alloc(&amp;topic_1, ctx, "test.topic.1", tattr_1);
+      if (err)
+      {
+          printf("line %d: %s\n", __LINE__, lbm_errmsg());
+          exit(1);
+      }
+  
+<span name="topic1_create" id="topic1_create"></span>      /* Creating the source */
+      err = lbm_src_create(&amp;src_1, ctx, topic_1, NULL, NULL, NULL);
+      if (err)
+      {
+          printf("line %d: %s\n", __LINE__, lbm_errmsg());
+          exit(1);
+      }
+  
+<span name="topic2_clone" id="topic2_clone"></span>      /* Initialized the second source attributes as a copy of the first */
+      if (lbm_src_topic_attr_dup(&amp;tattr_2, tattr_1) != 0 )
+      {
+          fprintf(stderr, "lbm_src_topic_attr_dup: %s\n", lbm_errmsg());
+          exit(1);
+      }
+  
+<span name="topic2_port" id="topic2_port"></span>      /* Now modify the destination port for this second source to put the publisher on a different transport */
+      des_port = 14002;
+      if (lbm_src_topic_attr_setopt(tattr_2, "transport_lbtrm_destination_port", &amp;des_port, sizeof(lbm_uint16_t)) != 0 )
+      {
+          fprintf(stderr, "lbm_src_topic_attr_setopt:transport_lbtrm_destination_port: %s\n", lbm_errmsg());
+          exit(1);
+      }
+  
+<span name="topic2_create" id="topic2_create"></span>      /* Allocating the second topic */
+      err = lbm_src_topic_alloc(&amp;topic_2, ctx, "test.topic.2", tattr_2);
+      if (err)
+      {
+          printf("line %d: %s\n", __LINE__, lbm_errmsg());
+          exit(1);
+      }
+  
+      /* Creating the source */
+      err = lbm_src_create(&amp;src_2, ctx, topic_2, NULL, NULL, NULL);
+      if (err)
+      {
+          printf("line %d: %s\n", __LINE__, lbm_errmsg());
+          exit(1);
+      }
+  
+<span name="topic_attr_del" id="topic_attr_del"></span>      /* Delete the first and second source topic attribute objects */
+      lbm_src_topic_attr_delete(tattr_1);
+      lbm_src_topic_attr_delete(tattr_2);
+  
+<span name="clean" id="clean"></span>      /* Finished with all LBM functions, delete the source and context object. */
+      lbm_src_delete(src_1);
+      lbm_src_delete(src_2);
+      lbm_context_delete(ctx);
+  
+  #if defined(_MSC_VER)
+      WSACleanup();
+  #endif
+  }
+  
+</td></tr></table></code></pre></small></body></html>

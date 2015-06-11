@@ -1,0 +1,37 @@
+body{
+        background:#fff;
+        font:12px verdana;
+        color:#000;
+}
+pre {
+	font-family: Consolas,monospace;
+	font-size: 12px;
+}
+a {
+        font-size:12px;
+        font-family:Verdana;
+        color:#2222ff;
+        text-decoration:none;
+}
+a:hover {
+        font-size:12px;
+        font-family:Verdana;
+        color:#444499;
+        text-decoration:none;
+}
+
+a:visited  {
+        font-size:12px;
+        font-family:Verdana;
+        color:#2222ff;
+        text-decoration:none;
+}
+
+a:visited:hover  {
+        font-size:12px;
+        font-family:Verdana;
+        color:#444499;
+        text-decoration:none;
+}
+
+

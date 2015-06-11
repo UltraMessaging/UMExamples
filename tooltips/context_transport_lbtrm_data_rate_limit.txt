@@ -1,0 +1,7 @@
+Maximum aggregate transmission rate of all LBT-RM sessions' original data plus retransmissions for this particular context.
+
+Scope:          context
+Type:           unsigned long int
+Units:          bits per second
+Default value:  10000000 (10 Mbps)
+When to Set:    Can only be set during object initialization.

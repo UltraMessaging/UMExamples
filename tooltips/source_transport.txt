@@ -1,0 +1,12 @@
+The transport type to be used for created sources.
+
+Scope:	source
+Type:	int
+When to Set:	Can only be set during object initialization.
+String value	Integer value	Description
+tcp	                LBM_SRC_TOPIC_ATTR_TRANSPORT_TCP	TCP over IPv4 Default for all.
+lbtrm,   lbt-rm	        LBM_SRC_TOPIC_ATTR_TRANSPORT_LBTRM	UDP-based reliable multicast with unicast NAKs
+lbtru,   lbt-ru	        LBM_SRC_TOPIC_ATTR_TRANSPORT_LBTRU	UDP-based reliable unicast with unicast NAKs
+lbtipc,  lbt-ipc        LBM_SRC_TOPIC_ATTR_TRANSPORT_LBTIPC	InterProcess Communication between processes on the same host using a shared memory area.
+lbtrdma, lbt-rdma       LBM_SRC_TOPIC_ATTR_TRANSPORT_LBTRDMA	Voltaire® InfiniBand Remote Direct Memory Access transport between hosts using a shared memory area.
+

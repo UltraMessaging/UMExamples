@@ -1,0 +1,24 @@
+/* Code Disclaimer? */
+
+/* =semlit,block,includes=*/
+#include <stdio.h>
+
+#if defined(_MSC_VER)
+/* Windows-only includes */
+#include <winsock2.h>
+#define SLEEP(s) Sleep((s)*1000)
+#else
+/* Unix-only includes */
+#include <stdlib.h>
+#include <unistd.h>
+#define SLEEP(s) sleep(s)
+#endif
+
+#include <lbm/lbm.h>
+/* =semlit,endblock,includes=*/
+
+main()
+{
+
+}
+

@@ -1,0 +1,111 @@
+<html>
+  <head>
+    <title>Context Create Example</title>
+  </head>
+  <body>
+    <a href="../" target="_top">&lt;-Back</a>
+    <h1>Context Create Example</h1>
+    <p>This is example code demonstrating how to create and delete an Ultra Messaging context. An Ultra Messaging context is an object which encapsulates nearly all of 
+	Ultra Messaging objects and functionality. All publishers and subscribers must live within a context, and the processing for publishers and subscribers is done 
+	by the context itself. By default, creating a context spawns a new thread, known as the the context thread which is responsible for processing publishers and 
+	subscribers.</p>
+    <p>Typically, an application will only need a single context. However, mutliple contexts may be useful is situations where an applications needs to send and receive
+	messages on different topic resolution domains, or if the application is intelligently load balancing contexts for optimal performance. </p>
+    <p>There is one program source file:<br>
+    </p>
+    <ul>
+      <li><b><tt><a href="context_create.c">context_create.c</a></tt></b>
+        - (right-click and save as "context_create.c") main program.</li>
+    </ul>
+
+    <h2>Program explanation: <tt>context_create.c</tt></h2>
+    <h4>Context Pointer</h4>
+	<p>Here is the declaration for the context variable. This will be used later when the context is created and initialized.</p>
+        <a name="declare_ref_1" id="declare_ref_1"></a>
+<small><pre>
+<a href="context_create_c.slsrc.html#declare" target="src">00020</a>      lbm_context_t *ctx;    /* pointer to context object */
+</pre><!-- endblock declare_ref_1 --></small>
+
+
+    <h4>Windows Only</h4>
+	<p>Windows applications must initialize the Winsock library to utilize sockets.</p>
+        <a name="windows_ref_1" id="windows_ref_1"></a>
+<small><pre>
+<a href="context_create_c.slsrc.html#windows" target="src">00023</a>  #if defined(_MSC_VER)
+<a href="context_create_c.slsrc.html#windows" target="src">00024</a>      /* windows-specific code */
+<a href="context_create_c.slsrc.html#windows" target="src">00025</a>      WSADATA wsadata;
+<a href="context_create_c.slsrc.html#windows" target="src">00026</a>      int wsStat = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
+<a href="context_create_c.slsrc.html#windows" target="src">00027</a>      if (wsStat != 0)
+<a href="context_create_c.slsrc.html#windows" target="src">00028</a>      {
+<a href="context_create_c.slsrc.html#windows" target="src">00029</a>          printf("line %d: wsStat=%d\n",__LINE__,wsStat);
+<a href="context_create_c.slsrc.html#windows" target="src">00030</a>          exit(1);
+<a href="context_create_c.slsrc.html#windows" target="src">00031</a>      }
+<a href="context_create_c.slsrc.html#windows" target="src">00032</a>  #endif
+</pre><!-- endblock windows_ref_1 --></small>
+
+
+	<p>If this fails, the application should exit since sockets will not be operational.</p>
+    <h4>Create Context</h4>
+	<p>The first variable is the context object that was previously declared. The second parameter would be an attribute object
+	which is not covered in this sample, however it is <a>here</a>. The third parameter is only provided for backwards compatibility
+	and should always be set to NULL. Finally the fourth parameter is a context level client data object (clientd), which can be 
+	used as a reference in other functions. 
+        <a name="create_ref_1" id="create_ref_1"></a>
+<small><pre>
+<a href="context_create_c.slsrc.html#create" target="src">00034</a>      err = lbm_context_create(&amp;ctx, NULL, NULL, NULL);
+<a href="context_create_c.slsrc.html#create" target="src">00035</a>      if (err)
+<a href="context_create_c.slsrc.html#create" target="src">00036</a>      {
+<a href="context_create_c.slsrc.html#create" target="src">00037</a>          printf("line %d: %s\n", __LINE__, lbm_errmsg());
+<a href="context_create_c.slsrc.html#create" target="src">00038</a>          exit(1);
+<a href="context_create_c.slsrc.html#create" target="src">00039</a>      }
+</pre><!-- endblock create_ref_1 --></small>
+
+
+      	<p>It is very important to check the return code. If the context fails to create, the application will fail to create any objects
+	associated with this context, which is nearly all other Ultra Messaging objects (with the exception of the Event Queue). Use the 
+	API lbm_errmsg() to log the reason why the context failed to create.</p>
+    <h4>Delete Context</h4>
+	<p>Very simply, this deletes the Ultra Messaging context.</p>
+        <a name="delete_ref_1" id="delete_ref_1"></a>
+<small><pre>
+<a href="context_create_c.slsrc.html#delete" target="src">00042</a>      lbm_context_delete(ctx);
+</pre><!-- endblock delete_ref_1 --></small>
+
+
+	<p>This API should only fail if the context passed in is NULL or invalid.</p>
+    <h4>Clean Windows Stuff</h4>
+	<p>It is a good idea to clean up the Winsock library before exiting the application as well. 
+        <a name="winclean_ref_1" id="winclean_ref_1"></a>
+<small><pre>
+<a href="context_create_c.slsrc.html#winclean" target="src">00044</a>  #if defined(_MSC_VER)
+<a href="context_create_c.slsrc.html#winclean" target="src">00045</a>      WSACleanup();
+<a href="context_create_c.slsrc.html#winclean" target="src">00046</a>  #endif
+</pre><!-- endblock winclean_ref_1 --></small>
+
+
+    <h4>Includes</h4>
+        <a name="includes_ref_1" id="includes_ref_1"></a>
+<small><pre>
+<a href="context_create_c.slsrc.html#includes" target="src">00003</a>  #include &lt;stdio.h&gt;
+<a href="context_create_c.slsrc.html#includes" target="src">00004</a>  
+<a href="context_create_c.slsrc.html#includes" target="src">00005</a>  #if defined(_MSC_VER)
+<a href="context_create_c.slsrc.html#includes" target="src">00006</a>  /* Windows-only includes */
+<a href="context_create_c.slsrc.html#includes" target="src">00007</a>  #include &lt;winsock2.h&gt;
+<a href="context_create_c.slsrc.html#includes" target="src">00008</a>  #define SLEEP(s) Sleep((s)*1000)
+<a href="context_create_c.slsrc.html#includes" target="src">00009</a>  #else
+<a href="context_create_c.slsrc.html#includes" target="src">00010</a>  /* Unix-only includes */
+<a href="context_create_c.slsrc.html#includes" target="src">00011</a>  #include &lt;stdlib.h&gt;
+<a href="context_create_c.slsrc.html#includes" target="src">00012</a>  #include &lt;unistd.h&gt;
+<a href="context_create_c.slsrc.html#includes" target="src">00013</a>  #define SLEEP(s) sleep(s)
+<a href="context_create_c.slsrc.html#includes" target="src">00014</a>  #endif
+<a href="context_create_c.slsrc.html#includes" target="src">00015</a>  
+<a href="context_create_c.slsrc.html#includes" target="src">00016</a>  #include &lt;lbm/lbm.h&gt;
+</pre><!-- endblock includes_ref_1 --></small>
+
+
+      <p>Note the differences in include files between Linux and Windows</p>
+
+  </body>
+</html>
+
+

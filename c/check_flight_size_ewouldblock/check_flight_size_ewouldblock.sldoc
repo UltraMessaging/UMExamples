@@ -1,0 +1,71 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Check flight size on EWOULDBLOCK</title>
+  </head>
+  <body>
+    <a href="../" target="_top">&lt;-Back</a>
+    <h1>Check flight size on EWOULDBLOCK</h1>
+    <p>By default, when a UMP source hits its configured flight size, 
+      (=semlit,tooltip,../../tooltips/source_ume_flight_size.txt,ume_flight_size=)
+      the lbm_src_send() call will either block until the internal flight counter is decremented, or the lbm_src_send() call 
+      will return an error, EWOULDBLOCK. Getting EWOULDBLOCK is not enough to determine if the source hit the configured flight size
+      because EWOULDBLOCK is also returned to lbm_src_send() if the publisher happened to hit the configured rate limiter
+      (=semlit,tooltip,../../tooltips/context_transport_lbtrm_data_rate_limit.txt,transport_lbtrm_data_rate_limit=)</p>
+    <p>Therefore, if an application is required to when it hits flight size, additional application logic must be implemented
+      to make the determination. This sample file will demonstrate how a non-blocking lbm_src_send() call can determine if flight
+      size was indeed hit, by checking the inflight counter and printing a message if the source is blocked on flight size</p>
+    <p>There is one program source file, and a store configuration XML:</p>
+    <ul>
+      <li><b><tt>=semlit,srcfile,check_flight_size_ewouldblock.slsrc,check_flight_size_ewouldblock.c=</tt></b></li>
+      <li><b><tt>=semlit,srcfile,check_flight_size_ewouldblock_store.slsrc,store.xml=</tt></b></li>
+    </ul>
+    <h2>Program explanation: <tt>check_flight_size_ewouldblock.c</tt></h2>
+    <h4>Define a Flight Size</h4>
+        <p>The =semlit,tooltip,../../tooltips/source_ume_flight_size.txt,ume_flight_size= can be set via configuration file, or
+          via the API as it is in the example application. Flight size determines the maximum risk a publisher is willing to tolerate
+          with respect to messages that have been published and not yet stabilized by the configured UMP store daemons. The default flight
+          size in Ultra Messaging is 1000 messages. For the purpose of this example, it is defined to 500.</p>
+        =semlit,insert,default_flight=
+    <h4>Declare Variables</h4>
+        <p>Not too much to note here, other than the int inflight variable which will be used when getting the inflight counter via the API,
+          and the char flight[4] variable which is being used to set the flight size via the API. </p>
+        =semlit,insert,variables=
+    <h4>Create the context</h4>
+        <p>Standard context attribute initializtion and context creation code. For more information on creating a context, please see the example
+          <a href="../context-create">Creating a Context</a></p>
+        =semlit,insert,init_create_context=
+    <h4>Create Source</h4>
+        <p>Standard source topic allocation, attibute initialization, and source creation. Note that the application is explicitly setting 
+          =semlit,tooltip,../../tooltips/source_ume_flight_size.txt,ume_flight_size=, as well as 
+          =semlit,tooltip,../../tooltips/source_ume_store.txt,ume_store=</p>
+        =semlit,insert,init_create_source=
+    <h4>Main Send Loop</h4>
+        <p>For the purpose of this example, the application is simply going to tight loop forever sending messages, and printing a message
+          to stdout whenever the source fails to send a message due to flight size.</p>
+        =semlit,insert,main_send_loop=
+    <h4>Send a Message</h4>
+        <p>Here is where the source actually tries to send a message. On success, it will simply reiterate through the loop and resend the 
+          same message again. Note the last parameter, LBM_SRC_NONBLOCK, which indicates that if the send would result in a blocking condition,
+          like hitting the rate limiter or hitting the flight size, to return an error instead of waiting for the block condition to resolve. It
+          is important to note that when using LBM_SRC_NONBLOCK, it is the applications responsibility to re-send this data, as it is not queued
+          by the UM library.</p>
+        =semlit,insert,src_send=
+    <h4>Check Send Error</h4>
+        <p>If lbm_src_send() returns an error, the application will need to check lbm_errnum() to see what the actual error was. In the case of this
+          example application, it is only checking to see if LBM_EWOULDBLOCK is returned. If LBM_EWOULDBLOCK is returned, the application now knows
+          that either lbm_src_send() failed because it hit flight size, or because it hit the rate limiter.</p>
+        =semlit,insert,check_send_error=
+    <h4>Check Flight Size</h4>
+        <p>Finally, the application will use the lbm_src_get_inflight() API call to see what the current inflight counter is at. If the current inflight
+          is equal to the configured flight size, then the application knows that lbm_src_send() failed because there are too many messages inflight,
+          and that it cannot send until messages are decalred stable, or not-stable in the event of timeout or store loss.</p>
+        =semlit,insert,get_flight=
+    <h4>Includes</h4>
+        <p>Include files for this application. Notice the Windows specific include files - these are not necessary for Linux only applications</p>
+        =semlit,insert,includes=
+    <h4>Store Configuration XML</h4>
+        <p>This is a store configuration file that can be used to run the umestored binary along with this example application</p>
+        =semlit,insert,store_xml=
+  </body>
+</html>

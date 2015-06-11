@@ -1,0 +1,7 @@
+Outgoing multicast port used for finer control of Topic Resolution. For example, if you want the context to send on a different address/port than the resolver_multicast_port, set this option and resolver_multicast_outgoing_address to different values. See also resolver_multicast_incoming_port.
+
+Scope:	        context
+Type:	        lbm_uint16_t
+Default value:	12965
+Byte order:	Network
+When to Set:	Can only be set during object initialization.

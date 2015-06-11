@@ -1,0 +1,98 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Context Create Example</title>
+  </head>
+  <body>
+    <a href="../" target="_top">&lt;-Back</a>
+    <h1>Setting Attributes Programatically</h1>
+    <p>In this example, a context is created with a non-default topic resolution mutlicast address and port. Those attributes are set
+       using the Ultra Messaging API. The application then goes on to create two LBTRM publishers. The first publisher has its 
+       attributes set via the API. The second publisher first clones the attributes of the first publisher, then sets a different
+       destination port for the multicast group to ensure that the second source is not using the same transport as the first source.</p>
+    <p>The purpose of this example is to demonstrate the different API's that can be used to set Ultra Messaging configuration 
+       within an application. This example does not cover every single configuration setting API; for example it does not demonstrate
+       the receiver or event queue attribute setting specific functions. However, those attributes are similar enough to the context
+       and source functions that this example should be sufficient enough.</p>
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt>=semlit,srcfile,setting_attributes_c.slsrc,setting_attributes.c=</tt></b>
+        - (right-click and save as "setting_attributes.c") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>setting_attributes.c</tt></h2>
+    <h4>Source Topic Attribute Pointer</h4>
+        <p>Here is the declaration for the source topic attribute variables. Since the application will be creating two separate publishers,
+           two variables are declared.</p>
+        =semlit,insert,topic_attr=
+    <h4>Context Attribute declatation</h4>
+	<p>This is the declaration for the context attribute.</p>
+	=semlit,insert,ctx_attr=
+    <h4>Attribute Variables</h4>
+	<p>Declaring these two variables to be used while setting the topic resolution port and LBTRM destination port</p>
+	=semlit,insert,attr_settings=
+    <h4>Initialize Context Attributes</h4>
+	<p>When using any Ultra Messaging attribute object, the object must first be initialized with the default values. If using a
+	   configuration file, the defaults are overwritten, however they can be overwritten programatically still before the context
+	   is created.</p>
+	=semlit,insert,init_ctx=
+    <h4>Setting Context Attribute using the String Method</h4>
+	<p>In C, there are two primary methods used to programitically set attributes; using a string value, or using the direct data
+	   type value. Here, the application is setting the context attribute
+	   =semlit,tooltip,../../tooltips/context_resolver_multicast_address.txt,resolver_multicast_address=
+	   which configures this applications topic resolution multicast address using the string method.</p>
+	=semlit,insert,ctx_res_addr=
+    <h4>Setting Context Attributes using the Data Type Method</h4>
+	<p>Unlike the previous attribute, the following snippet uses the data type method for entering the 
+	   =semlit,tooltip,../../tooltips/context_resolver_multicast_port.txt,resolver_multicast_port=, which is the port that the multicast group
+	   defined previously will use.</p>
+	=semlit,insert,ctx_res_port=
+    <h4>Create the Context Using the Attributes</h4>
+	<p>Now create the context using the attributes that were just previously configured. Notice the attributes object as the second parameter</p>
+	=semlit,insert,ctx_create=
+    <h4>Delete the Attribute Object</h4>
+	<p>Delete the attribute object to clean up</p>
+	=semlit,insert,ctx_attr_del=
+    <h4>Initialize Source Attribute for test.topic.1</h4>
+	<p>Like the context attribute object, the source topic attribute object must also be initialized</p>
+	=semlit,insert,topic1_init=
+    <h4>Setting Source Attribute via String</h4>
+	<p>Next, the source is configured to use the reliable multicast transport, LBTRM, by configuring the source attribute
+	=semlit,tooltip,../../tooltips/source_transport.txt,transport= </p>
+	=semlit,insert,topic1_transport=
+    <h4>Setting Source Attribute via Data Type</h4>
+	<p>Now the application will set the source destination address for the LBTRM multicast transport by configuring the source attribute
+	=semlit,tooltip,../../tooltips/source_transport_lbtrm_destination_port.txt,transport_lbtrm_destination_port= </p>
+	=semlit,insert,topic1_port=
+    <h4>Allocate the Topic for test.topic.1</h4>
+	<p>Allocate the topic for the first publisher</p>
+	=semlit,insert,topic1_alloc=
+    <h4>Create the First Source</h4>
+	<p>Create the source test.topic.1 by calling lbm_src_create(), and passing the attribute object in as the third paramter</p>
+	=semlit,insert,topic1_create=
+    <h4>Clone Attribues for Second Source</h4>
+	<p>If another source in the application will mostly be using the attributes from a previous source, those attributes can be cloned into a 
+	second attribute object. After the copy, alterations can be made prior to the creation of the second source</p>
+	=semlit,insert,topic2_clone=
+    <h4>Change the Multicast Port</h4>
+	<p>When optimizing a topic space, it can be advantageous to be very specific about which sources within an application share a transport session.
+	Sharing a transport session has many benefits if at the receiving end all the sources are of interest to the receiving application. If the receiving 
+	end is not interested in all the topics though, the non-interesting topics simply get discarded, and this becomes wasteful processing on part of the 
+	receiving application. The sourceapplication  has complete control over which topics share a transport session, and in this case, test.topic.2 will
+	not share a transport session as test.topic.1, which we will explicitly configure by assigning a different 
+	=semlit,tooltip,../../tooltips/source_transport_lbtrm_destination_port.txt,transport_lbtrm_destination_port= </p>
+	=semlit,insert,topic2_port=
+    <h4>Allocate and Create test.topic.2</h4>
+	<p>Just like previously done for the first publisher, allocate the topic with the configured attributes and create the source</p>
+	=semlit,insert,topic2_create=
+    <h4>Delete the Source Attribute Objects</h4>
+	<p>Deleting the source attribute objects is a good best practice</p>
+	=semlit,insert,topic_attr_del=
+    <h4>Delete the Sources and Context</h4>
+	<p>Deleting the sources and context is a good best practice as well. Be sure to delete the sources, and any other objects encapsualated in the context,
+	before deleting the context</p>
+	=semlit,insert,clean=
+    <h4>Includes</h4>
+	<p>Include files for this application. Notice the Windows specific include files - these are not necessary for Linux only applications</p>
+	=semlit,insert,includes=
+  </body>
+</html>

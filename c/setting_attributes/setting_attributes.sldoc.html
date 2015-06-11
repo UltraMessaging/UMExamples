@@ -1,0 +1,334 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Context Create Example</title>
+  </head>
+  <body>
+    <a href="../" target="_top">&lt;-Back</a>
+    <h1>Setting Attributes Programatically</h1>
+    <p>In this example, a context is created with a non-default topic resolution mutlicast address and port. Those attributes are set
+       using the Ultra Messaging API. The application then goes on to create two LBTRM publishers. The first publisher has its 
+       attributes set via the API. The second publisher first clones the attributes of the first publisher, then sets a different
+       destination port for the multicast group to ensure that the second source is not using the same transport as the first source.</p>
+    <p>The purpose of this example is to demonstrate the different API's that can be used to set Ultra Messaging configuration 
+       within an application. This example does not cover every single configuration setting API; for example it does not demonstrate
+       the receiver or event queue attribute setting specific functions. However, those attributes are similar enough to the context
+       and source functions that this example should be sufficient enough.</p>
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt><a href="setting_attributes.c">setting_attributes.c</a></tt></b>
+        - (right-click and save as "setting_attributes.c") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>setting_attributes.c</tt></h2>
+    <h4>Source Topic Attribute Pointer</h4>
+        <p>Here is the declaration for the source topic attribute variables. Since the application will be creating two separate publishers,
+           two variables are declared.</p>
+        <a name="topic_attr_ref_1" id="topic_attr_ref_1"></a>
+<small><pre>
+<a href="setting_attributes_c.slsrc.html#topic_attr" target="src">00025</a>      lbm_src_topic_attr_t *tattr_1;  /* pointer to source attribute object */
+<a href="setting_attributes_c.slsrc.html#topic_attr" target="src">00026</a>      lbm_src_topic_attr_t *tattr_2;  /* pointer to source attribute object */
+</pre><!-- endblock topic_attr_ref_1 --></small>
+
+
+    <h4>Context Attribute declatation</h4>
+	<p>This is the declaration for the context attribute.</p>
+	<a name="ctx_attr_ref_1" id="ctx_attr_ref_1"></a>
+<small><pre>
+<a href="setting_attributes_c.slsrc.html#ctx_attr" target="src">00027</a>      lbm_context_attr_t * cattr;     /* pointer to context attribute object */
+</pre><!-- endblock ctx_attr_ref_1 --></small>
+
+
+    <h4>Attribute Variables</h4>
+	<p>Declaring these two variables to be used while setting the topic resolution port and LBTRM destination port</p>
+	<a name="attr_settings_ref_1" id="attr_settings_ref_1"></a>
+<small><pre>
+<a href="setting_attributes_c.slsrc.html#attr_settings" target="src">00028</a>      lbm_uint16_t res_port;          /* Int to set resolver port */
+<a href="setting_attributes_c.slsrc.html#attr_settings" target="src">00029</a>      lbm_uint16_t des_port;          /* Int to set lbtrm destination port */
+</pre><!-- endblock attr_settings_ref_1 --></small>
+
+
+    <h4>Initialize Context Attributes</h4>
+	<p>When using any Ultra Messaging attribute object, the object must first be initialized with the default values. If using a
+	   configuration file, the defaults are overwritten, however they can be overwritten programatically still before the context
+	   is created.</p>
+	<a name="init_ctx_ref_1" id="init_ctx_ref_1"></a>
+<small><pre>
+<a href="setting_attributes_c.slsrc.html#init_ctx" target="src">00043</a>      /* Initialize the defaults for the context attribute object */
+<a href="setting_attributes_c.slsrc.html#init_ctx" target="src">00044</a>      if (lbm_context_attr_create(&amp;cattr) != 0)
+<a href="setting_attributes_c.slsrc.html#init_ctx" target="src">00045</a>      {
+<a href="setting_attributes_c.slsrc.html#init_ctx" target="src">00046</a>          fprintf(stderr, "lbm_context_attr_create: %s\n", lbm_errmsg());
+<a href="setting_attributes_c.slsrc.html#init_ctx" target="src">00047</a>      exit(1);
+<a href="setting_attributes_c.slsrc.html#init_ctx" target="src">00048</a>      }
+</pre><!-- endblock init_ctx_ref_1 --></small>
+
+
+    <h4>Setting Context Attribute using the String Method</h4>
+	<p>In C, there are two primary methods used to programitically set attributes; using a string value, or using the direct data
+	   type value. Here, the application is setting the context attribute
+	   <a href="#" title="Multicast address used for Topic Resolution. This option automatically sets the values for resolver_multicast_incoming_address and resolver_multicast_outgoing_address as evidenced by the default values for all three options, which are the same.
+
+Scope:	        context
+Type:	        struct in_addr
+Default value:	224.9.10.11
+When to Set:	Can only be set during object initialization.
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">resolver_multicast_address</a>
+
+	   which configures this applications topic resolution multicast address using the string method.</p>
+	<a name="ctx_res_addr_ref_1" id="ctx_res_addr_ref_1"></a>
+<small><pre>
+<a href="setting_attributes_c.slsrc.html#ctx_res_addr" target="src">00050</a>      /* Setting the resolver address using the string method */
+<a href="setting_attributes_c.slsrc.html#ctx_res_addr" target="src">00051</a>      if (lbm_context_attr_str_setopt(cattr, "resolver_multicast_address", "224.10.11.12") != 0) 
+<a href="setting_attributes_c.slsrc.html#ctx_res_addr" target="src">00052</a>      {
+<a href="setting_attributes_c.slsrc.html#ctx_res_addr" target="src">00053</a>          fprintf(stderr, "lbm_context_attr_str_setopt:resolver_multicast_address: %s\n", lbm_errmsg());
+<a href="setting_attributes_c.slsrc.html#ctx_res_addr" target="src">00054</a>          exit(1);
+<a href="setting_attributes_c.slsrc.html#ctx_res_addr" target="src">00055</a>      }
+</pre><!-- endblock ctx_res_addr_ref_1 --></small>
+
+
+    <h4>Setting Context Attributes using the Data Type Method</h4>
+	<p>Unlike the previous attribute, the following snippet uses the data type method for entering the 
+	   <a href="#" title="Outgoing multicast port used for finer control of Topic Resolution. For example, if you want the context to send on a different address/port than the resolver_multicast_port, set this option and resolver_multicast_outgoing_address to different values. See also resolver_multicast_incoming_port.
+
+Scope:	        context
+Type:	        lbm_uint16_t
+Default value:	12965
+Byte order:	Network
+When to Set:	Can only be set during object initialization.
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">resolver_multicast_port</a>
+, which is the port that the multicast group
+	   defined previously will use.</p>
+	<a name="ctx_res_port_ref_1" id="ctx_res_port_ref_1"></a>
+<small><pre>
+<a href="setting_attributes_c.slsrc.html#ctx_res_port" target="src">00057</a>      /* Setting the resolver port using the data-type value method */
+<a href="setting_attributes_c.slsrc.html#ctx_res_port" target="src">00058</a>      res_port = 12345;
+<a href="setting_attributes_c.slsrc.html#ctx_res_port" target="src">00059</a>      if (lbm_context_attr_setopt(cattr, "resolver_multicast_port", &amp;res_port, sizeof(lbm_uint16_t)) != 0 )
+<a href="setting_attributes_c.slsrc.html#ctx_res_port" target="src">00060</a>      {
+<a href="setting_attributes_c.slsrc.html#ctx_res_port" target="src">00061</a>      fprintf(stderr, "lbm_context_attr_setopt:resolver_mutlicast_port: %s\n", lbm_errmsg());
+<a href="setting_attributes_c.slsrc.html#ctx_res_port" target="src">00062</a>          exit(1);
+<a href="setting_attributes_c.slsrc.html#ctx_res_port" target="src">00063</a>      }
+</pre><!-- endblock ctx_res_port_ref_1 --></small>
+
+
+    <h4>Create the Context Using the Attributes</h4>
+	<p>Now create the context using the attributes that were just previously configured. Notice the attributes object as the second parameter</p>
+	<a name="ctx_create_ref_1" id="ctx_create_ref_1"></a>
+<small><pre>
+<a href="setting_attributes_c.slsrc.html#ctx_create" target="src">00065</a>      /* Creating the context */
+<a href="setting_attributes_c.slsrc.html#ctx_create" target="src">00066</a>      err = lbm_context_create(&amp;ctx, cattr, NULL, NULL);
+<a href="setting_attributes_c.slsrc.html#ctx_create" target="src">00067</a>      if (err)
+<a href="setting_attributes_c.slsrc.html#ctx_create" target="src">00068</a>      {
+<a href="setting_attributes_c.slsrc.html#ctx_create" target="src">00069</a>          printf("line %d: %s\n", __LINE__, lbm_errmsg());
+<a href="setting_attributes_c.slsrc.html#ctx_create" target="src">00070</a>          exit(1);
+<a href="setting_attributes_c.slsrc.html#ctx_create" target="src">00071</a>      }
+</pre><!-- endblock ctx_create_ref_1 --></small>
+
+
+    <h4>Delete the Attribute Object</h4>
+	<p>Delete the attribute object to clean up</p>
+	<a name="ctx_attr_del_ref_1" id="ctx_attr_del_ref_1"></a>
+<small><pre>
+<a href="setting_attributes_c.slsrc.html#ctx_attr_del" target="src">00073</a>      /* Delete the context attribute object */
+<a href="setting_attributes_c.slsrc.html#ctx_attr_del" target="src">00074</a>      lbm_context_attr_delete(cattr);
+</pre><!-- endblock ctx_attr_del_ref_1 --></small>
+
+
+    <h4>Initialize Source Attribute for test.topic.1</h4>
+	<p>Like the context attribute object, the source topic attribute object must also be initialized</p>
+	<a name="topic1_init_ref_1" id="topic1_init_ref_1"></a>
+<small><pre>
+<a href="setting_attributes_c.slsrc.html#topic1_init" target="src">00076</a>      /* Initializing the source attribute object */
+<a href="setting_attributes_c.slsrc.html#topic1_init" target="src">00077</a>      if (lbm_src_topic_attr_create(&amp;tattr_1) != 0)
+<a href="setting_attributes_c.slsrc.html#topic1_init" target="src">00078</a>      {
+<a href="setting_attributes_c.slsrc.html#topic1_init" target="src">00079</a>          fprintf(stderr, "lbm_src_topic_attr_create: %s\n", lbm_errmsg());
+<a href="setting_attributes_c.slsrc.html#topic1_init" target="src">00080</a>          exit(1);
+<a href="setting_attributes_c.slsrc.html#topic1_init" target="src">00081</a>      }
+</pre><!-- endblock topic1_init_ref_1 --></small>
+
+
+    <h4>Setting Source Attribute via String</h4>
+	<p>Next, the source is configured to use the reliable multicast transport, LBTRM, by configuring the source attribute
+	<a href="#" title="The transport type to be used for created sources.
+
+Scope:	source
+Type:	int
+When to Set:	Can only be set during object initialization.
+String value	Integer value	Description
+tcp	                LBM_SRC_TOPIC_ATTR_TRANSPORT_TCP	TCP over IPv4 Default for all.
+lbtrm,   lbt-rm	        LBM_SRC_TOPIC_ATTR_TRANSPORT_LBTRM	UDP-based reliable multicast with unicast NAKs
+lbtru,   lbt-ru	        LBM_SRC_TOPIC_ATTR_TRANSPORT_LBTRU	UDP-based reliable unicast with unicast NAKs
+lbtipc,  lbt-ipc        LBM_SRC_TOPIC_ATTR_TRANSPORT_LBTIPC	InterProcess Communication between processes on the same host using a shared memory area.
+lbtrdma, lbt-rdma       LBM_SRC_TOPIC_ATTR_TRANSPORT_LBTRDMA	Voltaire® InfiniBand Remote Direct Memory Access transport between hosts using a shared memory area.
+
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">transport</a>
+ </p>
+	<a name="topic1_transport_ref_1" id="topic1_transport_ref_1"></a>
+<small><pre>
+<a href="setting_attributes_c.slsrc.html#topic1_transport" target="src">00083</a>      /* Setting the transport via the source topic string method */
+<a href="setting_attributes_c.slsrc.html#topic1_transport" target="src">00084</a>      if (lbm_src_topic_attr_str_setopt(tattr_1, "transport", "lbtrm") != 0 )
+<a href="setting_attributes_c.slsrc.html#topic1_transport" target="src">00085</a>      {
+<a href="setting_attributes_c.slsrc.html#topic1_transport" target="src">00086</a>          fprintf(stderr, "lbm_src_topic_attr_str_setopt:transport: %s\n", lbm_errmsg());
+<a href="setting_attributes_c.slsrc.html#topic1_transport" target="src">00087</a>          exit(1);
+<a href="setting_attributes_c.slsrc.html#topic1_transport" target="src">00088</a>      }
+</pre><!-- endblock topic1_transport_ref_1 --></small>
+
+
+    <h4>Setting Source Attribute via Data Type</h4>
+	<p>Now the application will set the source destination address for the LBTRM multicast transport by configuring the source attribute
+	<a href="#" title="The UDP destination port used for this Topic when LBT-RM is used.
+
+Scope:          source
+Type:           lbm_uint16_t
+Default value:  14400
+Byte order:     Network
+When to Set:    Can only be set during object initialization.
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">transport_lbtrm_destination_port</a>
+ </p>
+	<a name="topic1_port_ref_1" id="topic1_port_ref_1"></a>
+<small><pre>
+<a href="setting_attributes_c.slsrc.html#topic1_port" target="src">00090</a>      /* Setting the lbtrm destination port via the direct value set method */
+<a href="setting_attributes_c.slsrc.html#topic1_port" target="src">00091</a>      des_port = 14001;
+<a href="setting_attributes_c.slsrc.html#topic1_port" target="src">00092</a>      if (lbm_src_topic_attr_setopt(tattr_1, "transport_lbtrm_destination_port", &amp;des_port, sizeof(lbm_uint16_t)) != 0 )
+<a href="setting_attributes_c.slsrc.html#topic1_port" target="src">00093</a>      {
+<a href="setting_attributes_c.slsrc.html#topic1_port" target="src">00094</a>          fprintf(stderr, "lbm_src_topic_attr_setopt:transport_lbtrm_destination_port: %s\n", lbm_errmsg());
+<a href="setting_attributes_c.slsrc.html#topic1_port" target="src">00095</a>          exit(1);
+<a href="setting_attributes_c.slsrc.html#topic1_port" target="src">00096</a>      }
+</pre><!-- endblock topic1_port_ref_1 --></small>
+
+
+    <h4>Allocate the Topic for test.topic.1</h4>
+	<p>Allocate the topic for the first publisher</p>
+	<a name="topic1_alloc_ref_1" id="topic1_alloc_ref_1"></a>
+<small><pre>
+<a href="setting_attributes_c.slsrc.html#topic1_alloc" target="src">00098</a>      /* Allocating the topic */
+<a href="setting_attributes_c.slsrc.html#topic1_alloc" target="src">00099</a>      err = lbm_src_topic_alloc(&amp;topic_1, ctx, "test.topic.1", tattr_1);
+<a href="setting_attributes_c.slsrc.html#topic1_alloc" target="src">00100</a>      if (err)
+<a href="setting_attributes_c.slsrc.html#topic1_alloc" target="src">00101</a>      {
+<a href="setting_attributes_c.slsrc.html#topic1_alloc" target="src">00102</a>          printf("line %d: %s\n", __LINE__, lbm_errmsg());
+<a href="setting_attributes_c.slsrc.html#topic1_alloc" target="src">00103</a>          exit(1);
+<a href="setting_attributes_c.slsrc.html#topic1_alloc" target="src">00104</a>      }
+</pre><!-- endblock topic1_alloc_ref_1 --></small>
+
+
+    <h4>Create the First Source</h4>
+	<p>Create the source test.topic.1 by calling lbm_src_create(), and passing the attribute object in as the third paramter</p>
+	<a name="topic1_create_ref_1" id="topic1_create_ref_1"></a>
+<small><pre>
+<a href="setting_attributes_c.slsrc.html#topic1_create" target="src">00106</a>      /* Creating the source */
+<a href="setting_attributes_c.slsrc.html#topic1_create" target="src">00107</a>      err = lbm_src_create(&amp;src_1, ctx, topic_1, NULL, NULL, NULL);
+<a href="setting_attributes_c.slsrc.html#topic1_create" target="src">00108</a>      if (err)
+<a href="setting_attributes_c.slsrc.html#topic1_create" target="src">00109</a>      {
+<a href="setting_attributes_c.slsrc.html#topic1_create" target="src">00110</a>          printf("line %d: %s\n", __LINE__, lbm_errmsg());
+<a href="setting_attributes_c.slsrc.html#topic1_create" target="src">00111</a>          exit(1);
+<a href="setting_attributes_c.slsrc.html#topic1_create" target="src">00112</a>      }
+</pre><!-- endblock topic1_create_ref_1 --></small>
+
+
+    <h4>Clone Attribues for Second Source</h4>
+	<p>If another source in the application will mostly be using the attributes from a previous source, those attributes can be cloned into a 
+	second attribute object. After the copy, alterations can be made prior to the creation of the second source</p>
+	<a name="topic2_clone_ref_1" id="topic2_clone_ref_1"></a>
+<small><pre>
+<a href="setting_attributes_c.slsrc.html#topic2_clone" target="src">00114</a>      /* Initialized the second source attributes as a copy of the first */
+<a href="setting_attributes_c.slsrc.html#topic2_clone" target="src">00115</a>      if (lbm_src_topic_attr_dup(&amp;tattr_2, tattr_1) != 0 )
+<a href="setting_attributes_c.slsrc.html#topic2_clone" target="src">00116</a>      {
+<a href="setting_attributes_c.slsrc.html#topic2_clone" target="src">00117</a>          fprintf(stderr, "lbm_src_topic_attr_dup: %s\n", lbm_errmsg());
+<a href="setting_attributes_c.slsrc.html#topic2_clone" target="src">00118</a>          exit(1);
+<a href="setting_attributes_c.slsrc.html#topic2_clone" target="src">00119</a>      }
+</pre><!-- endblock topic2_clone_ref_1 --></small>
+
+
+    <h4>Change the Multicast Port</h4>
+	<p>When optimizing a topic space, it can be advantageous to be very specific about which sources within an application share a transport session.
+	Sharing a transport session has many benefits if at the receiving end all the sources are of interest to the receiving application. If the receiving 
+	end is not interested in all the topics though, the non-interesting topics simply get discarded, and this becomes wasteful processing on part of the 
+	receiving application. The sourceapplication  has complete control over which topics share a transport session, and in this case, test.topic.2 will
+	not share a transport session as test.topic.1, which we will explicitly configure by assigning a different 
+	<a href="#" title="The UDP destination port used for this Topic when LBT-RM is used.
+
+Scope:          source
+Type:           lbm_uint16_t
+Default value:  14400
+Byte order:     Network
+When to Set:    Can only be set during object initialization.
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">transport_lbtrm_destination_port</a>
+ </p>
+	<a name="topic2_port_ref_1" id="topic2_port_ref_1"></a>
+<small><pre>
+<a href="setting_attributes_c.slsrc.html#topic2_port" target="src">00121</a>      /* Now modify the destination port for this second source to put the publisher on a different transport */
+<a href="setting_attributes_c.slsrc.html#topic2_port" target="src">00122</a>      des_port = 14002;
+<a href="setting_attributes_c.slsrc.html#topic2_port" target="src">00123</a>      if (lbm_src_topic_attr_setopt(tattr_2, "transport_lbtrm_destination_port", &amp;des_port, sizeof(lbm_uint16_t)) != 0 )
+<a href="setting_attributes_c.slsrc.html#topic2_port" target="src">00124</a>      {
+<a href="setting_attributes_c.slsrc.html#topic2_port" target="src">00125</a>          fprintf(stderr, "lbm_src_topic_attr_setopt:transport_lbtrm_destination_port: %s\n", lbm_errmsg());
+<a href="setting_attributes_c.slsrc.html#topic2_port" target="src">00126</a>          exit(1);
+<a href="setting_attributes_c.slsrc.html#topic2_port" target="src">00127</a>      }
+</pre><!-- endblock topic2_port_ref_1 --></small>
+
+
+    <h4>Allocate and Create test.topic.2</h4>
+	<p>Just like previously done for the first publisher, allocate the topic with the configured attributes and create the source</p>
+	<a name="topic2_create_ref_1" id="topic2_create_ref_1"></a>
+<small><pre>
+<a href="setting_attributes_c.slsrc.html#topic2_create" target="src">00129</a>      /* Allocating the second topic */
+<a href="setting_attributes_c.slsrc.html#topic2_create" target="src">00130</a>      err = lbm_src_topic_alloc(&amp;topic_2, ctx, "test.topic.2", tattr_2);
+<a href="setting_attributes_c.slsrc.html#topic2_create" target="src">00131</a>      if (err)
+<a href="setting_attributes_c.slsrc.html#topic2_create" target="src">00132</a>      {
+<a href="setting_attributes_c.slsrc.html#topic2_create" target="src">00133</a>          printf("line %d: %s\n", __LINE__, lbm_errmsg());
+<a href="setting_attributes_c.slsrc.html#topic2_create" target="src">00134</a>          exit(1);
+<a href="setting_attributes_c.slsrc.html#topic2_create" target="src">00135</a>      }
+<a href="setting_attributes_c.slsrc.html#topic2_create" target="src">00136</a>  
+<a href="setting_attributes_c.slsrc.html#topic2_create" target="src">00137</a>      /* Creating the source */
+<a href="setting_attributes_c.slsrc.html#topic2_create" target="src">00138</a>      err = lbm_src_create(&amp;src_2, ctx, topic_2, NULL, NULL, NULL);
+<a href="setting_attributes_c.slsrc.html#topic2_create" target="src">00139</a>      if (err)
+<a href="setting_attributes_c.slsrc.html#topic2_create" target="src">00140</a>      {
+<a href="setting_attributes_c.slsrc.html#topic2_create" target="src">00141</a>          printf("line %d: %s\n", __LINE__, lbm_errmsg());
+<a href="setting_attributes_c.slsrc.html#topic2_create" target="src">00142</a>          exit(1);
+<a href="setting_attributes_c.slsrc.html#topic2_create" target="src">00143</a>      }
+</pre><!-- endblock topic2_create_ref_1 --></small>
+
+
+    <h4>Delete the Source Attribute Objects</h4>
+	<p>Deleting the source attribute objects is a good best practice</p>
+	<a name="topic_attr_del_ref_1" id="topic_attr_del_ref_1"></a>
+<small><pre>
+<a href="setting_attributes_c.slsrc.html#topic_attr_del" target="src">00145</a>      /* Delete the first and second source topic attribute objects */
+<a href="setting_attributes_c.slsrc.html#topic_attr_del" target="src">00146</a>      lbm_src_topic_attr_delete(tattr_1);
+<a href="setting_attributes_c.slsrc.html#topic_attr_del" target="src">00147</a>      lbm_src_topic_attr_delete(tattr_2);
+</pre><!-- endblock topic_attr_del_ref_1 --></small>
+
+
+    <h4>Delete the Sources and Context</h4>
+	<p>Deleting the sources and context is a good best practice as well. Be sure to delete the sources, and any other objects encapsualated in the context,
+	before deleting the context</p>
+	<a name="clean_ref_1" id="clean_ref_1"></a>
+<small><pre>
+<a href="setting_attributes_c.slsrc.html#clean" target="src">00149</a>      /* Finished with all LBM functions, delete the source and context object. */
+<a href="setting_attributes_c.slsrc.html#clean" target="src">00150</a>      lbm_src_delete(src_1);
+<a href="setting_attributes_c.slsrc.html#clean" target="src">00151</a>      lbm_src_delete(src_2);
+<a href="setting_attributes_c.slsrc.html#clean" target="src">00152</a>      lbm_context_delete(ctx);
+</pre><!-- endblock clean_ref_1 --></small>
+
+
+    <h4>Includes</h4>
+	<p>Include files for this application. Notice the Windows specific include files - these are not necessary for Linux only applications</p>
+	<a name="includes_ref_1" id="includes_ref_1"></a>
+<small><pre>
+<a href="setting_attributes_c.slsrc.html#includes" target="src">00003</a>  #include &lt;stdio.h&gt;
+<a href="setting_attributes_c.slsrc.html#includes" target="src">00004</a>  
+<a href="setting_attributes_c.slsrc.html#includes" target="src">00005</a>  #if defined(_MSC_VER)
+<a href="setting_attributes_c.slsrc.html#includes" target="src">00006</a>  /* Windows-only includes */
+<a href="setting_attributes_c.slsrc.html#includes" target="src">00007</a>  #include &lt;winsock2.h&gt;
+<a href="setting_attributes_c.slsrc.html#includes" target="src">00008</a>  #define SLEEP(s) Sleep((s)*1000)
+<a href="setting_attributes_c.slsrc.html#includes" target="src">00009</a>  #else
+<a href="setting_attributes_c.slsrc.html#includes" target="src">00010</a>  /* Unix-only includes */
+<a href="setting_attributes_c.slsrc.html#includes" target="src">00011</a>  #include &lt;stdlib.h&gt;
+<a href="setting_attributes_c.slsrc.html#includes" target="src">00012</a>  #include &lt;unistd.h&gt;
+<a href="setting_attributes_c.slsrc.html#includes" target="src">00013</a>  #define SLEEP(s) sleep(s)
+<a href="setting_attributes_c.slsrc.html#includes" target="src">00014</a>  #endif
+<a href="setting_attributes_c.slsrc.html#includes" target="src">00015</a>  
+<a href="setting_attributes_c.slsrc.html#includes" target="src">00016</a>  #include &lt;lbm/lbm.h&gt;
+</pre><!-- endblock includes_ref_1 --></small>
+
+
+  </body>
+</html>
+

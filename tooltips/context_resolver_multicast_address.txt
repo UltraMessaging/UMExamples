@@ -1,0 +1,6 @@
+Multicast address used for Topic Resolution. This option automatically sets the values for resolver_multicast_incoming_address and resolver_multicast_outgoing_address as evidenced by the default values for all three options, which are the same.
+
+Scope:	        context
+Type:	        struct in_addr
+Default value:	224.9.10.11
+When to Set:	Can only be set during object initialization.

@@ -1,0 +1,8 @@
+Specifies the number of messages allowed to be in flight (unstabilized at a store and without delivery confirmation) before a new message send either blocks or triggers a notification (source event).
+
+Scope:          source
+Type:           unsigned int
+Units:          messages
+Default value:  1000
+When to Set:    Can only be set during object initialization.
+Version:        This option was implemented in LBM 4.1.1/UME 3.1.1

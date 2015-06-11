@@ -1,0 +1,7 @@
+The UDP destination port used for this Topic when LBT-RM is used.
+
+Scope:          source
+Type:           lbm_uint16_t
+Default value:  14400
+Byte order:     Network
+When to Set:    Can only be set during object initialization.

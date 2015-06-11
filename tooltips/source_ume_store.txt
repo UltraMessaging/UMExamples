@@ -1,0 +1,17 @@
+Add a store specification to the list of stores specified for the source. Unlike most other UMP settings, every
+time this setting is called, it adds another store specification to the list and does NOT overwrite previous
+specifications.
+Each entry contains the IP address, TCP port, registration ID, and group index for the store. For the
+configuration file as well as string versions of this option, format the string value as
+DomainID:IP:port:RegID:GroupIDX where DomainID is the store's UM domain ID, IP is the stores IP
+address, port is the TCP port for the store, RegID is the registration ID that the source desires to use, and
+GroupIDX is the group index that the store belongs to. The DomainID, RegID and GroupIDX pieces may be
+left off the string if desired. If so, UMP assumes the value of 0 for them.
+Because each entry adds a new store specification and does not overwrite previous values, an entry or string
+with the IP address of 0.0.0.0 and TCP port of 0 causes the removal of all previous store specifications. A
+single store specification means the source uses persistence. If no stores are specified, then persistence will
+not be provided for the source.
+
+Scope:         source
+Type:          lbm_ume_store_entry_t
+When to Set:   Can only be set during object initialization
