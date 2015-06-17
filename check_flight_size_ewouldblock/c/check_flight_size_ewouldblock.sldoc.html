@@ -1,12 +1,13 @@
 <html>
   <head>
     <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+
     <title>Check flight size on EWOULDBLOCK</title>
   </head>
   <body>
     <a href="../" target="_top">&lt;-Back</a>
     <h1>Check flight size on EWOULDBLOCK</h1>
-    <p>By default, when a UMP source hits its configured flight size, 
+        <p>By default, when a UMP source hits its configured flight size, 
       (<a href="#" title="Specifies the number of messages allowed to be in flight (unstabilized at a store and without delivery confirmation) before a new message send either blocks or triggers a notification (source event).
 
 Scope:          source
@@ -17,9 +18,8 @@ When to Set:    Can only be set during object initialization.
 Version:        This option was implemented in LBM 4.1.1/UME 3.1.1
 " style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">ume_flight_size</a>
 )
-      the lbm_src_send() call will either block until the internal flight counter is decremented, or the lbm_src_send() call 
-      will return an error, EWOULDBLOCK. Getting EWOULDBLOCK is not enough to determine if the source hit the configured flight size
-      because EWOULDBLOCK is also returned to lbm_src_send() if the publisher happened to hit the configured rate limiter
+      the send function will either block until the internal flight counter is decremented, or it will return an error, EWOULDBLOCK. Getting EWOULDBLOCK is not enough to determine if the source hit the configured flight size
+      because EWOULDBLOCK is also returned by the send function if the publisher happened to hit the configured rate limiter
       (<a href="#" title="Maximum aggregate transmission rate of all LBT-RM sessions' original data plus retransmissions for this particular context.
 
 Scope:          context
@@ -30,8 +30,9 @@ When to Set:    Can only be set during object initialization.
 " style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">transport_lbtrm_data_rate_limit</a>
 )</p>
     <p>Therefore, if an application is required to when it hits flight size, additional application logic must be implemented
-      to make the determination. This sample file will demonstrate how a non-blocking lbm_src_send() call can determine if flight
+      to make the determination. This sample file will demonstrate how a non-blocking send function can determine if flight
       size was indeed hit, by checking the inflight counter and printing a message if the source is blocked on flight size</p>
+
     <p>There is one program source file, and a store configuration XML:</p>
     <ul>
       <li><b><tt><a href="check_flight_size_ewouldblock.c">check_flight_size_ewouldblock.c</a></tt></b></li>

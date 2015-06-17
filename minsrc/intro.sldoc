@@ -1,0 +1,10 @@
+<a href="../../index.html" target="_top">Example index</a>
+
+<h1>Minimal UM Punlisher Example</h1>
+<p>This example demonstrates the minimal code to publish a message using UM.
+There is a corresponding minimal subscriber example at TODO.</p>
+
+<p>When reading the documentation below, click on any line number to display
+the pure source listing on the right side of the screen. Similarly, if you
+click on a line number on the right side of the screen, the corresponding
+documentation will be displayed on the left.</p>

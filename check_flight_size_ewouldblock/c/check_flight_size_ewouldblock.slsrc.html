@@ -1,0 +1,322 @@
+<!DOCTYPE html><html><head><title>check_flight_size_ewouldblock.c</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>check_flight_size_ewouldblock.c</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+<a href="check_flight_size_ewouldblock.sldoc.html#includes_ref_1" target="doc">00003</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#includes_ref_1" target="doc">00004</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#includes_ref_1" target="doc">00005</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#includes_ref_1" target="doc">00006</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#includes_ref_1" target="doc">00007</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#includes_ref_1" target="doc">00008</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#includes_ref_1" target="doc">00009</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#includes_ref_1" target="doc">00010</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#includes_ref_1" target="doc">00011</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#includes_ref_1" target="doc">00012</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#includes_ref_1" target="doc">00013</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#includes_ref_1" target="doc">00014</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#includes_ref_1" target="doc">00015</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#includes_ref_1" target="doc">00016</a>
+00017
+<a href="check_flight_size_ewouldblock.sldoc.html#default_flight_ref_1" target="doc">00018</a>
+00019
+00020
+00021
+<a href="check_flight_size_ewouldblock.sldoc.html#variables_ref_1" target="doc">00022</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#variables_ref_1" target="doc">00023</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#variables_ref_1" target="doc">00024</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#variables_ref_1" target="doc">00025</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#variables_ref_1" target="doc">00026</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#variables_ref_1" target="doc">00027</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#variables_ref_1" target="doc">00028</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#variables_ref_1" target="doc">00029</a>
+00030
+00031
+00032
+00033
+00034
+00035
+00036
+00037
+00038
+00039
+00040
+00041
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_context_ref_1" target="doc">00042</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_context_ref_1" target="doc">00043</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_context_ref_1" target="doc">00044</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_context_ref_1" target="doc">00045</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_context_ref_1" target="doc">00046</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_context_ref_1" target="doc">00047</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_context_ref_1" target="doc">00048</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_context_ref_1" target="doc">00049</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_context_ref_1" target="doc">00050</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_context_ref_1" target="doc">00051</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_context_ref_1" target="doc">00052</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_context_ref_1" target="doc">00053</a>
+00054
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00055</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00056</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00057</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00058</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00059</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00060</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00061</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00062</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00063</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00064</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00065</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00066</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00067</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00068</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00069</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00070</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00071</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00072</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00073</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00074</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00075</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00076</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00077</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00078</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00079</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00080</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00081</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00082</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00083</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00084</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00085</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00086</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#init_create_source_ref_1" target="doc">00087</a>
+00088
+<a href="check_flight_size_ewouldblock.sldoc.html#main_send_loop_ref_1" target="doc">00089</a>
+00090
+<a href="check_flight_size_ewouldblock.sldoc.html#src_send_ref_1" target="doc">00091</a>
+00092
+<a href="check_flight_size_ewouldblock.sldoc.html#check_send_error_ref_1" target="doc">00093</a>
+00094
+<a href="check_flight_size_ewouldblock.sldoc.html#get_flight_ref_1" target="doc">00095</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#get_flight_ref_1" target="doc">00096</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#get_flight_ref_1" target="doc">00097</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#get_flight_ref_1" target="doc">00098</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#get_flight_ref_1" target="doc">00099</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#get_flight_ref_1" target="doc">00100</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#get_flight_ref_1" target="doc">00101</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#get_flight_ref_1" target="doc">00102</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#get_flight_ref_1" target="doc">00103</a>
+00104
+00105
+00106
+00107
+00108
+00109
+</td><td>  /* Code Disclaimer? */
+  
+<span name="includes" id="includes"></span>  #include &lt;stdio.h&gt;
+  
+  #if defined(_MSC_VER)
+  /* Windows-only includes */
+  #include &lt;winsock2.h&gt;
+  #define SLEEP(s) Sleep((s)*1000)
+  #else
+  /* Unix-only includes */
+  #include &lt;stdlib.h&gt;
+  #include &lt;unistd.h&gt;
+  #define SLEEP(s) sleep(s)
+  #endif
+  
+  #include &lt;lbm/lbm.h&gt;
+  
+<span name="default_flight" id="default_flight"></span>  #define DEFAULT_APP_FLIGHT_SIZE 500     /* Used for checking flight size */
+  
+  main()
+  {
+<span name="variables" id="variables"></span>      lbm_context_t *ctx;         /* Context object */
+      lbm_topic_t *topic;         /* Topic object */
+      lbm_src_t *src;             /* Source object */
+      lbm_src_topic_attr_t * tattr;       /* Source topic attribute object */
+      lbm_context_attr_t * cattr;     /* Context attribute object */
+      int inflight;                           /* Object used for checking inflight counters */
+      char flight[4];
+      int err;                /* Used for checking API return codes */
+      
+  #if defined(_WIN32)
+      /* windows-specific code */
+      WSADATA wsadata;
+      int wsStat = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
+      if (wsStat != 0)
+      {
+          printf("line %d: wsStat=%d\n",__LINE__,wsStat);
+          exit(1);
+      }
+  #endif
+  
+<span name="init_create_context" id="init_create_context"></span>      if (lbm_context_attr_create(&amp;cattr) != 0)
+      {
+          fprintf(stderr, "lbm_context_attr_create: %s\n", lbm_errmsg());
+          exit(1);
+      }
+  
+      err = lbm_context_create(&amp;ctx, cattr, NULL, NULL);
+      if (err)
+      {
+          printf("line %d: %s\n", __LINE__, lbm_errmsg());
+          exit(1);
+      }
+  
+<span name="init_create_source" id="init_create_source"></span>      if (lbm_src_topic_attr_create(&amp;tattr) != 0)
+      {
+              fprintf(stderr, "lbm_src_topic_attr_create: %s\n", lbm_errmsg());
+              exit(1);
+      }
+  
+      sprintf(flight, "%d", DEFAULT_APP_FLIGHT_SIZE);
+      if (lbm_src_topic_attr_str_setopt(tattr, "ume_flight_size", flight) != 0 )
+      {
+          fprintf(stderr, "lbm_src_topic_attr_str_setopt:transport: %s\n", lbm_errmsg());
+          exit(1);
+      }
+  
+      /* Assuming there is a store running on the localhost at port 29999 */
+      if (lbm_src_topic_attr_str_setopt(tattr, "ume_store", "127.0.0.1:29999") != 0 )
+          {
+          fprintf(stderr, "lbm_src_topic_attr_str_setopt:transport: %s\n", lbm_errmsg());
+          exit(1);
+      }
+  
+      err = lbm_src_topic_alloc(&amp;topic, ctx, "test.topic", tattr);
+      if (err)
+      {
+          printf("lbm_src_topic_alloc - line %d: %s\n", __LINE__, lbm_errmsg());
+          exit(1);
+      }
+  
+      err = lbm_src_create(&amp;src, ctx, topic, NULL, NULL, NULL);
+      if (err)
+      {
+          printf("lbm_src_create - line %d: %s\n", __LINE__, lbm_errmsg());
+          exit(1);
+      }
+  
+<span name="main_send_loop" id="main_send_loop"></span>      while(1)
+      {
+<span name="src_send" id="src_send"></span>          if (lbm_src_send(src, "test", 4, LBM_SRC_NONBLOCK) == LBM_FAILURE)
+          {
+<span name="check_send_error" id="check_send_error"></span>              if (lbm_errnum() == LBM_EWOULDBLOCK)
+                          {
+<span name="get_flight" id="get_flight"></span>                  if (lbm_src_get_inflight(src, LBM_FLIGHT_SIZE_TYPE_UME, &amp;inflight, NULL, NULL) == 0) 
+                  {
+                      /* Check to see if the inflight counter is equal to the configured flight size */
+                      if (inflight == DEFAULT_APP_FLIGHT_SIZE)
+                      {
+                          /* Print alert */
+                          printf("ALERT: Source is blocked on flight size: %d\n", inflight);
+                      }
+                  }
+              }
+          }
+      }
+  }
+  
+  
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>
