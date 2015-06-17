@@ -4,8 +4,6 @@
 <title>Minimal UM Publisher Example</title>
 </head>
 <body>
-<p>Use html editor (like SeaMonkey)? spelling checker, html mistakes, table of contents</p>
-
 =semlit,include,../intro.sldoc=
 
 <p>There is one program source file:</p>
