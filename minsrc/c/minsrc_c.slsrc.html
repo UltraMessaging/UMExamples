@@ -1,0 +1,282 @@
+<!DOCTYPE html><html><head><title>minsrc.c</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>minsrc.c</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+<a href="minsrc.sldoc.html#includes_ref_1" target="doc">00005</a>
+<a href="minsrc.sldoc.html#includes_ref_1" target="doc">00006</a>
+<a href="minsrc.sldoc.html#includes_ref_1" target="doc">00007</a>
+<a href="minsrc.sldoc.html#includes_ref_1" target="doc">00008</a>
+<a href="minsrc.sldoc.html#includes_ref_1" target="doc">00009</a>
+<a href="minsrc.sldoc.html#includes_ref_1" target="doc">00010</a>
+<a href="minsrc.sldoc.html#includes_ref_1" target="doc">00011</a>
+<a href="minsrc.sldoc.html#includes_ref_1" target="doc">00012</a>
+<a href="minsrc.sldoc.html#includes_ref_1" target="doc">00013</a>
+<a href="minsrc.sldoc.html#includes_ref_1" target="doc">00014</a>
+00015
+00016
+00017
+<a href="minsrc.sldoc.html#ex_lbm_chk_ref_1" target="doc">00018</a>
+<a href="minsrc.sldoc.html#ex_lbm_chk_ref_1" target="doc">00019</a>
+<a href="minsrc.sldoc.html#ex_lbm_chk_ref_1" target="doc">00020</a>
+<a href="minsrc.sldoc.html#ex_lbm_chk_ref_1" target="doc">00021</a>
+<a href="minsrc.sldoc.html#ex_lbm_chk_ref_1" target="doc">00022</a>
+<a href="minsrc.sldoc.html#ex_lbm_chk_ref_1" target="doc">00023</a>
+<a href="minsrc.sldoc.html#ex_lbm_chk_ref_1" target="doc">00024</a>
+<a href="minsrc.sldoc.html#ex_lbm_chk_ref_1" target="doc">00025</a>
+00026
+00027
+<a href="minsrc.sldoc.html#incl_ex_ref_1" target="doc">00028</a>
+<a href="minsrc.sldoc.html#incl_ex_ref_1" target="doc">00029</a>
+00030
+<a href="minsrc.sldoc.html#wsa_start_ref_1" target="doc">00031</a>
+<a href="minsrc.sldoc.html#wsa_start_ref_1" target="doc">00032</a>
+<a href="minsrc.sldoc.html#wsa_start_ref_1" target="doc">00033</a>
+<a href="minsrc.sldoc.html#wsa_start_ref_1" target="doc">00034</a>
+<a href="minsrc.sldoc.html#wsa_start_ref_1" target="doc">00035</a>
+<a href="minsrc.sldoc.html#wsa_start_ref_1" target="doc">00036</a>
+<a href="minsrc.sldoc.html#wsa_start_ref_1" target="doc">00037</a>
+<a href="minsrc.sldoc.html#wsa_start_ref_1" target="doc">00038</a>
+<a href="minsrc.sldoc.html#wsa_start_ref_1" target="doc">00039</a>
+<a href="minsrc.sldoc.html#wsa_start_ref_1" target="doc">00040</a>
+<a href="minsrc.sldoc.html#wsa_start_ref_1" target="doc">00041</a>
+<a href="minsrc.sldoc.html#wsa_start_ref_1" target="doc">00042</a>
+<a href="minsrc.sldoc.html#wsa_start_ref_1" target="doc">00043</a>
+<a href="minsrc.sldoc.html#wsa_start_ref_1" target="doc">00044</a>
+<a href="minsrc.sldoc.html#wsa_start_ref_1" target="doc">00045</a>
+<a href="minsrc.sldoc.html#wsa_start_ref_1" target="doc">00046</a>
+<a href="minsrc.sldoc.html#wsa_start_ref_1" target="doc">00047</a>
+00048
+00049
+<a href="minsrc.sldoc.html#ctx_create_ref_1" target="doc">00050</a>
+<a href="minsrc.sldoc.html#ctx_create_ref_1" target="doc">00051</a>
+<a href="minsrc.sldoc.html#ctx_create_ref_1" target="doc">00052</a>
+<a href="minsrc.sldoc.html#ctx_create_ref_1" target="doc">00053</a>
+00054
+<a href="minsrc.sldoc.html#src_create_ref_1" target="doc">00055</a>
+<a href="minsrc.sldoc.html#src_create_ref_1" target="doc">00056</a>
+<a href="minsrc.sldoc.html#src_create_ref_1" target="doc">00057</a>
+<a href="minsrc.sldoc.html#src_create_ref_1" target="doc">00058</a>
+<a href="minsrc.sldoc.html#src_create_ref_1" target="doc">00059</a>
+<a href="minsrc.sldoc.html#src_create_ref_1" target="doc">00060</a>
+<a href="minsrc.sldoc.html#src_create_ref_1" target="doc">00061</a>
+<a href="minsrc.sldoc.html#src_create_ref_1" target="doc">00062</a>
+<a href="minsrc.sldoc.html#src_create_ref_1" target="doc">00063</a>
+00064
+<a href="minsrc.sldoc.html#tr_sleep_ref_1" target="doc">00065</a>
+00066
+00067
+<a href="minsrc.sldoc.html#sending_ref_1" target="doc">00068</a>
+<a href="minsrc.sldoc.html#sending_ref_1" target="doc">00069</a>
+<a href="minsrc.sldoc.html#sending_ref_1" target="doc">00070</a>
+<a href="minsrc.sldoc.html#sending_ref_1" target="doc">00071</a>
+00072
+00073
+<a href="minsrc.sldoc.html#linger_ref_1" target="doc">00074</a>
+<a href="minsrc.sldoc.html#linger_ref_1" target="doc">00075</a>
+<a href="minsrc.sldoc.html#linger_ref_1" target="doc">00076</a>
+00077
+<a href="minsrc.sldoc.html#delobj_ref_1" target="doc">00078</a>
+<a href="minsrc.sldoc.html#delobj_ref_1" target="doc">00079</a>
+<a href="minsrc.sldoc.html#delobj_ref_1" target="doc">00080</a>
+<a href="minsrc.sldoc.html#delobj_ref_1" target="doc">00081</a>
+<a href="minsrc.sldoc.html#delobj_ref_1" target="doc">00082</a>
+00083
+00084
+<a href="minsrc.sldoc.html#wsa_clean_ref_1" target="doc">00085</a>
+<a href="minsrc.sldoc.html#wsa_clean_ref_1" target="doc">00086</a>
+<a href="minsrc.sldoc.html#wsa_clean_ref_1" target="doc">00087</a>
+<a href="minsrc.sldoc.html#wsa_clean_ref_1" target="doc">00088</a>
+00089
+</td><td>  /* main.c - main driver for example app; mostly boilerplate. */
+  
+  #include &lt;stdio.h&gt;
+  
+<span name="includes" id="includes"></span>  #if defined(_MSC_VER)
+  /* Windows-only includes */
+  #include &lt;winsock2.h&gt;
+  #define SLEEP(s) Sleep((s)*1000)
+  #else
+  /* Unix-only includes */
+  #include &lt;stdlib.h&gt;
+  #include &lt;unistd.h&gt;
+  #define SLEEP(s) sleep(s)
+  #endif
+  
+  #include &lt;lbm/lbm.h&gt;
+  
+<span name="ex_lbm_chk" id="ex_lbm_chk"></span>  /* Example error checking program.  Include after each UM call. */
+  #define EX_LBM_CHK(err) do { \
+    if ((err) &lt; 0) { \
+      fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
+        __FILE__, __LINE__, lbm_errmsg()); \
+      exit(1); \
+    }  \
+  } while (0)
+  
+  
+<span name="incl_ex" id="incl_ex"></span>  /*** Include the example code ***/
+  #include "minsrc.c"
+  
+<span name="wsa_start" id="wsa_start"></span>  int main(int argc, char **argv)
+  {
+    lbm_context_t *ctx;  /* Context object: container for UM "instance". */
+    lbm_src_t *src;      /* Source object: for sending messages. */
+    int err;             /* UM functions normally return 0 (success) or -1 (error). */
+  
+  #if defined(_MSC_VER)
+    /* Windows-specific startup overhead */
+    WSADATA wsadata;
+    int wsa_err = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
+    if (wsa_err != 0) {
+      printf("line %d: wsStat=%d\n",__LINE__,wsStat);
+      fprintf(stderr, "%s:%d, WSAStartup error: %d\n",
+        __FILE__, __LINE__, wsa_err);
+      exit(1);
+    }
+  #endif
+  
+  
+<span name="ctx_create" id="ctx_create"></span>    /*** Initialization: create necessary UM objects. ***/
+  
+    err = lbm_context_create(&amp;ctx, NULL, NULL, NULL);
+    EX_LBM_CHK(err);
+  
+<span name="src_create" id="src_create"></span>    {
+      lbm_topic_t *topic;    /* Topic object: only needed temporarily. */
+  
+      err = lbm_src_topic_alloc(&amp;topic, ctx, "Greeting", NULL);
+      EX_LBM_CHK(err);
+  
+      err = lbm_src_create(&amp;src, ctx, topic, NULL, NULL, NULL);
+      EX_LBM_CHK(err);
+    }
+  
+<span name="tr_sleep" id="tr_sleep"></span>    SLEEP(1);  /* Let topic resolution execute. */
+  
+  
+<span name="sending" id="sending"></span>    /*** Send a message. ***/
+  
+    err = lbm_src_send(src, "Hello!", 6, LBM_MSG_FLUSH | LBM_SRC_BLOCK);
+    EX_LBM_CHK(err);
+  
+  
+<span name="linger" id="linger"></span>    /*** Cleanup: delete UM objects. ***/
+  
+    SLEEP(3);  /* Linger a bit to allow retransmissions. */
+  
+<span name="delobj" id="delobj"></span>    err = lbm_src_delete(src);
+    EX_LBM_CHK(err);
+  
+    err = lbm_context_delete(ctx);
+    EX_LBM_CHK(err);
+  
+  
+<span name="wsa_clean" id="wsa_clean"></span>  #if defined(_MSC_VER)
+    /* Windows-specific cleanup overhead */
+    WSACleanup();
+  #endif
+  }  /* main */
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

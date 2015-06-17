@@ -1,0 +1,44 @@
+<h3><tt>Misc</tt></h3>
+
+<p>A small effort was made to provide a some portability
+between Unix and Windows. For example:</p>
+=semlit,insert,includes=
+
+<p>Different sets of header files should be included for Unix v.s. Windows
+applications. Also, whereas Unix has a simple function <tt>sleep()</tt> which
+puts the caller to sleep for the specified number of seconds, Windows has
+no such function. It does, however, have <tt>Sleep()</tt>, which sleeps
+for the specified number of milliseconds. To provide portability within the
+exmaple code, the macro <tt>SLEEP()</tt> is defined appropriately to have
+the same behavior between Unix and Windows.</p>
+
+<p>Error handling can be one of the most complicated issues facing a
+programmer. Each application may have its own unique error handling conventions.
+For these example programs, a very simplistic error handling approach is
+taken: if anything unexpected happens, print a message and exit the program:</p>
+=semlit,insert,ex_lbm_chk=
+
+<p>The <tt>EX_LBM_CHK()</tt> macro checks a UM API return value. If negative,
+it assumes an error. One reason for making this a macro is so that the
+<tt>__FILE__</tt> and <tt>__LINE__</tt> compiler built-ins reference the
+file and line of the <em>usages</em> of the macro, not the file and line
+of the macro defintion itself.</p>
+
+<p>Most UM functions are designed to return one of only two integer values:
+0 for success and -1 for failure. The <tt>lbm.h</tt> header file defines
+the symbols LBM_OK and LBM_FAILURE respectively for these. However, there
+are a few functions which can return a value of 0 <em>or greater</em>
+in the event of success (for example: <tt>lbm_event_dispatch()</tt> and
+<tt>lbm_send_response()</tt> to name two). So the example <tt>EX_LBM_CHK()</tt>
+macro was written to be somewhat more general. However, be aware that there
+are a few other functions which do not return an integer status at all (for
+exmaple: <tt>lbm_serialize_response()</tt> to name one). Please refer to the
+API documentation for each UM function you call.</p>
+
+<p>As the first bit of executable code, Windows programs which use WinSock
+must at some point call <tt>WSAStartup()</tt>:</p>
+=semlit,insert,wsa_start=
+
+<p>A well-structured Windows networking application will also call <tt>WSACleanup()</tt>
+after before exit:</p>
+=semlit,insert,wsa_clean=

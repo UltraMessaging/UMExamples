@@ -1,0 +1,8 @@
+    <p>By default, when a UMP source hits its configured flight size, 
+      (=semlit,tooltip,../../tooltips/source_ume_flight_size.txt,ume_flight_size=)
+      the send function will either block until the internal flight counter is decremented, or it will return an error, EWOULDBLOCK. Getting EWOULDBLOCK is not enough to determine if the source hit the configured flight size
+      because EWOULDBLOCK is also returned by the send function if the publisher happened to hit the configured rate limiter
+      (=semlit,tooltip,../../tooltips/context_transport_lbtrm_data_rate_limit.txt,transport_lbtrm_data_rate_limit=)</p>
+    <p>Therefore, if an application is required to when it hits flight size, additional application logic must be implemented
+      to make the determination. This sample file will demonstrate how a non-blocking send function can determine if flight
+      size was indeed hit, by checking the inflight counter and printing a message if the source is blocked on flight size</p>
