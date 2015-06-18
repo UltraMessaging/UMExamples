@@ -31,10 +31,10 @@ documentation will be displayed on the left.</p>
 created. The first object to be created is a UM context object:</p>
 <a name="ctx_create_ref_1" id="ctx_create_ref_1"></a>
 <small><pre>
-<a href="minsrc_c.slsrc.html#ctx_create" target="src">00050</a>    /*** Initialization: create necessary UM objects. ***/
-<a href="minsrc_c.slsrc.html#ctx_create" target="src">00051</a>  
-<a href="minsrc_c.slsrc.html#ctx_create" target="src">00052</a>    err = lbm_context_create(&amp;ctx, NULL, NULL, NULL);
-<a href="minsrc_c.slsrc.html#ctx_create" target="src">00053</a>    EX_LBM_CHK(err);
+<a href="minsrc_c.slsrc.html#ctx_create" target="src">00047</a>    /*** Initialization: create necessary UM objects. ***/
+<a href="minsrc_c.slsrc.html#ctx_create" target="src">00048</a>  
+<a href="minsrc_c.slsrc.html#ctx_create" target="src">00049</a>    err = lbm_context_create(&amp;ctx, NULL, NULL, NULL);
+<a href="minsrc_c.slsrc.html#ctx_create" target="src">00050</a>    EX_LBM_CHK(err);
 </pre><!-- endblock ctx_create_ref_1 --></small>
 
 
@@ -55,15 +55,15 @@ specifying the topic name, and then create the "source" object, which is
 the object used subsequently to send messages.</p>
 <a name="src_create_ref_1" id="src_create_ref_1"></a>
 <small><pre>
-<a href="minsrc_c.slsrc.html#src_create" target="src">00055</a>    {
-<a href="minsrc_c.slsrc.html#src_create" target="src">00056</a>      lbm_topic_t *topic;    /* Topic object: only needed temporarily. */
+<a href="minsrc_c.slsrc.html#src_create" target="src">00052</a>    {
+<a href="minsrc_c.slsrc.html#src_create" target="src">00053</a>      lbm_topic_t *topic;    /* Topic object: only needed temporarily. */
+<a href="minsrc_c.slsrc.html#src_create" target="src">00054</a>  
+<a href="minsrc_c.slsrc.html#src_create" target="src">00055</a>      err = lbm_src_topic_alloc(&amp;topic, ctx, "Greeting", NULL);
+<a href="minsrc_c.slsrc.html#src_create" target="src">00056</a>      EX_LBM_CHK(err);
 <a href="minsrc_c.slsrc.html#src_create" target="src">00057</a>  
-<a href="minsrc_c.slsrc.html#src_create" target="src">00058</a>      err = lbm_src_topic_alloc(&amp;topic, ctx, "Greeting", NULL);
+<a href="minsrc_c.slsrc.html#src_create" target="src">00058</a>      err = lbm_src_create(&amp;src, ctx, topic, NULL, NULL, NULL);
 <a href="minsrc_c.slsrc.html#src_create" target="src">00059</a>      EX_LBM_CHK(err);
-<a href="minsrc_c.slsrc.html#src_create" target="src">00060</a>  
-<a href="minsrc_c.slsrc.html#src_create" target="src">00061</a>      err = lbm_src_create(&amp;src, ctx, topic, NULL, NULL, NULL);
-<a href="minsrc_c.slsrc.html#src_create" target="src">00062</a>      EX_LBM_CHK(err);
-<a href="minsrc_c.slsrc.html#src_create" target="src">00063</a>    }
+<a href="minsrc_c.slsrc.html#src_create" target="src">00060</a>    }
 </pre><!-- endblock src_create_ref_1 --></small>
 
 
@@ -88,7 +88,7 @@ one requires the same topic_alloc/src_create pairing.<p>
 applications to discover this new source:</p>
 <a name="tr_sleep_ref_1" id="tr_sleep_ref_1"></a>
 <small><pre>
-<a href="minsrc_c.slsrc.html#tr_sleep" target="src">00065</a>    SLEEP(1);  /* Let topic resolution execute. */
+<a href="minsrc_c.slsrc.html#tr_sleep" target="src">00062</a>    SLEEP(1);  /* Let topic resolution execute. */
 </pre><!-- endblock tr_sleep_ref_1 --></small>
 
 
@@ -113,10 +113,10 @@ addressed in more depth in TODO.</p>
 <p>Now that initialization is complete, it is time to send a message:</p>
 <a name="sending_ref_1" id="sending_ref_1"></a>
 <small><pre>
-<a href="minsrc_c.slsrc.html#sending" target="src">00068</a>    /*** Send a message. ***/
-<a href="minsrc_c.slsrc.html#sending" target="src">00069</a>  
-<a href="minsrc_c.slsrc.html#sending" target="src">00070</a>    err = lbm_src_send(src, "Hello!", 6, LBM_MSG_FLUSH | LBM_SRC_BLOCK);
-<a href="minsrc_c.slsrc.html#sending" target="src">00071</a>    EX_LBM_CHK(err);
+<a href="minsrc_c.slsrc.html#sending" target="src">00065</a>    /*** Send a message. ***/
+<a href="minsrc_c.slsrc.html#sending" target="src">00066</a>  
+<a href="minsrc_c.slsrc.html#sending" target="src">00067</a>    err = lbm_src_send(src, "Hello!", 6, LBM_MSG_FLUSH | LBM_SRC_BLOCK);
+<a href="minsrc_c.slsrc.html#sending" target="src">00068</a>    EX_LBM_CHK(err);
 </pre><!-- endblock sending_ref_1 --></small>
 
 
@@ -153,9 +153,9 @@ There are several possible asynchronous operations which might not yet have
 completed since the last send, so a short sleep is included:</p>
 <a name="linger_ref_1" id="linger_ref_1"></a>
 <small><pre>
-<a href="minsrc_c.slsrc.html#linger" target="src">00074</a>    /*** Cleanup: delete UM objects. ***/
-<a href="minsrc_c.slsrc.html#linger" target="src">00075</a>  
-<a href="minsrc_c.slsrc.html#linger" target="src">00076</a>    SLEEP(3);  /* Linger a bit to allow retransmissions. */
+<a href="minsrc_c.slsrc.html#linger" target="src">00071</a>    /*** Cleanup: delete UM objects. ***/
+<a href="minsrc_c.slsrc.html#linger" target="src">00072</a>  
+<a href="minsrc_c.slsrc.html#linger" target="src">00073</a>    SLEEP(3);  /* Linger a bit to allow retransmissions. */
 </pre><!-- endblock linger_ref_1 --></small>
 
 
@@ -176,11 +176,11 @@ subscriber experience unrecoverable loss.<p>
 <p>When deleting UM objects, order of deletion is important:</p>
 <a name="delobj_ref_1" id="delobj_ref_1"></a>
 <small><pre>
-<a href="minsrc_c.slsrc.html#delobj" target="src">00078</a>    err = lbm_src_delete(src);
+<a href="minsrc_c.slsrc.html#delobj" target="src">00075</a>    err = lbm_src_delete(src);
+<a href="minsrc_c.slsrc.html#delobj" target="src">00076</a>    EX_LBM_CHK(err);
+<a href="minsrc_c.slsrc.html#delobj" target="src">00077</a>  
+<a href="minsrc_c.slsrc.html#delobj" target="src">00078</a>    err = lbm_context_delete(ctx);
 <a href="minsrc_c.slsrc.html#delobj" target="src">00079</a>    EX_LBM_CHK(err);
-<a href="minsrc_c.slsrc.html#delobj" target="src">00080</a>  
-<a href="minsrc_c.slsrc.html#delobj" target="src">00081</a>    err = lbm_context_delete(ctx);
-<a href="minsrc_c.slsrc.html#delobj" target="src">00082</a>    EX_LBM_CHK(err);
 </pre><!-- endblock delobj_ref_1 --></small>
 
 
@@ -190,7 +190,8 @@ objects should be deleted, then context objects, and lastly event queues.
 These object deletions can become somewhat complex if event queues are
 used; see TODO for more explanation.</p>
 
-<h3><tt>Misc</tt></h3>
+<!-- main.sldoc - common doc included by many C examples -->
+<h2><tt>Misc</tt></h2>
 
 <p>A small effort was made to provide a some portability
 between Unix and Windows. For example:</p>
@@ -257,23 +258,23 @@ API documentation for each UM function you call.</p>
 must at some point call <tt>WSAStartup()</tt>:</p>
 <a name="wsa_start_ref_1" id="wsa_start_ref_1"></a>
 <small><pre>
-<a href="minsrc_c.slsrc.html#wsa_start" target="src">00031</a>  int main(int argc, char **argv)
-<a href="minsrc_c.slsrc.html#wsa_start" target="src">00032</a>  {
-<a href="minsrc_c.slsrc.html#wsa_start" target="src">00033</a>    lbm_context_t *ctx;  /* Context object: container for UM "instance". */
-<a href="minsrc_c.slsrc.html#wsa_start" target="src">00034</a>    lbm_src_t *src;      /* Source object: for sending messages. */
-<a href="minsrc_c.slsrc.html#wsa_start" target="src">00035</a>    int err;             /* UM functions normally return 0 (success) or -1 (error). */
-<a href="minsrc_c.slsrc.html#wsa_start" target="src">00036</a>  
-<a href="minsrc_c.slsrc.html#wsa_start" target="src">00037</a>  #if defined(_MSC_VER)
-<a href="minsrc_c.slsrc.html#wsa_start" target="src">00038</a>    /* Windows-specific startup overhead */
-<a href="minsrc_c.slsrc.html#wsa_start" target="src">00039</a>    WSADATA wsadata;
-<a href="minsrc_c.slsrc.html#wsa_start" target="src">00040</a>    int wsa_err = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
-<a href="minsrc_c.slsrc.html#wsa_start" target="src">00041</a>    if (wsa_err != 0) {
-<a href="minsrc_c.slsrc.html#wsa_start" target="src">00042</a>      printf("line %d: wsStat=%d\n",__LINE__,wsStat);
-<a href="minsrc_c.slsrc.html#wsa_start" target="src">00043</a>      fprintf(stderr, "%s:%d, WSAStartup error: %d\n",
-<a href="minsrc_c.slsrc.html#wsa_start" target="src">00044</a>        __FILE__, __LINE__, wsa_err);
-<a href="minsrc_c.slsrc.html#wsa_start" target="src">00045</a>      exit(1);
-<a href="minsrc_c.slsrc.html#wsa_start" target="src">00046</a>    }
-<a href="minsrc_c.slsrc.html#wsa_start" target="src">00047</a>  #endif
+<a href="minsrc_c.slsrc.html#wsa_start" target="src">00028</a>  int main(int argc, char **argv)
+<a href="minsrc_c.slsrc.html#wsa_start" target="src">00029</a>  {
+<a href="minsrc_c.slsrc.html#wsa_start" target="src">00030</a>    lbm_context_t *ctx;  /* Context object: container for UM "instance". */
+<a href="minsrc_c.slsrc.html#wsa_start" target="src">00031</a>    lbm_src_t *src;      /* Source object: for sending messages. */
+<a href="minsrc_c.slsrc.html#wsa_start" target="src">00032</a>    int err;             /* UM functions normally return 0 (success) or -1 (error). */
+<a href="minsrc_c.slsrc.html#wsa_start" target="src">00033</a>  
+<a href="minsrc_c.slsrc.html#wsa_start" target="src">00034</a>  #if defined(_MSC_VER)
+<a href="minsrc_c.slsrc.html#wsa_start" target="src">00035</a>    /* Windows-specific startup overhead */
+<a href="minsrc_c.slsrc.html#wsa_start" target="src">00036</a>    WSADATA wsadata;
+<a href="minsrc_c.slsrc.html#wsa_start" target="src">00037</a>    int wsa_err = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
+<a href="minsrc_c.slsrc.html#wsa_start" target="src">00038</a>    if (wsa_err != 0) {
+<a href="minsrc_c.slsrc.html#wsa_start" target="src">00039</a>      printf("line %d: wsStat=%d\n",__LINE__,wsStat);
+<a href="minsrc_c.slsrc.html#wsa_start" target="src">00040</a>      fprintf(stderr, "%s:%d, WSAStartup error: %d\n",
+<a href="minsrc_c.slsrc.html#wsa_start" target="src">00041</a>        __FILE__, __LINE__, wsa_err);
+<a href="minsrc_c.slsrc.html#wsa_start" target="src">00042</a>      exit(1);
+<a href="minsrc_c.slsrc.html#wsa_start" target="src">00043</a>    }
+<a href="minsrc_c.slsrc.html#wsa_start" target="src">00044</a>  #endif
 </pre><!-- endblock wsa_start_ref_1 --></small>
 
 
@@ -282,10 +283,10 @@ must at some point call <tt>WSAStartup()</tt>:</p>
 after before exit:</p>
 <a name="wsa_clean_ref_1" id="wsa_clean_ref_1"></a>
 <small><pre>
-<a href="minsrc_c.slsrc.html#wsa_clean" target="src">00085</a>  #if defined(_MSC_VER)
-<a href="minsrc_c.slsrc.html#wsa_clean" target="src">00086</a>    /* Windows-specific cleanup overhead */
-<a href="minsrc_c.slsrc.html#wsa_clean" target="src">00087</a>    WSACleanup();
-<a href="minsrc_c.slsrc.html#wsa_clean" target="src">00088</a>  #endif
+<a href="minsrc_c.slsrc.html#wsa_clean" target="src">00082</a>  #if defined(_MSC_VER)
+<a href="minsrc_c.slsrc.html#wsa_clean" target="src">00083</a>    /* Windows-specific cleanup overhead */
+<a href="minsrc_c.slsrc.html#wsa_clean" target="src">00084</a>    WSACleanup();
+<a href="minsrc_c.slsrc.html#wsa_clean" target="src">00085</a>  #endif
 </pre><!-- endblock wsa_clean_ref_1 --></small>
 
 

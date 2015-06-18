@@ -29,11 +29,6 @@
 /*=semlit,endblock,ex_lbm_chk=*/
 
 
-/*=semlit,block,incl_ex=*/
-/*** Include the example code ***/
-#include "minsrc.c"
-/*=semlit,endblock,incl_ex=*/
-
 /*=semlit,block,wsa_start=*/
 int main(int argc, char **argv)
 {

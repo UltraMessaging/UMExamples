@@ -1,4 +1,5 @@
-<h3><tt>Misc</tt></h3>
+<!-- main.sldoc - common doc included by many C examples -->
+<h2><tt>Misc</tt></h2>
 
 <p>A small effort was made to provide a some portability
 between Unix and Windows. For example:</p>

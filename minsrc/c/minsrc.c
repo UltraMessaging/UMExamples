@@ -25,9 +25,6 @@
 } while (0)
 
 
-/*** Include the example code ***/
-#include "minsrc.c"
-
 int main(int argc, char **argv)
 {
   lbm_context_t *ctx;  /* Context object: container for UM "instance". */
