@@ -1,7 +1,7 @@
 <html>
 <head>
 =semlit,include,../../style/head.sldoc=
-<title>Minimal UM Publisher Example</title>
+<title>minsrc: Minimal UM Publisher in C</title>
 </head>
 <body>
 =semlit,include,../intro.sldoc=

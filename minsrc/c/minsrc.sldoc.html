@@ -2,7 +2,7 @@
 <head>
 <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
 
-<title>Minimal UM Publisher Example</title>
+<title>minsrc: Minimal UM Publisher in C</title>
 </head>
 <body>
 <a href="../../index.html" class="button" target="_top">Example index</a>
@@ -224,7 +224,7 @@ For these example programs, a very simplistic error handling approach is
 taken: if anything unexpected happens, print a message and exit the program:</p>
 <a name="ex_lbm_chk_ref_1" id="ex_lbm_chk_ref_1"></a>
 <small><pre>
-<a href="minsrc_c.slsrc.html#ex_lbm_chk" target="src">00018</a>  /* Example error checking program.  Include after each UM call. */
+<a href="minsrc_c.slsrc.html#ex_lbm_chk" target="src">00018</a>  /* Example error checking macro.  Include after each UM call. */
 <a href="minsrc_c.slsrc.html#ex_lbm_chk" target="src">00019</a>  #define EX_LBM_CHK(err) do { \
 <a href="minsrc_c.slsrc.html#ex_lbm_chk" target="src">00020</a>    if ((err) &lt; 0) { \
 <a href="minsrc_c.slsrc.html#ex_lbm_chk" target="src">00021</a>      fprintf(stderr, "%s:%d, lbm error: '%s'\n", \

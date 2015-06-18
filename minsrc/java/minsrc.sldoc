@@ -1,18 +1,18 @@
 <html>
 <head>
 =semlit,include,../../style/head.sldoc=
-<title>Minimal UM Publisher Example</title>
+<title>minsrc: Minimal UM Publisher in Java</title>
 </head>
 <body>
 =semlit,include,../intro.sldoc=
 
 <p>There is one program source file:</p>
 <ul>
-<li><b><tt>=semlit,srcfile,minsrc_java.slsrc,minsrc.java=</tt></b>
-- (right-click and save as "minsrc.c") Example code.</li>
+<li><b><tt>=semlit,srcfile,MinSrc_java.slsrc,minsrc.java=</tt></b>
+- (right-click and save as "MinSrc.java") Example code.</li>
 </ul>
 
-<h2><tt>minsrc.java</tt></h2>
+<h2><tt>MinSrc.java</tt></h2>
 
 <p>The example source code is organized as a Java class.</p>
 

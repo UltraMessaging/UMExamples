@@ -2,7 +2,7 @@
 <head>
 <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
 
-<title>minsrc: Minimal UM Publisher in Java</title>
+<title>minsrc: Minimal UM Publisher in C#/.NET</title>
 </head>
 <body>
 <a href="../../index.html" class="button" target="_top">Example index</a>
@@ -19,13 +19,13 @@ documentation will be displayed on the left.</p>
 
 <p>There is one program source file:</p>
 <ul>
-<li><b><tt><a href="minsrc.java">minsrc.java</a></tt></b>
-- (right-click and save as "MinSrc.java") Example code.</li>
+<li><b><tt><a href="MinSrc.cs">MinSrc.cs</a></tt></b>
+- (right-click and save as "MinSrc.cs") Example code.</li>
 </ul>
 
-<h2><tt>MinSrc.java</tt></h2>
+<h2><tt>MinSrc.cs</tt></h2>
 
-<p>The example source code is organized as a Java class.</p>
+<p>The example source code is organized as a .NET class.</p>
 
 <h3>Initialization</h3>
 
@@ -33,9 +33,9 @@ documentation will be displayed on the left.</p>
 created. The first object to be created is a UM context object:</p>
 <a name="ctx_create_ref_1" id="ctx_create_ref_1"></a>
 <small><pre>
-<a href="MinSrc_java.slsrc.html#ctx_create" target="src">00011</a>      /*** Initialization: create necessary UM objects. ***/
-<a href="MinSrc_java.slsrc.html#ctx_create" target="src">00012</a>  
-<a href="MinSrc_java.slsrc.html#ctx_create" target="src">00013</a>      ctx = new LBMContext();
+<a href="MinSrc_cs.slsrc.html#ctx_create" target="src">00015</a>        /*** Initialization: create necessary UM objects. ***/
+<a href="MinSrc_cs.slsrc.html#ctx_create" target="src">00016</a>  
+<a href="MinSrc_cs.slsrc.html#ctx_create" target="src">00017</a>        ctx = new LBMContext();
 </pre><!-- endblock ctx_create_ref_1 --></small>
 
 
@@ -57,11 +57,11 @@ specifying the topic name, and then create the "source" object, which is
 the object used subsequently to send messages.</p>
 <a name="src_create_ref_1" id="src_create_ref_1"></a>
 <small><pre>
-<a href="MinSrc_java.slsrc.html#src_create" target="src">00015</a>      {
-<a href="MinSrc_java.slsrc.html#src_create" target="src">00016</a>        LBMTopic topic = nil;
-<a href="MinSrc_java.slsrc.html#src_create" target="src">00017</a>        topic = new LBMTopic(ctx, "Greeting");
-<a href="MinSrc_java.slsrc.html#src_create" target="src">00018</a>        src = new LBMSource(ctx, topic);
-<a href="MinSrc_java.slsrc.html#src_create" target="src">00019</a>      }
+<a href="MinSrc_cs.slsrc.html#src_create" target="src">00019</a>        {
+<a href="MinSrc_cs.slsrc.html#src_create" target="src">00020</a>          LBMTopic topic = nil;
+<a href="MinSrc_cs.slsrc.html#src_create" target="src">00021</a>          topic = new LBMTopic(ctx, "Greeting");
+<a href="MinSrc_cs.slsrc.html#src_create" target="src">00022</a>          src = new LBMSource(ctx, topic);
+<a href="MinSrc_cs.slsrc.html#src_create" target="src">00023</a>        }
 </pre><!-- endblock src_create_ref_1 --></small>
 
 
@@ -86,7 +86,7 @@ one requires the same new topic/new source pairing.<p>
 applications to discover this new source:</p>
 <a name="tr_sleep_ref_1" id="tr_sleep_ref_1"></a>
 <small><pre>
-<a href="MinSrc_java.slsrc.html#tr_sleep" target="src">00021</a>      Thread.sleep(1000);
+<a href="MinSrc_cs.slsrc.html#tr_sleep" target="src">00025</a>        System.Threading.Thread.Sleep(3000);
 </pre><!-- endblock tr_sleep_ref_1 --></small>
 
 
@@ -107,9 +107,9 @@ addressed in more depth in TODO.</p>
 <p>Now that initialization is complete, it is time to send a message:</p>
 <a name="sending_ref_1" id="sending_ref_1"></a>
 <small><pre>
-<a href="MinSrc_java.slsrc.html#sending" target="src">00024</a>    /*** Send a message. ***/
-<a href="MinSrc_java.slsrc.html#sending" target="src">00025</a>  
-<a href="MinSrc_java.slsrc.html#sending" target="src">00026</a>      src.send("Hello!".getBytes(), 7, LBM.MSG_FLUSH | LBM.SRC_BLOCK);
+<a href="MinSrc_cs.slsrc.html#sending" target="src">00028</a>    /*** Send a message. ***/
+<a href="MinSrc_cs.slsrc.html#sending" target="src">00029</a>  
+<a href="MinSrc_cs.slsrc.html#sending" target="src">00030</a>        src.send(Encoding.ASCII.GetBytes("Hello!"), 7, LBM.MSG_FLUSH | LBM.SRC_BLOCK);
 </pre><!-- endblock sending_ref_1 --></small>
 
 
@@ -146,9 +146,9 @@ There are several possible asynchronous operations which might not yet have
 completed since the last send, so a short sleep is included:</p>
 <a name="linger_ref_1" id="linger_ref_1"></a>
 <small><pre>
-<a href="MinSrc_java.slsrc.html#linger" target="src">00029</a>    /*** Cleanup: delete UM objects. ***/
-<a href="MinSrc_java.slsrc.html#linger" target="src">00030</a>  
-<a href="MinSrc_java.slsrc.html#linger" target="src">00031</a>      Thread.sleep(3000);
+<a href="MinSrc_cs.slsrc.html#linger" target="src">00033</a>    /*** Cleanup: delete UM objects. ***/
+<a href="MinSrc_cs.slsrc.html#linger" target="src">00034</a>  
+<a href="MinSrc_cs.slsrc.html#linger" target="src">00035</a>        System.Threading.Thread.Sleep(2000);
 </pre><!-- endblock linger_ref_1 --></small>
 
 
@@ -174,8 +174,8 @@ appropriate way to dispose of them.<p>
 <p>When deleting UM objects, order of deletion is important:</p>
 <a name="delobj_ref_1" id="delobj_ref_1"></a>
 <small><pre>
-<a href="MinSrc_java.slsrc.html#delobj" target="src">00033</a>      src.close();
-<a href="MinSrc_java.slsrc.html#delobj" target="src">00034</a>      ctx.close();
+<a href="MinSrc_cs.slsrc.html#delobj" target="src">00037</a>        src.close();
+<a href="MinSrc_cs.slsrc.html#delobj" target="src">00038</a>        ctx.close();
 </pre><!-- endblock delobj_ref_1 --></small>
 
 

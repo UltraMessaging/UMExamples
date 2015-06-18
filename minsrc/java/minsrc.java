@@ -1,4 +1,4 @@
-/* minsrc.c, see http://ultramessaging.github.io/UMExamples/minsrc/c/ */
+/* MinSrc.java, see http://ultramessaging.github.io/UMExamples/minsrc/java/ */
 
 import com.latencybusters.lbm.*;
 

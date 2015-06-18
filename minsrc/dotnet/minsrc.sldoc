@@ -1,44 +1,26 @@
 <html>
 <head>
-<link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
-
-<title>minsrc: Minimal UM Publisher in Java</title>
+=semlit,include,../../style/head.sldoc=
+<title>minsrc: Minimal UM Publisher in C#/.NET</title>
 </head>
 <body>
-<a href="../../index.html" class="button" target="_top">Example index</a>
-
-<h1>Minimal UM Punlisher Example</h1>
-<p>This example demonstrates the minimal code to publish a message using UM.
-There is a corresponding minimal subscriber example at TODO.</p>
-
-<p>When reading the documentation below, click on any line number to display
-the pure source listing on the right side of the screen. Similarly, if you
-click on a line number on the right side of the screen, the corresponding
-documentation will be displayed on the left.</p>
-
+=semlit,include,../intro.sldoc=
 
 <p>There is one program source file:</p>
 <ul>
-<li><b><tt><a href="minsrc.java">minsrc.java</a></tt></b>
-- (right-click and save as "MinSrc.java") Example code.</li>
+<li><b><tt>=semlit,srcfile,MinSrc_cs.slsrc,MinSrc.cs=</tt></b>
+- (right-click and save as "MinSrc.cs") Example code.</li>
 </ul>
 
-<h2><tt>MinSrc.java</tt></h2>
+<h2><tt>MinSrc.cs</tt></h2>
 
-<p>The example source code is organized as a Java class.</p>
+<p>The example source code is organized as a .NET class.</p>
 
 <h3>Initialization</h3>
 
 <p>The first phase of any UM program is initialization, where UM objects are
 created. The first object to be created is a UM context object:</p>
-<a name="ctx_create_ref_1" id="ctx_create_ref_1"></a>
-<small><pre>
-<a href="MinSrc_java.slsrc.html#ctx_create" target="src">00011</a>      /*** Initialization: create necessary UM objects. ***/
-<a href="MinSrc_java.slsrc.html#ctx_create" target="src">00012</a>  
-<a href="MinSrc_java.slsrc.html#ctx_create" target="src">00013</a>      ctx = new LBMContext();
-</pre><!-- endblock ctx_create_ref_1 --></small>
-
-
+=semlit,insert,ctx_create=
 
 <p>A context can be thought of as an "instance" of UM. It contains a worker
 thread which maintains internal state and reacts to socket events. Most UM
@@ -55,16 +37,7 @@ A real application require a different design.</p>
 of a source object is a two-step procedure: first create a "topic" object,
 specifying the topic name, and then create the "source" object, which is
 the object used subsequently to send messages.</p>
-<a name="src_create_ref_1" id="src_create_ref_1"></a>
-<small><pre>
-<a href="MinSrc_java.slsrc.html#src_create" target="src">00015</a>      {
-<a href="MinSrc_java.slsrc.html#src_create" target="src">00016</a>        LBMTopic topic = nil;
-<a href="MinSrc_java.slsrc.html#src_create" target="src">00017</a>        topic = new LBMTopic(ctx, "Greeting");
-<a href="MinSrc_java.slsrc.html#src_create" target="src">00018</a>        src = new LBMSource(ctx, topic);
-<a href="MinSrc_java.slsrc.html#src_create" target="src">00019</a>      }
-</pre><!-- endblock src_create_ref_1 --></small>
-
-
+=semlit,insert,src_create=
 
 <p>The first thing to note is the use curly braces to create a block. This
 is not necessary, but is done in this example to emphasize that the
@@ -84,12 +57,7 @@ one requires the same new topic/new source pairing.<p>
 
 <p>The final step during initialization is to wait for any subscribing
 applications to discover this new source:</p>
-<a name="tr_sleep_ref_1" id="tr_sleep_ref_1"></a>
-<small><pre>
-<a href="MinSrc_java.slsrc.html#tr_sleep" target="src">00021</a>      Thread.sleep(1000);
-</pre><!-- endblock tr_sleep_ref_1 --></small>
-
-
+=semlit,insert,tr_sleep=
 
 <p>This process is called "topic resolution", and takes a non-zero amount of time.
 If the publisher sends a message before the discovery process completes, some
@@ -105,14 +73,7 @@ addressed in more depth in TODO.</p>
 <h3>Publishing</h3>
 
 <p>Now that initialization is complete, it is time to send a message:</p>
-<a name="sending_ref_1" id="sending_ref_1"></a>
-<small><pre>
-<a href="MinSrc_java.slsrc.html#sending" target="src">00024</a>    /*** Send a message. ***/
-<a href="MinSrc_java.slsrc.html#sending" target="src">00025</a>  
-<a href="MinSrc_java.slsrc.html#sending" target="src">00026</a>      src.send("Hello!".getBytes(), 7, LBM.MSG_FLUSH | LBM.SRC_BLOCK);
-</pre><!-- endblock sending_ref_1 --></small>
-
-
+=semlit,insert,sending=
 
 <p>Note that the string "Hello!" only has 6 characters, but a 7 is passed as the
 number of bytes. This is to ensure that the null string character is included in
@@ -144,14 +105,7 @@ issues are explored in TODO.<p>
 <p>When its time to delete UM objects, certain guideliens should be followed.
 There are several possible asynchronous operations which might not yet have
 completed since the last send, so a short sleep is included:</p>
-<a name="linger_ref_1" id="linger_ref_1"></a>
-<small><pre>
-<a href="MinSrc_java.slsrc.html#linger" target="src">00029</a>    /*** Cleanup: delete UM objects. ***/
-<a href="MinSrc_java.slsrc.html#linger" target="src">00030</a>  
-<a href="MinSrc_java.slsrc.html#linger" target="src">00031</a>      Thread.sleep(3000);
-</pre><!-- endblock linger_ref_1 --></small>
-
-
+=semlit,insert,linger=
 
 <p>For example, if the FLUSH flag is not supplied with the send method, the
 implicit batcher might be holding on to one or more messages, and must be
@@ -172,28 +126,14 @@ component, just letting them go out of scope to be garbage collected is not an
 appropriate way to dispose of them.<p>
 
 <p>When deleting UM objects, order of deletion is important:</p>
-<a name="delobj_ref_1" id="delobj_ref_1"></a>
-<small><pre>
-<a href="MinSrc_java.slsrc.html#delobj" target="src">00033</a>      src.close();
-<a href="MinSrc_java.slsrc.html#delobj" target="src">00034</a>      ctx.close();
-</pre><!-- endblock delobj_ref_1 --></small>
-
-
+=semlit,insert,delobj=
 
 <p>In general, timers should be cancelled first. Then source and receiver
 objects should be deleted, then context objects, and lastly event queues.
 These object deletions can become somewhat complex if event queues are
 used; see TODO for more explanation.</p>
 
-<p2>Advanced Topics</p2>
-
-<p>licensing: TODO</p>
-
-<p>configuration: TODO</p>
-
-<p>anything else? TODO</p>
-
+=semlit,include,../advanced.sldoc=
 </body>
 </html>
-
 

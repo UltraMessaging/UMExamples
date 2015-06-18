@@ -1,4 +1,4 @@
-/* main.c - main driver for example app; mostly boilerplate. */
+/* minsrc.java, see http://ultramessaging.github.io/UMExamples/minsrc/java/ */
 
 #include <stdio.h>
 
@@ -15,7 +15,7 @@
 
 #include <lbm/lbm.h>
 
-/* Example error checking program.  Include after each UM call. */
+/* Example error checking macro.  Include after each UM call. */
 #define EX_LBM_CHK(err) do { \
   if ((err) < 0) { \
     fprintf(stderr, "%s:%d, lbm error: '%s'\n", \

@@ -1,4 +1,4 @@
-/* main.c - main driver for example app; mostly boilerplate. */
+/* minsrc.java, see http://ultramessaging.github.io/UMExamples/minsrc/java/ */
 
 #include <stdio.h>
 
