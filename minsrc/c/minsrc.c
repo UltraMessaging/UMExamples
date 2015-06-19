@@ -1,4 +1,4 @@
-/* minsrc.java, see http://ultramessaging.github.io/UMExamples/minsrc/java/ */
+/* minsrc.c, see http://ultramessaging.github.io/UMExamples/minsrc/c/ */
 
 #include <stdio.h>
 
