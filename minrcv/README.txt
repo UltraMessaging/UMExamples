@@ -2,4 +2,4 @@
 
 Summary=Minimal subscriber program.
 
-Description=
+Description=Create a context and a receiver. Process received messages. Runs as infinite loop.

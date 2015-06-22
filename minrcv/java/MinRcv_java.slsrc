@@ -1,11 +1,13 @@
-/* MinSrc.java, see http://ultramessaging.github.io/UMExamples/minsrc/java/ */
+/* MinRcv.java, see http://ultramessaging.github.io/UMExamples/minrcv/java/ */
+
+import java.io.UnsupportedEncodingException;
 
 import com.latencybusters.lbm.*;
 
-public class MinSrc {
+public class MinRcv {
   public static void main(String[] args) throws LBMException{
     LBMContext ctx = nil;  /* Context object: container for UM "instance". */
-    LBMSource src = nil;   /* Source object: for sending messages. */
+    LBMSource rcv = nil;   /* Receiver object: for receiving messages. */
 
 
 /*=semlit,block,ctx_create=*/
@@ -45,4 +47,4 @@ public class MinSrc {
     ctx.close();
 /*=semlit,endblock,delobj=*/
   }  /* main */
-}  /* class MinSrc */
+}  /* class MinRcv */

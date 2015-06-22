@@ -1,0 +1,176 @@
+<!DOCTYPE html><html><head><title>MinRcv.java</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>MinRcv.java</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+00008
+00009
+00010
+<a href="minrcv.sldoc.html#ctx_create_ref_1" target="doc">00011</a>
+<a href="minrcv.sldoc.html#ctx_create_ref_1" target="doc">00012</a>
+<a href="minrcv.sldoc.html#ctx_create_ref_1" target="doc">00013</a>
+00014
+<a href="minrcv.sldoc.html#src_create_ref_1" target="doc">00015</a>
+<a href="minrcv.sldoc.html#src_create_ref_1" target="doc">00016</a>
+<a href="minrcv.sldoc.html#src_create_ref_1" target="doc">00017</a>
+<a href="minrcv.sldoc.html#src_create_ref_1" target="doc">00018</a>
+<a href="minrcv.sldoc.html#src_create_ref_1" target="doc">00019</a>
+00020
+<a href="minrcv.sldoc.html#tr_sleep_ref_1" target="doc">00021</a>
+00022
+00023
+<a href="minrcv.sldoc.html#sending_ref_1" target="doc">00024</a>
+<a href="minrcv.sldoc.html#sending_ref_1" target="doc">00025</a>
+<a href="minrcv.sldoc.html#sending_ref_1" target="doc">00026</a>
+00027
+00028
+<a href="minrcv.sldoc.html#linger_ref_1" target="doc">00029</a>
+<a href="minrcv.sldoc.html#linger_ref_1" target="doc">00030</a>
+<a href="minrcv.sldoc.html#linger_ref_1" target="doc">00031</a>
+00032
+<a href="minrcv.sldoc.html#delobj_ref_1" target="doc">00033</a>
+<a href="minrcv.sldoc.html#delobj_ref_1" target="doc">00034</a>
+00035
+00036
+</td><td>  /* MinSrc.java, see http://ultramessaging.github.io/UMExamples/minsrc/java/ */
+  
+  import com.latencybusters.lbm.*;
+  
+  public class MinSrc {
+    public static void main(String[] args) throws LBMException{
+      LBMContext ctx = nil;  /* Context object: container for UM "instance". */
+      LBMSource src = nil;   /* Source object: for sending messages. */
+  
+  
+<span name="ctx_create" id="ctx_create"></span>      /*** Initialization: create necessary UM objects. ***/
+  
+      ctx = new LBMContext();
+  
+<span name="src_create" id="src_create"></span>      {
+        LBMTopic topic = nil;
+        topic = new LBMTopic(ctx, "Greeting");
+        src = new LBMSource(ctx, topic);
+      }
+  
+<span name="tr_sleep" id="tr_sleep"></span>      Thread.sleep(1000);
+  
+  
+<span name="sending" id="sending"></span>    /*** Send a message. ***/
+  
+      src.send("Hello!".getBytes(), 7, LBM.MSG_FLUSH | LBM.SRC_BLOCK);
+   
+  
+<span name="linger" id="linger"></span>    /*** Cleanup: delete UM objects. ***/
+  
+      Thread.sleep(3000);
+  
+<span name="delobj" id="delobj"></span>      src.close();
+      ctx.close();
+    }  /* main */
+  }  /* class MinSrc */
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

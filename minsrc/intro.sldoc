@@ -1,8 +1,9 @@
-<a href="../../index.html" class="button" target="_top">Example index</a>
+<a href="../../index.html" class="button" target="_top">All examples</a>
 
-<h1>Minimal UM Punlisher Example</h1>
+<h1>Minimal UM Publisher Example</h1>
 <p>This example demonstrates the minimal code to publish a message using UM.
-There is a corresponding minimal subscriber example at TODO.</p>
+There is a corresponding minimal subscriber example at
+<a href="../../minrcv/index.html" target="_top">minrcv</a>.</p>
 
 <p>When reading the documentation below, click on any line number to display
 the pure source listing on the right side of the screen. Similarly, if you

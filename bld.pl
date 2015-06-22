@@ -30,6 +30,8 @@ while (<>) {
   my $example_line = "<tr><td align=\"right\"><b>$t</b></td><td>$c&nbsp;$java&nbsp;$dotnet</td><td>$summary</td></tr>\n";
 
   print $main_index_file $example_line;
+
+  # Conditionally add to language-specific example indicies.
   if (file_found("$t/c/$t.sldoc")) {
     print $c_index_file $example_line;
   }
@@ -39,6 +41,12 @@ while (<>) {
   if (file_found("$t/dotnet/$t.sldoc")) {
     print $dotnet_index_file $example_line;
   }
+
+  # Add to example-specific index.
+  my $example_index_file = open_example_index($t, $summary, $description);
+  $example_line =~ s/href=\"$t\//href=\"/g;  # index is already under the tool dir
+  print $example_index_file $example_line;
+  close_example_index($example_index_file);
 }  # while
 
 # All done.
@@ -73,7 +81,7 @@ sub non_button {
 sub mk_button {
   my ($txt, $link) = @_;
 
-  return "<a href=\"$link\" class=\"button\">$txt</a>";
+  return "<a href=\"$link\" class=\"button\" target=\"_top\">$txt</a>";
 }  # mk_button
 
 
@@ -317,3 +325,44 @@ __EOF__
 
   close($dotnet_index_file);
 }  # close_dotnet_index
+
+
+sub open_example_index {
+  my ($example, $summary, $description) = @_;
+
+  my ($file_name, $example_index_file) = ("$example/index.html");
+  open($example_index_file, ">", $file_name) || die("bld.pl: ERROR: open_example_index: $file_name: could not open ($!)");
+
+  my $main_button = mk_button("All examples", "index.html");
+
+  print $example_index_file <<__EOF__;
+<html>
+<head>
+<title>UMExamples - $example</title>
+<link rel="stylesheet" href="../style/main.css" type="text/css" media="screen" />
+</head>
+<body>
+<p>The master list of examples is available at: $main_button</p>
+
+<h2>$example Example</h2>
+<p>$description</p>
+<p>Select language:</p>
+
+<table>
+__EOF__
+
+  return $example_index_file;
+}  # open_example_index
+
+
+sub close_example_index {
+  my ($example_index_file) = @_;
+
+  print $example_index_file <<__EOF__;
+</table>
+</body>
+</html>
+__EOF__
+
+  close($example_index_file);
+}  # close_example_index

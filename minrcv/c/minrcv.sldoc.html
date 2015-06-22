@@ -1,0 +1,329 @@
+<html>
+<head>
+<link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+
+<title>minrcv: Minimal UM subscriber in C</title>
+</head>
+<body>
+<a href="../../index.html" class="button" target="_top">All examples</a>
+
+<h1>Minimal UM Subscriber Example</h1>
+<p>This example demonstrates the minimal code to subscribe and
+receive a message using UM.
+There is a corresponding minimal publisher example at
+<a href="../../minsrc/index.html" target="_top">minsrc</a>.</p>
+
+<p>In a subscriber program, there is typically a minimum of two threads executing:
+the main thread (started with the program is executed) and
+the context thread (started when the context object is created).
+In this minimal subscriber example, the main thread performs
+initialization (creates initial objects), and then has nothing
+to do and so executes an infinite loop of sleeps. The real work
+of receiving messages is performed by the context thread, which
+receives messages and calls the example's application callback
+function.</p>
+
+<p>When reading the documentation below, click on any line number to display
+the pure source listing on the right side of the screen. Similarly, if you
+click on a line number on the right side of the screen, the corresponding
+documentation will be displayed on the left.</p>
+
+
+<p>There is one program source file:</p>
+<ul>
+<li><b><tt><a href="minrcv.c">minrcv.c</a></tt></b>
+- (right-click and save as "minrcv.c") Example code.</li>
+</ul>
+
+<h2><tt>minrcv.c</tt></h2>
+
+<h3>Initialization</h3>
+
+<p>The first phase of any UM program is initialization, where UM objects are
+created. The first object to be created is a UM context object:</p>
+<a name="ctx_create_ref_1" id="ctx_create_ref_1"></a>
+<small><pre>
+<a href="minrcv_c.slsrc.html#ctx_create" target="src">00065</a>    /*** Initialization: create necessary UM objects. ***/
+<a href="minrcv_c.slsrc.html#ctx_create" target="src">00066</a>  
+<a href="minrcv_c.slsrc.html#ctx_create" target="src">00067</a>    err = lbm_context_create(&amp;ctx, NULL, NULL, NULL);
+<a href="minrcv_c.slsrc.html#ctx_create" target="src">00068</a>    EX_LBM_CHK(err);
+</pre><!-- endblock ctx_create_ref_1 --></small>
+
+
+
+<p>A context can be thought of as an "instance" of UM. It contains a worker
+thread which maintains internal state and reacts to socket events. Most UM
+applications create a single context instance which manages the publishing
+and receiving of messages over many topics, although there are less-common
+use cases which call for multiple context instances within a single process
+(see TODO).</p>
+
+<p>Also note the use of <tt>EX_LBM_CHK(err)</tt>. This is a simple error
+handling macro, described more-fully later on.</p>
+
+<p>The next object that needs to be created is a "receiver" object. Creation
+of a receiver object is a two-step procedure: first obtain a "topic" object,
+specifying the topic name, and then create the "receiver" object, which is
+the object used subsequently to receive messages.</p>
+<a name="src_create_ref_1" id="src_create_ref_1"></a>
+<small><pre>
+<a href="minrcv_c.slsrc.html#src_create" target="src">00070</a>    {
+<a href="minrcv_c.slsrc.html#src_create" target="src">00071</a>      lbm_topic_t *topic;    /* Topic object: only needed temporarily. */
+<a href="minrcv_c.slsrc.html#src_create" target="src">00072</a>  
+<a href="minrcv_c.slsrc.html#src_create" target="src">00073</a>      err = lbm_rcv_topic_lookup(&amp;topic, ctx, "Greeting", NULL);
+<a href="minrcv_c.slsrc.html#src_create" target="src">00074</a>      EX_LBM_CHK(err);
+<a href="minrcv_c.slsrc.html#src_create" target="src">00075</a>  
+<a href="minrcv_c.slsrc.html#src_create" target="src">00076</a>      err = lbm_rcv_create(&amp;rcv, ctx, topic, app_rcv_callback, NULL, NULL);
+<a href="minrcv_c.slsrc.html#src_create" target="src">00077</a>      EX_LBM_CHK(err);
+<a href="minrcv_c.slsrc.html#src_create" target="src">00078</a>    }
+</pre><!-- endblock src_create_ref_1 --></small>
+
+
+
+<p>The first thing to note is the use curly braces to create a block. This
+is not necessary, but is done in this example to emphasize that the
+<tt>topic</tt> variable is only used as a bridge between the following
+two function calls. The <tt>lbm_rcv_topic_lookup()</tt> function allocates
+a topic object internally inside the context and returns a handle to that
+object. However, there is only one thing that can be done with this topic
+object: use it to create a receiver object. Once that receiver object is created,
+the application no longer needs to retain the topic object. It is unique among
+UM objects in that the application does not need to manage or clean up topic
+objects explicitly -- e.g. there is no <tt>lbm_src_topic_delete()</tt> function.</p>
+
+<p>Next note the third parameter passed to <tt>lbm_rcv_create()</tt>:
+the function pointer <tt>app_rcv_callback</tt>. This funciton is
+explained in detail a bit later on. For now, understand that
+the UM library will call that function for each message received.</p>
+
+<p>Note that it would be unusual for a real application to create a single
+topic for all its communication needs. Most real-world applications would
+create several receivers, all within the same context. Just be aware that each
+one requires the same topic_lookup/rcv_create pairing.<p>
+
+<h3>Receiving</h3>
+
+<p>Now that initialization is complete, it is time to receive a message.
+However, this is not done in the "main" thread. For this example, the
+"main" thread is not needed for anything after initialization; it is
+just coded as an infinite loop of sleeps:</p>
+<a name="main_sleep_ref_1" id="main_sleep_ref_1"></a>
+<small><pre>
+<a href="minrcv_c.slsrc.html#main_sleep" target="src">00080</a>    for (;;) {  /* loop forever */
+<a href="minrcv_c.slsrc.html#main_sleep" target="src">00081</a>      SLEEP(1);
+<a href="minrcv_c.slsrc.html#main_sleep" target="src">00082</a>    }
+</pre><!-- endblock main_sleep_ref_1 --></small>
+
+
+
+<p>Actual reception of messages is done by the context thread, which was
+started when the context object was created. When the context receives a
+message, it calls the application callback specified in the receiver
+creation: <tt>app_rcv_callback()</tt>:</p>
+<a name="app_rcv_cb_ref_1" id="app_rcv_cb_ref_1"></a>
+<small><pre>
+<a href="minrcv_c.slsrc.html#app_rcv_cb" target="src">00028</a>  int app_rcv_callback(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
+<a href="minrcv_c.slsrc.html#app_rcv_cb" target="src">00029</a>  {
+</pre><!-- endblock app_rcv_cb_ref_1 --></small>
+
+
+
+<p>Note that the function needs to be declared as shown, in conformance with
+the <tt>lbm_rcv_cb_proc</tt> function type defined in <tt>lbm.h</tt>:</p>
+<pre>
+  typedef int(*) lbm_rcv_cb_proc(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
+</pre>
+
+<p>The first thing to understand is that this function is called when UM
+has events to deliver, and received messages are only one kind of event.
+Therefore, the first thing the receiver callback must do is check the
+event type:</p>
+<a name="rcv_switch_ref_1" id="rcv_switch_ref_1"></a>
+<small><pre>
+<a href="minrcv_c.slsrc.html#rcv_switch" target="src">00030</a>    switch (msg-&gt;type) {
+<a href="minrcv_c.slsrc.html#rcv_switch" target="src">00031</a>    case LBM_MSG_DATA:  /* an actual message is received */
+<a href="minrcv_c.slsrc.html#rcv_switch" target="src">00032</a>      printf("Received %d bytes on topic %s: '%.*s'\n",
+<a href="minrcv_c.slsrc.html#rcv_switch" target="src">00033</a>             msg-&gt;len, msg-&gt;topic_name, msg-&gt;len, msg-&gt;data);
+<a href="minrcv_c.slsrc.html#rcv_switch" target="src">00034</a>      break;
+<a href="minrcv_c.slsrc.html#rcv_switch" target="src">00035</a>  
+<a href="minrcv_c.slsrc.html#rcv_switch" target="src">00036</a>    default:
+<a href="minrcv_c.slsrc.html#rcv_switch" target="src">00037</a>      printf("Received lbm_msg_t type %x on topic %s\n",
+<a href="minrcv_c.slsrc.html#rcv_switch" target="src">00038</a>             msg-&gt;type, msg-&gt;topic_name);
+<a href="minrcv_c.slsrc.html#rcv_switch" target="src">00039</a>      break;
+<a href="minrcv_c.slsrc.html#rcv_switch" target="src">00040</a>    }  /* switch */
+</pre><!-- endblock rcv_switch_ref_1 --></small>
+
+
+
+<p>For this minimal subscriber, the only event type of interest is
+<tt>LBM_MSG_DATA</tt>, which indicates that a message has been received
+and is being delivered to the application. The <tt>msg</tt> parameter
+points at an <tt>lbm_msg_t_stct</tt> structure which contains various
+metadata about the message, in addition to a pointer to the message
+itself, <tt>msg->data</tt>. UM simply interprets the message as an
+array of <tt>char</tt>s; the number of <tt>char</tt>s indicated in
+<tt>msg->len</tt>.</p>
+
+<p>For this simple example, it is assumed that the message contents
+is an ascii string. The <tt>printf</tt> format
+string "<tt>%.*s</tt>" is used in case the sender does not include
+a null terminator in the string; the "<tt>*</tt>" tells printf to
+take the "precision" (maximum number of characters for a string)
+from the parameter list, in this case <tt>msg->len</tt>.</p>
+
+<p>Finally, almost all UM application callback functions require
+that the application return <tt>0</tt>. It is not appropriate to
+return a non-zero value, even if the callback detected an error.</p>
+
+<p>Be aware that the application callback is executed by the
+context thread. The context thread is sensitive to delays,
+especially if UDP-based protocols are delivering data
+(i.e. LBT-RM or LBT-RU). The receiver callback should
+never block for significant periods of time; even a few
+hundred microseconds can result in packet loss during
+traffic bursts.</p>
+
+<p>If some messages require time-consuming processing, it
+is recommended for the application to queue the message
+for processing by an application thread, allowing the
+receiver callback to return immediately. Alternatively,
+the UM "event queue" can be used; see TODO.</p>
+
+<h3>Cleanup</h3>
+
+<p>In this example program, no cleanup is needed since the "main" thread
+executes an infinite loop, requiring the user to abort the program
+manually. However, for illustration purposes, cleanup code is included
+after the infinite loop.</p>
+
+<p>When deleting UM objects, order of deletion is important:</p>
+<a name="delobj_ref_1" id="delobj_ref_1"></a>
+<small><pre>
+<a href="minrcv_c.slsrc.html#delobj" target="src">00085</a>    /* Since app is written as infinite loop, will never get here. */
+<a href="minrcv_c.slsrc.html#delobj" target="src">00086</a>    err = lbm_src_delete(src);
+<a href="minrcv_c.slsrc.html#delobj" target="src">00087</a>    EX_LBM_CHK(err);
+<a href="minrcv_c.slsrc.html#delobj" target="src">00088</a>  
+<a href="minrcv_c.slsrc.html#delobj" target="src">00089</a>    err = lbm_context_delete(ctx);
+<a href="minrcv_c.slsrc.html#delobj" target="src">00090</a>    EX_LBM_CHK(err);
+</pre><!-- endblock delobj_ref_1 --></small>
+
+
+
+<p>In general, timers should be cancelled first. Then source and receiver
+objects should be deleted, then context objects, and lastly event queues.
+These object deletions can become somewhat complex if event queues are
+used; see TODO for more explanation.</p>
+
+<!-- main.sldoc - common doc included by many C examples -->
+<h2><tt>Misc</tt></h2>
+
+<p>A small effort was made to provide a some portability
+between Unix and Windows. For example:</p>
+<a name="includes_ref_1" id="includes_ref_1"></a>
+<small><pre>
+<a href="minrcv_c.slsrc.html#includes" target="src">00005</a>  #if defined(_MSC_VER)
+<a href="minrcv_c.slsrc.html#includes" target="src">00006</a>  /* Windows-only includes */
+<a href="minrcv_c.slsrc.html#includes" target="src">00007</a>  #include &lt;winsock2.h&gt;
+<a href="minrcv_c.slsrc.html#includes" target="src">00008</a>  #define SLEEP(s) Sleep((s)*1000)
+<a href="minrcv_c.slsrc.html#includes" target="src">00009</a>  #else
+<a href="minrcv_c.slsrc.html#includes" target="src">00010</a>  /* Unix-only includes */
+<a href="minrcv_c.slsrc.html#includes" target="src">00011</a>  #include &lt;stdlib.h&gt;
+<a href="minrcv_c.slsrc.html#includes" target="src">00012</a>  #include &lt;unistd.h&gt;
+<a href="minrcv_c.slsrc.html#includes" target="src">00013</a>  #define SLEEP(s) sleep(s)
+<a href="minrcv_c.slsrc.html#includes" target="src">00014</a>  #endif
+</pre><!-- endblock includes_ref_1 --></small>
+
+
+
+<p>Different sets of header files should be included for Unix v.s. Windows
+applications. Also, whereas Unix has a simple function <tt>sleep()</tt> which
+puts the caller to sleep for the specified number of seconds, Windows has
+no such function. It does, however, have <tt>Sleep()</tt>, which sleeps
+for the specified number of milliseconds. To provide portability within the
+exmaple code, the macro <tt>SLEEP()</tt> is defined appropriately to have
+the same behavior between Unix and Windows.</p>
+
+<p>Error handling can be one of the most complicated issues facing a
+programmer. Each application may have its own unique error handling conventions.
+For these example programs, a very simplistic error handling approach is
+taken: if anything unexpected happens, print a message and exit the program:</p>
+<a name="ex_lbm_chk_ref_1" id="ex_lbm_chk_ref_1"></a>
+<small><pre>
+<a href="minrcv_c.slsrc.html#ex_lbm_chk" target="src">00018</a>  /* Example error checking macro.  Include after each UM call. */
+<a href="minrcv_c.slsrc.html#ex_lbm_chk" target="src">00019</a>  #define EX_LBM_CHK(err) do { \
+<a href="minrcv_c.slsrc.html#ex_lbm_chk" target="src">00020</a>    if ((err) &lt; 0) { \
+<a href="minrcv_c.slsrc.html#ex_lbm_chk" target="src">00021</a>      fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
+<a href="minrcv_c.slsrc.html#ex_lbm_chk" target="src">00022</a>        __FILE__, __LINE__, lbm_errmsg()); \
+<a href="minrcv_c.slsrc.html#ex_lbm_chk" target="src">00023</a>      exit(1); \
+<a href="minrcv_c.slsrc.html#ex_lbm_chk" target="src">00024</a>    }  \
+<a href="minrcv_c.slsrc.html#ex_lbm_chk" target="src">00025</a>  } while (0)
+</pre><!-- endblock ex_lbm_chk_ref_1 --></small>
+
+
+
+<p>The <tt>EX_LBM_CHK()</tt> macro checks a UM API return value. If negative,
+it assumes an error. One reason for making this a macro is so that the
+<tt>__FILE__</tt> and <tt>__LINE__</tt> compiler built-ins reference the
+file and line of the <em>usages</em> of the macro, not the file and line
+of the macro defintion itself.</p>
+
+<p>Most UM functions are designed to return one of only two integer values:
+0 for success and -1 for failure. The <tt>lbm.h</tt> header file defines
+the symbols LBM_OK and LBM_FAILURE respectively for these. However, there
+are a few functions which can return a value of 0 <em>or greater</em>
+in the event of success (for example: <tt>lbm_event_dispatch()</tt> and
+<tt>lbm_send_response()</tt> to name two). So the example <tt>EX_LBM_CHK()</tt>
+macro was written to be somewhat more general. However, be aware that there
+are a few other functions which do not return an integer status at all (for
+exmaple: <tt>lbm_serialize_response()</tt> to name one). Please refer to the
+API documentation for each UM function you call.</p>
+
+<p>As the first bit of executable code, Windows programs which use WinSock
+must at some point call <tt>WSAStartup()</tt>:</p>
+<a name="wsa_start_ref_1" id="wsa_start_ref_1"></a>
+<small><pre>
+<a href="minrcv_c.slsrc.html#wsa_start" target="src">00046</a>  int main(int argc, char **argv)
+<a href="minrcv_c.slsrc.html#wsa_start" target="src">00047</a>  {
+<a href="minrcv_c.slsrc.html#wsa_start" target="src">00048</a>    lbm_context_t *ctx;  /* Context object: container for UM "instance". */
+<a href="minrcv_c.slsrc.html#wsa_start" target="src">00049</a>    lbm_rcv_t *rcv;      /* Source object: for subscribing to messages. */
+<a href="minrcv_c.slsrc.html#wsa_start" target="src">00050</a>    int err;             /* UM functions normally return 0 (success) or -1 (error). */
+<a href="minrcv_c.slsrc.html#wsa_start" target="src">00051</a>  
+<a href="minrcv_c.slsrc.html#wsa_start" target="src">00052</a>  #if defined(_MSC_VER)
+<a href="minrcv_c.slsrc.html#wsa_start" target="src">00053</a>    /* Windows-specific startup overhead */
+<a href="minrcv_c.slsrc.html#wsa_start" target="src">00054</a>    WSADATA wsadata;
+<a href="minrcv_c.slsrc.html#wsa_start" target="src">00055</a>    int wsa_err = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
+<a href="minrcv_c.slsrc.html#wsa_start" target="src">00056</a>    if (wsa_err != 0) {
+<a href="minrcv_c.slsrc.html#wsa_start" target="src">00057</a>      printf("line %d: wsStat=%d\n",__LINE__,wsStat);
+<a href="minrcv_c.slsrc.html#wsa_start" target="src">00058</a>      fprintf(stderr, "%s:%d, WSAStartup error: %d\n",
+<a href="minrcv_c.slsrc.html#wsa_start" target="src">00059</a>        __FILE__, __LINE__, wsa_err);
+<a href="minrcv_c.slsrc.html#wsa_start" target="src">00060</a>      exit(1);
+<a href="minrcv_c.slsrc.html#wsa_start" target="src">00061</a>    }
+<a href="minrcv_c.slsrc.html#wsa_start" target="src">00062</a>  #endif
+</pre><!-- endblock wsa_start_ref_1 --></small>
+
+
+
+<p>A well-structured Windows networking application will also call <tt>WSACleanup()</tt>
+after before exit:</p>
+<a name="wsa_clean_ref_1" id="wsa_clean_ref_1"></a>
+<small><pre>
+<a href="minrcv_c.slsrc.html#wsa_clean" target="src">00093</a>  #if defined(_MSC_VER)
+<a href="minrcv_c.slsrc.html#wsa_clean" target="src">00094</a>    /* Windows-specific cleanup overhead */
+<a href="minrcv_c.slsrc.html#wsa_clean" target="src">00095</a>    WSACleanup();
+<a href="minrcv_c.slsrc.html#wsa_clean" target="src">00096</a>  #endif
+</pre><!-- endblock wsa_clean_ref_1 --></small>
+
+
+
+
+<p2>Advanced Topics</p2>
+
+<p>licensing: TODO</p>
+
+<p>configuration: TODO</p>
+
+<p>anything else? TODO</p>
+
+</body>
+</html>
+

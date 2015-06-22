@@ -1,9 +1,20 @@
-<a href="../../index.html" class="button" target="_top">Example index</a>
+<a href="../../index.html" class="button" target="_top">All examples</a>
 
 <h1>Minimal UM Subscriber Example</h1>
 <p>This example demonstrates the minimal code to subscribe and
 receive a message using UM.
-There is a corresponding minimal publisher example at TODO.</p>
+There is a corresponding minimal publisher example at
+<a href="../../minsrc/index.html" target="_top">minsrc</a>.</p>
+
+<p>In a subscriber program, there is typically a minimum of two threads executing:
+the main thread (started with the program is executed) and
+the context thread (started when the context object is created).
+In this minimal subscriber example, the main thread performs
+initialization (creates initial objects), and then has nothing
+to do and so executes an infinite loop of sleeps. The real work
+of receiving messages is performed by the context thread, which
+receives messages and calls the example's application callback
+function.</p>
 
 <p>When reading the documentation below, click on any line number to display
 the pure source listing on the right side of the screen. Similarly, if you

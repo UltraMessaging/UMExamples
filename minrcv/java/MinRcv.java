@@ -8,41 +8,29 @@ public class MinSrc {
     LBMSource src = nil;   /* Source object: for sending messages. */
 
 
-/*=semlit,block,ctx_create=*/
     /*** Initialization: create necessary UM objects. ***/
 
     ctx = new LBMContext();
-/*=semlit,endblock,ctx_create=*/
 
-/*=semlit,block,src_create=*/
     {
       LBMTopic topic = nil;
-      topic = new LBMTopic(ctx, "Greeting", new LBMSourceAttributes());
+      topic = new LBMTopic(ctx, "Greeting");
       src = new LBMSource(ctx, topic);
     }
-/*=semlit,endblock,src_create=*/
 
-/*=semlit,block,tr_sleep=*/
     Thread.sleep(1000);
-/*=semlit,endblock,tr_sleep=*/
 
 
-/*=semlit,block,sending=*/
   /*** Send a message. ***/
 
     src.send("Hello!".getBytes(), 7, LBM.MSG_FLUSH | LBM.SRC_BLOCK);
-/*=semlit,endblock,sending=*/
  
 
-/*=semlit,block,linger=*/
   /*** Cleanup: delete UM objects. ***/
 
     Thread.sleep(3000);
-/*=semlit,endblock,linger=*/
 
-/*=semlit,block,delobj=*/
     src.close();
     ctx.close();
-/*=semlit,endblock,delobj=*/
   }  /* main */
 }  /* class MinSrc */

@@ -1,18 +1,18 @@
 <html>
 <head>
 =semlit,include,../../style/head.sldoc=
-<title>minsrc: Minimal UM Publisher in C</title>
+<title>minrcv: Minimal UM subscriber in C</title>
 </head>
 <body>
 =semlit,include,../intro.sldoc=
 
 <p>There is one program source file:</p>
 <ul>
-<li><b><tt>=semlit,srcfile,minsrc_c.slsrc,minsrc.c=</tt></b>
-- (right-click and save as "minsrc.c") Example code.</li>
+<li><b><tt>=semlit,srcfile,minrcv_c.slsrc,minrcv.c=</tt></b>
+- (right-click and save as "minrcv.c") Example code.</li>
 </ul>
 
-<h2><tt>minsrc.c</tt></h2>
+<h2><tt>minrcv.c</tt></h2>
 
 <h3>Initialization</h3>
 
@@ -30,96 +30,99 @@ use cases which call for multiple context instances within a single process
 <p>Also note the use of <tt>EX_LBM_CHK(err)</tt>. This is a simple error
 handling macro, described more-fully later on.</p>
 
-<p>The next object that needs to be created is a "source" object. Creation
-of a source object is a two-step procedure: first create a "topic" object,
-specifying the topic name, and then create the "source" object, which is
-the object used subsequently to send messages.</p>
+<p>The next object that needs to be created is a "receiver" object. Creation
+of a receiver object is a two-step procedure: first obtain a "topic" object,
+specifying the topic name and any desired receiver attributes, and then create
+the "receiver" object, which is the object used subsequently to receive messages.</p>
 =semlit,insert,src_create=
 
 <p>The first thing to note is the use curly braces to create a block. This
 is not necessary, but is done in this example to emphasize that the
 <tt>topic</tt> variable is only used as a bridge between the following
-two function calls. The <tt>lbm_src_topic_alloc()</tt> function allocates
+two function calls. The <tt>lbm_rcv_topic_lookup()</tt> function allocates
 a topic object internally inside the context and returns a handle to that
-object. However, there is only one thing that can be done with a topic
-object: use it to create a source object. Once that source object is created,
+object. However, there is only one thing that can be done with this topic
+object: use it to create a receiver object. Once that receiver object is created,
 the application no longer needs to retain the topic object. It is unique among
 UM objects in that the application does not need to manage or clean up topic
-objects explicitly -- e.g. there is no <tt>lbm_src_topic_dealloc()</tt> function.</p>
+objects explicitly -- e.g. there is no <tt>lbm_src_topic_delete()</tt> function.</p>
+
+<p>Next note the third parameter passed to <tt>lbm_rcv_create()</tt>:
+the function pointer <tt>app_rcv_callback</tt>. This funciton is
+explained in detail a bit later on. For now, understand that
+the UM library will call that function for each message received.</p>
 
 <p>Note that it would be unusual for a real application to create a single
 topic for all its communication needs. Most real-world applications would
-create several sources, all within the same context. Just be aware that each
-one requires the same topic_alloc/src_create pairing.<p>
+create several receivers, all within the same context. Just be aware that each
+one requires the same topic_lookup/rcv_create pairing.<p>
 
-<p>The final step during initialization is to wait for any subscribing
-applications to discover this new source:</p>
-=semlit,insert,tr_sleep=
+<h3>Receiving</h3>
 
-<p>Note the use of <tt>SLEEP(1)</tt>.  This is a simple macro which puts
-the caller to sleep for the specified number of seconds, and is described
-more-fully later on.</p>
+<p>Now that initialization is complete, it is time to receive a message.
+However, this is not done in the "main" thread. For this example, the
+"main" thread is not needed for anything after initialization; it is
+just coded as an infinite loop of sleeps:</p>
+=semlit,insert,main_sleep=
 
-<p>This process is called "topic resolution", and takes a non-zero amount of time.
-If the publisher sends a message before the discovery process completes, some
-subscribers will not receive the message. This example takes the very simple
-approach waiting for a full second before sending its first (and only) message,
-but while this is usually more than enough time, there are scenarios where more
-time is needed (e.g. if large numbers of source objects are created all at once).
-Many users want a simple, fool-proof method for knowing when it is "safe" to send
-(i.e. when all pre-existing receivers will successfully receive the message);
-unfortunately, no such one-size-fits-all approach exists. The subject is
-addressed in more depth in TODO.</p>
+<p>Actual reception of messages is done by the context thread, which was
+started when the context object was created. When the context receives a
+message, it calls the application callback specified in the receiver
+creation: <tt>app_rcv_callback()</tt>:</p>
+=semlit,insert,app_rcv_cb=
 
-<h3>Publishing</h3>
+<p>Note that the function needs to be declared as shown, in conformance with
+the <tt>lbm_rcv_cb_proc</tt> function type defined in <tt>lbm.h</tt>:</p>
+<pre>
+  typedef int(*) lbm_rcv_cb_proc(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
+</pre>
 
-<p>Now that initialization is complete, it is time to send a message:</p>
-=semlit,insert,sending=
+<p>The first thing to understand is that this function is called when UM
+has events to deliver, and received messages are only one kind of event.
+Therefore, the first thing the receiver callback must do is check the
+event type:</p>
+=semlit,insert,rcv_switch=
 
-<p>Note that the string "Hello!" only has 6 characters, but a 7 is passed as the
-number of bytes. This is to ensure that the null string character is included in
-the message. Also note the inclusion of the FLUSH and SRC_BLOCK flags.</p>
+<p>For this minimal subscriber, the only event type of interest is
+<tt>LBM_MSG_DATA</tt>, which indicates that a message has been received
+and is being delivered to the application. The <tt>msg</tt> parameter
+points at an <tt>lbm_msg_t_stct</tt> structure which contains various
+metadata about the message, in addition to a pointer to the message
+itself, <tt>msg->data</tt>. UM simply interprets the message as an
+array of <tt>char</tt>s; the number of <tt>char</tt>s indicated in
+<tt>msg->len</tt>.</p>
 
-<p>The SRC_BLOCK flag technically does not need to be supplied since the default
-behavior is blocking, but this example supplies it anyway just to emphasize the fact
-that the application expects the send to block (go to sleep) if a blocking condition
-is encountered. For an example of non-blocking sends, see TODO.<p>
+<p>For this simple example, it is assumed that the message contents
+is an ascii string. The <tt>printf</tt> format
+string "<tt>%.*s</tt>" is used in case the sender does not include
+a null terminator in the string; the "<tt>*</tt>" tells printf to
+take the "precision" (maximum number of characters for a string)
+from the parameter list, in this case <tt>msg->len</tt>.</p>
 
-<p>The FLUSH flag is used to override the default UM behavior of using implicit
-batching. Batching is the process of combining multiple outgoing messages into a
-single network packet. This is done for efficiency so that high message rates can
-be achieved. However, using implicit batching can introduce message latencies of
-many milliseconds, so it is not unusual for UM applications to send with the
-FLUSH flag to push the message onto the network immediately. The tradeoff with
-this simplistic approach is that at high message rates, a significant load is imposed
-on both the sender and the receiver. For a somewhat more complex "intelligent
-batching" example, see TODO.</p>
+<p>Finally, almost all UM application callback functions require
+that the application return <tt>0</tt>. It is not appropriate to
+return a non-zero value, even if the callback detected an error.</p>
 
-<p>The UM API is thread-safe, meaning that the application might have multiple
-threads concurrently calling <tt>lbm_src_send()</tt>. However, be aware that
-there are situations where those threads will contend for internal locks
-(mutexes), leading to decreased parallelism and throughput. Source threading
-issues are explored in TODO.<p>
+<p>Be aware that the application callback is executed by the
+context thread. The context thread is sensitive to delays,
+especially if UDP-based protocols are delivering data
+(i.e. LBT-RM or LBT-RU). The receiver callback should
+never block for significant periods of time; even a few
+hundred microseconds can result in packet loss during
+traffic bursts.</p>
+
+<p>If some messages require time-consuming processing, it
+is recommended for the application to queue the message
+for processing by an application thread, allowing the
+receiver callback to return immediately. Alternatively,
+the UM "event queue" can be used; see TODO.</p>
 
 <h3>Cleanup</h3>
 
-<p>When its time to delete UM objects, certain guideliens should be followed.
-There are several possible asynchronous operations which might not yet have
-completed since the last send, so a short sleep is included:</p>
-=semlit,insert,linger=
-
-<p>For example, if the FLUSH flag is not supplied with the send function, the
-implicit batcher might be holding on to one or more messages, and must be
-allowed to time out. Or a UDP protocol might be used and a subscriber might
-have experienced "tail loss", requiring a timeout/retransmission sequence
-to take place. As with source creation, many users want to know how long to
-wait before deleting objects, and as before there is no perfect answer.
-For example, the default NAK generation interval is 10 seconds, suggesting
-that the linger should be at least that long. But a 10-second wait before
-allowing a program to exit may not be acceptable, and is rarely needed.
-Many users take the attitude that if a subscriber is still trying to recover
-loss packets after 2 or 3 seconds, then it is better to just let that
-subscriber experience unrecoverable loss.<p>
+<p>In this example program, no cleanup is needed since the "main" thread
+executes an infinite loop, requiring the user to abort the program
+manually. However, for illustration purposes, cleanup code is included
+after the infinite loop.</p>
 
 <p>When deleting UM objects, order of deletion is important:</p>
 =semlit,insert,delobj=
@@ -134,4 +137,3 @@ used; see TODO for more explanation.</p>
 =semlit,include,../advanced.sldoc=
 </body>
 </html>
-

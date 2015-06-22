@@ -2,4 +2,4 @@
 
 Summary=Minimal publisher program.
 
-Description=
+Description=Create a context and a source. Send a message.  Clean up and exit.

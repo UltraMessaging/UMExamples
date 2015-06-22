@@ -1,0 +1,298 @@
+<!DOCTYPE html><html><head><title>minrcv.c</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>minrcv.c</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+<a href="minrcv.sldoc.html#includes_ref_1" target="doc">00005</a>
+<a href="minrcv.sldoc.html#includes_ref_1" target="doc">00006</a>
+<a href="minrcv.sldoc.html#includes_ref_1" target="doc">00007</a>
+<a href="minrcv.sldoc.html#includes_ref_1" target="doc">00008</a>
+<a href="minrcv.sldoc.html#includes_ref_1" target="doc">00009</a>
+<a href="minrcv.sldoc.html#includes_ref_1" target="doc">00010</a>
+<a href="minrcv.sldoc.html#includes_ref_1" target="doc">00011</a>
+<a href="minrcv.sldoc.html#includes_ref_1" target="doc">00012</a>
+<a href="minrcv.sldoc.html#includes_ref_1" target="doc">00013</a>
+<a href="minrcv.sldoc.html#includes_ref_1" target="doc">00014</a>
+00015
+00016
+00017
+<a href="minrcv.sldoc.html#ex_lbm_chk_ref_1" target="doc">00018</a>
+<a href="minrcv.sldoc.html#ex_lbm_chk_ref_1" target="doc">00019</a>
+<a href="minrcv.sldoc.html#ex_lbm_chk_ref_1" target="doc">00020</a>
+<a href="minrcv.sldoc.html#ex_lbm_chk_ref_1" target="doc">00021</a>
+<a href="minrcv.sldoc.html#ex_lbm_chk_ref_1" target="doc">00022</a>
+<a href="minrcv.sldoc.html#ex_lbm_chk_ref_1" target="doc">00023</a>
+<a href="minrcv.sldoc.html#ex_lbm_chk_ref_1" target="doc">00024</a>
+<a href="minrcv.sldoc.html#ex_lbm_chk_ref_1" target="doc">00025</a>
+00026
+00027
+<a href="minrcv.sldoc.html#app_rcv_cb_ref_1" target="doc">00028</a>
+<a href="minrcv.sldoc.html#app_rcv_cb_ref_1" target="doc">00029</a>
+<a href="minrcv.sldoc.html#rcv_switch_ref_1" target="doc">00030</a>
+<a href="minrcv.sldoc.html#rcv_switch_ref_1" target="doc">00031</a>
+<a href="minrcv.sldoc.html#rcv_switch_ref_1" target="doc">00032</a>
+<a href="minrcv.sldoc.html#rcv_switch_ref_1" target="doc">00033</a>
+<a href="minrcv.sldoc.html#rcv_switch_ref_1" target="doc">00034</a>
+<a href="minrcv.sldoc.html#rcv_switch_ref_1" target="doc">00035</a>
+<a href="minrcv.sldoc.html#rcv_switch_ref_1" target="doc">00036</a>
+<a href="minrcv.sldoc.html#rcv_switch_ref_1" target="doc">00037</a>
+<a href="minrcv.sldoc.html#rcv_switch_ref_1" target="doc">00038</a>
+<a href="minrcv.sldoc.html#rcv_switch_ref_1" target="doc">00039</a>
+<a href="minrcv.sldoc.html#rcv_switch_ref_1" target="doc">00040</a>
+00041
+<a href="minrcv.sldoc.html#rcv_rtn_ref_1" target="doc">00042</a>
+<a href="minrcv.sldoc.html#rcv_rtn_ref_1" target="doc">00043</a>
+00044
+00045
+<a href="minrcv.sldoc.html#wsa_start_ref_1" target="doc">00046</a>
+<a href="minrcv.sldoc.html#wsa_start_ref_1" target="doc">00047</a>
+<a href="minrcv.sldoc.html#wsa_start_ref_1" target="doc">00048</a>
+<a href="minrcv.sldoc.html#wsa_start_ref_1" target="doc">00049</a>
+<a href="minrcv.sldoc.html#wsa_start_ref_1" target="doc">00050</a>
+<a href="minrcv.sldoc.html#wsa_start_ref_1" target="doc">00051</a>
+<a href="minrcv.sldoc.html#wsa_start_ref_1" target="doc">00052</a>
+<a href="minrcv.sldoc.html#wsa_start_ref_1" target="doc">00053</a>
+<a href="minrcv.sldoc.html#wsa_start_ref_1" target="doc">00054</a>
+<a href="minrcv.sldoc.html#wsa_start_ref_1" target="doc">00055</a>
+<a href="minrcv.sldoc.html#wsa_start_ref_1" target="doc">00056</a>
+<a href="minrcv.sldoc.html#wsa_start_ref_1" target="doc">00057</a>
+<a href="minrcv.sldoc.html#wsa_start_ref_1" target="doc">00058</a>
+<a href="minrcv.sldoc.html#wsa_start_ref_1" target="doc">00059</a>
+<a href="minrcv.sldoc.html#wsa_start_ref_1" target="doc">00060</a>
+<a href="minrcv.sldoc.html#wsa_start_ref_1" target="doc">00061</a>
+<a href="minrcv.sldoc.html#wsa_start_ref_1" target="doc">00062</a>
+00063
+00064
+<a href="minrcv.sldoc.html#ctx_create_ref_1" target="doc">00065</a>
+<a href="minrcv.sldoc.html#ctx_create_ref_1" target="doc">00066</a>
+<a href="minrcv.sldoc.html#ctx_create_ref_1" target="doc">00067</a>
+<a href="minrcv.sldoc.html#ctx_create_ref_1" target="doc">00068</a>
+00069
+<a href="minrcv.sldoc.html#src_create_ref_1" target="doc">00070</a>
+<a href="minrcv.sldoc.html#src_create_ref_1" target="doc">00071</a>
+<a href="minrcv.sldoc.html#src_create_ref_1" target="doc">00072</a>
+<a href="minrcv.sldoc.html#src_create_ref_1" target="doc">00073</a>
+<a href="minrcv.sldoc.html#src_create_ref_1" target="doc">00074</a>
+<a href="minrcv.sldoc.html#src_create_ref_1" target="doc">00075</a>
+<a href="minrcv.sldoc.html#src_create_ref_1" target="doc">00076</a>
+<a href="minrcv.sldoc.html#src_create_ref_1" target="doc">00077</a>
+<a href="minrcv.sldoc.html#src_create_ref_1" target="doc">00078</a>
+00079
+<a href="minrcv.sldoc.html#main_sleep_ref_1" target="doc">00080</a>
+<a href="minrcv.sldoc.html#main_sleep_ref_1" target="doc">00081</a>
+<a href="minrcv.sldoc.html#main_sleep_ref_1" target="doc">00082</a>
+00083
+00084
+<a href="minrcv.sldoc.html#delobj_ref_1" target="doc">00085</a>
+<a href="minrcv.sldoc.html#delobj_ref_1" target="doc">00086</a>
+<a href="minrcv.sldoc.html#delobj_ref_1" target="doc">00087</a>
+<a href="minrcv.sldoc.html#delobj_ref_1" target="doc">00088</a>
+<a href="minrcv.sldoc.html#delobj_ref_1" target="doc">00089</a>
+<a href="minrcv.sldoc.html#delobj_ref_1" target="doc">00090</a>
+00091
+00092
+<a href="minrcv.sldoc.html#wsa_clean_ref_1" target="doc">00093</a>
+<a href="minrcv.sldoc.html#wsa_clean_ref_1" target="doc">00094</a>
+<a href="minrcv.sldoc.html#wsa_clean_ref_1" target="doc">00095</a>
+<a href="minrcv.sldoc.html#wsa_clean_ref_1" target="doc">00096</a>
+00097
+</td><td>  /* minrcv.c, see http://ultramessaging.github.io/UMExamples/minrcv/c/ */
+  
+  #include &lt;stdio.h&gt;
+  
+<span name="includes" id="includes"></span>  #if defined(_MSC_VER)
+  /* Windows-only includes */
+  #include &lt;winsock2.h&gt;
+  #define SLEEP(s) Sleep((s)*1000)
+  #else
+  /* Unix-only includes */
+  #include &lt;stdlib.h&gt;
+  #include &lt;unistd.h&gt;
+  #define SLEEP(s) sleep(s)
+  #endif
+  
+  #include &lt;lbm/lbm.h&gt;
+  
+<span name="ex_lbm_chk" id="ex_lbm_chk"></span>  /* Example error checking macro.  Include after each UM call. */
+  #define EX_LBM_CHK(err) do { \
+    if ((err) &lt; 0) { \
+      fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
+        __FILE__, __LINE__, lbm_errmsg()); \
+      exit(1); \
+    }  \
+  } while (0)
+  
+  
+<span name="app_rcv_cb" id="app_rcv_cb"></span>  int app_rcv_callback(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
+  {
+<span name="rcv_switch" id="rcv_switch"></span>    switch (msg-&gt;type) {
+    case LBM_MSG_DATA:  /* an actual message is received */
+      printf("Received %d bytes on topic %s: '%.*s'\n",
+             msg-&gt;len, msg-&gt;topic_name, msg-&gt;len, msg-&gt;data);
+      break;
+  
+    default:
+      printf("Received lbm_msg_t type %x on topic %s\n",
+             msg-&gt;type, msg-&gt;topic_name);
+      break;
+    }  /* switch */
+  
+<span name="rcv_rtn" id="rcv_rtn"></span>    return 0;  /* UM callbacks must return 0 */
+  }  /* app_rcv_callback */
+  
+  
+<span name="wsa_start" id="wsa_start"></span>  int main(int argc, char **argv)
+  {
+    lbm_context_t *ctx;  /* Context object: container for UM "instance". */
+    lbm_rcv_t *rcv;      /* Source object: for subscribing to messages. */
+    int err;             /* UM functions normally return 0 (success) or -1 (error). */
+  
+  #if defined(_MSC_VER)
+    /* Windows-specific startup overhead */
+    WSADATA wsadata;
+    int wsa_err = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
+    if (wsa_err != 0) {
+      printf("line %d: wsStat=%d\n",__LINE__,wsStat);
+      fprintf(stderr, "%s:%d, WSAStartup error: %d\n",
+        __FILE__, __LINE__, wsa_err);
+      exit(1);
+    }
+  #endif
+  
+  
+<span name="ctx_create" id="ctx_create"></span>    /*** Initialization: create necessary UM objects. ***/
+  
+    err = lbm_context_create(&amp;ctx, NULL, NULL, NULL);
+    EX_LBM_CHK(err);
+  
+<span name="src_create" id="src_create"></span>    {
+      lbm_topic_t *topic;    /* Topic object: only needed temporarily. */
+  
+      err = lbm_rcv_topic_lookup(&amp;topic, ctx, "Greeting", NULL);
+      EX_LBM_CHK(err);
+  
+      err = lbm_rcv_create(&amp;rcv, ctx, topic, app_rcv_callback, NULL, NULL);
+      EX_LBM_CHK(err);
+    }
+  
+<span name="main_sleep" id="main_sleep"></span>    for (;;) {  /* loop forever */
+      SLEEP(1);
+    }
+  
+  
+<span name="delobj" id="delobj"></span>    /* Since app is written as infinite loop, will never get here. */
+    err = lbm_src_delete(src);
+    EX_LBM_CHK(err);
+  
+    err = lbm_context_delete(ctx);
+    EX_LBM_CHK(err);
+  
+  
+<span name="wsa_clean" id="wsa_clean"></span>  #if defined(_MSC_VER)
+    /* Windows-specific cleanup overhead */
+    WSACleanup();
+  #endif
+  }  /* main */
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

@@ -2,7 +2,6 @@
 
 #include <stdio.h>
 
-/*=semlit,block,includes=*/
 #if defined(_MSC_VER)
 /* Windows-only includes */
 #include <winsock2.h>
@@ -13,11 +12,9 @@
 #include <unistd.h>
 #define SLEEP(s) sleep(s)
 #endif
-/*=semlit,endblock,includes=*/
 
 #include <lbm/lbm.h>
 
-/*=semlit,block,ex_lbm_chk=*/
 /* Example error checking macro.  Include after each UM call. */
 #define EX_LBM_CHK(err) do { \
   if ((err) < 0) { \
@@ -26,14 +23,10 @@
     exit(1); \
   }  \
 } while (0)
-/*=semlit,endblock,ex_lbm_chk=*/
 
 
-/*=semlit,block,app_rcv_cb=*/
 int app_rcv_callback(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
 {
-/*=semlit,endblock,app_rcv_cb=*/
-/*=semlit,block,rcv_switch=*/
   switch (msg->type) {
   case LBM_MSG_DATA:  /* an actual message is received */
     printf("Received %d bytes on topic %s: '%.*s'\n",
@@ -45,15 +38,11 @@ int app_rcv_callback(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
            msg->type, msg->topic_name);
     break;
   }  /* switch */
-/*=semlit,endblock,rcv_switch=*/
 
-/*=semlit,block,rcv_rtn=*/
   return 0;  /* UM callbacks must return 0 */
 }  /* app_rcv_callback */
-/*=semlit,endblock,rcv_rtn=*/
 
 
-/*=semlit,block,wsa_start=*/
 int main(int argc, char **argv)
 {
   lbm_context_t *ctx;  /* Context object: container for UM "instance". */
@@ -71,17 +60,13 @@ int main(int argc, char **argv)
     exit(1);
   }
 #endif
-/*=semlit,endblock,wsa_start=*/
 
 
-/*=semlit,block,ctx_create=*/
   /*** Initialization: create necessary UM objects. ***/
 
   err = lbm_context_create(&ctx, NULL, NULL, NULL);
   EX_LBM_CHK(err);
-/*=semlit,endblock,ctx_create=*/
 
-/*=semlit,block,src_create=*/
   {
     lbm_topic_t *topic;    /* Topic object: only needed temporarily. */
 
@@ -91,29 +76,22 @@ int main(int argc, char **argv)
     err = lbm_rcv_create(&rcv, ctx, topic, app_rcv_callback, NULL, NULL);
     EX_LBM_CHK(err);
   }
-/*=semlit,endblock,src_create=*/
 
-/*=semlit,block,main_sleep=*/
   for (;;) {  /* loop forever */
     SLEEP(1);
   }
-/*=semlit,endblock,main_sleep=*/
 
 
-/*=semlit,block,delobj=*/
   /* Since app is written as infinite loop, will never get here. */
   err = lbm_src_delete(src);
   EX_LBM_CHK(err);
 
   err = lbm_context_delete(ctx);
   EX_LBM_CHK(err);
-/*=semlit,endblock,delobj=*/
 
 
-/*=semlit,block,wsa_clean=*/
 #if defined(_MSC_VER)
   /* Windows-specific cleanup overhead */
   WSACleanup();
 #endif
-/*=semlit,endblock,wsa_clean=*/
 }  /* main */

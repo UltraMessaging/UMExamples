@@ -5,11 +5,12 @@
 <title>minsrc: Minimal UM Publisher in C#/.NET</title>
 </head>
 <body>
-<a href="../../index.html" class="button" target="_top">Example index</a>
+<a href="../../index.html" class="button" target="_top">All examples</a>
 
-<h1>Minimal UM Punlisher Example</h1>
+<h1>Minimal UM Publisher Example</h1>
 <p>This example demonstrates the minimal code to publish a message using UM.
-There is a corresponding minimal subscriber example at TODO.</p>
+There is a corresponding minimal subscriber example at
+<a href="../../minrcv/index.html" target="_top">minrcv</a>.</p>
 
 <p>When reading the documentation below, click on any line number to display
 the pure source listing on the right side of the screen. Similarly, if you
@@ -52,7 +53,7 @@ UM errors will lead to the program aborting with an unhandled exception.
 A real application require a different design.</p>
 
 <p>The next object that needs to be created is a "source" object. Creation
-of a source object is a two-step procedure: first create a "topic" object,
+of a source object is a two-step procedure: first obtain a "topic" object,
 specifying the topic name, and then create the "source" object, which is
 the object used subsequently to send messages.</p>
 <a name="src_create_ref_1" id="src_create_ref_1"></a>
@@ -71,7 +72,7 @@ is not necessary, but is done in this example to emphasize that the
 <tt>topic</tt> variable is only used as a bridge between the following
 two method calls. The <tt>LBMTopic()</tt> method allocates
 a topic object internally inside the context and returns a handle to that
-object. However, there is only one thing that can be done with a topic
+object. However, there is only one thing that can be done with this topic
 object: use it to create a source object. Once that source object is created,
 the application no longer needs to retain the topic object. It is unique among
 UM objects in that the application does not need to manage or clean up topic

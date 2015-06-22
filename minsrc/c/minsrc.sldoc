@@ -31,9 +31,9 @@ use cases which call for multiple context instances within a single process
 handling macro, described more-fully later on.</p>
 
 <p>The next object that needs to be created is a "source" object. Creation
-of a source object is a two-step procedure: first create a "topic" object,
-specifying the topic name, and then create the "source" object, which is
-the object used subsequently to send messages.</p>
+of a source object is a two-step procedure: first obtain a "topic" object,
+specifying the topic name and any desired source attributes, and then create
+the "source" object, which is the object used subsequently to send messages.</p>
 =semlit,insert,src_create=
 
 <p>The first thing to note is the use curly braces to create a block. This
@@ -41,7 +41,7 @@ is not necessary, but is done in this example to emphasize that the
 <tt>topic</tt> variable is only used as a bridge between the following
 two function calls. The <tt>lbm_src_topic_alloc()</tt> function allocates
 a topic object internally inside the context and returns a handle to that
-object. However, there is only one thing that can be done with a topic
+object. However, there is only one thing that can be done with this topic
 object: use it to create a source object. Once that source object is created,
 the application no longer needs to retain the topic object. It is unique among
 UM objects in that the application does not need to manage or clean up topic

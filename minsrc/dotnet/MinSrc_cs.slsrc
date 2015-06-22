@@ -21,7 +21,7 @@ namespace MinSrc {
 /*=semlit,block,src_create=*/
       {
         LBMTopic topic = nil;
-        topic = new LBMTopic(ctx, "Greeting");
+        topic = new LBMTopic(ctx, "Greeting", new LBMSourceAttributes());
         src = new LBMSource(ctx, topic);
       }
 /*=semlit,endblock,src_create=*/
