@@ -1,0 +1,32 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Request-Response Sample Application</title>
+  </head>
+  <body>
+    <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>Request-Response Sample Application</h1>
+    <p>Ultra Messaging offers a Request/Response messaging model. A regular UM source can use a dedicated API to send a request
+	on its publishing topic. A receiver for that topic will receive the request similar to regular data messages, and can use
+	a dedicated API to send a response back to the source.</p>
+    <p>When a request message is sent, the message is published on the same transport that the source is configured to use. 
+     	Response messages on the other hand are sent directly to the source from the receiver via Unicast Immediate Messaging (UIM),
+	which is a direct TCP connection.</p>
+    <p>An important aspect of UM's Request/Response model is that it allows the application to keep track of which request 
+	corresponds to a given response. Due to the asynchronous nature of UM requests, any number of requests can be outstanding, 
+	and as the responses come in, they can be matched to their corresponding requests.</p>
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt>=semlit,srcfile,request_response_c.slsrc,request_response.c=</tt></b>
+        - (right-click and save as "request_response.c") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>request_response.c</tt></h2>
+    <h4>Includes</h4>
+        <p>A small effort was made to provide a some portability between Unix and Windows. For example:</p>
+        =semlit,insert,includes=
+	<p>Different sets of header files should be included for Unix v.s. Windows applications. Also, whereas Unix has a simple function 
+	sleep() which puts the caller to sleep for the specified number of seconds, Windows has no such function. It does, however, have 
+	Sleep(), which sleeps for the specified number of milliseconds. To provide portability within the exmaple code, the macro SLEEP() 
+	is defined appropriately to have the same behavior between Unix and Windows.</p>
+  </body>
+</html>
