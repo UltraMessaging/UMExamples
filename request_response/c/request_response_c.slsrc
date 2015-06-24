@@ -1,4 +1,4 @@
-/* Code Disclaimer? */
+/* request_response.c - http://ultramessaging.github.io/UMExamples */
 
 /* =semlit,block,includes=*/
 #include <stdio.h>
@@ -17,6 +17,7 @@
 #include <lbm/lbm.h>
 /* =semlit,endblock,includes=*/
 
+/* =semlit,block,error_check=*/
 /* Example error checking macro.  Include after each UM call. */
 #define EX_LBM_CHK(err) do { \
 	if ((err) < 0) { \
@@ -25,9 +26,13 @@
     		exit(1); \
   	}  \
 } while (0)
+/* =semlit,endblock,error_check=*/
 
+/* Global var used to indicate that the application can exit after response received */
 int run = 1;
 
+/* Callback used to handle request message for receiver */
+/* =semlit,block,rcv_cb=*/
 int rcv_handle_msg(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
 {
 	int err;
@@ -35,12 +40,17 @@ int rcv_handle_msg(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
 	switch (msg->type) {
 	case LBM_MSG_REQUEST:
 		printf("LBM_MSG_REQUEST received\n");
+		/* =semlit,block,send_resp=*/
 		err = lbm_send_response(msg->response, "response", 8, LBM_SRC_NONBLOCK);
 		EX_LBM_CHK(err);
+		/* =semlit,endblock,send_resp=*/
 		break;
 	}
 }
+/* =semlit,endblock,rcv_cb=*/
 
+/* Callback used to handle response message */
+/* =semlit,block,resp_cb=*/
 int handle_response(lbm_request_t *req, lbm_msg_t *msg, void *clientd)
 {
         switch (msg->type) {
@@ -50,19 +60,23 @@ int handle_response(lbm_request_t *req, lbm_msg_t *msg, void *clientd)
 		break;
 	}
 }
+/* =semlit,endblock,resp_cb=*/
 
 main()
 {
+	/* =semlit,block,vars=*/
 	lbm_context_t *ctx;                     /* Context object */
-        lbm_topic_t *stopic;                    /* Source Topic object */
-        lbm_src_t *src;                         /* Source object */
-        lbm_src_topic_attr_t * tattr;           /* Source topic attribute object */
-        lbm_context_attr_t * cattr;             /* Context attribute object */
-	lbm_rcv_t *rcv;      			/* Receive object: for subscribing to messages. */
+	lbm_topic_t *stopic;                    /* Source Topic object */
+	lbm_src_t *src;                         /* Source object */
+	lbm_src_topic_attr_t * tattr;           /* Source topic attribute object */
+	lbm_context_attr_t * cattr;             /* Context attribute object */
+	lbm_rcv_t *rcv;                         /* Receive object: for subscribing to messages. */
 	lbm_topic_t *rtopic;                    /* Receiver Topic object */
-	lbm_request_t *req;			/* Request object */
-        int err;                                /* Used for checking API return codes */
-  
+	lbm_request_t *req;                     /* Request object */
+	int err;                                /* Used for checking API return codes */
+	/* =semlit,endblock,vars=*/
+
+	/* =semlit,block,init_win=*/
 #if defined(_WIN32)
         /* windows-specific code */
         WSADATA wsadata;
@@ -73,44 +87,57 @@ main()
                 exit(1);
         }
 #endif
+	/* =semlit,endblock,init_win=*/
   
-        err = lbm_context_attr_create(&cattr);
+	/* Initialize context atrributes and create context */
+	err = lbm_context_attr_create(&cattr);
 	EX_LBM_CHK(err);
   
-        err = lbm_context_create(&ctx, cattr, NULL, NULL);
+	err = lbm_context_create(&ctx, cattr, NULL, NULL);
 	EX_LBM_CHK(err);
-  
+
+	/* =semlit,block,create_rcv=*/
 	/* Create receiver for receiving request and sending response */
 	err = lbm_rcv_topic_lookup(&rtopic, ctx, "test.topic", NULL);
 	EX_LBM_CHK(err);
 
 	err = lbm_rcv_create(&rcv, ctx, rtopic, rcv_handle_msg, NULL, NULL);
 	EX_LBM_CHK(err);
+	/* =semlit,endblock,create_rcv=*/
 
 	/* Create source for sending request */
+	/* =semlit,block,create_src=*/
 	err = lbm_src_topic_attr_create(&tattr);
 	EX_LBM_CHK(err);
   
-        err = lbm_src_topic_alloc(&stopic, ctx, "test.topic", tattr);
+	err = lbm_src_topic_alloc(&stopic, ctx, "test.topic", tattr);
   	EX_LBM_CHK(err);
 
-      	err = lbm_src_topic_attr_delete(tattr);
+	err = lbm_src_topic_attr_delete(tattr);
   	EX_LBM_CHK(err);
 
-        err = lbm_src_create(&src, ctx, stopic, NULL, NULL, NULL);
+	err = lbm_src_create(&src, ctx, stopic, NULL, NULL, NULL);
 	EX_LBM_CHK(err);
+	/* =semlit,endblock,create_src=*/
 
+	/* =semlit,block,send_req=*/
 	err = lbm_send_request(&req, src, "request", 7, handle_response, NULL, NULL, 0);
 	EX_LBM_CHK(err);
+	/* =semlit,endblock,send_req=*/
 
+	/* =semlit,block,loop=*/
 	while (run) {  /* loop until response received */
     		SLEEP(1);
   	}
+	/* =semlit,endblock,loop=*/
 
 	/* Clean up */
+	/* =semlit,block,del_req=*/
 	err = lbm_request_delete(req);
 	EX_LBM_CHK(err);
+	/* =semlit,endblock,del_req=*/
 
+	/* =semlit,block,clean=*/
   	err = lbm_src_delete(src);
   	EX_LBM_CHK(err);
 	
@@ -119,9 +146,12 @@ main()
 
   	err = lbm_context_delete(ctx);
   	EX_LBM_CHK(err);
+	/* =semlit,endblock,clean=*/
 
+	/* =semlit,block,clean_win=*/
 #if defined(_MSC_VER)
   	/* Windows-specific cleanup overhead */
   	WSACleanup();
 #endif
+	/* =semlit,endblock,clean_win=*/
 } /* main */

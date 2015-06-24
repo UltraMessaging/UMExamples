@@ -15,12 +15,223 @@
     <p>An important aspect of UM's Request/Response model is that it allows the application to keep track of which request 
 	corresponds to a given response. Due to the asynchronous nature of UM requests, any number of requests can be outstanding, 
 	and as the responses come in, they can be matched to their corresponding requests.</p>
+    <p>In this demonstration of Request/Response, the application create a single context, then a source and receier on topic
+	"test.topic". Once the source and receiver are created, the source publishes a single request message, then the main 
+	application thread wait until the receiver callback receives the request, and replies with a response. Once the source
+	callback for the response message is executed, the application sets a flag for the main application thread to cleanly exit</p>
     <p>There is one program source file:</p>
     <ul>
       <li><b><tt><a href="request_response.c">request_response.c</a></tt></b>
         - (right-click and save as "request_response.c") main program.</li>
     </ul>
     <h2>Program explanation: <tt>request_response.c</tt></h2>
+    <h4>Declare Variables</h4>
+	<p>Here the application is declaring all the variables it will use to setup this test case. Note the single context object (ctx), 
+	separate topic objects for the source and receiver (rtopic and stopic), source and receiver object (src and rcv), context and 
+	source attribute objects (cattr and tattr), the request object (req), and finally an integer for tracking the return codes from 
+	API calls</p>
+	<a name="vars_ref_1" id="vars_ref_1"></a>
+<small><pre>
+<a href="request_response_c.slsrc.html#vars" target="src">00057</a>      lbm_context_t *ctx;                     /* Context object */
+<a href="request_response_c.slsrc.html#vars" target="src">00058</a>      lbm_topic_t *stopic;                    /* Source Topic object */
+<a href="request_response_c.slsrc.html#vars" target="src">00059</a>      lbm_src_t *src;                         /* Source object */
+<a href="request_response_c.slsrc.html#vars" target="src">00060</a>      lbm_src_topic_attr_t * tattr;           /* Source topic attribute object */
+<a href="request_response_c.slsrc.html#vars" target="src">00061</a>      lbm_context_attr_t * cattr;             /* Context attribute object */
+<a href="request_response_c.slsrc.html#vars" target="src">00062</a>      lbm_rcv_t *rcv;                         /* Receive object: for subscribing to messages. */
+<a href="request_response_c.slsrc.html#vars" target="src">00063</a>      lbm_topic_t *rtopic;                    /* Receiver Topic object */
+<a href="request_response_c.slsrc.html#vars" target="src">00064</a>      lbm_request_t *req;                     /* Request object */
+<a href="request_response_c.slsrc.html#vars" target="src">00065</a>      int err;                                /* Used for checking API return codes */
+</pre><!-- endblock vars_ref_1 --></small>
+
+
+    <h4>Create Receiver and Message Callback Function</h4>
+	<p>First, the application does a topic lookup for the receiver topic object (rtopic), then creates the receiver using the receiver
+	object (rcv). Note when calling the receiver create API, lbm_rcv_create, the fourth parameter is rcv_handle_message. </p>
+	<a name="create_rcv_ref_1" id="create_rcv_ref_1"></a>
+<small><pre>
+<a href="request_response_c.slsrc.html#create_rcv" target="src">00085</a>      /* Create receiver for receiving request and sending response */
+<a href="request_response_c.slsrc.html#create_rcv" target="src">00086</a>      err = lbm_rcv_topic_lookup(&amp;rtopic, ctx, "test.topic", NULL);
+<a href="request_response_c.slsrc.html#create_rcv" target="src">00087</a>      EX_LBM_CHK(err);
+<a href="request_response_c.slsrc.html#create_rcv" target="src">00088</a>  
+<a href="request_response_c.slsrc.html#create_rcv" target="src">00089</a>      err = lbm_rcv_create(&amp;rcv, ctx, rtopic, rcv_handle_msg, NULL, NULL);
+<a href="request_response_c.slsrc.html#create_rcv" target="src">00090</a>      EX_LBM_CHK(err);
+</pre><!-- endblock create_rcv_ref_1 --></small>
+
+
+	<p>rcv_handle_message is a reference to the callback function that is to be executed when this receiver receives a message, including
+	request messages. The receiver message handler is executed for every single message delivered to the application from the UM library,
+	and is where the application typically processes the message data. Messages are depicted as a struct, lbm_msg_t, to make processing
+	the message and meta data for the message very simple. Since the message callback function is used for many different types of messages,
+	the type of the message is stored in the msg->type value of the struct. In this example, only the message type LBM_MSG_REQUEST is
+	handled.</p>
+	<a name="rcv_cb_ref_1" id="rcv_cb_ref_1"></a>
+<small><pre>
+<a href="request_response_c.slsrc.html#rcv_cb" target="src">00031</a>  int rcv_handle_msg(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
+<a href="request_response_c.slsrc.html#rcv_cb" target="src">00032</a>  {
+<a href="request_response_c.slsrc.html#rcv_cb" target="src">00033</a>      int err;
+<a href="request_response_c.slsrc.html#rcv_cb" target="src">00034</a>  
+<a href="request_response_c.slsrc.html#rcv_cb" target="src">00035</a>      switch (msg-&gt;type) {
+<a href="request_response_c.slsrc.html#rcv_cb" target="src">00036</a>      case LBM_MSG_REQUEST:
+<a href="request_response_c.slsrc.html#rcv_cb" target="src">00037</a>          printf("LBM_MSG_REQUEST received\n");
+<a href="request_response_c.slsrc.html#rcv_cb" target="src">00038</a>          err = lbm_send_response(msg-&gt;response, "response", 8, LBM_SRC_NONBLOCK);
+<a href="request_response_c.slsrc.html#rcv_cb" target="src">00039</a>          EX_LBM_CHK(err);
+<a href="request_response_c.slsrc.html#rcv_cb" target="src">00040</a>          break;
+<a href="request_response_c.slsrc.html#rcv_cb" target="src">00041</a>      }
+<a href="request_response_c.slsrc.html#rcv_cb" target="src">00042</a>  }
+</pre><!-- endblock rcv_cb_ref_1 --></small>
+
+
+    <h4>Create source, Send Request and Response Handler Callback</h4>
+	<p>After creating the receiver, the application then initialized the source topic and creates the source which will be used to 
+	send the request:</p>
+	<a name="create_src_ref_1" id="create_src_ref_1"></a>
+<small><pre>
+<a href="request_response_c.slsrc.html#create_src" target="src">00093</a>      err = lbm_src_topic_attr_create(&amp;tattr);
+<a href="request_response_c.slsrc.html#create_src" target="src">00094</a>      EX_LBM_CHK(err);
+<a href="request_response_c.slsrc.html#create_src" target="src">00095</a>    
+<a href="request_response_c.slsrc.html#create_src" target="src">00096</a>      err = lbm_src_topic_alloc(&amp;stopic, ctx, "test.topic", tattr);
+<a href="request_response_c.slsrc.html#create_src" target="src">00097</a>      EX_LBM_CHK(err);
+<a href="request_response_c.slsrc.html#create_src" target="src">00098</a>  
+<a href="request_response_c.slsrc.html#create_src" target="src">00099</a>      err = lbm_src_topic_attr_delete(tattr);
+<a href="request_response_c.slsrc.html#create_src" target="src">00100</a>      EX_LBM_CHK(err);
+<a href="request_response_c.slsrc.html#create_src" target="src">00101</a>  
+<a href="request_response_c.slsrc.html#create_src" target="src">00102</a>      err = lbm_src_create(&amp;src, ctx, stopic, NULL, NULL, NULL);
+<a href="request_response_c.slsrc.html#create_src" target="src">00103</a>      EX_LBM_CHK(err);
+</pre><!-- endblock create_src_ref_1 --></small>
+
+
+	</p>Once the source is successfully create, the request message can then be sent. The API to send a request is lbm_send_request.
+	Note the first parameter of the API is the request object. It is important for the application to track this object, and delete 
+	the object once the application is not expecting any more responses for this particular request. Also note the fifth parameter, 
+	handle_response:</p>
+	<a name="send_req_ref_1" id="send_req_ref_1"></a>
+<small><pre>
+<a href="request_response_c.slsrc.html#send_req" target="src">00105</a>      err = lbm_send_request(&amp;req, src, "request", 7, handle_response, NULL, NULL, 0);
+<a href="request_response_c.slsrc.html#send_req" target="src">00106</a>      EX_LBM_CHK(err);
+</pre><!-- endblock send_req_ref_1 --></small>
+
+
+	handle_response is the callback function for the source that is executed upon receiving a response from a receiver. It is similar
+	to the previously set receiver callback in that is is called to execute a response message, which also is delivered via the 
+	lbm_msg_t struct. </p>
+	<a name="resp_cb_ref_1" id="resp_cb_ref_1"></a>
+<small><pre>
+<a href="request_response_c.slsrc.html#resp_cb" target="src">00045</a>  int handle_response(lbm_request_t *req, lbm_msg_t *msg, void *clientd)
+<a href="request_response_c.slsrc.html#resp_cb" target="src">00046</a>  {
+<a href="request_response_c.slsrc.html#resp_cb" target="src">00047</a>          switch (msg-&gt;type) {
+<a href="request_response_c.slsrc.html#resp_cb" target="src">00048</a>          case LBM_MSG_RESPONSE:
+<a href="request_response_c.slsrc.html#resp_cb" target="src">00049</a>          printf("LBM_MSG_RESPONSE received\n");
+<a href="request_response_c.slsrc.html#resp_cb" target="src">00050</a>          run = 0;
+<a href="request_response_c.slsrc.html#resp_cb" target="src">00051</a>          break;
+<a href="request_response_c.slsrc.html#resp_cb" target="src">00052</a>      }
+<a href="request_response_c.slsrc.html#resp_cb" target="src">00053</a>  }
+</pre><!-- endblock resp_cb_ref_1 --></small>
+
+
+	<p>Once this samples application gets a response, it sets the "run" variable to 0 to instruct the main application thread to exit.</p> 
+    <h4>Send Response</h4>
+	<p>Inside the Message Callback function (rcv_handle_message), which is where the receiver processes the request message that was
+	just sent, the sample application sends the response using the lbm_send_response API. The first paramter is the response object 
+	which is contained within the lbm_msg_t struct. Note the LBM_SRC_NONBLOCK flag as the last paramter - this is absolutely crucial
+	since the application is attempting to send the message from within the receiver message callback, which executes on the UM 
+	context thread. Using a non-blocking send of any kind within a context thread callback is required calling a blocking call
+	on the context thread can result in application deadlock.</p>
+	<a name="send_resp_ref_1" id="send_resp_ref_1"></a>
+<small><pre>
+<a href="request_response_c.slsrc.html#send_resp" target="src">00038</a>          err = lbm_send_response(msg-&gt;response, "response", 8, LBM_SRC_NONBLOCK);
+<a href="request_response_c.slsrc.html#send_resp" target="src">00039</a>          EX_LBM_CHK(err);
+</pre><!-- endblock send_resp_ref_1 --></small>
+
+
+    <h4>Main Loop</h4>
+	<p>Once the receiver and source are created, and the request message is sent, there is nothing else for the main application thread 
+	to do but wait for the response to be received. Once the response is received within the handle_response callback, the run variable
+	will be set to 0 and the loop will break</p>
+	<a name="loop_ref_1" id="loop_ref_1"></a>
+<small><pre>
+<a href="request_response_c.slsrc.html#loop" target="src">00108</a>      while (run) {  /* loop until response received */
+<a href="request_response_c.slsrc.html#loop" target="src">00109</a>              SLEEP(1);
+<a href="request_response_c.slsrc.html#loop" target="src">00110</a>      }
+</pre><!-- endblock loop_ref_1 --></small>
+
+
+    <h4>Cleanup</h4>
+	<p>As previously stated, it is important to cleanup the request object. For applications that send thousands of requests, or more, 
+	the memory utilization for the uncleaned request objects will become apparent, and can even lead to longer latencies for request/response
+	when not properly cleaned.</p>
+	<a name="del_req_ref_1" id="del_req_ref_1"></a>
+<small><pre>
+<a href="request_response_c.slsrc.html#del_req" target="src">00113</a>      err = lbm_request_delete(req);
+<a href="request_response_c.slsrc.html#del_req" target="src">00114</a>      EX_LBM_CHK(err);
+</pre><!-- endblock del_req_ref_1 --></small>
+
+
+	<p>Once the request is deleted, the source, receiver and context can be deleted</p>
+	<a name="clean_ref_1" id="clean_ref_1"></a>
+<small><pre>
+<a href="request_response_c.slsrc.html#clean" target="src">00116</a>      err = lbm_src_delete(src);
+<a href="request_response_c.slsrc.html#clean" target="src">00117</a>      EX_LBM_CHK(err);
+<a href="request_response_c.slsrc.html#clean" target="src">00118</a>      
+<a href="request_response_c.slsrc.html#clean" target="src">00119</a>      err = lbm_rcv_delete(rcv);
+<a href="request_response_c.slsrc.html#clean" target="src">00120</a>      EX_LBM_CHK(err);
+<a href="request_response_c.slsrc.html#clean" target="src">00121</a>  
+<a href="request_response_c.slsrc.html#clean" target="src">00122</a>      err = lbm_context_delete(ctx);
+<a href="request_response_c.slsrc.html#clean" target="src">00123</a>      EX_LBM_CHK(err);
+</pre><!-- endblock clean_ref_1 --></small>
+
+
+    <h4>Error Checking</h4>
+	<p>Error handling can be one of the most complicated issues facing a programmer. Each application may have its own unique error 
+	handling conventions. For these example programs, a very simplistic error handling approach is taken: if anything unexpected happens, 
+	print a message and exit the program:</p>
+	<a name="error_check_ref_1" id="error_check_ref_1"></a>
+<small><pre>
+<a href="request_response_c.slsrc.html#error_check" target="src">00018</a>  /* Example error checking macro.  Include after each UM call. */
+<a href="request_response_c.slsrc.html#error_check" target="src">00019</a>  #define EX_LBM_CHK(err) do { \
+<a href="request_response_c.slsrc.html#error_check" target="src">00020</a>      if ((err) &lt; 0) { \
+<a href="request_response_c.slsrc.html#error_check" target="src">00021</a>              fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
+<a href="request_response_c.slsrc.html#error_check" target="src">00022</a>              __FILE__, __LINE__, lbm_errmsg()); \
+<a href="request_response_c.slsrc.html#error_check" target="src">00023</a>              exit(1); \
+<a href="request_response_c.slsrc.html#error_check" target="src">00024</a>      }  \
+<a href="request_response_c.slsrc.html#error_check" target="src">00025</a>  } while (0)
+</pre><!-- endblock error_check_ref_1 --></small>
+
+
+	<p>The EX_LBM_CHK() macro checks a UM API return value. If negative, it assumes an error. One reason for making this a macro is so 
+	that the __FILE__ and __LINE__ compiler built-ins reference the file and line of the usages of the macro, not the file and line of 
+	the macro defintion itself.</p>
+	</p>Most UM functions are designed to return one of only two integer values: 0 for success and -1 for failure. The lbm.h header file 
+	defines the symbols LBM_OK and LBM_FAILURE respectively for these. However, there are a few functions which can return a value of 0 or 
+	greater in the event of success (for example: lbm_event_dispatch() and lbm_send_response() to name two). So the example EX_LBM_CHK() 
+	macro was written to be somewhat more general. However, be aware that there are a few other functions which do not return an integer 
+	status at all (for exmaple: lbm_serialize_response() to name one). Please refer to the API documentation for each UM function you call.</p>
+    <h4>Windows Only</h4>
+	<p>Windows applications must initialize the Winsock library to utilize sockets.</p>
+	<a name="init_win_ref_1" id="init_win_ref_1"></a>
+<small><pre>
+<a href="request_response_c.slsrc.html#init_win" target="src">00067</a>  #if defined(_WIN32)
+<a href="request_response_c.slsrc.html#init_win" target="src">00068</a>          /* windows-specific code */
+<a href="request_response_c.slsrc.html#init_win" target="src">00069</a>          WSADATA wsadata;
+<a href="request_response_c.slsrc.html#init_win" target="src">00070</a>          int wsStat = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
+<a href="request_response_c.slsrc.html#init_win" target="src">00071</a>          if (wsStat != 0)
+<a href="request_response_c.slsrc.html#init_win" target="src">00072</a>          {
+<a href="request_response_c.slsrc.html#init_win" target="src">00073</a>                  printf("line %d: wsStat=%d\n",__LINE__,wsStat);
+<a href="request_response_c.slsrc.html#init_win" target="src">00074</a>                  exit(1);
+<a href="request_response_c.slsrc.html#init_win" target="src">00075</a>          }
+<a href="request_response_c.slsrc.html#init_win" target="src">00076</a>  #endif
+</pre><!-- endblock init_win_ref_1 --></small>
+
+
+	<p>A well-structured Windows networking application will also call WSACleanup() after before exit</p>
+	<a name="clean_win_ref_1" id="clean_win_ref_1"></a>
+<small><pre>
+<a href="request_response_c.slsrc.html#clean_win" target="src">00125</a>  #if defined(_MSC_VER)
+<a href="request_response_c.slsrc.html#clean_win" target="src">00126</a>      /* Windows-specific cleanup overhead */
+<a href="request_response_c.slsrc.html#clean_win" target="src">00127</a>      WSACleanup();
+<a href="request_response_c.slsrc.html#clean_win" target="src">00128</a>  #endif
+</pre><!-- endblock clean_win_ref_1 --></small>
+
+
     <h4>Includes</h4>
         <p>A small effort was made to provide a some portability between Unix and Windows. For example:</p>
         <a name="includes_ref_1" id="includes_ref_1"></a>
