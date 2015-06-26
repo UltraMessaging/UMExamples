@@ -1,0 +1,108 @@
+/* MinSrc.java, see http://ultramessaging.github.io/UMExamples/minsrc/java/ */
+
+/* =semlit,block,import=*/
+import com.latencybusters.lbm.*;
+/* =semlit,endblock,import=*/
+
+public class request_response {
+	public static int run = 1;
+	
+	public static void main(String[] args) throws LBMException
+	{
+		/* Initialization: create necessary UM objects. */
+		/* =semlit,block,context_create=*/
+		LBMContext ctx = new LBMContext();
+		/* =semlit,endblock,context_create=*/
+
+		/* Initialize and create receiver and receiver callback */
+		/* =semlit,block,init_cb=*/
+		ReceiverCallback myReceiverCallback = new ReceiverCallback();
+		/* =semlit,endblock,init_cb=*/
+
+		/* =semlit,block,create_rcv=*/
+		LBMReceiverAttributes rcv_attr = new LBMReceiverAttributes();
+		LBMTopic rtopic = new LBMTopic(ctx, "test.topic", rcv_attr);
+		LBMReceiver rcv = new LBMReceiver(ctx, rtopic, myReceiverCallback, null);
+		/* =semlit,endblock,create_rcv=*/
+
+		/* Initialize and create source */
+		/* =semlit,block,create_src=*/
+		LBMTopic stopic = new LBMTopic(ctx, "test.topic", new LBMSourceAttributes());
+		LBMSource src = new LBMSource(ctx, stopic);
+		/* =semlit,endblock,create_src=*/
+
+		/* =semlit,block,create_req=*/
+		LBMRequest req = new LBMRequest("Request".getBytes(), "Request".length());
+		ResponseCallback myResponseCallback = new ResponseCallback();
+		req.addResponseCallback(myResponseCallback);
+		/* =semlit,endblock,create_req=*/
+
+		/* Sleep for 1 second to allow TR to complete */
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) { }
+
+		/* Send a message. */
+		/* =semlit,block,send_req=*/
+		src.send(req, LBM.MSG_FLUSH | LBM.SRC_BLOCK);
+		/* =semlit,endblock,send_req=*/
+
+		/* =semlit,block,loop=*/
+		while (run == 1) {
+			try {
+				Thread.sleep(1000);
+                	} catch (InterruptedException e) { }
+		}
+		/* =semlit,endblock,loop=*/
+
+		/* Cleanup: delete UM objects. */
+		/* =semlit,block,clean=*/
+		req.close();
+		src.close();
+		rcv.close();
+		ctx.close();
+		/* =semlit,endblock,clean=*/
+	}  /* main */
+	
+	/* Class for receiving messages */
+	/* =semlit,block,rcv_cb=*/
+	private static class ReceiverCallback implements LBMReceiverCallback {
+        	public int onReceive(Object cbArg, LBMMessage msg)
+        	{
+                	switch (msg.type())
+                	{
+                	        case LBM.MSG_REQUEST:
+                	                System.out.println("Request Received");
+					/* =semlit,block,send_response=*/
+					try {
+						msg.respond("Response".getBytes(), "Response".length(), LBM.SRC_NONBLOCK);
+					}
+					catch (LBMException ex)
+					{
+						System.err.println("Error responding to request: " + ex.toString());
+					}
+					/* =semlit,endblock,send_response=*/
+					break;
+                	}
+                	return 0;
+        	}
+	}  /* ReceiverCallback */
+	/* =semlit,endblock,rcv_cb=*/
+
+	/* Class for receiving responses */
+	/* =semlit,block,resp_cb=*/
+	private static class ResponseCallback implements LBMResponseCallback {
+		public int onResponse(Object cbArg, LBMRequest req, LBMMessage msg)
+		{
+			switch (msg.type())
+			{
+				case LBM.MSG_RESPONSE:
+					System.out.println("Response Received");
+					run = 0;
+					break;
+			}
+			return 0;
+		}
+	} /* ResponseCallback */
+	/* =semlit,endblock,resp_cb=*/
+}  /* class MinSrc */

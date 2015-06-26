@@ -1,0 +1,272 @@
+<!DOCTYPE html><html><head><title>request_response.java</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>request_response.java</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+<a href="request_response.sldoc.html#import_ref_1" target="doc">00003</a>
+00004
+00005
+00006
+00007
+00008
+00009
+00010
+<a href="request_response.sldoc.html#context_create_ref_1" target="doc">00011</a>
+00012
+00013
+<a href="request_response.sldoc.html#init_cb_ref_1" target="doc">00014</a>
+00015
+<a href="request_response.sldoc.html#create_rcv_ref_1" target="doc">00016</a>
+<a href="request_response.sldoc.html#create_rcv_ref_1" target="doc">00017</a>
+<a href="request_response.sldoc.html#create_rcv_ref_1" target="doc">00018</a>
+00019
+00020
+<a href="request_response.sldoc.html#create_src_ref_1" target="doc">00021</a>
+<a href="request_response.sldoc.html#create_src_ref_1" target="doc">00022</a>
+00023
+<a href="request_response.sldoc.html#create_req_ref_1" target="doc">00024</a>
+<a href="request_response.sldoc.html#create_req_ref_1" target="doc">00025</a>
+<a href="request_response.sldoc.html#create_req_ref_1" target="doc">00026</a>
+00027
+00028
+00029
+00030
+00031
+00032
+00033
+<a href="request_response.sldoc.html#send_req_ref_1" target="doc">00034</a>
+00035
+<a href="request_response.sldoc.html#loop_ref_1" target="doc">00036</a>
+<a href="request_response.sldoc.html#loop_ref_1" target="doc">00037</a>
+<a href="request_response.sldoc.html#loop_ref_1" target="doc">00038</a>
+<a href="request_response.sldoc.html#loop_ref_1" target="doc">00039</a>
+<a href="request_response.sldoc.html#loop_ref_1" target="doc">00040</a>
+00041
+00042
+<a href="request_response.sldoc.html#clean_ref_1" target="doc">00043</a>
+<a href="request_response.sldoc.html#clean_ref_1" target="doc">00044</a>
+<a href="request_response.sldoc.html#clean_ref_1" target="doc">00045</a>
+<a href="request_response.sldoc.html#clean_ref_1" target="doc">00046</a>
+00047
+00048
+00049
+<a href="request_response.sldoc.html#rcv_cb_ref_1" target="doc">00050</a>
+<a href="request_response.sldoc.html#rcv_cb_ref_1" target="doc">00051</a>
+<a href="request_response.sldoc.html#rcv_cb_ref_1" target="doc">00052</a>
+<a href="request_response.sldoc.html#rcv_cb_ref_1" target="doc">00053</a>
+<a href="request_response.sldoc.html#rcv_cb_ref_1" target="doc">00054</a>
+<a href="request_response.sldoc.html#rcv_cb_ref_1" target="doc">00055</a>
+<a href="request_response.sldoc.html#rcv_cb_ref_1" target="doc">00056</a>
+<a href="request_response.sldoc.html#send_response_ref_1" target="doc">00057</a>
+<a href="request_response.sldoc.html#send_response_ref_1" target="doc">00058</a>
+<a href="request_response.sldoc.html#send_response_ref_1" target="doc">00059</a>
+<a href="request_response.sldoc.html#send_response_ref_1" target="doc">00060</a>
+<a href="request_response.sldoc.html#send_response_ref_1" target="doc">00061</a>
+<a href="request_response.sldoc.html#send_response_ref_1" target="doc">00062</a>
+<a href="request_response.sldoc.html#send_response_ref_1" target="doc">00063</a>
+<a href="request_response.sldoc.html#rcv_cb_ref_1" target="doc">00064</a>
+<a href="request_response.sldoc.html#rcv_cb_ref_1" target="doc">00065</a>
+<a href="request_response.sldoc.html#rcv_cb_ref_1" target="doc">00066</a>
+<a href="request_response.sldoc.html#rcv_cb_ref_1" target="doc">00067</a>
+<a href="request_response.sldoc.html#rcv_cb_ref_1" target="doc">00068</a>
+00069
+00070
+<a href="request_response.sldoc.html#resp_cb_ref_1" target="doc">00071</a>
+<a href="request_response.sldoc.html#resp_cb_ref_1" target="doc">00072</a>
+<a href="request_response.sldoc.html#resp_cb_ref_1" target="doc">00073</a>
+<a href="request_response.sldoc.html#resp_cb_ref_1" target="doc">00074</a>
+<a href="request_response.sldoc.html#resp_cb_ref_1" target="doc">00075</a>
+<a href="request_response.sldoc.html#resp_cb_ref_1" target="doc">00076</a>
+<a href="request_response.sldoc.html#resp_cb_ref_1" target="doc">00077</a>
+<a href="request_response.sldoc.html#resp_cb_ref_1" target="doc">00078</a>
+<a href="request_response.sldoc.html#resp_cb_ref_1" target="doc">00079</a>
+<a href="request_response.sldoc.html#resp_cb_ref_1" target="doc">00080</a>
+<a href="request_response.sldoc.html#resp_cb_ref_1" target="doc">00081</a>
+<a href="request_response.sldoc.html#resp_cb_ref_1" target="doc">00082</a>
+<a href="request_response.sldoc.html#resp_cb_ref_1" target="doc">00083</a>
+00084
+</td><td>  /* MinSrc.java, see http://ultramessaging.github.io/UMExamples/minsrc/java/ */
+  
+<span name="import" id="import"></span>  import com.latencybusters.lbm.*;
+  
+  public class request_response {
+      public static int run = 1;
+      
+      public static void main(String[] args) throws LBMException
+      {
+          /* Initialization: create necessary UM objects. */
+<span name="context_create" id="context_create"></span>          LBMContext ctx = new LBMContext();
+  
+          /* Initialize and create receiver and receiver callback */
+<span name="init_cb" id="init_cb"></span>          ReceiverCallback myReceiverCallback = new ReceiverCallback();
+  
+<span name="create_rcv" id="create_rcv"></span>          LBMReceiverAttributes rcv_attr = new LBMReceiverAttributes();
+          LBMTopic rtopic = new LBMTopic(ctx, "test.topic", rcv_attr);
+          LBMReceiver rcv = new LBMReceiver(ctx, rtopic, myReceiverCallback, null);
+  
+          /* Initialize and create source */
+<span name="create_src" id="create_src"></span>          LBMTopic stopic = new LBMTopic(ctx, "test.topic", new LBMSourceAttributes());
+          LBMSource src = new LBMSource(ctx, stopic);
+  
+<span name="create_req" id="create_req"></span>          LBMRequest req = new LBMRequest("Request".getBytes(), "Request".length());
+          ResponseCallback myResponseCallback = new ResponseCallback();
+          req.addResponseCallback(myResponseCallback);
+  
+          /* Sleep for 1 second to allow TR to complete */
+          try {
+              Thread.sleep(1000);
+          } catch (InterruptedException e) { }
+  
+          /* Send a message. */
+<span name="send_req" id="send_req"></span>          src.send(req, LBM.MSG_FLUSH | LBM.SRC_BLOCK);
+  
+<span name="loop" id="loop"></span>          while (run == 1) {
+              try {
+                  Thread.sleep(1000);
+                      } catch (InterruptedException e) { }
+          }
+  
+          /* Cleanup: delete UM objects. */
+<span name="clean" id="clean"></span>          req.close();
+          src.close();
+          rcv.close();
+          ctx.close();
+      }  /* main */
+      
+      /* Class for receiving messages */
+<span name="rcv_cb" id="rcv_cb"></span>      private static class ReceiverCallback implements LBMReceiverCallback {
+              public int onReceive(Object cbArg, LBMMessage msg)
+              {
+                      switch (msg.type())
+                      {
+                              case LBM.MSG_REQUEST:
+                                      System.out.println("Request Received");
+<span name="send_response" id="send_response"></span>                      try {
+                          msg.respond("Response".getBytes(), "Response".length(), LBM.SRC_NONBLOCK);
+                      }
+                      catch (LBMException ex)
+                      {
+                          System.err.println("Error responding to request: " + ex.toString());
+                      }
+                      break;
+                      }
+                      return 0;
+              }
+      }  /* ReceiverCallback */
+  
+      /* Class for receiving responses */
+<span name="resp_cb" id="resp_cb"></span>      private static class ResponseCallback implements LBMResponseCallback {
+          public int onResponse(Object cbArg, LBMRequest req, LBMMessage msg)
+          {
+              switch (msg.type())
+              {
+                  case LBM.MSG_RESPONSE:
+                      System.out.println("Response Received");
+                      run = 0;
+                      break;
+              }
+              return 0;
+          }
+      } /* ResponseCallback */
+  }  /* class MinSrc */
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>
