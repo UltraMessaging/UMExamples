@@ -1,0 +1,81 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Request-Response Sample Application</title>
+  </head>
+  <body>
+    <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>Request-Response Sample Application</h1>
+    <p>Ultra Messaging offers a Request/Response messaging model. A regular UM source can use a dedicated API to send a request
+	on its publishing topic. A receiver for that topic will receive the request similar to regular data messages, and can use
+	a dedicated API to send a response back to the source.</p>
+    <p>When a request message is sent, the message is published on the same transport that the source is configured to use. 
+     	Response messages on the other hand are sent directly to the source from the receiver via Unicast Immediate Messaging (UIM),
+	which is a direct TCP connection.</p>
+    <p>An important aspect of UM's Request/Response model is that it allows the application to keep track of which request 
+	corresponds to a given response. Due to the asynchronous nature of UM requests, any number of requests can be outstanding, 
+	and as the responses come in, they can be matched to their corresponding requests.</p>
+    <p>In this demonstration of Request/Response, the application create a single context, then a source and receier on topic
+	"test.topic". Once the source and receiver are created, the source publishes a single request message, then the main 
+	application thread wait until the receiver callback receives the request, and replies with a response. Once the source
+	callback for the response message is executed, the application sets a flag for the main application thread to cleanly exit</p>
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt>=semlit,srcfile,request_response_cs.slsrc,request_response.cs=</tt></b>
+        - (right-click and save as "request_response.cs") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>request_response.cs</tt></h2>
+    <h4>Create Context</h4>
+	<p>The first phase of any UM program is initialization, where UM objects are created. The first object to be created is a UM 
+	context object</p>
+	=semlit,insert,context_create=
+    <h4>Create Receiver and Message Callback Function</h4>
+	<p>First, the application must register a LBMReceiverCallback object</p>
+	=semlit,insert,init_cb=
+	<p>The receiver callback class is defined as "ReceiverCallback" in this application, and looks like this:</p>
+	=semlit,insert,rcv_cb=
+	<p> This callback function will be executed when the receiver receives a message, including request messages. The receiver 
+	message handler is executed for every single message delivered to the application from the UM library, and is where the 
+	application typically processes the message data.
+	<p>Next, the application initializes a receiver attribute object called rcv_attr, which is then used to create the topic. 
+	Attribute objects are used to configure particular settings for a receiver rather than using the default values or from an inherited
+	configuration file. An LBMTopic object is create next, and this is required for all receivers as it defines which context, the 
+	name of the topic string the receiver will use, and the attribute object. Finally, the receiver object, LBMReceiver, is created using 
+	a reference to the previously initialized ReceiverCallback object and LBMTopic object.</p>
+	=semlit,insert,create_rcv=
+    <h4>Create source, Send Request and Response Handler Callback</h4>
+	<p>After creating the receiver, the application then initializes the source topic and creates the source which will be used to 
+	send the request:</p>
+	=semlit,insert,create_src=
+	</p>Once the source is successfully created, the request object needs to be initialized. The request object is responsible for 
+	sending the request and is also responsible for receiving responses. It is important to track the request within the application,
+	and close it when all responses have been received. Once the request object is initialized with the payload for the request, a 
+	response handler must be added as a means of processing response messages back from the receiver(s). The response callback is similar
+	to the receiver message callback.</p>
+	=semlit,insert,create_req=
+	<p>And the response handler class and function:</p>
+	=semlit,insert,resp_cb=
+	<p>Now the application is ready to send the request:</p>
+	=semlit,insert,send_req=
+	<p>The main application thread will now wait for the response to be received before continuing. Once this sample application gets a 
+	response, it sets the "run" variable to 0 to instruct the main application thread to exit.</p> 
+    <h4>Send Response</h4>
+	<p>Inside the Message Callback function, which is where the receiver processes the request message that was
+	just sent, the sample application sends the response using the msg.respond() API. Note the LBM.SRC_NONBLOCK flag as the last paramter 
+	- this is absolutely crucial since the application is attempting to send the message from within the receiver message callback, which 
+	executes on the UM context thread. Using a non-blocking send of any kind within a context thread callback is required calling a blocking call
+	on the context thread can result in application deadlock.</p>
+	=semlit,insert,send_response=
+    <h4>Main Loop</h4>
+	<p>Once the receiver and source are created, and the request message is sent, there is nothing else for the main application thread 
+	to do but wait for the response to be received. Once the response is received within the ResponseCallback function, the run variable
+	will be set to 0 and the loop will break</p>
+	=semlit,insert,loop=
+    <h4>Cleanup</h4>
+	<p>As previously stated, it is important to cleanup the request object. For applications that send thousands of requests, or more, 
+	the memory utilization for the uncleaned request objects will become apparent, and can even lead to longer latencies for request/response
+	when not properly cleaned.</p>
+	<p>Once the request is deleted, the source, receiver and context can be deleted</p>
+	=semlit,insert,clean=
+  </body>
+</html>
