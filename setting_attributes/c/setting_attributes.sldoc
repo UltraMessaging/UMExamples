@@ -4,7 +4,7 @@
     <title>Context Create Example</title>
   </head>
   <body>
-    <a href="../" target="_top">&lt;-Back</a>
+    <a href="../../index.html" class="button" target="_top">Example index</a>
     <h1>Setting Attributes Programatically</h1>
     <p>In this example, a context is created with a non-default topic resolution mutlicast address and port. Those attributes are set
        using the Ultra Messaging API. The application then goes on to create two LBTRM publishers. The first publisher has its 
