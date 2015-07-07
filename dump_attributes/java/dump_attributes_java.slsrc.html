@@ -1,0 +1,286 @@
+<!DOCTYPE html><html><head><title>dump_attributes.java</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>dump_attributes.java</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+00008
+00009
+00010
+00011
+00012
+00013
+00014
+00015
+00016
+00017
+00018
+00019
+00020
+00021
+<a href="dump_attributes.sldoc.html#ctx_create_ref_1" target="doc">00022</a>
+<a href="dump_attributes.sldoc.html#ctx_create_ref_1" target="doc">00023</a>
+<a href="dump_attributes.sldoc.html#ctx_create_ref_1" target="doc">00024</a>
+<a href="dump_attributes.sldoc.html#ctx_create_ref_1" target="doc">00025</a>
+<a href="dump_attributes.sldoc.html#ctx_create_ref_1" target="doc">00026</a>
+<a href="dump_attributes.sldoc.html#ctx_create_ref_1" target="doc">00027</a>
+<a href="dump_attributes.sldoc.html#ctx_create_ref_1" target="doc">00028</a>
+<a href="dump_attributes.sldoc.html#ctx_create_ref_1" target="doc">00029</a>
+<a href="dump_attributes.sldoc.html#src_create_ref_1" target="doc">00030</a>
+<a href="dump_attributes.sldoc.html#src_create_ref_1" target="doc">00031</a>
+<a href="dump_attributes.sldoc.html#src_create_ref_1" target="doc">00032</a>
+<a href="dump_attributes.sldoc.html#src_create_ref_1" target="doc">00033</a>
+<a href="dump_attributes.sldoc.html#src_create_ref_1" target="doc">00034</a>
+<a href="dump_attributes.sldoc.html#src_create_ref_1" target="doc">00035</a>
+<a href="dump_attributes.sldoc.html#src_create_ref_1" target="doc">00036</a>
+<a href="dump_attributes.sldoc.html#src_create_ref_1" target="doc">00037</a>
+<a href="dump_attributes.sldoc.html#src_create_ref_1" target="doc">00038</a>
+<a href="dump_attributes.sldoc.html#src_create_ref_1" target="doc">00039</a>
+<a href="dump_attributes.sldoc.html#src_create_ref_1" target="doc">00040</a>
+<a href="dump_attributes.sldoc.html#src_create_ref_1" target="doc">00041</a>
+<a href="dump_attributes.sldoc.html#src_create_ref_1" target="doc">00042</a>
+<a href="dump_attributes.sldoc.html#src_create_ref_1" target="doc">00043</a>
+<a href="dump_attributes.sldoc.html#src_create_ref_1" target="doc">00044</a>
+<a href="dump_attributes.sldoc.html#src_create2_ref_1" target="doc">00045</a>
+<a href="dump_attributes.sldoc.html#src_create2_ref_1" target="doc">00046</a>
+<a href="dump_attributes.sldoc.html#src_create2_ref_1" target="doc">00047</a>
+<a href="dump_attributes.sldoc.html#src_create2_ref_1" target="doc">00048</a>
+<a href="dump_attributes.sldoc.html#src_create2_ref_1" target="doc">00049</a>
+<a href="dump_attributes.sldoc.html#src_create2_ref_1" target="doc">00050</a>
+<a href="dump_attributes.sldoc.html#src_create2_ref_1" target="doc">00051</a>
+00052
+00053
+00054
+00055
+00056
+00057
+<a href="dump_attributes.sldoc.html#dump_ctx_attr_ref_1" target="doc">00058</a>
+<a href="dump_attributes.sldoc.html#dump_ctx_attr_ref_1" target="doc">00059</a>
+<a href="dump_attributes.sldoc.html#dump_ctx_attr_ref_1" target="doc">00060</a>
+<a href="dump_attributes.sldoc.html#dump_ctx_attr_ref_1" target="doc">00061</a>
+<a href="dump_attributes.sldoc.html#dump_ctx_attr_ref_1" target="doc">00062</a>
+<a href="dump_attributes.sldoc.html#dump_ctx_attr_ref_1" target="doc">00063</a>
+<a href="dump_attributes.sldoc.html#dump_src_attr_ref_1" target="doc">00064</a>
+<a href="dump_attributes.sldoc.html#dump_src_attr_ref_1" target="doc">00065</a>
+<a href="dump_attributes.sldoc.html#dump_src_attr_ref_1" target="doc">00066</a>
+<a href="dump_attributes.sldoc.html#dump_src_attr_ref_1" target="doc">00067</a>
+<a href="dump_attributes.sldoc.html#dump_src_attr_ref_1" target="doc">00068</a>
+<a href="dump_attributes.sldoc.html#dump_src_attr_ref_1" target="doc">00069</a>
+<a href="dump_attributes.sldoc.html#dump_src_attr2_ref_1" target="doc">00070</a>
+<a href="dump_attributes.sldoc.html#dump_src_attr2_ref_1" target="doc">00071</a>
+<a href="dump_attributes.sldoc.html#dump_src_attr2_ref_1" target="doc">00072</a>
+<a href="dump_attributes.sldoc.html#dump_src_attr2_ref_1" target="doc">00073</a>
+<a href="dump_attributes.sldoc.html#dump_src_attr2_ref_1" target="doc">00074</a>
+<a href="dump_attributes.sldoc.html#dump_src_attr2_ref_1" target="doc">00075</a>
+00076
+00077
+00078
+<a href="dump_attributes.sldoc.html#delobj_ref_1" target="doc">00079</a>
+<a href="dump_attributes.sldoc.html#delobj_ref_1" target="doc">00080</a>
+<a href="dump_attributes.sldoc.html#delobj_ref_1" target="doc">00081</a>
+<a href="dump_attributes.sldoc.html#delobj_ref_1" target="doc">00082</a>
+00083
+00084
+00085
+00086
+00087
+00088
+00089
+00090
+00091
+</td><td>  /* DumoAttributes.java, see http://ultramessaging.github.io/UMExamples/DumpAttributes/java/ */
+  
+  import com.latencybusters.lbm.*;
+  
+  public class DumpAttributes {
+      
+      public static void main(String[] args) throws LBMException {
+          LBMContext ctx = null;      /* Container for UM instance */
+          LBMTopic topic1 = null;     /* Object used to create topic */
+          LBMTopic topic2 = null;     /* Object used to create topic */
+          LBMSource src1 = null;      /* Used for sending messages on a single topic */
+          LBMSource src2 = null;      /* Used for sending messages on a single topic */
+          LBMSourceAttributes srcAttr = null;     /* Object used to configure sources */
+          int desPort;
+          
+          /* We are using certain lbm objects that require an application level   */
+          /* memory manager called the LBMObjectRecycler to cleanup               */
+          LBMObjectRecycler objRec = new LBMObjectRecycler();
+          
+          /*** Initialization: create necessary UM objects. ***/
+          try {
+<span name="ctx_create" id="ctx_create"></span>              /* create ctxAttr to set config values before creating context */
+              LBMContextAttributes ctxAttr = new LBMContextAttributes();
+              
+              /* Modify resolver address by setting attributes */
+              ctxAttr.setValue("resolver_multicast_address", "224.10.11.12");
+              
+              /* Create a context with default attributes */
+              ctx = new LBMContext(ctxAttr);
+<span name="src_create" id="src_create"></span>              /* Create source attributes object, used to configure sources */
+              srcAttr = new LBMSourceAttributes();
+              srcAttr.setObjectRecycler(objRec, null);
+              
+              /* Set configuration value using strings */
+              srcAttr.setValue("transport", "lbtrm");
+              
+              /* The Java API only accepts string values. ints, for example */
+              /* must be converted to strings */
+              desPort = 14001;
+              srcAttr.setValue("transport_lbtrm_destination_port", Integer.toString(desPort));
+              
+              /* Create topic for the first source with configured attributes */
+              topic1 = new LBMTopic(ctx, "test.topic1", srcAttr);
+              src1 = new LBMSource(ctx, topic1);
+<span name="src_create2" id="src_create2"></span>              /* Modify Configuration for second topic to use a new port */
+              desPort = 14002;
+              srcAttr.setValue("transport_lbtrm_destination_port", Integer.toString(desPort));
+              
+              /* Create second topic and source using modified configuration values */ 
+              topic2 = new LBMTopic(ctx, "test.topic2", srcAttr);
+              src2 = new LBMSource(ctx, topic2);
+          }
+          catch(LBMException ex)
+          {
+              System.err.println("Error initializing LBM objects: " + ex.toString());
+              System.exit(1);
+          }
+<span name="dump_ctx_attr" id="dump_ctx_attr"></span>          System.out.println("Context Attributes: ");
+          LBMConfigOption cfgOptArray[] = ctx.dumpAttributeList();
+          for(int i = 0; i&lt;cfgOptArray.length; i++)
+          {
+              System.out.println(cfgOptArray[i].getType() + " " + cfgOptArray[i].getOptionName() + " " + cfgOptArray[i].getValue());
+          }
+<span name="dump_src_attr" id="dump_src_attr"></span>          System.out.println("Source #1 Attributes: ");
+          cfgOptArray = src1.dumpAttributeList();
+          for(int i = 0; i&lt;cfgOptArray.length; i++)
+          {
+              System.out.println(cfgOptArray[i].getType() + " " + cfgOptArray[i].getOptionName() + " " + cfgOptArray[i].getValue());
+          }
+<span name="dump_src_attr2" id="dump_src_attr2"></span>          System.out.println("Source #2 Attributes: ");
+          cfgOptArray = src2.dumpAttributeList();
+          for(int i = 0; i&lt;cfgOptArray.length; i++)
+          {
+              System.out.println(cfgOptArray[i].getType() + " " + cfgOptArray[i].getOptionName() + " " + cfgOptArray[i].getValue());
+          }
+          
+          /* Cleanup all LBM objects */
+          try {
+<span name="delobj" id="delobj"></span>              objRec.close();
+              src2.close();
+              src1.close();
+              ctx.close();
+          }
+          catch(LBMException ex)
+          {
+              System.err.println("Error closing LBM objects: " + ex.toString());
+              System.exit(1);
+          }
+      } /* main */
+  } /* class dumpAttributes */
+  
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

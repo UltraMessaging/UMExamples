@@ -1,0 +1,188 @@
+<html>
+<head>
+<h1>An example of dumping attributes in Java</h1>
+<link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+
+<title>dump_attributes: An example of dumping attributes in Java</title>
+</head>
+<body>
+<a href="../../index.html" class="button" target="_top">Example index</a>
+
+<p>This example code shows how to dump the currently configured attributes 
+of a context and 2 different sources.</p>
+
+<p>When reading the documentation below, click on any line number to display
+the pure source listing on the right side of the screen. Similarly, if you
+click on a line number on the right side of the screen, the corresponding
+documentation will be displayed on the left.</p>
+
+
+<p>There is one program source file:</p>
+<ul>
+<li><b><tt><a href="dump_attributes.java">dump_attributes.java</a></tt></b>
+- (right-click and save as "dump_attributes.java") Example code.</li>
+</ul>
+
+<h2><tt>dump_attributes.java</tt></h2>
+
+<p>The example source code is organized as a Java class.</p>
+
+<h3>Initialization</h3>
+
+<p>The first phase of any UM program is initialization, where UM objects are
+created. The first object to be created is a UM context object:</p>
+<a name="ctx_create_ref_1" id="ctx_create_ref_1"></a>
+<small><pre>
+<a href="dump_attributes_java.slsrc.html#ctx_create" target="src">00022</a>              /* create ctxAttr to set config values before creating context */
+<a href="dump_attributes_java.slsrc.html#ctx_create" target="src">00023</a>              LBMContextAttributes ctxAttr = new LBMContextAttributes();
+<a href="dump_attributes_java.slsrc.html#ctx_create" target="src">00024</a>              
+<a href="dump_attributes_java.slsrc.html#ctx_create" target="src">00025</a>              /* Modify resolver address by setting attributes */
+<a href="dump_attributes_java.slsrc.html#ctx_create" target="src">00026</a>              ctxAttr.setValue("resolver_multicast_address", "224.10.11.12");
+<a href="dump_attributes_java.slsrc.html#ctx_create" target="src">00027</a>              
+<a href="dump_attributes_java.slsrc.html#ctx_create" target="src">00028</a>              /* Create a context with default attributes */
+<a href="dump_attributes_java.slsrc.html#ctx_create" target="src">00029</a>              ctx = new LBMContext(ctxAttr);
+</pre><!-- endblock ctx_create_ref_1 --></small>
+
+
+
+<p>A context can be thought of as an "instance" of UM. It contains a worker
+thread which maintains internal state and reacts to socket events. Most UM
+applications create a single context instance which manages the publishing
+and receiving of messages over many topics, although there are less-common
+use cases which call for multiple context instances within a single process
+(see TODO).</p>
+
+
+<p>The next object that needs to be created is a "source" object. Creation
+of a source object is a two-step procedure: first create a "topic" object,
+specifying the topic name, and then create the "source" object, which is
+the object used subsequently to send messages.</p>
+<a name="src_create_ref_1" id="src_create_ref_1"></a>
+<small><pre>
+<a href="dump_attributes_java.slsrc.html#src_create" target="src">00030</a>              /* Create source attributes object, used to configure sources */
+<a href="dump_attributes_java.slsrc.html#src_create" target="src">00031</a>              srcAttr = new LBMSourceAttributes();
+<a href="dump_attributes_java.slsrc.html#src_create" target="src">00032</a>              srcAttr.setObjectRecycler(objRec, null);
+<a href="dump_attributes_java.slsrc.html#src_create" target="src">00033</a>              
+<a href="dump_attributes_java.slsrc.html#src_create" target="src">00034</a>              /* Set configuration value using strings */
+<a href="dump_attributes_java.slsrc.html#src_create" target="src">00035</a>              srcAttr.setValue("transport", "lbtrm");
+<a href="dump_attributes_java.slsrc.html#src_create" target="src">00036</a>              
+<a href="dump_attributes_java.slsrc.html#src_create" target="src">00037</a>              /* The Java API only accepts string values. ints, for example */
+<a href="dump_attributes_java.slsrc.html#src_create" target="src">00038</a>              /* must be converted to strings */
+<a href="dump_attributes_java.slsrc.html#src_create" target="src">00039</a>              desPort = 14001;
+<a href="dump_attributes_java.slsrc.html#src_create" target="src">00040</a>              srcAttr.setValue("transport_lbtrm_destination_port", Integer.toString(desPort));
+<a href="dump_attributes_java.slsrc.html#src_create" target="src">00041</a>              
+<a href="dump_attributes_java.slsrc.html#src_create" target="src">00042</a>              /* Create topic for the first source with configured attributes */
+<a href="dump_attributes_java.slsrc.html#src_create" target="src">00043</a>              topic1 = new LBMTopic(ctx, "test.topic1", srcAttr);
+<a href="dump_attributes_java.slsrc.html#src_create" target="src">00044</a>              src1 = new LBMSource(ctx, topic1);
+</pre><!-- endblock src_create_ref_1 --></small>
+
+
+
+<p>In this example, a second source is created.  The only difference between
+between the 2 sources created in this example is that they are configured to 
+use different destination ports.  This will enable the user to view differences
+in the attributes that will be dumped later. </p>
+<a name="src_create2_ref_1" id="src_create2_ref_1"></a>
+<small><pre>
+<a href="dump_attributes_java.slsrc.html#src_create2" target="src">00045</a>              /* Modify Configuration for second topic to use a new port */
+<a href="dump_attributes_java.slsrc.html#src_create2" target="src">00046</a>              desPort = 14002;
+<a href="dump_attributes_java.slsrc.html#src_create2" target="src">00047</a>              srcAttr.setValue("transport_lbtrm_destination_port", Integer.toString(desPort));
+<a href="dump_attributes_java.slsrc.html#src_create2" target="src">00048</a>              
+<a href="dump_attributes_java.slsrc.html#src_create2" target="src">00049</a>              /* Create second topic and source using modified configuration values */ 
+<a href="dump_attributes_java.slsrc.html#src_create2" target="src">00050</a>              topic2 = new LBMTopic(ctx, "test.topic2", srcAttr);
+<a href="dump_attributes_java.slsrc.html#src_create2" target="src">00051</a>              src2 = new LBMSource(ctx, topic2);
+</pre><!-- endblock src_create2_ref_1 --></small>
+
+
+
+<h3>Dump Attributes</h3>
+
+<p>In this block, we will dump every attribute that the context object is 
+configured to use.  Many of these values are expected to be default.  This
+is because only the <tt>resolver_multicast_address</tt> was set to a non-default value
+in the beginning of this example program.  In a non-trivial application, it is 
+common for many of the default attributes to be overridden by a configuration 
+file, xml file, or programatically.</p>
+<a name="dump_ctx_attr_ref_1" id="dump_ctx_attr_ref_1"></a>
+<small><pre>
+<a href="dump_attributes_java.slsrc.html#dump_ctx_attr" target="src">00058</a>          System.out.println("Context Attributes: ");
+<a href="dump_attributes_java.slsrc.html#dump_ctx_attr" target="src">00059</a>          LBMConfigOption cfgOptArray[] = ctx.dumpAttributeList();
+<a href="dump_attributes_java.slsrc.html#dump_ctx_attr" target="src">00060</a>          for(int i = 0; i&lt;cfgOptArray.length; i++)
+<a href="dump_attributes_java.slsrc.html#dump_ctx_attr" target="src">00061</a>          {
+<a href="dump_attributes_java.slsrc.html#dump_ctx_attr" target="src">00062</a>              System.out.println(cfgOptArray[i].getType() + " " + cfgOptArray[i].getOptionName() + " " + cfgOptArray[i].getValue());
+<a href="dump_attributes_java.slsrc.html#dump_ctx_attr" target="src">00063</a>          }
+</pre><!-- endblock dump_ctx_attr_ref_1 --></small>
+
+
+
+<p>In this block, we will dump every attribute that the first source object is 
+configured to use.  Many of these values are expected to be default.  This source
+is configured to use a non-default <tt>transport</tt> and <tt>transport_lbtrm_destination_port</tt>.
+These values can be seen the console output of this applciation.</p>
+<a name="dump_src_attr_ref_1" id="dump_src_attr_ref_1"></a>
+<small><pre>
+<a href="dump_attributes_java.slsrc.html#dump_src_attr" target="src">00064</a>          System.out.println("Source #1 Attributes: ");
+<a href="dump_attributes_java.slsrc.html#dump_src_attr" target="src">00065</a>          cfgOptArray = src1.dumpAttributeList();
+<a href="dump_attributes_java.slsrc.html#dump_src_attr" target="src">00066</a>          for(int i = 0; i&lt;cfgOptArray.length; i++)
+<a href="dump_attributes_java.slsrc.html#dump_src_attr" target="src">00067</a>          {
+<a href="dump_attributes_java.slsrc.html#dump_src_attr" target="src">00068</a>              System.out.println(cfgOptArray[i].getType() + " " + cfgOptArray[i].getOptionName() + " " + cfgOptArray[i].getValue());
+<a href="dump_attributes_java.slsrc.html#dump_src_attr" target="src">00069</a>          }
+<a href="#dump_src_attr_ref_2">next ref</a>  <a href="#dump_src_attr_ref_2">last ref</a></pre></small>
+
+
+
+<p>Here, the second source's attributes will be dumped.  The only difference
+between the two sources in this example is the <tt>transport_lbtrm_destination_port</tt>.  
+This can be viewed in the console output of the example application.</p>
+<a name="dump_src_attr_ref_2" id="dump_src_attr_ref_2"></a>
+<small><pre>
+<a href="dump_attributes_java.slsrc.html#dump_src_attr" target="src">00064</a>          System.out.println("Source #1 Attributes: ");
+<a href="dump_attributes_java.slsrc.html#dump_src_attr" target="src">00065</a>          cfgOptArray = src1.dumpAttributeList();
+<a href="dump_attributes_java.slsrc.html#dump_src_attr" target="src">00066</a>          for(int i = 0; i&lt;cfgOptArray.length; i++)
+<a href="dump_attributes_java.slsrc.html#dump_src_attr" target="src">00067</a>          {
+<a href="dump_attributes_java.slsrc.html#dump_src_attr" target="src">00068</a>              System.out.println(cfgOptArray[i].getType() + " " + cfgOptArray[i].getOptionName() + " " + cfgOptArray[i].getValue());
+<a href="dump_attributes_java.slsrc.html#dump_src_attr" target="src">00069</a>          }
+<a href="#dump_src_attr_ref_1">first ref</a>  <a href="#dump_src_attr_ref_1">prev ref</a></pre></small>
+
+
+
+
+<h3>Cleanup</h3>
+
+<p>This block contains the code necessary to clean up the remaining lbm objects.
+Unlike most common practices in Java, most UM objects should be explicitly
+closed when they are no longer needed. Since most UM objects contain an active
+component, just letting them go out of scope to be garbage collected is not an
+appropriate way to dispose of them. Note that the srcAttr oject does not have 
+a close method.  In order to close this object, it can be tied to an "object 
+recycler, as was done on srcAttr's constructor.  This will allow the recycler 
+clean up the ojbect when the recyclers .close method is called. <p>
+
+<p>When deleting UM objects, order of deletion is important:</p>
+<a name="delobj_ref_1" id="delobj_ref_1"></a>
+<small><pre>
+<a href="dump_attributes_java.slsrc.html#delobj" target="src">00079</a>              objRec.close();
+<a href="dump_attributes_java.slsrc.html#delobj" target="src">00080</a>              src2.close();
+<a href="dump_attributes_java.slsrc.html#delobj" target="src">00081</a>              src1.close();
+<a href="dump_attributes_java.slsrc.html#delobj" target="src">00082</a>              ctx.close();
+</pre><!-- endblock delobj_ref_1 --></small>
+
+
+
+<p>In general, timers should be cancelled first. Then source and receiver
+objects should be deleted, then context objects, and lastly event queues.
+These object deletions can become somewhat complex if event queues are
+used; see TODO for more explanation.</p>
+
+<p2>Advanced Topics</p2>
+
+<p>licensing: TODO</p>
+
+<p>configuration: TODO</p>
+
+<p>anything else? TODO</p>
+
+</body>
+</html>
+
+
