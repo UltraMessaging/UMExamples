@@ -4,7 +4,7 @@
     <title>{Insert Page title here}</title>
   </head>
   <body>
-    <a href="../" target="_top">&lt;-Back</a>
+    <a href="../../index.html" class="button" target="_top">Example index</a>
     <h1>{Page header Here}</h1>
     <p>{Sample description here}</p>
     <p>There is one program source file:</p>
