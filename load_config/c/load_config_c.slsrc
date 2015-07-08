@@ -1,0 +1,50 @@
+/* load_config.c - http://ultramessaging.github.io/UMExamples */
+
+/* =semlit,block,includes=*/
+#include <stdio.h>
+
+#if defined(_MSC_VER)
+/* Windows-only includes */
+#include <winsock2.h>
+#else
+/* Unix-only includes */
+#include <stdlib.h>
+#include <unistd.h>
+#endif
+
+#include <lbm/lbm.h>
+/* =semlit,endblock,includes=*/
+
+/* =semlit,block,error_check=*/
+/* Example error checking macro.  Include after each UM call. */
+#define EX_LBM_CHK(err) do { \
+        if ((err) < 0) { \
+                fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
+                __FILE__, __LINE__, lbm_errmsg()); \
+                exit(1); \
+        }  \
+} while (0)
+/* =semlit,endblock,error_check=*/
+
+/* =semlit,block,define_configs=*/
+#define LBM_CONFIG_FLAT_FILE "../flat_config.cfg"
+#define LBM_CONFIG_XML_FILE  "../xml_config.xml"
+#define LBM_APPLICATION_NAME "processA"
+/* =semlit,endblock,define_configs=*/
+
+main()
+{
+        /* =semlit,block,vars=*/
+	int err;				/* Used for checking API return codes */
+	/* =semlit,endblock,vars=*/
+
+	/* =semlit,block,flat_file=*/	
+	err = lbm_config((const char *)LBM_CONFIG_FLAT_FILE);
+	EX_LBM_CHK(err);
+	/* =semlit,endblock,flat_file=*/
+
+	/* =semlit,block,xml_file=*/
+	err = lbm_config_xml_file((const char *)LBM_CONFIG_XML_FILE, (const char *)LBM_APPLICATION_NAME);
+	EX_LBM_CHK(err);
+	/* =semlit,endblock,xml_file=*/
+}

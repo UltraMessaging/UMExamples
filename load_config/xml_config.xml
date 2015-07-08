@@ -1,0 +1,29 @@
+<um-configuration version="1.0">
+    <templates>
+        <template name="common">
+            <options type="context">
+                <option default-value="10000000000" name="transport_lbtrm_data_rate_limit"/>
+                <option default-value="52428800" name="transport_lbtrm_retransmit_rate_limit"/>
+                <option default-value="8388608" name="resolver_multicast_receiver_socket_buffer"/>
+                <option default-value="8388608" name="resolver_unicast_receiver_socket_buffer"/>
+                <option default-value="8388608" name="transport_lbtrm_receiver_socket_buffer"/>
+                <option default-value="8388608" name="transport_lbtru_receiver_socket_buffer"/>
+            </options>
+        </template>
+    </templates>
+    <applications>
+        <application name="processA" template="common">
+            <contexts>
+                <context>
+                    <receivers>
+                        <topic pattern=".*">
+                            <options type="receiver">
+                                <option name="use_late_join" default-value="1" />
+                            </options>
+                        </topic>
+                    </receivers>
+                </context>
+            </contexts>
+        </application>
+    </applications>
+</um-configuration>

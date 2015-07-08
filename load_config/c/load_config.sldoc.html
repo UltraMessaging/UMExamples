@@ -1,0 +1,133 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Load Configuration File</title>
+  </head>
+  <body>
+    <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>Loading Configuration Files</h1>
+    <p>Ultra Messaging is highly dependent on the configuration attributes applied to each of the components in the library to
+       meet the requirements for an application. As described in the
+       <a href="http://ultramessaging.github.io/UMExamples/setting_attributes/c/index.html" target="_top">Setting Attributes</a>
+       sample application, attributes can be set programatically using the UM API. However, this can be tedious and even problematic
+       as it is not easy to maintain across a network of hundreds or even thousands of UM applications. Therefore, it makes more sense
+       to centralize a UM application configuration, and using UM configuration files was designed just for this purpose.</p>
+    <p>Ultra Messaging configuration files can be flat files, where each attribute is defined by its scope, the name of the attirbute, 
+       and the desired value for said attribute. Each entry is formatted like so:</p>
+    <p style="text-indent:10"><b>scope attribute_name desired_value</b><p>
+    <p>For example, if the application wanted to set a source to use Ultra Messaging's reliable multicast 
+       <a href="#" title="The transport type to be used for created sources.
+
+Scope:	source
+Type:	int
+When to Set:	Can only be set during object initialization.
+String value	Integer value	Description
+tcp	                LBM_SRC_TOPIC_ATTR_TRANSPORT_TCP	TCP over IPv4 Default for all.
+lbtrm,   lbt-rm	        LBM_SRC_TOPIC_ATTR_TRANSPORT_LBTRM	UDP-based reliable multicast with unicast NAKs
+lbtru,   lbt-ru	        LBM_SRC_TOPIC_ATTR_TRANSPORT_LBTRU	UDP-based reliable unicast with unicast NAKs
+lbtipc,  lbt-ipc        LBM_SRC_TOPIC_ATTR_TRANSPORT_LBTIPC	InterProcess Communication between processes on the same host using a shared memory area.
+lbtrdma, lbt-rdma       LBM_SRC_TOPIC_ATTR_TRANSPORT_LBTRDMA	Voltaire® InfiniBand Remote Direct Memory Access transport between hosts using a shared memory area.
+
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">transport</a>
+it would look like this:</p>
+    <p style="text-indent:10"><b>source transport lbtrm</b></p>
+    <p>Multiple flat files can be loaded via the API in a single application. For an attribute that is configured more than once when using
+       multiple configuration files, the application will accept the value of the last file in which it is loaded as the default value. Using
+       the API after loading a configuration file will also overwrite the value of a given attribute if configuring the same attributes.</p>
+    <p>As of UM 5.0, applications have the ability to load XML formatted files, which provide significanly more flexibility with regard to using
+       a single configuration file for multiple applications. XML files are far more flexible because applications can use pre-defined templates,
+       and applications can use a very specific subset of defined values inside the configuration file by defining an Application Name.</p>
+    <p>XML files differ slightly from flat files in that multiple XML files cannot be loaded within a single process; any attempt after the initial
+       load will result in an error. XML files and flat files can be loaded within the same application however.</p>
+    <p>There is one program source file and two configuration files:</p>
+    <ul>
+      <li><b><tt><a href="load_config.c">load_config.c</a></tt></b>
+        - (right-click and save as "load_config.c") main program.</li>
+      <li><b><tt><a href="flat_config.cfg">flat_config.cfg</a></tt></b></li>
+      <li><b><tt><a href="xml_config.xml">xml_config.xml</a></tt></b></li>
+    </ul>
+    <h2>Program explanation: <tt>load_config.c</tt></h2>
+    <h4>Define Configuration File Names</h4>
+	<p>There are certainly a lot of different methods for getting the path and name for a configuration file, however for the purposes
+  	of this sample application, they are simply defined as macros</p>
+	<a name="define_configs_ref_1" id="define_configs_ref_1"></a>
+<small><pre>
+<a href="load_config_c.slsrc.html#define_configs" target="src">00025</a>  #define LBM_CONFIG_FLAT_FILE "../flat_config.cfg"
+<a href="load_config_c.slsrc.html#define_configs" target="src">00026</a>  #define LBM_CONFIG_XML_FILE  "../xml_config.xml"
+<a href="load_config_c.slsrc.html#define_configs" target="src">00027</a>  #define LBM_APPLICATION_NAME "processA"
+</pre><!-- endblock define_configs_ref_1 --></small>
+
+
+	<p>Also note the LBM_APPLICATION_NAME. This is needed for loading the XML configuration file</p>
+    <h4>Load Flat File</h4>
+	<p>Here the application is using lbm_config() to load the flat file "flat_config.cfg":</p>
+	<a name="flat_file_ref_1" id="flat_file_ref_1"></a>
+<small><pre>
+<a href="load_config_c.slsrc.html#flat_file" target="src">00033</a>      err = lbm_config((const char *)LBM_CONFIG_FLAT_FILE);
+<a href="load_config_c.slsrc.html#flat_file" target="src">00034</a>      EX_LBM_CHK(err);
+</pre><!-- endblock flat_file_ref_1 --></small>
+
+
+	<p>It is important to check for errors when loading configuration files as an error will be returned when using a malformed configuration
+	file. Checking the LBM error message will elabortate on the malformed error specifically.</p>
+        <p>It is worth noting here that this function call <b>can</b> be used to load XML files. However when using lbm_config() to load an XML
+	file, it cannot assign an application name as opposed to using the lbm_config_xml_file() as shown below. Therefore it is highly recommended
+	to use the lbm_config_xml_file() when loading XML configuration files</p>
+    <h4>Load XML File</h4>
+	<p>Very similar to loading a flat file, with the exception of the added parameter which indicates the name of the application, which points
+	to specific attributes this application should be setting:</p>
+	<a name="xml_file_ref_1" id="xml_file_ref_1"></a>
+<small><pre>
+<a href="load_config_c.slsrc.html#xml_file" target="src">00036</a>      err = lbm_config_xml_file((const char *)LBM_CONFIG_XML_FILE, (const char *)LBM_APPLICATION_NAME);
+<a href="load_config_c.slsrc.html#xml_file" target="src">00037</a>      EX_LBM_CHK(err);
+</pre><!-- endblock xml_file_ref_1 --></small>
+
+
+    <h4>Error Checking</h4>
+        <p>Error handling can be one of the most complicated issues facing a programmer. Each application may have its own unique error
+        handling conventions. For these example programs, a very simplistic error handling approach is taken: if anything unexpected happens,
+        print a message and exit the program:</p>
+        <a name="error_check_ref_1" id="error_check_ref_1"></a>
+<small><pre>
+<a href="load_config_c.slsrc.html#error_check" target="src">00016</a>  /* Example error checking macro.  Include after each UM call. */
+<a href="load_config_c.slsrc.html#error_check" target="src">00017</a>  #define EX_LBM_CHK(err) do { \
+<a href="load_config_c.slsrc.html#error_check" target="src">00018</a>          if ((err) &lt; 0) { \
+<a href="load_config_c.slsrc.html#error_check" target="src">00019</a>                  fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
+<a href="load_config_c.slsrc.html#error_check" target="src">00020</a>                  __FILE__, __LINE__, lbm_errmsg()); \
+<a href="load_config_c.slsrc.html#error_check" target="src">00021</a>                  exit(1); \
+<a href="load_config_c.slsrc.html#error_check" target="src">00022</a>          }  \
+<a href="load_config_c.slsrc.html#error_check" target="src">00023</a>  } while (0)
+</pre><!-- endblock error_check_ref_1 --></small>
+
+
+        <p>The EX_LBM_CHK() macro checks a UM API return value. If negative, it assumes an error. One reason for making this a macro is so
+        that the __FILE__ and __LINE__ compiler built-ins reference the file and line of the usages of the macro, not the file and line of
+        the macro defintion itself.</p>
+        </p>Most UM functions are designed to return one of only two integer values: 0 for success and -1 for failure. The lbm.h header file
+        defines the symbols LBM_OK and LBM_FAILURE respectively for these. However, there are a few functions which can return a value of 0 or
+        greater in the event of success (for example: lbm_event_dispatch() and lbm_send_response() to name two). So the example EX_LBM_CHK()
+        macro was written to be somewhat more general. However, be aware that there are a few other functions which do not return an integer
+        status at all (for exmaple: lbm_serialize_response() to name one). Please refer to the API documentation for each UM function you call.</p>
+    <h4>Includes</h4>
+        <p>A small effort was made to provide a some portability between Unix and Windows. For example:</p>
+        <a name="includes_ref_1" id="includes_ref_1"></a>
+<small><pre>
+<a href="load_config_c.slsrc.html#includes" target="src">00003</a>  #include &lt;stdio.h&gt;
+<a href="load_config_c.slsrc.html#includes" target="src">00004</a>  
+<a href="load_config_c.slsrc.html#includes" target="src">00005</a>  #if defined(_MSC_VER)
+<a href="load_config_c.slsrc.html#includes" target="src">00006</a>  /* Windows-only includes */
+<a href="load_config_c.slsrc.html#includes" target="src">00007</a>  #include &lt;winsock2.h&gt;
+<a href="load_config_c.slsrc.html#includes" target="src">00008</a>  #else
+<a href="load_config_c.slsrc.html#includes" target="src">00009</a>  /* Unix-only includes */
+<a href="load_config_c.slsrc.html#includes" target="src">00010</a>  #include &lt;stdlib.h&gt;
+<a href="load_config_c.slsrc.html#includes" target="src">00011</a>  #include &lt;unistd.h&gt;
+<a href="load_config_c.slsrc.html#includes" target="src">00012</a>  #endif
+<a href="load_config_c.slsrc.html#includes" target="src">00013</a>  
+<a href="load_config_c.slsrc.html#includes" target="src">00014</a>  #include &lt;lbm/lbm.h&gt;
+</pre><!-- endblock includes_ref_1 --></small>
+
+
+	<p>Different sets of header files should be included for Unix v.s. Windows applications.</p>
+  </body>
+</html>
+

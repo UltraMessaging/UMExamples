@@ -1,0 +1,162 @@
+<!DOCTYPE html><html><head><title>xml_config.xml</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>xml_config.xml</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+00008
+00009
+00010
+00011
+00012
+00013
+00014
+00015
+00016
+00017
+00018
+00019
+00020
+00021
+00022
+00023
+00024
+00025
+00026
+00027
+00028
+00029
+</td><td>  &lt;um-configuration version="1.0"&gt;
+      &lt;templates&gt;
+          &lt;template name="common"&gt;
+              &lt;options type="context"&gt;
+                  &lt;option default-value="10000000000" name="transport_lbtrm_data_rate_limit"/&gt;
+                  &lt;option default-value="52428800" name="transport_lbtrm_retransmit_rate_limit"/&gt;
+                  &lt;option default-value="8388608" name="resolver_multicast_receiver_socket_buffer"/&gt;
+                  &lt;option default-value="8388608" name="resolver_unicast_receiver_socket_buffer"/&gt;
+                  &lt;option default-value="8388608" name="transport_lbtrm_receiver_socket_buffer"/&gt;
+                  &lt;option default-value="8388608" name="transport_lbtru_receiver_socket_buffer"/&gt;
+              &lt;/options&gt;
+          &lt;/template&gt;
+      &lt;/templates&gt;
+      &lt;applications&gt;
+          &lt;application name="processA" template="common"&gt;
+              &lt;contexts&gt;
+                  &lt;context&gt;
+                      &lt;receivers&gt;
+                          &lt;topic pattern=".*"&gt;
+                              &lt;options type="receiver"&gt;
+                                  &lt;option name="use_late_join" default-value="1" /&gt;
+                              &lt;/options&gt;
+                          &lt;/topic&gt;
+                      &lt;/receivers&gt;
+                  &lt;/context&gt;
+              &lt;/contexts&gt;
+          &lt;/application&gt;
+      &lt;/applications&gt;
+  &lt;/um-configuration&gt;
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>
