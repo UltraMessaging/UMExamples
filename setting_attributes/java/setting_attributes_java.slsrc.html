@@ -1,0 +1,250 @@
+<!DOCTYPE html><html><head><title>setting_attributes.java</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>setting_attributes.java</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+00008
+00009
+00010
+00011
+00012
+00013
+00014
+00015
+00016
+00017
+00018
+00019
+00020
+00021
+00022
+00023
+<a href="setting_attributes.sldoc.html#ctx_attr_create_ref_1" target="doc">00024</a>
+<a href="setting_attributes.sldoc.html#ctx_attr_create_ref_1" target="doc">00025</a>
+<a href="setting_attributes.sldoc.html#ctx_attr_create_ref_1" target="doc">00026</a>
+<a href="setting_attributes.sldoc.html#ctx_attr_create_ref_1" target="doc">00027</a>
+<a href="setting_attributes.sldoc.html#ctx_attr_create_ref_1" target="doc">00028</a>
+00029
+<a href="setting_attributes.sldoc.html#ctx_create_ref_1" target="doc">00030</a>
+00031
+<a href="setting_attributes.sldoc.html#src_attr_create_ref_1" target="doc">00032</a>
+<a href="setting_attributes.sldoc.html#src_attr_create_ref_1" target="doc">00033</a>
+<a href="setting_attributes.sldoc.html#src_attr_create_ref_1" target="doc">00034</a>
+<a href="setting_attributes.sldoc.html#src_attr_create_ref_1" target="doc">00035</a>
+<a href="setting_attributes.sldoc.html#src_attr_create_ref_1" target="doc">00036</a>
+<a href="setting_attributes.sldoc.html#src_attr_create_ref_1" target="doc">00037</a>
+<a href="setting_attributes.sldoc.html#src_attr_create_ref_1" target="doc">00038</a>
+<a href="setting_attributes.sldoc.html#src_attr_create_ref_1" target="doc">00039</a>
+<a href="setting_attributes.sldoc.html#src_attr_create_ref_1" target="doc">00040</a>
+<a href="setting_attributes.sldoc.html#src_attr_create_ref_1" target="doc">00041</a>
+<a href="setting_attributes.sldoc.html#src_attr_create_ref_1" target="doc">00042</a>
+<a href="setting_attributes.sldoc.html#src_attr_create_ref_1" target="doc">00043</a>
+<a href="setting_attributes.sldoc.html#src_attr_create_ref_1" target="doc">00044</a>
+<a href="setting_attributes.sldoc.html#src_create_ref_1" target="doc">00045</a>
+00046
+<a href="setting_attributes.sldoc.html#src_create2_ref_1" target="doc">00047</a>
+<a href="setting_attributes.sldoc.html#src_create2_ref_1" target="doc">00048</a>
+<a href="setting_attributes.sldoc.html#src_create2_ref_1" target="doc">00049</a>
+<a href="setting_attributes.sldoc.html#src_create2_ref_1" target="doc">00050</a>
+<a href="setting_attributes.sldoc.html#src_create2_ref_1" target="doc">00051</a>
+<a href="setting_attributes.sldoc.html#src_create2_ref_1" target="doc">00052</a>
+00053
+00054
+00055
+00056
+00057
+00058
+00059
+00060
+00061
+<a href="setting_attributes.sldoc.html#clean_ref_1" target="doc">00062</a>
+<a href="setting_attributes.sldoc.html#clean_ref_1" target="doc">00063</a>
+<a href="setting_attributes.sldoc.html#clean_ref_1" target="doc">00064</a>
+<a href="setting_attributes.sldoc.html#clean_ref_1" target="doc">00065</a>
+00066
+00067
+00068
+00069
+00070
+00071
+00072
+00073
+</td><td>  /* SettingAttributes.java, see http://ultramessaging.github.io/UMExamples/SettingAttributes/java/ */
+  
+  import com.latencybusters.lbm.*;
+  
+  public class SettingAttributes {
+      
+      
+      public static void main(String[] args) throws LBMException {
+          LBMContext ctx = null;      /* Container for UM instance */
+          LBMTopic topic1 = null;     /* Object used to create topic */
+          LBMTopic topic2 = null;     /* Object used to create topic */
+          LBMSource src1 = null;      /* Used for sending messages on a single topic */
+          LBMSource src2 = null;      /* Used for sending messages on a single topic */
+          LBMSourceAttributes srcAttr = null;     /* Object used to configure sources */
+          int desPort;
+          
+          /* We are using certain lbm objects that require an application level   */
+          /* memory manager called the LBMObjectRecycler to cleanup               */
+          LBMObjectRecycler objRec = new LBMObjectRecycler();
+          
+          /*** Initialization: create necessary UM objects. ***/
+          try {
+              /* create ctxAttr to set config values before creating context */
+<span name="ctx_attr_create" id="ctx_attr_create"></span>              LBMContextAttributes ctxAttr = new LBMContextAttributes();
+              ctxAttr.setObjectRecycler(objRec, null);
+  
+              /* Modify resolver address by setting attributes */
+              ctxAttr.setValue("resolver_multicast_address", "224.10.11.12");
+              /* Create a context with default attributes */
+<span name="ctx_create" id="ctx_create"></span>              ctx = new LBMContext(ctxAttr);
+              /* Create source attributes object, used to configure sources */
+<span name="src_attr_create" id="src_attr_create"></span>              srcAttr = new LBMSourceAttributes();
+              srcAttr.setObjectRecycler(objRec, null);
+              
+              /* Set configuration value using strings */
+              srcAttr.setValue("transport", "lbtrm");
+              
+              /* The Java API only accepts string values. ints, for example */
+              /* must be converted to strings */
+              desPort = 14001;
+              srcAttr.setValue("transport_lbtrm_destination_port", Integer.toString(desPort));
+      
+              /* Create topic for the first source with configured attributes */
+              topic1 = new LBMTopic(ctx, "test.topic1", srcAttr);
+<span name="src_create" id="src_create"></span>              src1 = new LBMSource(ctx, topic1);
+              /* Modify Configuration for second topic to use a new port */
+<span name="src_create2" id="src_create2"></span>              desPort = 14002;
+              srcAttr.setValue("transport_lbtrm_destination_port", Integer.toString(desPort));
+              
+              /* Create second topic and source using modified configuration values */ 
+              topic2 = new LBMTopic(ctx, "test.topic2", srcAttr);
+              src2 = new LBMSource(ctx, topic2);
+          }
+          catch(LBMException ex)
+          {
+              System.err.println("Error initializing LBM objects: " + ex.toString());
+              System.exit(1);
+          }
+          
+          /* Cleanup all LBM objects */
+          try {
+<span name="clean" id="clean"></span>              objRec.close();
+              src2.close();
+              src1.close();
+              ctx.close();
+          }
+          catch(LBMException ex)
+          {
+              System.err.println("Error closing LBM objects: " + ex.toString());
+              System.exit(1);
+          }
+      } /* main */
+  } /* class SettingAttributes */
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>
