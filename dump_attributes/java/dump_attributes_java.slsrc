@@ -1,6 +1,6 @@
 /* DumoAttributes.java, see http://ultramessaging.github.io/UMExamples/DumpAttributes/java/ */
 
-import com.latencybusters.lbm.*;
+import com.latencybusters.lbm.*;;
 
 public class DumpAttributes {
 	

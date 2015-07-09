@@ -1,6 +1,6 @@
 <html>
 <head>
-<h1>An example of dumping attributes in Java</h1>
+<h1>An example of dumping attributes in Java.</h1>
 =semlit,include,../../style/head.sldoc=
 <title>dump_attributes: An example of dumping attributes in Java</title>
 </head>
