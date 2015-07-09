@@ -1,0 +1,13 @@
+<p>Value used to set SO_RCVBUF value of the resolver receivers. In some cases the OS will not allow all of this value to be used. A value of 0 instructs UM to use the default OS values. See the section on socket buffer sizes for platform-dependent information. See also our white paper Topics in High Performance Messaging for background and guidelines on UDP buffer sizing.
+
+<table><tr>
+<td>Scope:</td><td>	context</td>
+</tr><tr>
+<td>Type:</td><td>	lbm_ulong_t</td>
+</tr><tr>
+<td>Units:</td><td>	bytes</td>
+</tr><tr>
+<td>Default value:</td><td>	0 (use OS default)</td>
+</tr><tr>
+<td>When to Set:</td><td>	Can only be set during object initialization.</td>
+</tr></table>

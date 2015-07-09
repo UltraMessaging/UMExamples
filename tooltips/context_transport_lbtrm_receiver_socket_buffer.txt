@@ -1,0 +1,7 @@
+Value used to set SO_RCVBUF value of the LBT-RM receiver multicast socket. In some cases the OS will not allow all of this value to be used. See the section on socket buffer sizes for platform-dependent information. See also our white paper Topics in High Performance Messaging for background and guidelines on UDP buffer sizing.
+
+Scope:	context
+Type:	lbm_ulong_t
+Units:	bytes
+Default value:	524288 (512KB)
+When to Set:	Can only be set during object initialization.

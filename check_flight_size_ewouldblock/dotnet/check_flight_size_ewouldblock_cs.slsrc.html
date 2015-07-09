@@ -1,0 +1,306 @@
+<!DOCTYPE html><html><head><title>check_flight_size_ewouldblock.cs</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>check_flight_size_ewouldblock.cs</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+00008
+00009
+00010
+00011
+00012
+00013
+00014
+00015
+00016
+00017
+00018
+00019
+00020
+00021
+00022
+00023
+00024
+00025
+<a href="check_flight_size_ewouldblock.sldoc.html#store_cfg_ref_1" target="doc">00026</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#store_cfg_ref_1" target="doc">00027</a>
+00028
+00029
+00030
+00031
+00032
+00033
+00034
+00035
+00036
+00037
+00038
+00039
+00040
+00041
+00042
+00043
+00044
+00045
+00046
+00047
+00048
+00049
+00050
+00051
+<a href="check_flight_size_ewouldblock.sldoc.html#src_send_ref_1" target="doc">00052</a>
+00053
+<a href="check_flight_size_ewouldblock.sldoc.html#flight_size_check_ref_1" target="doc">00054</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#flight_size_check_ref_1" target="doc">00055</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#flight_size_check_ref_1" target="doc">00056</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#flight_size_check_ref_1" target="doc">00057</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#flight_size_check_ref_1" target="doc">00058</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#flight_size_check_ref_1" target="doc">00059</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#flight_size_check_ref_1" target="doc">00060</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#flight_size_check_ref_1" target="doc">00061</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#flight_size_check_ref_1" target="doc">00062</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#flight_size_check_ref_1" target="doc">00063</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#flight_size_check_ref_1" target="doc">00064</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#flight_size_check_ref_1" target="doc">00065</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#flight_size_check_ref_1" target="doc">00066</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#flight_size_check_ref_1" target="doc">00067</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#flight_size_check_ref_1" target="doc">00068</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#flight_size_check_ref_1" target="doc">00069</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#flight_size_check_ref_1" target="doc">00070</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#flight_size_check_ref_1" target="doc">00071</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#flight_size_check_ref_1" target="doc">00072</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#flight_size_check_ref_1" target="doc">00073</a>
+<a href="check_flight_size_ewouldblock.sldoc.html#flight_size_check_ref_1" target="doc">00074</a>
+00075
+00076
+00077
+00078
+00079
+00080
+00081
+00082
+00083
+00084
+00085
+00086
+00087
+00088
+00089
+00090
+00091
+00092
+00093
+00094
+00095
+00096
+00097
+00098
+00099
+00100
+00101
+</td><td>  /* CheckFlightSizeEwouldblock.cs, see http://ultramessaging.github.io/UMExamples/CheckFlightSizeEwouldblock/dotnet/ */
+  
+  using System;
+  using System.Collections.Generic;
+  using System.Text;
+  using com.latencybusters.lbm;
+  
+  namespace CheckFlightSizeEwouldblock
+  {
+      class CheckFlightSizeEwouldblock
+      {
+          private const int maxFlightSize = 500;
+  
+          static void Main(string[] args)
+          {
+              LBMContext ctx = null;  /* Context object: container for UM "instance". */
+              LBMSource src = null;   /* Source object: for sending messages. */
+  
+              try
+              {
+                  LBMTopic topic = null;
+                  LBMSourceAttributes srcAttr = null;
+  
+                  ctx = new LBMContext();
+                  srcAttr = new LBMSourceAttributes();
+<span name="store_cfg" id="store_cfg"></span>                  srcAttr.setValue("ume_store", "127.0.0.1:29999");
+                  srcAttr.setValue("ume_flight_size", maxFlightSize.ToString());
+                  topic = ctx.allocTopic("test.topic", srcAttr);
+                  src = new LBMSource(ctx, topic);
+              }
+              catch (LBMException ex)
+              {
+                  System.Console.Error.WriteLine("Error initializing LBM objects:  " + ex.Message);
+                  System.Environment.Exit(1);
+              }
+  
+              try
+              {
+                  System.Threading.Thread.Sleep(3000);
+              }
+              catch (Exception ex)
+              {
+                  System.Console.Error.WriteLine("Error System.Threading.Thread.Sleep() exception:  " + ex.Message);
+                  System.Environment.Exit(1);
+              }
+  
+              while (true)
+              {
+                  /*** Send a message. ***/
+                  try
+                  {
+<span name="src_send" id="src_send"></span>                      src.send(Encoding.ASCII.GetBytes("test"), 4, LBM.MSG_FLUSH | LBM.SRC_NONBLOCK);
+                  }
+<span name="flight_size_check" id="flight_size_check"></span>                  catch (LBMEWouldBlockException ex)
+                  {
+                      try
+                      {
+                          int currentFlightSize = src.getInflight(LBM.FLIGHT_SIZE_TYPE_UME);
+  
+                          if (currentFlightSize == maxFlightSize)
+                          {
+                              System.Console.Error.WriteLine("Source is blocked on flight. Exiting");
+                              break;
+                          }
+                      }
+                      catch (LBMException exInflight)
+                      {
+                          System.Console.Error.WriteLine("Error getting flightsize: " + exInflight.Message);
+                      }
+                  }
+                  catch (LBMException ex)
+                  {
+                      System.Console.Error.WriteLine("Error sending: " + ex.Message);
+                  }
+              }
+  
+              /*** Cleanup: delete UM objects. ***/
+              try
+              {
+                  System.Threading.Thread.Sleep(3000);
+              }
+              catch (Exception ex)
+              {
+                  System.Console.Error.WriteLine("Error System.Threading.Thread.Sleep() exception:  " + ex.Message);
+                  System.Environment.Exit(1);
+              }
+  
+              try
+              {
+                  src.close();
+                  ctx.close();
+              }
+              catch (LBMException ex)
+              {
+                  System.Console.Error.WriteLine("Error closing LBM objects: " + ex.Message);
+                  System.Environment.Exit(1);
+              }
+  
+          }  /* Main */
+      }  /* class CheckFlightSizeEwouldblock*/
+  }
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

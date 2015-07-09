@@ -1,3 +1,6 @@
+<a href="../../index.html" class="button" target="_top">Example index</a>
+
+<h1>Checking Flight Size programatically</h1>
     <p>By default, when a UMP source hits its configured flight size, 
       (=semlit,tooltip,../../tooltips/source_ume_flight_size.txt,ume_flight_size=)
       the send function will either block until the internal flight counter is decremented, or it will return an error, EWOULDBLOCK. Getting EWOULDBLOCK is not enough to determine if the source hit the configured flight size

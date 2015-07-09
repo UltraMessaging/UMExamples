@@ -1,0 +1,230 @@
+<html>
+<head>
+<link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+
+<title>dump_attributes: Dump UM conifguration attributes</title>
+</head>
+<body>
+<h1>An example of dumping attributes in C</h1>
+<a href="../../index.html" class="button" target="_top">Example index</a>
+
+<p>This example code shows how to dump the currently configured attributes 
+of a context and 2 different sources.</p>
+
+<p>When reading the documentation below, click on any line number to display
+the pure source listing on the right side of the screen. Similarly, if you
+click on a line number on the right side of the screen, the corresponding
+documentation will be displayed on the left.</p>
+
+
+<p>There is one program source file:</p>
+<ul>
+<li><b><tt><a href="dump_attributes.c">dump_attributes.c</a></tt></b>
+- (right-click and save as "dump_attributes.c") Example code.</li>
+</ul>
+
+<h2><tt>dump_attributes.c</tt></h2>
+
+<h3>Initialization</h3>
+
+<p>This sample createes 2 source objects.  The intention is to demonstrate
+that sources can have a differing set of configuration attributes. The creation
+of a source object is a two-step procedure: first create a "topic" object,
+specifying the topic name, and then create the "source" object. The topic
+object is used to configure a sources attributes. </p>
+<a name="src_create_ref_1" id="src_create_ref_1"></a>
+<small><pre>
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00079</a>      /* Initializing the source attribute object */
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00080</a>      if (lbm_src_topic_attr_create(&amp;tattr_1) != 0)
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00081</a>      {
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00082</a>          fprintf(stderr, "lbm_src_topic_attr_create: %s\n", lbm_errmsg());
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00083</a>          exit(1);
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00084</a>      }
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00085</a>  
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00086</a>      /* Setting the transport via the source topic string method */
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00087</a>      if (lbm_src_topic_attr_str_setopt(tattr_1, "transport", "lbtrm") != 0)
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00088</a>      {
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00089</a>          fprintf(stderr, "lbm_src_topic_attr_str_setopt:transport: %s\n", lbm_errmsg());
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00090</a>          exit(1);
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00091</a>      }
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00092</a>  
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00093</a>      /* Setting the lbtrm destination port via the direct value set method */
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00094</a>      des_port = 14001;
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00095</a>      if (lbm_src_topic_attr_setopt(tattr_1, "transport_lbtrm_destination_port", &amp;des_port, sizeof(lbm_uint16_t)) != 0)
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00096</a>      {
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00097</a>          fprintf(stderr, "lbm_src_topic_attr_setopt:transport_lbtrm_destination_port: %s\n", lbm_errmsg());
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00098</a>          exit(1);
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00099</a>      }
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00100</a>  
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00101</a>      /* Allocating the topic */
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00102</a>      err = lbm_src_topic_alloc(&amp;topic_1, ctx, "test.topic.1", tattr_1);
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00103</a>      if (err)
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00104</a>      {
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00105</a>          printf("line %d: %s\n", __LINE__, lbm_errmsg());
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00106</a>          exit(1);
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00107</a>      }
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00108</a>  
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00109</a>      /* Creating the source */
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00110</a>      err = lbm_src_create(&amp;src_1, ctx, topic_1, NULL, NULL, NULL);
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00111</a>      if (err)
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00112</a>      {
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00113</a>          printf("line %d: %s\n", __LINE__, lbm_errmsg());
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00114</a>          exit(1);
+<a href="dump_attributes_c.slsrc.html#src_create" target="src">00115</a>      }
+</pre><!-- endblock src_create_ref_1 --></small>
+
+
+
+<p>In this example, a second source is created.  The only difference between
+between the 2 sources created in this example is that they are configured to 
+use different destination ports.  This will enable the user to view differences
+in the attributes that will be dumped later. </p>
+<a name="src_create2_ref_1" id="src_create2_ref_1"></a>
+<small><pre>
+<a href="dump_attributes_c.slsrc.html#src_create2" target="src">00116</a>      /* Initialized the second source attributes as a copy of the first */
+<a href="dump_attributes_c.slsrc.html#src_create2" target="src">00117</a>      if (lbm_src_topic_attr_dup(&amp;tattr_2, tattr_1) != 0)
+<a href="dump_attributes_c.slsrc.html#src_create2" target="src">00118</a>      {
+<a href="dump_attributes_c.slsrc.html#src_create2" target="src">00119</a>          fprintf(stderr, "lbm_src_topic_attr_dup: %s\n", lbm_errmsg());
+<a href="dump_attributes_c.slsrc.html#src_create2" target="src">00120</a>          exit(1);
+<a href="dump_attributes_c.slsrc.html#src_create2" target="src">00121</a>      }
+<a href="dump_attributes_c.slsrc.html#src_create2" target="src">00122</a>  
+<a href="dump_attributes_c.slsrc.html#src_create2" target="src">00123</a>      /* Now modify the destination port for this second source to put the publisher on a different transport */
+<a href="dump_attributes_c.slsrc.html#src_create2" target="src">00124</a>      des_port = 14002;
+<a href="dump_attributes_c.slsrc.html#src_create2" target="src">00125</a>      if (lbm_src_topic_attr_setopt(tattr_2, "transport_lbtrm_destination_port", &amp;des_port, sizeof(lbm_uint16_t)) != 0)
+<a href="dump_attributes_c.slsrc.html#src_create2" target="src">00126</a>      {
+<a href="dump_attributes_c.slsrc.html#src_create2" target="src">00127</a>          fprintf(stderr, "lbm_src_topic_attr_setopt:transport_lbtrm_destination_port: %s\n", lbm_errmsg());
+<a href="dump_attributes_c.slsrc.html#src_create2" target="src">00128</a>          exit(1);
+<a href="dump_attributes_c.slsrc.html#src_create2" target="src">00129</a>      }
+<a href="dump_attributes_c.slsrc.html#src_create2" target="src">00130</a>  
+<a href="dump_attributes_c.slsrc.html#src_create2" target="src">00131</a>      /* Allocating the second topic */
+<a href="dump_attributes_c.slsrc.html#src_create2" target="src">00132</a>      err = lbm_src_topic_alloc(&amp;topic_2, ctx, "test.topic.2", tattr_2);
+<a href="dump_attributes_c.slsrc.html#src_create2" target="src">00133</a>      if (err)
+<a href="dump_attributes_c.slsrc.html#src_create2" target="src">00134</a>      {
+<a href="dump_attributes_c.slsrc.html#src_create2" target="src">00135</a>          printf("line %d: %s\n", __LINE__, lbm_errmsg());
+<a href="dump_attributes_c.slsrc.html#src_create2" target="src">00136</a>          exit(1);
+<a href="dump_attributes_c.slsrc.html#src_create2" target="src">00137</a>      }
+<a href="dump_attributes_c.slsrc.html#src_create2" target="src">00138</a>  
+<a href="dump_attributes_c.slsrc.html#src_create2" target="src">00139</a>      /* Creating the source */
+<a href="dump_attributes_c.slsrc.html#src_create2" target="src">00140</a>      err = lbm_src_create(&amp;src_2, ctx, topic_2, NULL, NULL, NULL);
+<a href="dump_attributes_c.slsrc.html#src_create2" target="src">00141</a>      if (err)
+<a href="dump_attributes_c.slsrc.html#src_create2" target="src">00142</a>      {
+<a href="dump_attributes_c.slsrc.html#src_create2" target="src">00143</a>          printf("line %d: %s\n", __LINE__, lbm_errmsg());
+<a href="dump_attributes_c.slsrc.html#src_create2" target="src">00144</a>          exit(1);
+<a href="dump_attributes_c.slsrc.html#src_create2" target="src">00145</a>      }
+</pre><!-- endblock src_create2_ref_1 --></small>
+
+
+
+<h3>Dump Context Attributes</h3>
+
+<p>In this block, we will dump every attribute that the context object is 
+configured to use.  Many of these values are expected to be default.  This
+is because only the <tt>resolver_multicast_address</tt> was set to a non-default value
+in the beginning of this example program.  In a non-trivial application, it is 
+common for many of the default attributes to be overridden by a configuration 
+file, xml file, or programatically. In C, you are required to first get the number
+of attributes that the library can return using the lbm_*_attr_option_size.  This
+number can change from version to version as attributes are added and deprecated.
+Next, it is necessary to allocate an array with lbm_*_attr_option_size elements.
+Finally, it can be filled by the lbm_*_dump function. This array should be freed
+if you intend for it to be used for other attirbutes which may have different
+numbers of attributes. </p>
+<a name="dump_ctx_attr_ref_1" id="dump_ctx_attr_ref_1"></a>
+<small><pre>
+<a href="dump_attributes_c.slsrc.html#dump_ctx_attr" target="src">00146</a>      /* each lbm object (ctx, src, rcv)  has a different number of configuration     */
+<a href="dump_attributes_c.slsrc.html#dump_ctx_attr" target="src">00147</a>      /* attributes. To allocate the array, call the corresponding *_option_size      */
+<a href="dump_attributes_c.slsrc.html#dump_ctx_attr" target="src">00148</a>      /* function and allocate enough memory to contain the return strings        */
+<a href="dump_attributes_c.slsrc.html#dump_ctx_attr" target="src">00149</a>      entries = lbm_context_attr_option_size();
+<a href="dump_attributes_c.slsrc.html#dump_ctx_attr" target="src">00150</a>      configs_option_ptr = malloc(entries * sizeof(lbm_config_option_t));
+<a href="dump_attributes_c.slsrc.html#dump_ctx_attr" target="src">00151</a>  
+<a href="dump_attributes_c.slsrc.html#dump_ctx_attr" target="src">00152</a>      /* Get the attributes for the context */
+<a href="dump_attributes_c.slsrc.html#dump_ctx_attr" target="src">00153</a>      if (LBM_FAILURE == lbm_context_dump(ctx, &amp;entries, configs_option_ptr))
+<a href="dump_attributes_c.slsrc.html#dump_ctx_attr" target="src">00154</a>      {
+<a href="dump_attributes_c.slsrc.html#dump_ctx_attr" target="src">00155</a>          fprintf(stderr, "lbm_context_dump error: %s\n", lbm_errmsg());
+<a href="dump_attributes_c.slsrc.html#dump_ctx_attr" target="src">00156</a>          return;
+<a href="dump_attributes_c.slsrc.html#dump_ctx_attr" target="src">00157</a>      }
+<a href="dump_attributes_c.slsrc.html#dump_ctx_attr" target="src">00158</a>  
+<a href="dump_attributes_c.slsrc.html#dump_ctx_attr" target="src">00159</a>      /* iterate through the returned array and print each option */
+<a href="dump_attributes_c.slsrc.html#dump_ctx_attr" target="src">00160</a>      for (idx = 0; idx &lt; entries; ++idx) {
+<a href="dump_attributes_c.slsrc.html#dump_ctx_attr" target="src">00161</a>          printf("%s[%d]: %s = %s\n", configs_option_ptr[idx].type, idx, configs_option_ptr[idx].oname, configs_option_ptr[idx].val);
+<a href="dump_attributes_c.slsrc.html#dump_ctx_attr" target="src">00162</a>      }
+<a href="dump_attributes_c.slsrc.html#dump_ctx_attr" target="src">00163</a>  
+<a href="dump_attributes_c.slsrc.html#dump_ctx_attr" target="src">00164</a>      /* done with context attributes so free the allocated memory */
+<a href="dump_attributes_c.slsrc.html#dump_ctx_attr" target="src">00165</a>      free(configs_option_ptr);
+</pre><!-- endblock dump_ctx_attr_ref_1 --></small>
+
+
+
+<h3>Dump Source Attributes</h3>
+
+<p>In this block, we will dump every attribute that the first source object is 
+configured to use.  Many of these values are expected to be default.  This source
+is configured to use a non-default <tt>transport</tt> and <tt>transport_lbtrm_destination_port</tt>.
+These values can be seen the console output of this appliciation. In C, you are required to 
+first get the number of attributes that the library can return using the lbm_*_attr_option_size.  
+This number can change from version to version as attributes are added and deprecated.
+Next, it is necessary to allocate an array with lbm_*_attr_option_size elements.
+Finally, it can be filled by the lbm_*_dump function.</p>
+<a name="dump_src_attr_ref_1" id="dump_src_attr_ref_1"></a>
+<small><pre>
+<a href="dump_attributes_c.slsrc.html#dump_src_attr" target="src">00166</a>      /* each lbm object (ctx, src, rcv)  has a different number of configuration */
+<a href="dump_attributes_c.slsrc.html#dump_src_attr" target="src">00167</a>      /* options to allocate the array, call the corresponding *_option_size      */
+<a href="dump_attributes_c.slsrc.html#dump_src_attr" target="src">00168</a>      /* function and allocate enough memory to contain the return strings        */
+<a href="dump_attributes_c.slsrc.html#dump_src_attr" target="src">00169</a>      entries = lbm_src_topic_attr_option_size();
+<a href="dump_attributes_c.slsrc.html#dump_src_attr" target="src">00170</a>      configs_option_ptr = malloc(entries * sizeof(lbm_config_option_t));
+<a href="dump_attributes_c.slsrc.html#dump_src_attr" target="src">00171</a>  
+<a href="dump_attributes_c.slsrc.html#dump_src_attr" target="src">00172</a>      /* Get the attributes for the first source */
+<a href="dump_attributes_c.slsrc.html#dump_src_attr" target="src">00173</a>      if (LBM_FAILURE == lbm_src_topic_dump(src_1, &amp;entries, configs_option_ptr))
+<a href="dump_attributes_c.slsrc.html#dump_src_attr" target="src">00174</a>      {
+<a href="dump_attributes_c.slsrc.html#dump_src_attr" target="src">00175</a>          fprintf(stderr, "lbm_src_topic_dump error: %s\n", lbm_errmsg());
+<a href="dump_attributes_c.slsrc.html#dump_src_attr" target="src">00176</a>          return;
+<a href="dump_attributes_c.slsrc.html#dump_src_attr" target="src">00177</a>      }
+<a href="dump_attributes_c.slsrc.html#dump_src_attr" target="src">00178</a>  
+<a href="dump_attributes_c.slsrc.html#dump_src_attr" target="src">00179</a>      /* iterate through the returned array and print each option */
+<a href="dump_attributes_c.slsrc.html#dump_src_attr" target="src">00180</a>      for (idx = 0; idx &lt; entries; ++idx) {
+<a href="dump_attributes_c.slsrc.html#dump_src_attr" target="src">00181</a>          printf("%s[%d]: %s = %s\n", configs_option_ptr[idx].type, idx, configs_option_ptr[idx].oname, configs_option_ptr[idx].val);
+<a href="dump_attributes_c.slsrc.html#dump_src_attr" target="src">00182</a>      }
+<a href="dump_attributes_c.slsrc.html#dump_src_attr" target="src">00183</a>  
+<a href="dump_attributes_c.slsrc.html#dump_src_attr" target="src">00184</a>      /* note that configs_option_ptr can be reused for multiple sources without being freed. */
+<a href="dump_attributes_c.slsrc.html#dump_src_attr" target="src">00185</a>  
+</pre><!-- endblock dump_src_attr_ref_1 --></small>
+
+
+
+<p>Here, the second source's attributes will be dumped.  The only difference
+between the two sources in this example is the <tt>transport_lbtrm_destination_port</tt>.  
+This can be viewed in the console output of the example application. configs_option_ptr will
+no longer be used.  Therefore it can & should be freed. </p>
+<a name="dump_src_attr2_ref_1" id="dump_src_attr2_ref_1"></a>
+<small><pre>
+<a href="dump_attributes_c.slsrc.html#dump_src_attr2" target="src">00186</a>      /* Get the attributes for the second source */
+<a href="dump_attributes_c.slsrc.html#dump_src_attr2" target="src">00187</a>      if (LBM_FAILURE == lbm_src_topic_dump(src_2, &amp;entries, configs_option_ptr))
+<a href="dump_attributes_c.slsrc.html#dump_src_attr2" target="src">00188</a>      {
+<a href="dump_attributes_c.slsrc.html#dump_src_attr2" target="src">00189</a>          fprintf(stderr, "lbm_src_topic_dump error: %s\n", lbm_errmsg());
+<a href="dump_attributes_c.slsrc.html#dump_src_attr2" target="src">00190</a>          return;
+<a href="dump_attributes_c.slsrc.html#dump_src_attr2" target="src">00191</a>      }
+<a href="dump_attributes_c.slsrc.html#dump_src_attr2" target="src">00192</a>  
+<a href="dump_attributes_c.slsrc.html#dump_src_attr2" target="src">00193</a>      /* iterate through the returned array and print each option */
+<a href="dump_attributes_c.slsrc.html#dump_src_attr2" target="src">00194</a>      for (idx = 0; idx &lt; entries; ++idx) {
+<a href="dump_attributes_c.slsrc.html#dump_src_attr2" target="src">00195</a>          printf("%s[%d]: %s = %s\n", configs_option_ptr[idx].type, idx, configs_option_ptr[idx].oname, configs_option_ptr[idx].val);
+<a href="dump_attributes_c.slsrc.html#dump_src_attr2" target="src">00196</a>      }
+<a href="dump_attributes_c.slsrc.html#dump_src_attr2" target="src">00197</a>  
+<a href="dump_attributes_c.slsrc.html#dump_src_attr2" target="src">00198</a>      /* done with source attributes so free the allocated memory */
+<a href="dump_attributes_c.slsrc.html#dump_src_attr2" target="src">00199</a>      free(configs_option_ptr);
+</pre><!-- endblock dump_src_attr2_ref_1 --></small>
+
+
+
+
+<p2>Advanced Topics</p2>
+
+<p>licensing: TODO</p>
+
+<p>configuration: TODO</p>
+
+<p>anything else? TODO</p>
+
+</body>
+</html>
+
+

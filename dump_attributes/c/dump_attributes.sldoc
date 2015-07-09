@@ -1,0 +1,71 @@
+<html>
+<head>
+=semlit,include,../../style/head.sldoc=
+<title>dump_attributes: Dump UM conifguration attributes</title>
+</head>
+<body>
+<h1>An example of dumping attributes in C</h1>
+=semlit,include,../intro.sldoc=
+
+<p>There is one program source file:</p>
+<ul>
+<li><b><tt>=semlit,srcfile,dump_attributes_c.slsrc,dump_attributes.c=</tt></b>
+- (right-click and save as "dump_attributes.c") Example code.</li>
+</ul>
+
+<h2><tt>dump_attributes.c</tt></h2>
+
+<h3>Initialization</h3>
+
+<p>This sample createes 2 source objects.  The intention is to demonstrate
+that sources can have a differing set of configuration attributes. The creation
+of a source object is a two-step procedure: first create a "topic" object,
+specifying the topic name, and then create the "source" object. The topic
+object is used to configure a sources attributes. </p>
+=semlit,insert,src_create=
+
+<p>In this example, a second source is created.  The only difference between
+between the 2 sources created in this example is that they are configured to 
+use different destination ports.  This will enable the user to view differences
+in the attributes that will be dumped later. </p>
+=semlit,insert,src_create2=
+
+<h3>Dump Context Attributes</h3>
+
+<p>In this block, we will dump every attribute that the context object is 
+configured to use.  Many of these values are expected to be default.  This
+is because only the <tt>resolver_multicast_address</tt> was set to a non-default value
+in the beginning of this example program.  In a non-trivial application, it is 
+common for many of the default attributes to be overridden by a configuration 
+file, xml file, or programatically. In C, you are required to first get the number
+of attributes that the library can return using the lbm_*_attr_option_size.  This
+number can change from version to version as attributes are added and deprecated.
+Next, it is necessary to allocate an array with lbm_*_attr_option_size elements.
+Finally, it can be filled by the lbm_*_dump function. This array should be freed
+if you intend for it to be used for other attirbutes which may have different
+numbers of attributes. </p>
+=semlit,insert,dump_ctx_attr=
+
+<h3>Dump Source Attributes</h3>
+
+<p>In this block, we will dump every attribute that the first source object is 
+configured to use.  Many of these values are expected to be default.  This source
+is configured to use a non-default <tt>transport</tt> and <tt>transport_lbtrm_destination_port</tt>.
+These values can be seen the console output of this appliciation. In C, you are required to 
+first get the number of attributes that the library can return using the lbm_*_attr_option_size.  
+This number can change from version to version as attributes are added and deprecated.
+Next, it is necessary to allocate an array with lbm_*_attr_option_size elements.
+Finally, it can be filled by the lbm_*_dump function.</p>
+=semlit,insert,dump_src_attr=
+
+<p>Here, the second source's attributes will be dumped.  The only difference
+between the two sources in this example is the <tt>transport_lbtrm_destination_port</tt>.  
+This can be viewed in the console output of the example application. configs_option_ptr will
+no longer be used.  Therefore it can & should be freed. </p>
+=semlit,insert,dump_src_attr2=
+
+
+=semlit,include,../advanced.sldoc=
+</body>
+</html>
+

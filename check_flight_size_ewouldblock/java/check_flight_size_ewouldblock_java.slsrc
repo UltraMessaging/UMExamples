@@ -1,0 +1,95 @@
+/* CheckFlightSizeEwouldblock.java, see http://ultramessaging.github.io/UMExamples/CheckFlightSizeEwouldblock/java/ */
+
+import com.latencybusters.lbm.*;
+
+public class CheckFlightSizeEwouldblock {
+	
+	private final static int maxFlightSize = 500;
+	
+	public static void main(String[] args) throws LBMException {
+		LBMContext ctx = null; /* Context object: container for UM "instance". */
+		LBMSource src = null; /* Source object: for sending messages. */
+
+		/*** Initialization: create necessary UM objects. ***/
+		try {
+			LBMTopic topic = null;
+			LBMSourceAttributes srcAttr = null;
+			
+			ctx = new LBMContext();
+			srcAttr = new LBMSourceAttributes();
+/*=semlit,block,store_cfg=*/			
+			srcAttr.setValue("ume_store", "127.0.0.1:29999");
+			srcAttr.setValue("ume_flight_size", Integer.toString(maxFlightSize));
+/*=semlit,endblock,store_cfg=*/			
+			topic = ctx.allocTopic("test.topic",srcAttr);
+			src = new LBMSource(ctx, topic);
+		}
+		catch(LBMException ex)
+		{
+			System.err.println("Error initializing LBM objects: " + ex.toString());
+			System.exit(1);
+		}
+		
+		try{
+			Thread.sleep(1000);
+		}
+		catch(InterruptedException ex)
+		{
+			System.err.println("Error Thread.sleep interrupted: " + ex.toString());
+			System.exit(1);
+		}
+		
+		while(true)
+		{
+			/*** Send a message. ***/
+			try {
+/*=semlit,block,src_send=*/
+				src.send("test".getBytes(), "test".getBytes().length, LBM.MSG_FLUSH | LBM.SRC_NONBLOCK);
+/*=semlit,endblock,src_send=*/
+			}
+/*=semlit,block,flight_size_check=*/
+			catch (LBMEWouldBlockException ex)
+			{
+				try{
+					int currentFlightSize = src.getInflight(LBM.FLIGHT_SIZE_TYPE_UME);
+					
+					if(currentFlightSize == maxFlightSize)
+					{
+						System.err.println("Source is blocked on flight. Exiting");
+						break;
+					}
+				}
+				catch(LBMException exInflight)
+				{
+					System.err.println("Error getting flightsize: " + ex.toString());
+				}
+			}
+/*=semlit,endblock,flight_size_check=*/
+			catch(LBMException ex)
+			{
+				System.err.println("Error sending: " + ex.toString());
+			}
+		}
+		/*** Cleanup: delete UM objects. ***/
+
+		try{
+			Thread.sleep(3000);
+		}
+		catch(InterruptedException ex)
+		{
+			System.err.println("Error Thread.sleep interrupted: " + ex.toString());
+			System.exit(1);
+		}
+		
+		try {
+			src.close();
+			ctx.close();
+		}
+		catch(LBMException ex)
+		{
+			System.err.println("Error closing LBM objects: " + ex.toString());
+			System.exit(1);
+		}
+		
+	} /* main */
+} /* class MinSrc */

@@ -1,0 +1,8 @@
+Configure the source to enable both Late Join and Off-Transport Recovery (OTR) operation for receivers.
+
+Scope:  source
+Type:   int
+When to Set:	Can only be set during object initialization.
+Value	Description
+1	Enable source for Late Join and OTR.
+0	Disable source for Late Join and OTR. Default for all.

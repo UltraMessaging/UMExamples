@@ -1,0 +1,122 @@
+<html>
+<head>
+<link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+
+<title>setting_attributes.java: how to configure attributes programatically</title>
+</head>
+<body>
+<a href="../../index.html" class="button" target="_top">Example index</a>
+<h1>Setting Attributes Programatically</h1>
+<p>There is one program source file:</p>
+<ul>
+<li><b><tt><a href="setting_attributes.java">setting_attributes.java</a></tt></b>
+- (right-click and save as "setting_attributes.java") Example code.</li>
+</ul>
+
+<h2><tt>setting_attributes.java</tt></h2>
+
+<p>The example source code is organized as a Java class.</p>
+
+<h3>Configuring Context Attributes</h3>
+
+<p>In order to configure a UM context, an attributes object must first be created:</p>
+<a name="ctx_attr_create_ref_1" id="ctx_attr_create_ref_1"></a>
+<small><pre>
+<a href="setting_attributes_java.slsrc.html#ctx_attr_create" target="src">00024</a>              LBMContextAttributes ctxAttr = new LBMContextAttributes();
+<a href="setting_attributes_java.slsrc.html#ctx_attr_create" target="src">00025</a>              ctxAttr.setObjectRecycler(objRec, null);
+<a href="setting_attributes_java.slsrc.html#ctx_attr_create" target="src">00026</a>  
+<a href="setting_attributes_java.slsrc.html#ctx_attr_create" target="src">00027</a>              /* Modify resolver address by setting attributes */
+<a href="setting_attributes_java.slsrc.html#ctx_attr_create" target="src">00028</a>              ctxAttr.setValue("resolver_multicast_address", "224.10.11.12");
+</pre><!-- endblock ctx_attr_create_ref_1 --></small>
+
+
+
+<p>When an attributes object is created, a snapshot of the current configuration is 
+loaded.  In this example, the attributes contained in ctxAttr will be default.  This 
+is not always the case.  If a configuration file has been loaded via the API, or set
+via environmental variables, these values may not be default. </p>
+
+<p>These attributes will be used to configure a new context:</p>
+
+<a name="ctx_create_ref_1" id="ctx_create_ref_1"></a>
+<small><pre>
+<a href="setting_attributes_java.slsrc.html#ctx_create" target="src">00030</a>              ctx = new LBMContext(ctxAttr);
+</pre><!-- endblock ctx_create_ref_1 --></small>
+
+
+
+<p>The constructor is passed a reference to the attributes object, letting the UM library
+know that it should configure the new context with these specific attributes.</p>
+
+<h3>Configuring Source Attributes</h3>
+
+<p>Sources are configured slightly differently.  To create a source, a topic ojbect is 
+required. So instead of passing the attributes object directly into the sources constructor,
+it is used to initialized a topic object: </p>
+<a name="src_attr_create_ref_1" id="src_attr_create_ref_1"></a>
+<small><pre>
+<a href="setting_attributes_java.slsrc.html#src_attr_create" target="src">00032</a>              srcAttr = new LBMSourceAttributes();
+<a href="setting_attributes_java.slsrc.html#src_attr_create" target="src">00033</a>              srcAttr.setObjectRecycler(objRec, null);
+<a href="setting_attributes_java.slsrc.html#src_attr_create" target="src">00034</a>              
+<a href="setting_attributes_java.slsrc.html#src_attr_create" target="src">00035</a>              /* Set configuration value using strings */
+<a href="setting_attributes_java.slsrc.html#src_attr_create" target="src">00036</a>              srcAttr.setValue("transport", "lbtrm");
+<a href="setting_attributes_java.slsrc.html#src_attr_create" target="src">00037</a>              
+<a href="setting_attributes_java.slsrc.html#src_attr_create" target="src">00038</a>              /* The Java API only accepts string values. ints, for example */
+<a href="setting_attributes_java.slsrc.html#src_attr_create" target="src">00039</a>              /* must be converted to strings */
+<a href="setting_attributes_java.slsrc.html#src_attr_create" target="src">00040</a>              desPort = 14001;
+<a href="setting_attributes_java.slsrc.html#src_attr_create" target="src">00041</a>              srcAttr.setValue("transport_lbtrm_destination_port", Integer.toString(desPort));
+<a href="setting_attributes_java.slsrc.html#src_attr_create" target="src">00042</a>      
+<a href="setting_attributes_java.slsrc.html#src_attr_create" target="src">00043</a>              /* Create topic for the first source with configured attributes */
+<a href="setting_attributes_java.slsrc.html#src_attr_create" target="src">00044</a>              topic1 = new LBMTopic(ctx, "test.topic1", srcAttr);
+</pre><!-- endblock src_attr_create_ref_1 --></small>
+
+
+
+This topic object is then used to initialize a source with the given set of attributes.
+
+<a name="src_create_ref_1" id="src_create_ref_1"></a>
+<small><pre>
+<a href="setting_attributes_java.slsrc.html#src_create" target="src">00045</a>              src1 = new LBMSource(ctx, topic1);
+</pre><!-- endblock src_create_ref_1 --></small>
+
+
+
+<p>In this example a second source is configured to use a different transport_lbtrm_destination_port.
+It is common for topics to be programatically configured to use different settings, and this example
+demonstrates how the same source attributes object can be used to configure 2 different sources with
+their own unique set of attributes:</p>
+
+<a name="src_create2_ref_1" id="src_create2_ref_1"></a>
+<small><pre>
+<a href="setting_attributes_java.slsrc.html#src_create2" target="src">00047</a>              desPort = 14002;
+<a href="setting_attributes_java.slsrc.html#src_create2" target="src">00048</a>              srcAttr.setValue("transport_lbtrm_destination_port", Integer.toString(desPort));
+<a href="setting_attributes_java.slsrc.html#src_create2" target="src">00049</a>              
+<a href="setting_attributes_java.slsrc.html#src_create2" target="src">00050</a>              /* Create second topic and source using modified configuration values */ 
+<a href="setting_attributes_java.slsrc.html#src_create2" target="src">00051</a>              topic2 = new LBMTopic(ctx, "test.topic2", srcAttr);
+<a href="setting_attributes_java.slsrc.html#src_create2" target="src">00052</a>              src2 = new LBMSource(ctx, topic2);
+</pre><!-- endblock src_create2_ref_1 --></small>
+
+
+
+<h3>Cleaning Up Attributes</h3>
+
+<p>In object oriented languages, UM uses slightly different aproach to cleaning up attributes. 
+Due to shared resources with the unerdlying native C library, the .close method is used to clean
+up native memory allocation.  *Attributes objects are different from other UM objects in that
+they do not have .close() methods.  In order to clean them up, they can be assigned an LBMObjectRecycler 
+which can be .close()d.  This is done via the setObjectRecycler method as shown below:  </p>
+
+<a name="clean_ref_1" id="clean_ref_1"></a>
+<small><pre>
+<a href="setting_attributes_java.slsrc.html#clean" target="src">00062</a>              objRec.close();
+<a href="setting_attributes_java.slsrc.html#clean" target="src">00063</a>              src2.close();
+<a href="setting_attributes_java.slsrc.html#clean" target="src">00064</a>              src1.close();
+<a href="setting_attributes_java.slsrc.html#clean" target="src">00065</a>              ctx.close();
+</pre><!-- endblock clean_ref_1 --></small>
+
+
+
+</body>
+</html>
+
+
