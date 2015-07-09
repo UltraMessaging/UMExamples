@@ -1,0 +1,125 @@
+<html>
+<head>
+<link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+
+<title>check_flight_size_ewouldblock.cs: Checking Flight Size in C#/.NET</title>
+</head>
+<body>
+<a href="../../index.html" class="button" target="_top">Example index</a>
+
+<h1>Checking Flight Size programatically</h1>
+    <p>By default, when a UMP source hits its configured flight size, 
+      (<a href="#" title="Specifies the number of messages allowed to be in flight (unstabilized at a store and without delivery confirmation) before a new message send either blocks or triggers a notification (source event).
+
+Scope:          source
+Type:           unsigned int
+Units:          messages
+Default value:  1000
+When to Set:    Can only be set during object initialization.
+Version:        This option was implemented in LBM 4.1.1/UME 3.1.1
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">ume_flight_size</a>
+)
+      the send function will either block until the internal flight counter is decremented, or it will return an error, EWOULDBLOCK. Getting EWOULDBLOCK is not enough to determine if the source hit the configured flight size
+      because EWOULDBLOCK is also returned by the send function if the publisher happened to hit the configured rate limiter
+      (<a href="#" title="Maximum aggregate transmission rate of all LBT-RM sessions' original data plus retransmissions for this particular context.
+
+Scope:          context
+Type:           unsigned long int
+Units:          bits per second
+Default value:  10000000 (10 Mbps)
+When to Set:    Can only be set during object initialization.
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">transport_lbtrm_data_rate_limit</a>
+)</p>
+    <p>Therefore, if an application is required to when it hits flight size, additional application logic must be implemented
+      to make the determination. This sample file will demonstrate how a non-blocking send function can determine if flight
+      size was indeed hit, by checking the inflight counter and printing a message if the source is blocked on flight size</p>
+
+
+<p>There is one program source file:</p>
+<ul>
+<li><b><tt><a href="check_flight_size_ewouldblock.cs">check_flight_size_ewouldblock.cs</a></tt></b>
+- (right-click and save as "check_flight_size_ewouldblock.cs") Example code.</li>
+</ul>
+
+<h2><tt>check_flight_size_ewouldblock.cs</tt></h2>
+
+<p>The example source code is organized as a .NET class.</p>
+
+<h3>Store Setup</h3>
+
+<p>This example will check flight size.  Flight size is a UMP (UME) feature
+that is only applicable when stores are used.  In this example, we have provided
+one store XML, and are configuring the application to use one store:</p>
+
+<a name="store_cfg_ref_1" id="store_cfg_ref_1"></a>
+<small><pre>
+<a href="check_flight_size_ewouldblock_cs.slsrc.html#store_cfg" target="src">00026</a>                  srcAttr.setValue("ume_store", "127.0.0.1:29999");
+<a href="check_flight_size_ewouldblock_cs.slsrc.html#store_cfg" target="src">00027</a>                  srcAttr.setValue("ume_flight_size", maxFlightSize.ToString());
+</pre><!-- endblock store_cfg_ref_1 --></small>
+
+
+
+<p>Note that while only 1 store is required for testing purposes, all production
+deployments should use a minimum of three stores. Failure to do so may result in
+blocking in the event of failure.  In this example, we will assume no failures, 
+so one store is enough for demonstration purposes. </p>
+
+
+<h3>Checking Flight Size</h3>
+
+<p>When sending messages: </p>
+
+<a name="src_send_ref_1" id="src_send_ref_1"></a>
+<small><pre>
+<a href="check_flight_size_ewouldblock_cs.slsrc.html#src_send" target="src">00052</a>                      src.send(Encoding.ASCII.GetBytes("test"), 4, LBM.MSG_FLUSH | LBM.SRC_NONBLOCK);
+</pre><!-- endblock src_send_ref_1 --></small>
+
+
+
+<p>There are two potential reasons that a store can block.  The first reason
+is that the lbtrm rate limit was exceeded.  The second reason is that the 
+application exceeded it's <tt>ume_flight_size</tt> limit. The exceptions thrown
+by the UM library do not distinguish between the two, therefore it is necessary
+to check flight size via the API to resolve the type of exception. The following
+block of code demonstrates how to handle an exception and check for flight size:</p>
+
+<a name="flight_size_check_ref_1" id="flight_size_check_ref_1"></a>
+<small><pre>
+<a href="check_flight_size_ewouldblock_cs.slsrc.html#flight_size_check" target="src">00054</a>                  catch (LBMEWouldBlockException ex)
+<a href="check_flight_size_ewouldblock_cs.slsrc.html#flight_size_check" target="src">00055</a>                  {
+<a href="check_flight_size_ewouldblock_cs.slsrc.html#flight_size_check" target="src">00056</a>                      try
+<a href="check_flight_size_ewouldblock_cs.slsrc.html#flight_size_check" target="src">00057</a>                      {
+<a href="check_flight_size_ewouldblock_cs.slsrc.html#flight_size_check" target="src">00058</a>                          int currentFlightSize = src.getInflight(LBM.FLIGHT_SIZE_TYPE_UME);
+<a href="check_flight_size_ewouldblock_cs.slsrc.html#flight_size_check" target="src">00059</a>  
+<a href="check_flight_size_ewouldblock_cs.slsrc.html#flight_size_check" target="src">00060</a>                          if (currentFlightSize == maxFlightSize)
+<a href="check_flight_size_ewouldblock_cs.slsrc.html#flight_size_check" target="src">00061</a>                          {
+<a href="check_flight_size_ewouldblock_cs.slsrc.html#flight_size_check" target="src">00062</a>                              System.Console.Error.WriteLine("Source is blocked on flight. Exiting");
+<a href="check_flight_size_ewouldblock_cs.slsrc.html#flight_size_check" target="src">00063</a>                              break;
+<a href="check_flight_size_ewouldblock_cs.slsrc.html#flight_size_check" target="src">00064</a>                          }
+<a href="check_flight_size_ewouldblock_cs.slsrc.html#flight_size_check" target="src">00065</a>                      }
+<a href="check_flight_size_ewouldblock_cs.slsrc.html#flight_size_check" target="src">00066</a>                      catch (LBMException exInflight)
+<a href="check_flight_size_ewouldblock_cs.slsrc.html#flight_size_check" target="src">00067</a>                      {
+<a href="check_flight_size_ewouldblock_cs.slsrc.html#flight_size_check" target="src">00068</a>                          System.Console.Error.WriteLine("Error getting flightsize: " + exInflight.Message);
+<a href="check_flight_size_ewouldblock_cs.slsrc.html#flight_size_check" target="src">00069</a>                      }
+<a href="check_flight_size_ewouldblock_cs.slsrc.html#flight_size_check" target="src">00070</a>                  }
+<a href="check_flight_size_ewouldblock_cs.slsrc.html#flight_size_check" target="src">00071</a>                  catch (LBMException ex)
+<a href="check_flight_size_ewouldblock_cs.slsrc.html#flight_size_check" target="src">00072</a>                  {
+<a href="check_flight_size_ewouldblock_cs.slsrc.html#flight_size_check" target="src">00073</a>                      System.Console.Error.WriteLine("Error sending: " + ex.Message);
+<a href="check_flight_size_ewouldblock_cs.slsrc.html#flight_size_check" target="src">00074</a>                  }
+</pre><!-- endblock flight_size_check_ref_1 --></small>
+
+
+
+<p>Exceeding flight size may mean there is a problem receiving ACKs from a store.
+This could mean a number of things. The stores could be slow and or busy, which 
+is indicative of a potential capacity problem. There could be a communication/network
+issue preventing timely ACKs.  It could also be that message volumes were higher 
+than was tested and or anticipated. Whatever, the issue, it is often important to log
+and or otherwise raise the issue.  A source which is blocked due to exceeding the 
+configured flight size can no longer publish.<p>
+
+
+</body>
+</html>
+
+

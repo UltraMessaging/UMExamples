@@ -1,0 +1,59 @@
+<html>
+<head>
+=semlit,include,../../style/head.sldoc=
+<title>check_flight_size_ewouldblock.cs: Checking Flight Size in C#/.NET</title>
+</head>
+<body>
+=semlit,include,../intro.sldoc=
+
+<p>There is one program source file:</p>
+<ul>
+<li><b><tt>=semlit,srcfile,check_flight_size_ewouldblock_cs.slsrc,check_flight_size_ewouldblock.cs=</tt></b>
+- (right-click and save as "check_flight_size_ewouldblock.cs") Example code.</li>
+</ul>
+
+<h2><tt>check_flight_size_ewouldblock.cs</tt></h2>
+
+<p>The example source code is organized as a .NET class.</p>
+
+<h3>Store Setup</h3>
+
+<p>This example will check flight size.  Flight size is a UMP (UME) feature
+that is only applicable when stores are used.  In this example, we have provided
+one store XML, and are configuring the application to use one store:</p>
+
+=semlit,insert,store_cfg=
+
+<p>Note that while only 1 store is required for testing purposes, all production
+deployments should use a minimum of three stores. Failure to do so may result in
+blocking in the event of failure.  In this example, we will assume no failures, 
+so one store is enough for demonstration purposes. </p>
+
+
+<h3>Checking Flight Size</h3>
+
+<p>When sending messages: </p>
+
+=semlit,insert,src_send=
+
+<p>There are two potential reasons that a store can block.  The first reason
+is that the lbtrm rate limit was exceeded.  The second reason is that the 
+application exceeded it's <tt>ume_flight_size</tt> limit. The exceptions thrown
+by the UM library do not distinguish between the two, therefore it is necessary
+to check flight size via the API to resolve the type of exception. The following
+block of code demonstrates how to handle an exception and check for flight size:</p>
+
+=semlit,insert,flight_size_check=
+
+<p>Exceeding flight size may mean there is a problem receiving ACKs from a store.
+This could mean a number of things. The stores could be slow and or busy, which 
+is indicative of a potential capacity problem. There could be a communication/network
+issue preventing timely ACKs.  It could also be that message volumes were higher 
+than was tested and or anticipated. Whatever, the issue, it is often important to log
+and or otherwise raise the issue.  A source which is blocked due to exceeding the 
+configured flight size can no longer publish.<p>
+
+
+</body>
+</html>
+

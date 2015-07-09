@@ -4,8 +4,8 @@
 <title>setting_attributes.java: how to configure attributes programatically</title>
 </head>
 <body>
-
-
+<a href="../../index.html" class="button" target="_top">Example index</a>
+<h1>Setting Attributes Programatically</h1>
 <p>There is one program source file:</p>
 <ul>
 <li><b><tt>=semlit,srcfile,setting_attributes_java.slsrc,setting_attributes.java=</tt></b>

@@ -4,6 +4,7 @@
 <title>dump_attributes: Dump UM conifguration attributes</title>
 </head>
 <body>
+<h1>An example of dumping attributes in C</h1>
 =semlit,include,../intro.sldoc=
 
 <p>There is one program source file:</p>
