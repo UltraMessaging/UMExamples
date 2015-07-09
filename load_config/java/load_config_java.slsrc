@@ -1,0 +1,43 @@
+/* load_config.java, see http://ultramessaging.github.io/UMExamples */
+
+/* =semlit,block,import=*/
+import com.latencybusters.lbm.*;
+/* =semlit,endblock,import=*/
+
+public class load_config {
+	/* Define configuration files */
+	/* =semlit,block,define_configs=*/
+	public static String flat_conf = "../flat_config.cfg";
+	public static String xml_conf = "../xml_config.xml";
+	public static String app_name = "processA";
+	/* =semlit,endblock,define_configs=*/
+
+        public static void main(String[] args) throws LBMException
+        {
+		/* load flat file first */
+		/* =semlit,block,flat_file=*/
+		try 
+		{
+			LBM.setConfiguration(flat_conf);
+		}
+		catch (LBMException ex)
+		{
+			System.err.println("Error setting LBM configuration: " + ex.toString());
+			System.exit(1);
+		}
+		/* =semlit,endblock,flat_file=*/
+
+		/* then load XML file */
+		/* =semlit,block,xml_file=*/
+		try
+                {
+			LBM.setConfigurationXml(xml_conf, app_name);
+		}
+		catch (LBMException ex)
+                {
+                        System.err.println("Error setting LBM configuration: " + ex.toString());
+                        System.exit(1);
+                }
+		/* =semlit,endblock,xml_file=*/
+	}
+}

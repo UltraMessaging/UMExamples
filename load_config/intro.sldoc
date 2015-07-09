@@ -1,0 +1,23 @@
+    <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>Loading Configuration Files</h1>
+    <p>Ultra Messaging is highly dependent on the configuration attributes applied to each of the components in the library to
+       meet the requirements for an application. As described in the
+       <a href="http://ultramessaging.github.io/UMExamples/setting_attributes/c/index.html" target="_top">Setting Attributes</a>
+       sample application, attributes can be set programatically using the UM API. However, this can be tedious and even problematic
+       as it is not easy to maintain across a network of hundreds or even thousands of UM applications. Therefore, it makes more sense
+       to centralize a UM application configuration, and using UM configuration files was designed just for this purpose.</p>
+    <p>Ultra Messaging configuration files can be flat files, where each attribute is defined by its scope, the name of the attirbute,
+       and the desired value for said attribute. Each entry is formatted like so:</p>
+    <p style="text-indent:10"><b><i>scope attribute_name desired_value</i></b><p>
+    <p>For example, if the application wanted to set a source to use Ultra Messaging's reliable multicast
+       =semlit,tooltip,../../tooltips/source_transport.txt,transport=it would look like this:</p>
+    <p style="text-indent:10"><b>source transport lbtrm</b></p>
+    <p>Multiple flat files can be loaded via the API in a single application. For an attribute that is configured more than once when using
+       multiple configuration files, the application will accept the value of the last file in which it is loaded as the default value. Using
+       the API after loading a configuration file will also overwrite the value of a given attribute if configuring the same attributes.</p>
+    <p>As of UM 5.0, applications have the ability to load XML formatted files, which provide significanly more flexibility with regard to using
+       a single configuration file for multiple applications. XML files are far more flexible because applications can use pre-defined templates,
+       and applications can use a very specific subset of defined values inside the configuration file by defining an Application Name.</p>
+    <p>XML files differ slightly from flat files in that multiple XML files cannot be loaded within a single process; any attempt after the initial
+       load will result in an error. XML files and flat files can be loaded within the same application however.</p>
+    <p>There is one program source file and two configuration files:</p>

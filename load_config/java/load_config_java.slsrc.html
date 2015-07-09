@@ -1,0 +1,174 @@
+<!DOCTYPE html><html><head><title>load_config.java</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>load_config.java</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+<a href="load_config.sldoc.html#import_ref_1" target="doc">00003</a>
+00004
+00005
+00006
+<a href="load_config.sldoc.html#define_configs_ref_1" target="doc">00007</a>
+<a href="load_config.sldoc.html#define_configs_ref_1" target="doc">00008</a>
+<a href="load_config.sldoc.html#define_configs_ref_1" target="doc">00009</a>
+00010
+00011
+00012
+00013
+<a href="load_config.sldoc.html#flat_file_ref_1" target="doc">00014</a>
+<a href="load_config.sldoc.html#flat_file_ref_1" target="doc">00015</a>
+<a href="load_config.sldoc.html#flat_file_ref_1" target="doc">00016</a>
+<a href="load_config.sldoc.html#flat_file_ref_1" target="doc">00017</a>
+<a href="load_config.sldoc.html#flat_file_ref_1" target="doc">00018</a>
+<a href="load_config.sldoc.html#flat_file_ref_1" target="doc">00019</a>
+<a href="load_config.sldoc.html#flat_file_ref_1" target="doc">00020</a>
+<a href="load_config.sldoc.html#flat_file_ref_1" target="doc">00021</a>
+<a href="load_config.sldoc.html#flat_file_ref_1" target="doc">00022</a>
+00023
+00024
+<a href="load_config.sldoc.html#xml_file_ref_1" target="doc">00025</a>
+<a href="load_config.sldoc.html#xml_file_ref_1" target="doc">00026</a>
+<a href="load_config.sldoc.html#xml_file_ref_1" target="doc">00027</a>
+<a href="load_config.sldoc.html#xml_file_ref_1" target="doc">00028</a>
+<a href="load_config.sldoc.html#xml_file_ref_1" target="doc">00029</a>
+<a href="load_config.sldoc.html#xml_file_ref_1" target="doc">00030</a>
+<a href="load_config.sldoc.html#xml_file_ref_1" target="doc">00031</a>
+<a href="load_config.sldoc.html#xml_file_ref_1" target="doc">00032</a>
+<a href="load_config.sldoc.html#xml_file_ref_1" target="doc">00033</a>
+00034
+00035
+</td><td>  /* load_config.java, see http://ultramessaging.github.io/UMExamples */
+  
+<span name="import" id="import"></span>  import com.latencybusters.lbm.*;
+  
+  public class load_config {
+      /* Define configuration files */
+<span name="define_configs" id="define_configs"></span>      public static String flat_conf = "../flat_config.cfg";
+      public static String xml_conf = "../xml_config.xml";
+      public static String app_name = "processA";
+  
+          public static void main(String[] args) throws LBMException
+          {
+          /* load flat file first */
+<span name="flat_file" id="flat_file"></span>          try 
+          {
+              LBM.setConfiguration(flat_conf);
+          }
+          catch (LBMException ex)
+          {
+              System.err.println("Error setting LBM configuration: " + ex.toString());
+              System.exit(1);
+          }
+  
+          /* then load XML file */
+<span name="xml_file" id="xml_file"></span>          try
+                  {
+              LBM.setConfigurationXml(xml_conf, app_name);
+          }
+          catch (LBMException ex)
+                  {
+                          System.err.println("Error setting LBM configuration: " + ex.toString());
+                          System.exit(1);
+                  }
+      }
+  }
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

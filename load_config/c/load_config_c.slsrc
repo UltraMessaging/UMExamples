@@ -35,7 +35,7 @@
 main()
 {
         /* =semlit,block,vars=*/
-	int err;				/* Used for checking API return codes */
+	int err;	/* Used for checking API return codes */
 	/* =semlit,endblock,vars=*/
 
 	/* =semlit,block,flat_file=*/	

@@ -28,7 +28,7 @@
 
 main()
 {
-	int err;				/* Used for checking API return codes */
+	int err;	/* Used for checking API return codes */
 
 	err = lbm_config((const char *)LBM_CONFIG_FLAT_FILE);
 	EX_LBM_CHK(err);
