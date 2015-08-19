@@ -1,0 +1,362 @@
+<!DOCTYPE html><html><head><title>event_q_src.c</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>event_q_src.c</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+00008
+00009
+00010
+00011
+00012
+00013
+00014
+00015
+00016
+00017
+00018
+00019
+00020
+00021
+00022
+00023
+00024
+00025
+00026
+00027
+00028
+00029
+00030
+00031
+00032
+00033
+00034
+00035
+00036
+00037
+00038
+00039
+00040
+00041
+00042
+00043
+00044
+00045
+00046
+00047
+00048
+00049
+00050
+00051
+00052
+00053
+00054
+00055
+00056
+00057
+00058
+00059
+00060
+00061
+00062
+00063
+00064
+00065
+00066
+00067
+00068
+00069
+00070
+00071
+00072
+00073
+00074
+00075
+00076
+00077
+00078
+00079
+00080
+00081
+00082
+00083
+00084
+00085
+00086
+00087
+00088
+00089
+00090
+00091
+00092
+00093
+00094
+00095
+00096
+00097
+00098
+<a href="event_q_src.sldoc.html#evq_create_ref_1" target="doc">00099</a>
+00100
+00101
+00102
+00103
+00104
+<a href="event_q_src.sldoc.html#src_create_ref_1" target="doc">00105</a>
+00106
+00107
+00108
+00109
+00110
+00111
+00112
+00113
+<a href="event_q_src.sldoc.html#evq_run_ref_1" target="doc">00114</a>
+00115
+00116
+00117
+00118
+00119
+00120
+00121
+<a href="event_q_src.sldoc.html#evq_close_ref_1" target="doc">00122</a>
+<a href="event_q_src.sldoc.html#evq_close_ref_1" target="doc">00123</a>
+<a href="event_q_src.sldoc.html#evq_close_ref_1" target="doc">00124</a>
+00125
+00126
+00127
+00128
+00129
+</td><td>  /* Example on setting Ultra Messaging attributes */
+  
+  #include &lt;stdio.h&gt;
+  
+  #if defined(_MSC_VER)
+  /* Windows-only includes */
+  #include &lt;winsock2.h&gt;
+  #define SLEEP(s) Sleep((s)*1000)
+  #else
+  /* Unix-only includes */
+  #include &lt;stdlib.h&gt;
+  #include &lt;unistd.h&gt;
+  #define SLEEP(s) sleep(s)
+  #endif
+  
+  #include &lt;lbm/lbm.h&gt;
+  
+  /* Source event handler.  the UM library passes all per-source events       */
+  /* back to the application.  This will by default execute on the context    */
+  /* thread.  Therefore there should be no blocking calls made.  If you must  */
+  /* make a blocking call then use the evenQ.                                 */
+  int handle_src_event(lbm_src_t *src, int event, void *ed, void *cd)
+  {
+      switch (event) {
+      case LBM_SRC_EVENT_CONNECT:
+      {
+          const char *clientname = (const char *)ed;
+          printf("Receiver connect [%s]\n", clientname);
+      }
+      break;
+      case LBM_SRC_EVENT_DISCONNECT:
+      {
+          const char *clientname = (const char *)ed;
+          printf("Receiver disconnect [%s]\n", clientname);
+      }
+      break;
+      default:
+          printf("Unhandled source event %d\n", event);
+          break;
+      }
+      return 0;
+  }
+  
+  main()
+  {
+      lbm_context_t *ctx;                         /* pointer to context object */
+      lbm_topic_t *topic_1;                       /* pointer to topic object */
+      lbm_src_t *src;                             /* pointer to source object */
+      lbm_src_topic_attr_t *tattr;                /* pointer to source attribute object */
+      lbm_context_attr_t * cattr;                 /* pointer to context attribute object */
+      int err;                                    /* return status of lbm functions (true=error) */
+      lbm_event_queue_t *evq = NULL;              /* pointer to eventQ handle */
+  
+  #if defined(_MSC_VER)
+      /* windows-specific code */
+      WSADATA wsadata;
+      int wsStat = WSAStartup(MAKEWORD(2, 2), &amp;wsadata);
+      if (wsStat != 0)
+      {
+          printf("line %d: wsStat=%d\n", __LINE__, wsStat);
+          exit(1);
+      }
+  #endif
+  
+      /* Initialize the defaults for the context attribute object */
+      if (lbm_context_attr_create(&amp;cattr) != 0)
+      {
+          fprintf(stderr, "lbm_context_attr_create: %s\n", lbm_errmsg());
+          exit(1);
+      }
+  
+      /* Creating the context */
+      err = lbm_context_create(&amp;ctx, cattr, NULL, NULL);
+      if (err)
+      {
+          printf("line %d: %s\n", __LINE__, lbm_errmsg());
+          exit(1);
+      }
+  
+      /* Delete the context attribute object */
+      lbm_context_attr_delete(cattr);
+  
+      /* Initializing the source attribute object */
+      if (lbm_src_topic_attr_create(&amp;tattr) != 0)
+      {
+          fprintf(stderr, "lbm_src_topic_attr_create: %s\n", lbm_errmsg());
+          exit(1);
+      }
+  
+      /* Allocating the topic */
+      err = lbm_src_topic_alloc(&amp;topic_1, ctx, "test.topic", tattr);
+      if (err)
+      {
+          printf("line %d: %s\n", __LINE__, lbm_errmsg());
+          exit(1);
+      }
+  
+      /* Create an event queue and associate it with a callback */
+<span name="evq_create" id="evq_create"></span>      if (lbm_event_queue_create(&amp;evq, NULL, NULL, NULL) == LBM_FAILURE) {
+          fprintf(stderr, "lbm_event_queue_create: %s\n", lbm_errmsg());
+          exit(1);
+      }
+      
+      /* Creating the source */
+<span name="src_create" id="src_create"></span>      err = lbm_src_create(&amp;src, ctx, topic_1, handle_src_event, NULL, evq);
+      if (err)
+      {
+          printf("line %d: %s\n", __LINE__, lbm_errmsg());
+          exit(1);
+      }
+  
+      /* This runs the eventQ for 10 seconds.  This means for the next 10 seconds */
+      /* all of the sources events will be processed on this thread.              */
+<span name="evq_run" id="evq_run"></span>      if(lbm_event_dispatch(evq, 10000) == LBM_FAILURE) {
+          fprintf(stderr, "lbm_event_dispatch returned error: %s\n", lbm_errmsg());
+      }
+  
+      /* Delete the first and second source topic attribute objects */
+      lbm_src_topic_attr_delete(tattr);
+  
+      /* Finished with all LBM functions, delete the source and context object. */
+<span name="evq_close" id="evq_close"></span>      lbm_src_delete(src);
+      lbm_context_delete(ctx);
+      lbm_event_queue_delete(evq);
+  #if defined(_MSC_VER)
+      WSACleanup();
+  #endif
+  }
+  
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

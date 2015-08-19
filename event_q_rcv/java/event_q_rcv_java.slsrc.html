@@ -1,0 +1,258 @@
+<!DOCTYPE html><html><head><title>event_q_rcv.java</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>event_q_rcv.java</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+00008
+00009
+00010
+00011
+<a href="event_q_rcv.sldoc.html#evq_create_ref_1" target="doc">00012</a>
+00013
+00014
+00015
+00016
+00017
+00018
+<a href="event_q_rcv.sldoc.html#rcv_create_ref_1" target="doc">00019</a>
+<a href="event_q_rcv.sldoc.html#rcv_create_ref_1" target="doc">00020</a>
+<a href="event_q_rcv.sldoc.html#rcv_create_ref_1" target="doc">00021</a>
+<a href="event_q_rcv.sldoc.html#rcv_create_ref_1" target="doc">00022</a>
+00023
+00024
+00025
+00026
+00027
+00028
+00029
+<a href="event_q_rcv.sldoc.html#evq_run_ref_1" target="doc">00030</a>
+00031
+00032
+00033
+00034
+<a href="event_q_rcv.sldoc.html#evq_close_ref_1" target="doc">00035</a>
+<a href="event_q_rcv.sldoc.html#evq_close_ref_1" target="doc">00036</a>
+<a href="event_q_rcv.sldoc.html#evq_close_ref_1" target="doc">00037</a>
+00038
+00039
+00040
+00041
+00042
+00043
+00044
+00045
+00046
+00047
+00048
+00049
+00050
+00051
+00052
+00053
+00054
+00055
+00056
+00057
+00058
+00059
+00060
+00061
+00062
+00063
+00064
+00065
+00066
+00067
+00068
+00069
+00070
+00071
+00072
+00073
+00074
+00075
+00076
+00077
+</td><td>  import com.latencybusters.lbm.*;
+  
+  public class EventQrcv {
+      public static void main(String[] args) throws LBMException {
+          LBMContext ctx = null;      /* Context object: container for UM "instance". */
+          LBMReceiver rcv = null;     /* Source object: for sending messages. */
+          LBMEventQueue evq = null;   /* Event Queue object: process receiver events on app thread */
+          
+          LBMRcvReceiver rcvCB = null;
+          
+          ctx = new LBMContext();
+<span name="evq_create" id="evq_create"></span>          evq = new LBMEventQueue();
+          
+          {
+              LBMTopic topic = null;  
+              topic = ctx.allocTopic("test.topic");
+              
+  
+<span name="rcv_create" id="rcv_create"></span>              /* The event queue object is passed into the receiver constructor */
+              /* This causes events to be queued in an unbounded Q.  In order   */
+              /* to process these messages the evq.Run() method must be called  */
+              rcv = new LBMReceiver(ctx, topic, rcvCB, null, evq);
+          }
+          
+          
+          /* run the event queue for 60 seconds           */
+          /* all the receiver events will be processed    */
+          /* in this thread. This includes message        */
+          /* processing.                                  */
+<span name="evq_run" id="evq_run"></span>          evq.run(60000);
+          
+          try {
+              /* Shutdown order is important.  Event Queues should */
+              /* be .close()d after the context and receiver.      */
+<span name="evq_close" id="evq_close"></span>              rcv.close();
+              ctx.close();
+              evq.close();
+          }
+          catch(LBMException ex)
+          {
+              System.err.println("Error closing LBM objects: " + ex.toString());
+              System.exit(1);
+          }
+      }
+  }
+  
+  class LBMRcvReceiver implements LBMReceiverCallback
+  {
+      /* This on receive callback is required to process messages and */
+      /* other events.  Normally this callback would be executed on   */
+      /* the context thread.  In this example, we are using an eventQ */
+      /* This means this callback will be executed during the .run()  */
+      /* call on the eventQ object                                    */
+      public int onReceive(Object cbArg, LBMMessage msg)
+      {
+          switch (msg.type())
+          {
+              case LBM.MSG_DATA:
+                  System.out.println("Msg Received: " + msg.dataString());
+                  break;
+              case LBM.MSG_BOS:
+                  System.out.println("[" + msg.topicName() + "][" + msg.source() + "], Beginning of Transport Session");
+                  break;
+              case LBM.MSG_EOS:
+                  System.out.println("[" + msg.topicName() + "][" + msg.source() + "], End of Transport Session");
+                  break;
+              default:
+                  System.out.println("Unknown lbm_msg_t type " + msg.type() + " [" + msg.topicName() + "][" + msg.source() + "]");
+                  break;
+          }
+          System.out.flush(); 
+          msg.dispose();      
+          return 0;
+      }
+  }
+  
+  
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

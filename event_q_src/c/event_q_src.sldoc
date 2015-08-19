@@ -1,0 +1,39 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Source Event Queue Example</title>
+  </head>
+  <body>
+    <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>How to use an Event Queue with a source</h1>
+    <p>An event queue is an object in the UM library that allows a source to process events on an application thread. By default all events
+	are processed on the context thread.  The context thread is created automatically when the context object is instantiated.  This thread is a 
+	shared resource between all sources, receivers and timers, both internally in the UM library and externally in the application.  This can quickly 
+	become a bottleneck if an application is doing lots of things, like receiving messages, tracking timers related to UMP, or event getting lots of 
+	other events related to the UM library.  Therefore, at a slight cost to performance (1 thread switch). An application can use its own thread, or 
+	as many as it likes.  One way to do this is to use the event queue.</p>
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt>=semlit,srcfile,event_q_src_c.slsrc,event_q_src.c=</tt></b>
+        - (right-click and save as "event_q_src.c") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>event_q_src.c</tt></h2>
+    <h4>Creating the Event Queue</h4>
+        <p>The easiest way to creant an event queue is to initialize it by calling lbm_event_queue_create with no arguments.</p>
+        =semlit,insert,evq_create=
+    <h4>Create a source  with an event queue.</h4>
+	<p>To "hook up" a source to an event queue, simply pass it into the lbm_src_create function.  Note that all further
+		events will be delivered to the event queue.  They will not be processed until the event queue is run by calling lbm_event_dispatch.</p>
+	=semlit,insert,src_create=
+    <h4>Processing Events on the Event Queue</h4>
+	<p>To run an event queue on a specific thread, simply call lbm_event_dispatch with an argument (time in milliseconds).  This
+	will execute queued events on the thread that called lbm_event_dispatch. Events will be processed for the specified amount of time.</p>
+	=semlit,insert,evq_run=
+    <h4>Cleanup</h4>
+	<p>When using an event queue, care must be taken in order to cleanly shutdown.  Issues can potentially occur
+	if a context tries to deliver events to the queue after it has already been _deleted()'ed.  Therefore, the application 
+	should delete all sources, then the context itself.  This will prevent any new events from being generated.  Once the
+	queue is empty and no new events are being generated, the event queue can safely be _deleted()'ed.</p>
+	=semlit,insert,evq_close=
+    </body>
+</html>

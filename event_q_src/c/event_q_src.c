@@ -1,0 +1,129 @@
+/* Example on setting Ultra Messaging attributes */
+
+#include <stdio.h>
+
+#if defined(_MSC_VER)
+/* Windows-only includes */
+#include <winsock2.h>
+#define SLEEP(s) Sleep((s)*1000)
+#else
+/* Unix-only includes */
+#include <stdlib.h>
+#include <unistd.h>
+#define SLEEP(s) sleep(s)
+#endif
+
+#include <lbm/lbm.h>
+
+/* Source event handler.  the UM library passes all per-source events		*/
+/* back to the application.  This will by default execute on the context	*/
+/* thread.  Therefore there should be no blocking calls made.  If you must	*/
+/* make a blocking call then use the evenQ.									*/
+int handle_src_event(lbm_src_t *src, int event, void *ed, void *cd)
+{
+	switch (event) {
+	case LBM_SRC_EVENT_CONNECT:
+	{
+		const char *clientname = (const char *)ed;
+		printf("Receiver connect [%s]\n", clientname);
+	}
+	break;
+	case LBM_SRC_EVENT_DISCONNECT:
+	{
+		const char *clientname = (const char *)ed;
+		printf("Receiver disconnect [%s]\n", clientname);
+	}
+	break;
+	default:
+		printf("Unhandled source event %d\n", event);
+		break;
+	}
+	return 0;
+}
+
+main()
+{
+	lbm_context_t *ctx;							/* pointer to context object */
+	lbm_topic_t *topic_1;						/* pointer to topic object */
+	lbm_src_t *src;								/* pointer to source object */
+	lbm_src_topic_attr_t *tattr;				/* pointer to source attribute object */
+	lbm_context_attr_t * cattr;					/* pointer to context attribute object */
+	int err;									/* return status of lbm functions (true=error) */
+	lbm_event_queue_t *evq = NULL;				/* pointer to eventQ handle */
+
+#if defined(_MSC_VER)
+	/* windows-specific code */
+	WSADATA wsadata;
+	int wsStat = WSAStartup(MAKEWORD(2, 2), &wsadata);
+	if (wsStat != 0)
+	{
+		printf("line %d: wsStat=%d\n", __LINE__, wsStat);
+		exit(1);
+	}
+#endif
+
+	/* Initialize the defaults for the context attribute object */
+	if (lbm_context_attr_create(&cattr) != 0)
+	{
+		fprintf(stderr, "lbm_context_attr_create: %s\n", lbm_errmsg());
+		exit(1);
+	}
+
+	/* Creating the context */
+	err = lbm_context_create(&ctx, cattr, NULL, NULL);
+	if (err)
+	{
+		printf("line %d: %s\n", __LINE__, lbm_errmsg());
+		exit(1);
+	}
+
+	/* Delete the context attribute object */
+	lbm_context_attr_delete(cattr);
+
+	/* Initializing the source attribute object */
+	if (lbm_src_topic_attr_create(&tattr) != 0)
+	{
+		fprintf(stderr, "lbm_src_topic_attr_create: %s\n", lbm_errmsg());
+		exit(1);
+	}
+
+	/* Allocating the topic */
+	err = lbm_src_topic_alloc(&topic_1, ctx, "test.topic", tattr);
+	if (err)
+	{
+		printf("line %d: %s\n", __LINE__, lbm_errmsg());
+		exit(1);
+	}
+
+	/* Create an event queue and associate it with a callback */
+	if (lbm_event_queue_create(&evq, NULL, NULL, NULL) == LBM_FAILURE) {
+		fprintf(stderr, "lbm_event_queue_create: %s\n", lbm_errmsg());
+		exit(1);
+	}
+	
+	/* Creating the source */
+	err = lbm_src_create(&src, ctx, topic_1, handle_src_event, NULL, evq);
+	if (err)
+	{
+		printf("line %d: %s\n", __LINE__, lbm_errmsg());
+		exit(1);
+	}
+
+	/* This runs the eventQ for 10 seconds.  This means for the next 10 seconds */
+	/* all of the sources events will be processed on this thread.				*/
+	if(lbm_event_dispatch(evq, 10000) == LBM_FAILURE) {
+		fprintf(stderr, "lbm_event_dispatch returned error: %s\n", lbm_errmsg());
+	}
+
+	/* Delete the first and second source topic attribute objects */
+	lbm_src_topic_attr_delete(tattr);
+
+	/* Finished with all LBM functions, delete the source and context object. */
+	lbm_src_delete(src);
+	lbm_context_delete(ctx);
+	lbm_event_queue_delete(evq);
+#if defined(_MSC_VER)
+	WSACleanup();
+#endif
+}
+
