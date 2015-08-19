@@ -1,0 +1,248 @@
+<!DOCTYPE html><html><head><title>event_q_rcv.cs</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>event_q_rcv.cs</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+00008
+00009
+00010
+00011
+00012
+00013
+00014
+00015
+00016
+<a href="event_q_rcv.sldoc.html#evq_create_ref_1" target="doc">00017</a>
+00018
+00019
+00020
+00021
+00022
+00023
+00024
+<a href="event_q_rcv.sldoc.html#rcv_create_ref_1" target="doc">00025</a>
+00026
+00027
+00028
+00029
+00030
+00031
+00032
+<a href="event_q_rcv.sldoc.html#evq_run_ref_1" target="doc">00033</a>
+00034
+00035
+00036
+00037
+<a href="event_q_rcv.sldoc.html#evq_close_ref_1" target="doc">00038</a>
+<a href="event_q_rcv.sldoc.html#evq_close_ref_1" target="doc">00039</a>
+<a href="event_q_rcv.sldoc.html#evq_close_ref_1" target="doc">00040</a>
+00041
+00042
+00043
+00044
+00045
+00046
+00047
+<a href="event_q_rcv.sldoc.html#proc_events_ref_1" target="doc">00048</a>
+<a href="event_q_rcv.sldoc.html#proc_events_ref_1" target="doc">00049</a>
+<a href="event_q_rcv.sldoc.html#proc_events_ref_1" target="doc">00050</a>
+<a href="event_q_rcv.sldoc.html#proc_events_ref_1" target="doc">00051</a>
+<a href="event_q_rcv.sldoc.html#proc_events_ref_1" target="doc">00052</a>
+<a href="event_q_rcv.sldoc.html#proc_events_ref_1" target="doc">00053</a>
+<a href="event_q_rcv.sldoc.html#proc_events_ref_1" target="doc">00054</a>
+<a href="event_q_rcv.sldoc.html#proc_events_ref_1" target="doc">00055</a>
+<a href="event_q_rcv.sldoc.html#proc_events_ref_1" target="doc">00056</a>
+<a href="event_q_rcv.sldoc.html#proc_events_ref_1" target="doc">00057</a>
+<a href="event_q_rcv.sldoc.html#proc_events_ref_1" target="doc">00058</a>
+<a href="event_q_rcv.sldoc.html#proc_events_ref_1" target="doc">00059</a>
+<a href="event_q_rcv.sldoc.html#proc_events_ref_1" target="doc">00060</a>
+<a href="event_q_rcv.sldoc.html#proc_events_ref_1" target="doc">00061</a>
+<a href="event_q_rcv.sldoc.html#proc_events_ref_1" target="doc">00062</a>
+<a href="event_q_rcv.sldoc.html#proc_events_ref_1" target="doc">00063</a>
+<a href="event_q_rcv.sldoc.html#proc_events_ref_1" target="doc">00064</a>
+<a href="event_q_rcv.sldoc.html#proc_events_ref_1" target="doc">00065</a>
+<a href="event_q_rcv.sldoc.html#proc_events_ref_1" target="doc">00066</a>
+<a href="event_q_rcv.sldoc.html#proc_events_ref_1" target="doc">00067</a>
+<a href="event_q_rcv.sldoc.html#proc_events_ref_1" target="doc">00068</a>
+00069
+00070
+00071
+00072
+</td><td>  using System;
+  using System.Collections.Generic;
+  using System.Linq;
+  using System.Text;
+  using System.Threading.Tasks;
+  using com.latencybusters.lbm;
+  
+  public class EventQrcv {
+  
+      static void Main(String[] args)  {
+          LBMContext ctx = null; /* Context object: container for UM "instance". */
+          LBMReceiver rcv = null; /* Source object: for sending messages. */
+          LBMEventQueue evq = null; /* Event Queue object: process receiver events on app thread */
+          LBMReceiverCallback cb = new LBMReceiverCallback(onReceive);    /* Wrapping the onReceive functor in a callback */
+          
+          ctx = new LBMContext();
+<span name="evq_create" id="evq_create"></span>          evq = new LBMEventQueue();
+          {
+              LBMTopic topic = null;
+              topic = ctx.lookupTopic("test.topic");
+  
+              /* The event queue object is passed into the receiver constructor */
+              /* This causes events to be queued in an unbounded Q.  In order   */
+              /* to process these messages the evq.Run() method must be called  */
+<span name="rcv_create" id="rcv_create"></span>              rcv = new LBMReceiver(ctx, topic, onReceive, null, evq);
+          }
+  
+          
+          /* run the event queue for 60 seconds           */
+          /* all the receiver events will be processed    */
+          /* in this thread. This includes message        */
+          /* processing.                                  */
+<span name="evq_run" id="evq_run"></span>          evq.run(60000);
+  
+          try {
+              /* Shutdown order is important.  Event Queues should */
+              /* be .close()d after the context and receiver.      */
+<span name="evq_close" id="evq_close"></span>              rcv.close();
+              ctx.close();
+              evq.close();
+          }
+          catch(LBMException ex)
+          {
+              System.Console.Error.WriteLine("Error closing LBM objects: " + ex.Message);
+              System.Environment.Exit(1);
+          }
+      }
+<span name="proc_events" id="proc_events"></span>      static int onReceive(Object cbArg, LBMMessage msg)
+      {
+          switch (msg.type())
+          {
+              case LBM.MSG_DATA:
+                  System.Console.Out.WriteLine("Msg Received: " + msg.dataString());
+                  break;
+              case LBM.MSG_BOS:
+                  System.Console.Out.WriteLine("[" + msg.topicName() + "][" + msg.source() + "], Beginning of Transport Session");
+                  break;
+              case LBM.MSG_EOS:
+                  System.Console.Out.WriteLine("[" + msg.topicName() + "][" + msg.source() + "], End of Transport Session");
+                  break;
+              default:
+                  System.Console.Out.WriteLine("Unknown lbm_msg_t type " + msg.type() + " [" + msg.topicName() + "][" + msg.source() + "]");
+                  break;
+          }
+          System.Console.Out.Flush();
+          msg.dispose();
+          return 0;
+      }
+  }
+  
+  
+  
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html><html><head><title>event_q_src.java</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>event_q_src.java</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+00008
+00009
+00010
+00011
+00012
+00013
+00014
+00015
+00016
+00017
+00018
+00019
+00020
+00021
+00022
+00023
+00024
+00025
+00026
+00027
+00028
+<a href="event_q_src.sldoc.html#evq_create_ref_1" target="doc">00029</a>
+00030
+00031
+<a href="event_q_src.sldoc.html#src_create_ref_1" target="doc">00032</a>
+00033
+00034
+00035
+00036
+00037
+00038
+00039
+00040
+00041
+00042
+00043
+<a href="event_q_src.sldoc.html#evq_run_ref_1" target="doc">00044</a>
+00045
+<a href="event_q_src.sldoc.html#evq_close_ref_1" target="doc">00046</a>
+<a href="event_q_src.sldoc.html#evq_close_ref_1" target="doc">00047</a>
+<a href="event_q_src.sldoc.html#evq_close_ref_1" target="doc">00048</a>
+00049
+00050
+00051
+00052
+00053
+00054
+00055
+00056
+00057
+00058
+00059
+00060
+00061
+00062
+00063
+00064
+00065
+00066
+00067
+00068
+00069
+00070
+00071
+00072
+00073
+00074
+00075
+00076
+00077
+00078
+00079
+00080
+00081
+00082
+00083
+00084
+</td><td>  /* eventQ.java, see http://ultramessaging.github.io/UMExamples/eventQ/java/ */
+  
+  import com.latencybusters.lbm.*;
+  
+  public class eventQ {
+      
+      
+      public static void main(String[] args) throws LBMException {
+          LBMContext ctx = null; /* Context object: container for UM "instance". */
+          LBMSource src = null; /* Source object: for sending messages. */
+          LBMEventQueue evq = null; /* Event Queue object: process source events on app thread */
+          SrcCB cb = null;
+          
+          
+          /*** Create a source using an event queue ***/
+          try {
+              LBMTopic topic = null;
+              LBMSourceAttributes srcAttr = null;
+              
+              ctx = new LBMContext();
+              srcAttr = new LBMSourceAttributes();
+              
+              /* create callback to process events */
+              cb = new SrcCB();
+              
+              /* define Event Queue. This allows us to process events on an  */
+              /* application thread, as opposed to the default behavior,     */
+              /* which is to process events on the (internal) context thread.*/
+<span name="evq_create" id="evq_create"></span>              evq = new LBMEventQueue();
+              
+              topic = ctx.allocTopic("test.topic",srcAttr);
+<span name="src_create" id="src_create"></span>              src = new LBMSource(ctx, topic, evq);
+          }
+          catch(LBMException ex)
+          {
+              System.err.println("Error initializing LBM objects: " + ex.toString());
+              System.exit(1);
+          }
+          
+  
+          /* run the event queue for 60 seconds       */
+          /* all the source events will be processed  */
+          /* in this thread                 */
+<span name="evq_run" id="evq_run"></span>          evq.run(60000);
+          try {
+<span name="evq_close" id="evq_close"></span>              src.close();
+              ctx.close();
+              evq.close();
+          }
+          catch(LBMException ex)
+          {
+              System.err.println("Error closing LBM objects: " + ex.toString());
+              System.exit(1);
+          }
+          
+      } /* main */
+  } /* class eventQ */
+  
+  class SrcCB implements LBMSourceEventCallback
+  {
+      public boolean blocked = false;
+  
+      public int onSourceEvent(Object arg, LBMSourceEvent sourceEvent)
+      {
+          String clientname;
+  
+          switch (sourceEvent.type())
+          {
+              case LBM.SRC_EVENT_CONNECT:
+                  clientname = sourceEvent.dataString();
+                  System.out.println("Receiver connect " + clientname);
+                  break;
+              case LBM.SRC_EVENT_DISCONNECT:
+                  clientname = sourceEvent.dataString();
+                  System.out.println("Receiver disconnect " + clientname);
+                  break;
+              default:
+                  break;
+          }
+          sourceEvent.dispose();
+          System.out.flush(); 
+          return 0;
+      }
+  }
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

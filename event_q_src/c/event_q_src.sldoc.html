@@ -1,0 +1,62 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Source Event Queue Example</title>
+  </head>
+  <body>
+    <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>How to use an Event Queue with a source</h1>
+    <p>An event queue is an object in the UM library that allows a source to process events on an application thread. By default all events
+	are processed on the context thread.  The context thread is created automatically when the context object is instantiated.  This thread is a 
+	shared resource between all sources, receivers and timers, both internally in the UM library and externally in the application.  This can quickly 
+	become a bottleneck if an application is doing lots of things, like receiving messages, tracking timers related to UMP, or event getting lots of 
+	other events related to the UM library.  Therefore, at a slight cost to performance (1 thread switch). An application can use its own thread, or 
+	as many as it likes.  One way to do this is to use the event queue.</p>
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt><a href="event_q_src.c">event_q_src.c</a></tt></b>
+        - (right-click and save as "event_q_src.c") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>event_q_src.c</tt></h2>
+    <h4>Creating the Event Queue</h4>
+        <p>The easiest way to creant an event queue is to initialize it by calling lbm_event_queue_create no arguments.</p>
+        <a name="evq_create_ref_1" id="evq_create_ref_1"></a>
+<small><pre>
+<a href="event_q_src_c.slsrc.html#evq_create" target="src">00099</a>      if (lbm_event_queue_create(&amp;evq, NULL, NULL, NULL) == LBM_FAILURE) {
+</pre><!-- endblock evq_create_ref_1 --></small>
+
+
+    <h4>Create a source  with an event queue.</h4>
+	<p>To "hook up" a source to an event queue, simply pass it into the lbm_src_create function.  Note that all further
+		events will be delivered to the event queue.  They will not be processed until the event queue run by calling lbm_event_dispatch.</p>
+	<a name="src_create_ref_1" id="src_create_ref_1"></a>
+<small><pre>
+<a href="event_q_src_c.slsrc.html#src_create" target="src">00105</a>      err = lbm_src_create(&amp;src, ctx, topic_1, handle_src_event, NULL, evq);
+</pre><!-- endblock src_create_ref_1 --></small>
+
+
+    <h4>Processing Events on the Event Queue</h4>
+	<p>To run an event queue on a specific thread, simply call lbm_event_dispatch with an argument (time in milliseconds).  This
+	will execute events on the event queue on the thread that called lbm_event_dispatch for the specified amount of time.</p>
+	<a name="evq_run_ref_1" id="evq_run_ref_1"></a>
+<small><pre>
+<a href="event_q_src_c.slsrc.html#evq_run" target="src">00114</a>      if(lbm_event_dispatch(evq, 10000) == LBM_FAILURE) {
+</pre><!-- endblock evq_run_ref_1 --></small>
+
+
+    <h4>Cleanup</h4>
+	<p>When using an event queue, care must be taken in order to cleanly shutdown.  Issues can potentially occur
+	if a context tries to deliver events to the queue after it has already been _deleted()'ed.  Therefore, the application 
+	should delete all sources, then the context itself.  This will prevent any new events from being generated.  Once the
+	queue is empty and no new events are being generated, it can safely be _deleted()'ed.</p>
+	<a name="evq_close_ref_1" id="evq_close_ref_1"></a>
+<small><pre>
+<a href="event_q_src_c.slsrc.html#evq_close" target="src">00122</a>      lbm_src_delete(src);
+<a href="event_q_src_c.slsrc.html#evq_close" target="src">00123</a>      lbm_context_delete(ctx);
+<a href="event_q_src_c.slsrc.html#evq_close" target="src">00124</a>      lbm_event_queue_delete(evq);
+</pre><!-- endblock evq_close_ref_1 --></small>
+
+
+    </body>
+</html>
+
