@@ -1,0 +1,39 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Receiver Event Queue Example</title>
+  </head>
+  <body>
+    <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>How to use an Event Queue with a receiver</h1>
+    <p>An event queue is an object in the UM library that allows a receiver to process events on an application thread. By default all events
+	are processed on the context thread.  This context thread is created automatically when the context object is instantiated.  This thread is a 
+	shared resource between all sources, receivers and timers, both internally in the UM library and externally in the application.  This can quickly 
+	become a bottleneck if an application is doing lots of things, like receiving messages, tracking timers related to UMP, or event getting lots of 
+	other events related to the UM library.  Therefore, at a slight cost to performance (1 thread switch), an application can use its own thread, or 
+	as many as it likes.  One way to do this is to use the event queue.</p>
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt>=semlit,srcfile,event_q_rcv_java.slsrc,event_q_rcv.java=</tt></b>
+        - (right-click and save as "event_q_rcv.java") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>event_q_rcv.java</tt></h2>
+    <h4>Creating the Event Queue</h4>
+        <p>The eventQ is simply an LBMEventQueue object that is constructed with no arguments.</p>
+        =semlit,insert,evq_create=
+    <h4>Create a receiver with an event queue.</h4>
+	<p>To "hook up" a receiver to an event queue, simply pass it into the constructor.  Note that all further
+		events will be delivered to the event queue.  They will not be processed until the event queue is .run().</p>
+	=semlit,insert,rcv_create=
+    <h4>Processing Events on the Event Queue</h4>
+	<p>To run an event queue on a specific thread, simply call .run() with an argument (time in miliseconds).  This
+	will execute events on the event queue on the thread that called .run() for the specified amount of time.</p>
+	=semlit,insert,evq_run=
+    <h4>Cleanup</h4>
+	<p>When using an event queue, care must be taken in order to cleanly shutdown.  Issues can potentially occur
+	if a context tries to deliver events to the queue after it has already been .close()d.  Therefore, the application 
+	should shut down all receivers, then the context itself.  This will prevent any new events from being generated.  Once the
+	queue is empty and no new events are being generated, it can safely be .close()d.</p>
+	=semlit,insert,evq_close=
+    </body>
+</html>
