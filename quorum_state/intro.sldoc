@@ -1,0 +1,18 @@
+<a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>Tracking quorum for a source</h1>
+    <h3>(to make sure the source can send messages)</h3>
+    <p>It is often very useful for an application to track whether an Ultra Messaging persistent source has quorum with its configured stores
+      for the purpose of knowing whether the source can publish messages or not. Persistent source can only publish messages if the source
+      maintains connectivity with a quorum (majority) of stores it is configured to persist to. If the source loses quorum, then any attempt
+      to publish messages will result in an error at the API layer, LBM_EUMENOREG.</p>
+    <p>Tracking the state of quorum for sources is quite simple: upon startup the source is not registered with any stores, therefore it is safe
+      to assume the source is not able to send yet. Once the source completes registration with a quorum of stores, the source event
+      LBM_SRC_EVENT_UME_REGISTRATION_COMPLETE_EX is delivered via the source event callback, and it is safe to send messages. From this point, 
+      only a store unresponsive event with the "quorum lost" message would set the source back into a state where it cannot send, and this data
+      is delivered via LBM_SRC_EVENT_UME_STORE_UNRESPONSIVE in the same source event callback. Once quorum is lost, the source will attemp to
+      re-register to stores automatically, and once quorum is re-established, a new registration complete event will be delivered.</p>
+    <p>It is worth noting that the following method will NOT prevent a source from attempting to send when the source does not have a quorum
+      of registered stores because of the threading model of Ultra Messaging. For example, the source event callback is executed from the 
+      context thread which is created and managed by the UM library. The lbm_src_send() call on the other hand is being called on the main 
+      application thread. Therefore it is possible that the application thread will attempt to send a message before the state can be updated
+      properly. For this reason, it is very important to check the return code for lbm_src_send() for errors.</p>

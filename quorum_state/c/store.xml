@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ume-store version="1.2">
+  <daemon>
+    <log>DEMO_STORE.log</log>
+    <web-monitor>*:8080/web-monitor>
+  </daemon>
+  <stores>
+    <store name="DEMO_STORE" port="29999">
+      <ume-attributes>
+          <option name="disk-cache-directory" value="cache" type="store"/>
+          <option name="disk-state-directory" value="state" type="store"/>
+          <option name="context-name" value="DEMO_STORE"/>
+      </ume-attributes>
+      <topics>
+        <topic pattern=".*" type="PCRE">
+          <ume-attributes>
+            <option name="repository-type" value="disk" type="store"/>
+          </ume-attributes>
+        </topic>
+      </topics>
+    </store>
+  </stores>
+</ume-store>

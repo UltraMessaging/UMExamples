@@ -1,0 +1,352 @@
+<!DOCTYPE html><html><head><title>quorum_state.c</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>quorum_state.c</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+<a href="quorum_state.sldoc.html#includes_ref_1" target="doc">00003</a>
+<a href="quorum_state.sldoc.html#includes_ref_1" target="doc">00004</a>
+<a href="quorum_state.sldoc.html#includes_ref_1" target="doc">00005</a>
+<a href="quorum_state.sldoc.html#includes_ref_1" target="doc">00006</a>
+<a href="quorum_state.sldoc.html#includes_ref_1" target="doc">00007</a>
+<a href="quorum_state.sldoc.html#includes_ref_1" target="doc">00008</a>
+<a href="quorum_state.sldoc.html#includes_ref_1" target="doc">00009</a>
+<a href="quorum_state.sldoc.html#includes_ref_1" target="doc">00010</a>
+<a href="quorum_state.sldoc.html#includes_ref_1" target="doc">00011</a>
+<a href="quorum_state.sldoc.html#includes_ref_1" target="doc">00012</a>
+<a href="quorum_state.sldoc.html#includes_ref_1" target="doc">00013</a>
+<a href="quorum_state.sldoc.html#includes_ref_1" target="doc">00014</a>
+<a href="quorum_state.sldoc.html#includes_ref_1" target="doc">00015</a>
+<a href="quorum_state.sldoc.html#includes_ref_1" target="doc">00016</a>
+<a href="quorum_state.sldoc.html#includes_ref_1" target="doc">00017</a>
+00018
+<a href="quorum_state.sldoc.html#sleep_macro_ref_1" target="doc">00019</a>
+<a href="quorum_state.sldoc.html#sleep_macro_ref_1" target="doc">00020</a>
+<a href="quorum_state.sldoc.html#sleep_macro_ref_1" target="doc">00021</a>
+<a href="quorum_state.sldoc.html#sleep_macro_ref_1" target="doc">00022</a>
+<a href="quorum_state.sldoc.html#sleep_macro_ref_1" target="doc">00023</a>
+00024
+<a href="quorum_state.sldoc.html#src_ready_int_ref_1" target="doc">00025</a>
+00026
+00027
+00028
+00029
+00030
+<a href="quorum_state.sldoc.html#reg_complete_ref_1" target="doc">00031</a>
+<a href="quorum_state.sldoc.html#reg_complete_ref_1" target="doc">00032</a>
+<a href="quorum_state.sldoc.html#reg_complete_ref_1" target="doc">00033</a>
+<a href="quorum_state.sldoc.html#reg_complete_ref_1" target="doc">00034</a>
+<a href="quorum_state.sldoc.html#reg_complete_ref_1" target="doc">00035</a>
+<a href="quorum_state.sldoc.html#unresponsive_ref_1" target="doc">00036</a>
+<a href="quorum_state.sldoc.html#unresponsive_ref_1" target="doc">00037</a>
+<a href="quorum_state.sldoc.html#unresponsive_ref_1" target="doc">00038</a>
+<a href="quorum_state.sldoc.html#unresponsive_ref_1" target="doc">00039</a>
+<a href="quorum_state.sldoc.html#unresponsive_ref_1" target="doc">00040</a>
+<a href="quorum_state.sldoc.html#unresponsive_ref_1" target="doc">00041</a>
+<a href="quorum_state.sldoc.html#unresponsive_ref_1" target="doc">00042</a>
+00043
+00044
+00045
+00046
+00047
+00048
+<a href="quorum_state.sldoc.html#variables_ref_1" target="doc">00049</a>
+<a href="quorum_state.sldoc.html#variables_ref_1" target="doc">00050</a>
+<a href="quorum_state.sldoc.html#variables_ref_1" target="doc">00051</a>
+<a href="quorum_state.sldoc.html#variables_ref_1" target="doc">00052</a>
+<a href="quorum_state.sldoc.html#variables_ref_1" target="doc">00053</a>
+<a href="quorum_state.sldoc.html#variables_ref_1" target="doc">00054</a>
+00055
+00056
+00057
+00058
+00059
+00060
+00061
+00062
+00063
+00064
+00065
+00066
+<a href="quorum_state.sldoc.html#init_create_context_ref_1" target="doc">00067</a>
+<a href="quorum_state.sldoc.html#init_create_context_ref_1" target="doc">00068</a>
+<a href="quorum_state.sldoc.html#init_create_context_ref_1" target="doc">00069</a>
+<a href="quorum_state.sldoc.html#init_create_context_ref_1" target="doc">00070</a>
+<a href="quorum_state.sldoc.html#init_create_context_ref_1" target="doc">00071</a>
+<a href="quorum_state.sldoc.html#init_create_context_ref_1" target="doc">00072</a>
+<a href="quorum_state.sldoc.html#init_create_context_ref_1" target="doc">00073</a>
+<a href="quorum_state.sldoc.html#init_create_context_ref_1" target="doc">00074</a>
+<a href="quorum_state.sldoc.html#init_create_context_ref_1" target="doc">00075</a>
+<a href="quorum_state.sldoc.html#init_create_context_ref_1" target="doc">00076</a>
+<a href="quorum_state.sldoc.html#init_create_context_ref_1" target="doc">00077</a>
+<a href="quorum_state.sldoc.html#init_create_context_ref_1" target="doc">00078</a>
+00079
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00080</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00081</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00082</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00083</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00084</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00085</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00086</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00087</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00088</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00089</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00090</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00091</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00092</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00093</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00094</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00095</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00096</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00097</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00098</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00099</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00100</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00101</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00102</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00103</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00104</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00105</a>
+00106
+<a href="quorum_state.sldoc.html#main_send_loop_ref_1" target="doc">00107</a>
+00108
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00109</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00110</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00111</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00112</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00113</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00114</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00115</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00116</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00117</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00118</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00119</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00120</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00121</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00122</a>
+00123
+00124
+</td><td>  /* Code Disclaimer? */
+  
+<span name="includes" id="includes"></span>  #include &lt;stdio.h&gt;
+  #include &lt;string.h&gt;
+  
+  #if defined(_MSC_VER)
+  /* Windows-only includes */
+  #include &lt;winsock2.h&gt;
+  #define SLEEP(s) Sleep((s)*1000)
+  #else
+  /* Unix-only includes */
+  #include &lt;stdlib.h&gt;
+  #include &lt;unistd.h&gt;
+  #define SLEEP(s) sleep(s)
+  #endif
+  
+  #include &lt;lbm/lbm.h&gt;
+  
+<span name="sleep_macro" id="sleep_macro"></span>  #if defined(_WIN32)
+  #   define SLEEP_SEC(x) Sleep((x)*1000)
+  #else
+  #   define SLEEP_SEC(x) sleep(x)
+  #endif
+  
+<span name="src_ready_int" id="src_ready_int"></span>  int src_ready = 0;
+  
+  /* Source event handler callback (passed into lbm_src_create()) */
+  int handle_src_event(lbm_src_t *src, int event, void *ed, void *cd)
+  {
+      switch (event) {
+<span name="reg_complete" id="reg_complete"></span>          case LBM_SRC_EVENT_UME_REGISTRATION_COMPLETE_EX:
+          {
+              src_ready = 1;
+              break;
+          }
+<span name="unresponsive" id="unresponsive"></span>          case LBM_SRC_EVENT_UME_STORE_UNRESPONSIVE:
+          {
+              const char *infostr = (const char *)ed;
+              if (strstr(infostr, "quorum lost") != NULL)
+                  src_ready = 0;
+              break;
+          }
+      }
+      return 0;
+  }
+  
+  main()
+  {
+<span name="variables" id="variables"></span>          lbm_context_t *ctx;                     /* Context object */
+          lbm_topic_t *topic;                     /* Topic object */
+          lbm_src_t *src;                         /* Source object */
+          lbm_src_topic_attr_t * tattr;           /* Source topic attribute object */
+          lbm_context_attr_t * cattr;             /* Context attribute object */
+          int err;                                /* Used for checking API return codes */
+  
+  #if defined(_WIN32)
+          /* windows-specific code */
+          WSADATA wsadata;
+          int wsStat = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
+          if (wsStat != 0)
+          {
+                  printf("line %d: wsStat=%d\n",__LINE__,wsStat);
+                  exit(1);
+          }
+  #endif
+  
+<span name="init_create_context" id="init_create_context"></span>          if (lbm_context_attr_create(&amp;cattr) != 0)
+          {
+                  fprintf(stderr, "lbm_context_attr_create: %s\n", lbm_errmsg());
+                  exit(1);
+          }
+  
+          err = lbm_context_create(&amp;ctx, cattr, NULL, NULL);
+          if (err)
+          {
+                  printf("line %d: %s\n", __LINE__, lbm_errmsg());
+                  exit(1);
+          }
+  
+<span name="init_create_source" id="init_create_source"></span>          if (lbm_src_topic_attr_create(&amp;tattr) != 0)
+          {
+                  fprintf(stderr, "lbm_src_topic_attr_create: %s\n", lbm_errmsg());
+                  exit(1);
+          }
+  
+          /* Assuming there is a store running on the localhost at port 29999 */
+          if (lbm_src_topic_attr_str_setopt(tattr, "ume_store", "127.0.0.1:29999") != 0 )
+          {
+                  fprintf(stderr, "lbm_src_topic_attr_str_setopt:ume_store: %s\n", lbm_errmsg());
+                  exit(1);
+          }
+  
+          err = lbm_src_topic_alloc(&amp;topic, ctx, "test.topic", tattr);
+          if (err)
+          {
+                  printf("lbm_src_topic_alloc - line %d: %s\n", __LINE__, lbm_errmsg());
+                  exit(1);
+          }
+  
+          err = lbm_src_create(&amp;src, ctx, topic, handle_src_event, NULL, NULL);
+          if (err)
+          {
+                  printf("lbm_src_create - line %d: %s\n", __LINE__, lbm_errmsg());
+                  exit(1);
+          }
+  
+<span name="main_send_loop" id="main_send_loop"></span>      while(1)
+      {
+<span name="src_send" id="src_send"></span>          if (src_ready)
+          {
+              if (lbm_src_send(src, "test", 4, LBM_SRC_NONBLOCK) == LBM_FAILURE)
+              {
+                  /* Assume EWOULDBLOCK and wait */
+                  SLEEP_SEC(1);
+              }
+          }
+          else
+          {
+              /* Print a warning that the source is not ready and sleep */
+              printf("Source is not ready to send (no quorum)\n");
+              SLEEP_SEC(1);
+          }
+      }
+  }
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

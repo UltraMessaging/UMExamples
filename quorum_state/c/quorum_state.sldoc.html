@@ -1,0 +1,215 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+
+    <title>Track quorum for a source</title>
+  </head>
+  <body>
+    <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>Tracking quorum for a source</h1>
+    <h3>(to make sure the source can send messages)</h3>
+    <p>It is often very useful for an application to track whether an Ultra Messaging persistent source has quorum with its configured stores
+      for the purpose of knowing whether the source can publish messages or not. Persistent source can only publish messages if the source
+      maintains connectivity with a quorum (majority) of stores it is configured to persist to. If the source loses quorum, then any attempt
+      to publish messages will result in an error at the API layer, LBM_EUMENOREG.</p>
+    <p>Tracking the state of quorum for sources is quite simple: upon startup the source is not registered with any stores, therefore it is safe
+      to assume the source is not able to send yet. Once the source completes registration with a quorum of stores, the source event
+      LBM_SRC_EVENT_UME_REGISTRATION_COMPLETE_EX is delivered via the source event callback, and it is safe to send messages. From this point, 
+      only a store unresponsive event with the "quorum lost" message would set the source back into a state where it cannot send, and this data
+      is delivered via LBM_SRC_EVENT_UME_STORE_UNRESPONSIVE in the same source event callback. Once quorum is lost, the source will attemp to
+      re-register to stores automatically, and once quorum is re-established, a new registration complete event will be delivered.</p>
+    <p>It is worth noting that the following method will NOT prevent a source from attempting to send when the source does not have a quorum
+      of registered stores because of the threading model of Ultra Messaging. For example, the source event callback is executed from the 
+      context thread which is created and managed by the UM library. The lbm_src_send() call on the other hand is being called on the main 
+      application thread. Therefore it is possible that the application thread will attempt to send a message before the state can be updated
+      properly. For this reason, it is very important to check the return code for lbm_src_send() for errors.</p>
+
+    <p>There is one program source file, and a store configuration XML:</p>
+    <ul>
+      <li><b><tt><a href="quorum_state.c">quorum_state.c</a></tt></b></li>
+      <li><b><tt><a href="store.xml">store.xml</a></tt></b></li>
+    </ul>
+    <h2>Program explanation: <tt>quorum_state.c</tt></h2>
+    <h4>Create a state variable</h4>
+        <p>In this example, the application will simply track whether the source has quorum using a global interger, src_ready. src_ready will
+	  initialize as 0, because the source upon creation will not be in a state where it can send.</p>
+        <a name="src_ready_int_ref_1" id="src_ready_int_ref_1"></a>
+<small><pre>
+<a href="quorum_state_c.slsrc.html#src_ready_int" target="src">00025</a>  int src_ready = 0;
+</pre><!-- endblock src_ready_int_ref_1 --></small>
+
+
+    <h4>Setting the state</h4>
+	<p>
+    <h4>Create the context</h4>
+        <p>Standard context attribute initializtion and context creation code. For more information on creating a context, please see the example
+          <a href="../context-create">Creating a Context</a></p>
+        <a name="init_create_context_ref_1" id="init_create_context_ref_1"></a>
+<small><pre>
+<a href="quorum_state_c.slsrc.html#init_create_context" target="src">00067</a>          if (lbm_context_attr_create(&amp;cattr) != 0)
+<a href="quorum_state_c.slsrc.html#init_create_context" target="src">00068</a>          {
+<a href="quorum_state_c.slsrc.html#init_create_context" target="src">00069</a>                  fprintf(stderr, "lbm_context_attr_create: %s\n", lbm_errmsg());
+<a href="quorum_state_c.slsrc.html#init_create_context" target="src">00070</a>                  exit(1);
+<a href="quorum_state_c.slsrc.html#init_create_context" target="src">00071</a>          }
+<a href="quorum_state_c.slsrc.html#init_create_context" target="src">00072</a>  
+<a href="quorum_state_c.slsrc.html#init_create_context" target="src">00073</a>          err = lbm_context_create(&amp;ctx, cattr, NULL, NULL);
+<a href="quorum_state_c.slsrc.html#init_create_context" target="src">00074</a>          if (err)
+<a href="quorum_state_c.slsrc.html#init_create_context" target="src">00075</a>          {
+<a href="quorum_state_c.slsrc.html#init_create_context" target="src">00076</a>                  printf("line %d: %s\n", __LINE__, lbm_errmsg());
+<a href="quorum_state_c.slsrc.html#init_create_context" target="src">00077</a>                  exit(1);
+<a href="quorum_state_c.slsrc.html#init_create_context" target="src">00078</a>          }
+</pre><!-- endblock init_create_context_ref_1 --></small>
+
+
+    <h4>Create Source</h4>
+        <p>Standard source topic allocation, attibute initialization, and source creation. Note that the application is explicitly setting 
+          <a href="#" title="Add a store specification to the list of stores specified for the source. Unlike most other UMP settings, every
+time this setting is called, it adds another store specification to the list and does NOT overwrite previous
+specifications.
+Each entry contains the IP address, TCP port, registration ID, and group index for the store. For the
+configuration file as well as string versions of this option, format the string value as
+DomainID:IP:port:RegID:GroupIDX where DomainID is the store's UM domain ID, IP is the stores IP
+address, port is the TCP port for the store, RegID is the registration ID that the source desires to use, and
+GroupIDX is the group index that the store belongs to. The DomainID, RegID and GroupIDX pieces may be
+left off the string if desired. If so, UMP assumes the value of 0 for them.
+Because each entry adds a new store specification and does not overwrite previous values, an entry or string
+with the IP address of 0.0.0.0 and TCP port of 0 causes the removal of all previous store specifications. A
+single store specification means the source uses persistence. If no stores are specified, then persistence will
+not be provided for the source.
+
+Scope:         source
+Type:          lbm_ume_store_entry_t
+When to Set:   Can only be set during object initialization
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">ume_store</a>
+</p>
+        <a name="init_create_source_ref_1" id="init_create_source_ref_1"></a>
+<small><pre>
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00080</a>          if (lbm_src_topic_attr_create(&amp;tattr) != 0)
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00081</a>          {
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00082</a>                  fprintf(stderr, "lbm_src_topic_attr_create: %s\n", lbm_errmsg());
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00083</a>                  exit(1);
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00084</a>          }
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00085</a>  
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00086</a>          /* Assuming there is a store running on the localhost at port 29999 */
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00087</a>          if (lbm_src_topic_attr_str_setopt(tattr, "ume_store", "127.0.0.1:29999") != 0 )
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00088</a>          {
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00089</a>                  fprintf(stderr, "lbm_src_topic_attr_str_setopt:ume_store: %s\n", lbm_errmsg());
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00090</a>                  exit(1);
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00091</a>          }
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00092</a>  
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00093</a>          err = lbm_src_topic_alloc(&amp;topic, ctx, "test.topic", tattr);
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00094</a>          if (err)
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00095</a>          {
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00096</a>                  printf("lbm_src_topic_alloc - line %d: %s\n", __LINE__, lbm_errmsg());
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00097</a>                  exit(1);
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00098</a>          }
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00099</a>  
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00100</a>          err = lbm_src_create(&amp;src, ctx, topic, handle_src_event, NULL, NULL);
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00101</a>          if (err)
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00102</a>          {
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00103</a>                  printf("lbm_src_create - line %d: %s\n", __LINE__, lbm_errmsg());
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00104</a>                  exit(1);
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00105</a>          }
+</pre><!-- endblock init_create_source_ref_1 --></small>
+
+
+    <h4>Main Send Loop</h4>
+        <p>For the purpose of this example, the application is simply going to tight loop forever sending messages, and printing a message
+          to stdout when the source is not in the ready state</p>
+        <a name="main_send_loop_ref_1" id="main_send_loop_ref_1"></a>
+<small><pre>
+<a href="quorum_state_c.slsrc.html#main_send_loop" target="src">00107</a>      while(1)
+</pre><!-- endblock main_send_loop_ref_1 --></small>
+
+
+    <h4>Send a Message</h4>
+	<p>Here the application is first going to make sure the application is ready to send. If src_ready is set to 1, then registration has completed
+	  and the source should be able to send. If src_ready is 0, then registration has not completed, or the application has lost quorum and was 
+	  notified via the unresponsive source event; in either case the source cannot send.</p>
+        <a name="src_send_ref_1" id="src_send_ref_1"></a>
+<small><pre>
+<a href="quorum_state_c.slsrc.html#src_send" target="src">00109</a>          if (src_ready)
+<a href="quorum_state_c.slsrc.html#src_send" target="src">00110</a>          {
+<a href="quorum_state_c.slsrc.html#src_send" target="src">00111</a>              if (lbm_src_send(src, "test", 4, LBM_SRC_NONBLOCK) == LBM_FAILURE)
+<a href="quorum_state_c.slsrc.html#src_send" target="src">00112</a>              {
+<a href="quorum_state_c.slsrc.html#src_send" target="src">00113</a>                  /* Assume EWOULDBLOCK and wait */
+<a href="quorum_state_c.slsrc.html#src_send" target="src">00114</a>                  SLEEP_SEC(1);
+<a href="quorum_state_c.slsrc.html#src_send" target="src">00115</a>              }
+<a href="quorum_state_c.slsrc.html#src_send" target="src">00116</a>          }
+<a href="quorum_state_c.slsrc.html#src_send" target="src">00117</a>          else
+<a href="quorum_state_c.slsrc.html#src_send" target="src">00118</a>          {
+<a href="quorum_state_c.slsrc.html#src_send" target="src">00119</a>              /* Print a warning that the source is not ready and sleep */
+<a href="quorum_state_c.slsrc.html#src_send" target="src">00120</a>              printf("Source is not ready to send (no quorum)\n");
+<a href="quorum_state_c.slsrc.html#src_send" target="src">00121</a>              SLEEP_SEC(1);
+<a href="quorum_state_c.slsrc.html#src_send" target="src">00122</a>          }
+</pre><!-- endblock src_send_ref_1 --></small>
+
+
+    <h4>Includes</h4>
+        <p>Include files for this application. Notice the Windows specific include files - these are not necessary for Linux only applications</p>
+        <a name="includes_ref_1" id="includes_ref_1"></a>
+<small><pre>
+<a href="quorum_state_c.slsrc.html#includes" target="src">00003</a>  #include &lt;stdio.h&gt;
+<a href="quorum_state_c.slsrc.html#includes" target="src">00004</a>  #include &lt;string.h&gt;
+<a href="quorum_state_c.slsrc.html#includes" target="src">00005</a>  
+<a href="quorum_state_c.slsrc.html#includes" target="src">00006</a>  #if defined(_MSC_VER)
+<a href="quorum_state_c.slsrc.html#includes" target="src">00007</a>  /* Windows-only includes */
+<a href="quorum_state_c.slsrc.html#includes" target="src">00008</a>  #include &lt;winsock2.h&gt;
+<a href="quorum_state_c.slsrc.html#includes" target="src">00009</a>  #define SLEEP(s) Sleep((s)*1000)
+<a href="quorum_state_c.slsrc.html#includes" target="src">00010</a>  #else
+<a href="quorum_state_c.slsrc.html#includes" target="src">00011</a>  /* Unix-only includes */
+<a href="quorum_state_c.slsrc.html#includes" target="src">00012</a>  #include &lt;stdlib.h&gt;
+<a href="quorum_state_c.slsrc.html#includes" target="src">00013</a>  #include &lt;unistd.h&gt;
+<a href="quorum_state_c.slsrc.html#includes" target="src">00014</a>  #define SLEEP(s) sleep(s)
+<a href="quorum_state_c.slsrc.html#includes" target="src">00015</a>  #endif
+<a href="quorum_state_c.slsrc.html#includes" target="src">00016</a>  
+<a href="quorum_state_c.slsrc.html#includes" target="src">00017</a>  #include &lt;lbm/lbm.h&gt;
+</pre><!-- endblock includes_ref_1 --></small>
+
+
+    <h4>Sleep helper function</h4>
+	<p>Since sleep is different in Windows and Linux, this sleep helper function is defined as a macro to ensure compatibility when attempting to 
+	  sleep() for any number of seconds.</p>
+	<a name="sleep_macro_ref_1" id="sleep_macro_ref_1"></a>
+<small><pre>
+<a href="quorum_state_c.slsrc.html#sleep_macro" target="src">00019</a>  #if defined(_WIN32)
+<a href="quorum_state_c.slsrc.html#sleep_macro" target="src">00020</a>  #   define SLEEP_SEC(x) Sleep((x)*1000)
+<a href="quorum_state_c.slsrc.html#sleep_macro" target="src">00021</a>  #else
+<a href="quorum_state_c.slsrc.html#sleep_macro" target="src">00022</a>  #   define SLEEP_SEC(x) sleep(x)
+<a href="quorum_state_c.slsrc.html#sleep_macro" target="src">00023</a>  #endif
+</pre><!-- endblock sleep_macro_ref_1 --></small>
+
+
+    <h4>Store Configuration XML</h4>
+        <p>This is a store configuration file that can be used to run the umestored binary along with this example application</p>
+        <a name="store_xml_ref_1" id="store_xml_ref_1"></a>
+<small><pre>
+<a href="../quorum_state_store.slsrc.html#store_xml" target="src">00001</a>  &lt;?xml version="1.0" encoding="utf-8" ?&gt;
+<a href="../quorum_state_store.slsrc.html#store_xml" target="src">00002</a>  &lt;ume-store version="1.2"&gt;
+<a href="../quorum_state_store.slsrc.html#store_xml" target="src">00003</a>    &lt;daemon&gt;
+<a href="../quorum_state_store.slsrc.html#store_xml" target="src">00004</a>      &lt;log&gt;DEMO_STORE.log&lt;/log&gt;
+<a href="../quorum_state_store.slsrc.html#store_xml" target="src">00005</a>      &lt;web-monitor&gt;*:8080/web-monitor&gt;
+<a href="../quorum_state_store.slsrc.html#store_xml" target="src">00006</a>    &lt;/daemon&gt;
+<a href="../quorum_state_store.slsrc.html#store_xml" target="src">00007</a>    &lt;stores&gt;
+<a href="../quorum_state_store.slsrc.html#store_xml" target="src">00008</a>      &lt;store name="DEMO_STORE" port="29999"&gt;
+<a href="../quorum_state_store.slsrc.html#store_xml" target="src">00009</a>        &lt;ume-attributes&gt;
+<a href="../quorum_state_store.slsrc.html#store_xml" target="src">00010</a>            &lt;option name="disk-cache-directory" value="cache" type="store"/&gt;
+<a href="../quorum_state_store.slsrc.html#store_xml" target="src">00011</a>            &lt;option name="disk-state-directory" value="state" type="store"/&gt;
+<a href="../quorum_state_store.slsrc.html#store_xml" target="src">00012</a>            &lt;option name="context-name" value="DEMO_STORE"/&gt;
+<a href="../quorum_state_store.slsrc.html#store_xml" target="src">00013</a>        &lt;/ume-attributes&gt;
+<a href="../quorum_state_store.slsrc.html#store_xml" target="src">00014</a>        &lt;topics&gt;
+<a href="../quorum_state_store.slsrc.html#store_xml" target="src">00015</a>          &lt;topic pattern=".*" type="PCRE"&gt;
+<a href="../quorum_state_store.slsrc.html#store_xml" target="src">00016</a>            &lt;ume-attributes&gt;
+<a href="../quorum_state_store.slsrc.html#store_xml" target="src">00017</a>              &lt;option name="repository-type" value="disk" type="store"/&gt;
+<a href="../quorum_state_store.slsrc.html#store_xml" target="src">00018</a>            &lt;/ume-attributes&gt;
+<a href="../quorum_state_store.slsrc.html#store_xml" target="src">00019</a>          &lt;/topic&gt;
+<a href="../quorum_state_store.slsrc.html#store_xml" target="src">00020</a>        &lt;/topics&gt;
+<a href="../quorum_state_store.slsrc.html#store_xml" target="src">00021</a>      &lt;/store&gt;
+<a href="../quorum_state_store.slsrc.html#store_xml" target="src">00022</a>    &lt;/stores&gt;
+<a href="../quorum_state_store.slsrc.html#store_xml" target="src">00023</a>  &lt;/ume-store&gt;
+</pre><!-- endblock store_xml_ref_1 --></small>
+
+
+  </body>
+</html>
+

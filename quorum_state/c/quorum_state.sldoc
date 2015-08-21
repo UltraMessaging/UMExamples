@@ -1,0 +1,48 @@
+<html>
+  <head>
+    =semlit,include,../../style/head.sldoc=
+    <title>Track quorum for a source</title>
+  </head>
+  <body>
+    =semlit,include,../intro.sldoc=
+    <p>There is one program source file, and a store configuration XML:</p>
+    <ul>
+      <li><b><tt>=semlit,srcfile,quorum_state_c.slsrc,quorum_state.c=</tt></b></li>
+      <li><b><tt>=semlit,srcfile,../quorum_state_store.slsrc,store.xml=</tt></b></li>
+    </ul>
+    <h2>Program explanation: <tt>quorum_state.c</tt></h2>
+    <h4>Create a state variable</h4>
+        <p>In this example, the application will simply track whether the source has quorum using a global interger, src_ready. src_ready will
+	  initialize as 0, because the source upon creation will not be in a state where it can send.</p>
+        =semlit,insert,src_ready_int=
+    <h4>Setting the state</h4>
+	<p>
+    <h4>Create the context</h4>
+        <p>Standard context attribute initializtion and context creation code. For more information on creating a context, please see the example
+          <a href="../context-create">Creating a Context</a></p>
+        =semlit,insert,init_create_context=
+    <h4>Create Source</h4>
+        <p>Standard source topic allocation, attibute initialization, and source creation. Note that the application is explicitly setting 
+          =semlit,tooltip,../../tooltips/source_ume_store.txt,ume_store=</p>
+        =semlit,insert,init_create_source=
+    <h4>Main Send Loop</h4>
+        <p>For the purpose of this example, the application is simply going to tight loop forever sending messages, and printing a message
+          to stdout when the source is not in the ready state</p>
+        =semlit,insert,main_send_loop=
+    <h4>Send a Message</h4>
+	<p>Here the application is first going to make sure the application is ready to send. If src_ready is set to 1, then registration has completed
+	  and the source should be able to send. If src_ready is 0, then registration has not completed, or the application has lost quorum and was 
+	  notified via the unresponsive source event; in either case the source cannot send.</p>
+        =semlit,insert,src_send=
+    <h4>Includes</h4>
+        <p>Include files for this application. Notice the Windows specific include files - these are not necessary for Linux only applications</p>
+        =semlit,insert,includes=
+    <h4>Sleep helper function</h4>
+	<p>Since sleep is different in Windows and Linux, this sleep helper function is defined as a macro to ensure compatibility when attempting to 
+	  sleep() for any number of seconds.</p>
+	=semlit,insert,sleep_macro=
+    <h4>Store Configuration XML</h4>
+        <p>This is a store configuration file that can be used to run the umestored binary along with this example application</p>
+        =semlit,insert,store_xml=
+  </body>
+</html>
