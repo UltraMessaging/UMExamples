@@ -1,0 +1,28 @@
+The behavior that the source will follow when determining the consensus sequence number used as the first
+message of a source upon re-registration after a failure or suspension. This setting is only used when
+quorum-consensus is also used.
+Scope: source
+Type: int
+When to Set: Can only be set during object initialization.
+String value Integer value Description
+lowest LBM_SRC_TOPIC_ATTR_U
+ME_QC_SQN_BEHAVIOR_
+LOWEST
+Consensus is determined as the
+lowest of the latest sequence
+numbers seen from any store.
+majority LBM_SRC_TOPIC_ATTR_U
+ME_QC_SQN_BEHAVIOR_
+MAJORITY
+Consensus is determined as the
+latest sequence number agreed
+upon by the majority of stores
+within a group. Between groups,
+the latest of all majority decisions is
+used. Default for all.
+highest LBM_SRC_TOPIC_ATTR_U
+ME_QC_SQN_BEHAVIOR_
+HIGHEST
+Consensus is determined as the
+highest of the latest sequence
+numbers seen from any store

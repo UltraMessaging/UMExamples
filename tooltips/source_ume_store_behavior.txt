@@ -1,0 +1,8 @@
+The behavior that the source will follow for handling store failures.
+
+Scope:	source
+Type:	int
+When to Set:	Can only be set during object initialization.
+String value	Integer value	Description
+rr, round-robin	LBM_SRC_TOPIC_ATTR_UME_STORE_BEHAVIOR_RR	The source will use a single store at a time and when a store is unresponsive due to failure or disconnect, the next store in the list will be used. This will continue in a round-robin fashion until a store is found that is available. Default for all.
+qc, quorum-consensus	LBM_SRC_TOPIC_ATTR_UME_STORE_BEHAVIOR_QC	The source will use multiple stores at the same time based on store and store group configuration.
