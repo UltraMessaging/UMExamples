@@ -105,6 +105,13 @@ main()
                 exit(1);
         }
 
+	/* Need to set store behavior to Quorum-Consensus  */
+	if (lbm_src_topic_attr_str_setopt(tattr, "ume_store_behavior", "qc") != 0 )
+	{
+		fprintf(stderr, "lbm_src_topic_attr_str_setopt:ume_store_behavior: %s\n", lbm_errmsg());
+		exit(1);
+	}
+
         err = lbm_src_topic_alloc(&topic, ctx, "test.topic", tattr);
         if (err)
         {

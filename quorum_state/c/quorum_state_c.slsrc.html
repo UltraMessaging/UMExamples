@@ -121,16 +121,16 @@
 <a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00103</a>
 <a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00104</a>
 <a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00105</a>
-00106
-<a href="quorum_state.sldoc.html#main_send_loop_ref_1" target="doc">00107</a>
-00108
-<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00109</a>
-<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00110</a>
-<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00111</a>
-<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00112</a>
-<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00113</a>
-<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00114</a>
-<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00115</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00106</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00107</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00108</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00109</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00110</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00111</a>
+<a href="quorum_state.sldoc.html#init_create_source_ref_1" target="doc">00112</a>
+00113
+<a href="quorum_state.sldoc.html#main_send_loop_ref_1" target="doc">00114</a>
+00115
 <a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00116</a>
 <a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00117</a>
 <a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00118</a>
@@ -138,8 +138,15 @@
 <a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00120</a>
 <a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00121</a>
 <a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00122</a>
-00123
-00124
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00123</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00124</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00125</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00126</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00127</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00128</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00129</a>
+00130
+00131
 </td><td>  /* Code Disclaimer? */
   
 <span name="includes" id="includes"></span>  #include &lt;stdio.h&gt;
@@ -231,6 +238,13 @@
                   fprintf(stderr, "lbm_src_topic_attr_str_setopt:ume_store: %s\n", lbm_errmsg());
                   exit(1);
           }
+  
+      /* Need to set store behavior to Quorum-Consensus  */
+      if (lbm_src_topic_attr_str_setopt(tattr, "ume_store_behavior", "qc") != 0 )
+      {
+          fprintf(stderr, "lbm_src_topic_attr_str_setopt:ume_store_behavior: %s\n", lbm_errmsg());
+          exit(1);
+      }
   
           err = lbm_src_topic_alloc(&amp;topic, ctx, "test.topic", tattr);
           if (err)

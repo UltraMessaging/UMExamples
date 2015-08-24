@@ -1,0 +1,278 @@
+<!DOCTYPE html><html><head><title>QuorumState.java</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>QuorumState.java</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+<a href="quorum_state.sldoc.html#src_ready_int_ref_1" target="doc">00008</a>
+00009
+00010
+00011
+00012
+00013
+00014
+00015
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00016</a>
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00017</a>
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00018</a>
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00019</a>
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00020</a>
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00021</a>
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00022</a>
+<a href="quorum_state.sldoc.html#store_cfg_ref_1" target="doc">00023</a>
+<a href="quorum_state.sldoc.html#store_cfg_ref_1" target="doc">00024</a>
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00025</a>
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00026</a>
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00027</a>
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00028</a>
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00029</a>
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00030</a>
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00031</a>
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00032</a>
+00033
+<a href="quorum_state.sldoc.html#main_send_loop_ref_1" target="doc">00034</a>
+00035
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00036</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00037</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00038</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00039</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00040</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00041</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00042</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00043</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00044</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00045</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00046</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00047</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00048</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00049</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00050</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00051</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00052</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00053</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00054</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00055</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00056</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00057</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00058</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00059</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00060</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00061</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00062</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00063</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00064</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00065</a>
+00066
+00067
+00068
+00069
+00070
+00071
+00072
+00073
+00074
+<a href="quorum_state.sldoc.html#reg_complete_ref_1" target="doc">00075</a>
+<a href="quorum_state.sldoc.html#reg_complete_ref_1" target="doc">00076</a>
+<a href="quorum_state.sldoc.html#reg_complete_ref_1" target="doc">00077</a>
+<a href="quorum_state.sldoc.html#unresponsive_ref_1" target="doc">00078</a>
+<a href="quorum_state.sldoc.html#unresponsive_ref_1" target="doc">00079</a>
+<a href="quorum_state.sldoc.html#unresponsive_ref_1" target="doc">00080</a>
+<a href="quorum_state.sldoc.html#unresponsive_ref_1" target="doc">00081</a>
+00082
+00083
+00084
+00085
+00086
+00087
+</td><td>  /* quorum_state.java, see http://ultramessaging.github.io/UMExamples/quorum_state/java/ */
+  
+  import com.latencybusters.lbm.*;
+  import java.lang.*;
+  
+  
+  public class QuorumState {
+<span name="src_ready_int" id="src_ready_int"></span>      public static int srcReady = 0;
+      
+      public static void main(String[] args) throws LBMException {
+          LBMContext ctx = null; /* Context object: container for UM "instance". */
+          LBMSource src = null; /* Source object: for sending messages. */
+  
+          SrcCB srccb = new SrcCB();
+  
+<span name="ctx_src_create" id="ctx_src_create"></span>          /*** Initialization: create necessary UM objects. ***/
+          try {
+              LBMTopic topic = null;
+              LBMSourceAttributes srcAttr = null;
+              
+              ctx = new LBMContext();
+              srcAttr = new LBMSourceAttributes();
+<span name="store_cfg" id="store_cfg"></span>              srcAttr.setValue("ume_store", "127.0.0.1:29999");
+              srcAttr.setValue("ume_store_behavior", "qc");
+              topic = ctx.allocTopic("test.topic",srcAttr);
+              src = ctx.createSource(topic, srccb, null, null);
+          }
+          catch(LBMException ex)
+          {
+              System.err.println("Error initializing LBM objects: " + ex.toString());
+              System.exit(1);
+          }
+          
+<span name="main_send_loop" id="main_send_loop"></span>          while(true)
+          {
+<span name="src_send" id="src_send"></span>              if (srcReady == 1)
+              {
+                  /*** Send a message. ***/
+                  try {
+                      src.send("test".getBytes(), "test".getBytes().length, LBM.MSG_FLUSH | LBM.SRC_NONBLOCK);
+                  }
+                  catch(LBMException ex)
+                  {
+                      /* Error trying to send, wait 1 second and try again */
+                      try {
+                          Thread.sleep(1000);
+                      }
+                      catch(InterruptedException tex) {
+                          System.err.println("Error Thread.sleep interrupted: " + tex.toString());
+                          System.exit(1);
+                      }
+                  }
+              }
+              else
+              {
+                  /* No quorum, wait 1 second and check again */
+                  System.out.println("Source is not ready to send (no quorum)");
+                  try {
+                      Thread.sleep(1000);
+                  }
+                  catch(InterruptedException tex) {
+                      System.err.println("Error Thread.sleep interrupted: " + tex.toString());
+                      System.exit(1);
+                  }
+              }
+          }
+      } /* main */
+  
+      private static class SrcCB implements LBMSourceEventCallback
+      {
+          public int onSourceEvent(Object arg, LBMSourceEvent sourceEvent)
+          {
+              switch (sourceEvent.type())
+              {
+<span name="reg_complete" id="reg_complete"></span>                  case LBM.SRC_EVENT_UME_REGISTRATION_COMPLETE_EX:
+                      srcReady = 1;
+                      break;
+<span name="unresponsive" id="unresponsive"></span>                  case LBM.SRC_EVENT_UME_STORE_UNRESPONSIVE:
+                      if (sourceEvent.dataString().contains("quorum lost"))
+                          srcReady = 0;
+                      break;
+              }
+              sourceEvent.dispose();
+              return 0;
+          }
+      }
+  } /* class QuorumState */
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>
