@@ -4,8 +4,6 @@
     <title>Check flight size on EWOULDBLOCK</title>
   </head>
   <body>
-    <a href="../../index.html" class="button" target="_top">Example index</a>
-    <h1>Check flight size on EWOULDBLOCK</h1>
     =semlit,include,../intro.sldoc=
     <p>There is one program source file, and a store configuration XML:</p>
     <ul>
