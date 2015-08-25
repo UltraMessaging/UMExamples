@@ -26,16 +26,16 @@
 
     <p>There is one program source file, and a store configuration XML:</p>
     <ul>
-      <li><b><tt><a href="QuorumState.java">QuorumState.java</a></tt></b></li>
+      <li><b><tt><a href="QuorumState.cs">QuorumState.cs</a></tt></b></li>
       <li><b><tt><a href="store.xml">store.xml</a></tt></b></li>
     </ul>
-    <h2>Program explanation: <tt>QuroumState.java</tt></h2>
+    <h2>Program explanation: <tt>QuorumState.cs</tt></h2>
     <h4>Create a state variable</h4>
         <p>In this example, the application will simply track whether the source has quorum using a global interger, src_ready. src_ready will
 	  initialize as 0, because the source upon creation will not be in a state where it can send.</p>
         <a name="src_ready_int_ref_1" id="src_ready_int_ref_1"></a>
 <small><pre>
-<a href="quorum_state_java.slsrc.html#src_ready_int" target="src">00008</a>      public static int srcReady = 0;
+<a href="quorum_state_cs.slsrc.html#src_ready_int" target="src">00009</a>      public static int srcReady = 0;
 </pre><!-- endblock src_ready_int_ref_1 --></small>
 
 
@@ -72,23 +72,25 @@ qc, quorum-consensus	LBM_SRC_TOPIC_ATTR_UME_STORE_BEHAVIOR_QC	The source will us
 </p>
         <a name="ctx_src_create_ref_1" id="ctx_src_create_ref_1"></a>
 <small><pre>
-<a href="quorum_state_java.slsrc.html#ctx_src_create" target="src">00016</a>          /*** Initialization: create necessary UM objects. ***/
-<a href="quorum_state_java.slsrc.html#ctx_src_create" target="src">00017</a>          try {
-<a href="quorum_state_java.slsrc.html#ctx_src_create" target="src">00018</a>              LBMTopic topic = null;
-<a href="quorum_state_java.slsrc.html#ctx_src_create" target="src">00019</a>              LBMSourceAttributes srcAttr = null;
-<a href="quorum_state_java.slsrc.html#ctx_src_create" target="src">00020</a>              
-<a href="quorum_state_java.slsrc.html#ctx_src_create" target="src">00021</a>              ctx = new LBMContext();
-<a href="quorum_state_java.slsrc.html#ctx_src_create" target="src">00022</a>              srcAttr = new LBMSourceAttributes();
-<a href="quorum_state_java.slsrc.html#ctx_src_create" target="src">00023</a>              srcAttr.setValue("ume_store", "127.0.0.1:29999");
-<a href="quorum_state_java.slsrc.html#ctx_src_create" target="src">00024</a>              srcAttr.setValue("ume_store_behavior", "qc");
-<a href="quorum_state_java.slsrc.html#ctx_src_create" target="src">00025</a>              topic = ctx.allocTopic("test.topic",srcAttr);
-<a href="quorum_state_java.slsrc.html#ctx_src_create" target="src">00026</a>              src = ctx.createSource(topic, srccb, null, null);
-<a href="quorum_state_java.slsrc.html#ctx_src_create" target="src">00027</a>          }
-<a href="quorum_state_java.slsrc.html#ctx_src_create" target="src">00028</a>          catch(LBMException ex)
-<a href="quorum_state_java.slsrc.html#ctx_src_create" target="src">00029</a>          {
-<a href="quorum_state_java.slsrc.html#ctx_src_create" target="src">00030</a>              System.err.println("Error initializing LBM objects: " + ex.toString());
-<a href="quorum_state_java.slsrc.html#ctx_src_create" target="src">00031</a>              System.exit(1);
-<a href="quorum_state_java.slsrc.html#ctx_src_create" target="src">00032</a>          }
+<a href="quorum_state_cs.slsrc.html#ctx_src_create" target="src">00018</a>          /*** Initialization: create necessary UM objects. ***/
+<a href="quorum_state_cs.slsrc.html#ctx_src_create" target="src">00019</a>          try
+<a href="quorum_state_cs.slsrc.html#ctx_src_create" target="src">00020</a>          {
+<a href="quorum_state_cs.slsrc.html#ctx_src_create" target="src">00021</a>              LBMTopic topic = null;
+<a href="quorum_state_cs.slsrc.html#ctx_src_create" target="src">00022</a>              LBMSourceAttributes srcAttr = null;
+<a href="quorum_state_cs.slsrc.html#ctx_src_create" target="src">00023</a>  
+<a href="quorum_state_cs.slsrc.html#ctx_src_create" target="src">00024</a>              srccb = new SrcCB();
+<a href="quorum_state_cs.slsrc.html#ctx_src_create" target="src">00025</a>              ctx = new LBMContext();
+<a href="quorum_state_cs.slsrc.html#ctx_src_create" target="src">00026</a>              srcAttr = new LBMSourceAttributes();
+<a href="quorum_state_cs.slsrc.html#ctx_src_create" target="src">00027</a>              srcAttr.setValue("ume_store", "127.0.0.1:29999");
+<a href="quorum_state_cs.slsrc.html#ctx_src_create" target="src">00028</a>              srcAttr.setValue("ume_store_behavior", "qc");
+<a href="quorum_state_cs.slsrc.html#ctx_src_create" target="src">00029</a>              topic = ctx.allocTopic("test.topic", srcAttr);
+<a href="quorum_state_cs.slsrc.html#ctx_src_create" target="src">00030</a>              src = ctx.createSource(topic, new LBMSourceEventCallback(srccb.onSourceEvent), null, null);
+<a href="quorum_state_cs.slsrc.html#ctx_src_create" target="src">00031</a>          }
+<a href="quorum_state_cs.slsrc.html#ctx_src_create" target="src">00032</a>          catch (LBMException ex)
+<a href="quorum_state_cs.slsrc.html#ctx_src_create" target="src">00033</a>          {
+<a href="quorum_state_cs.slsrc.html#ctx_src_create" target="src">00034</a>              System.Console.Error.WriteLine("Error initializing LBM objects: " + ex.Message);
+<a href="quorum_state_cs.slsrc.html#ctx_src_create" target="src">00035</a>              System.Environment.Exit(1);
+<a href="quorum_state_cs.slsrc.html#ctx_src_create" target="src">00036</a>          }
 </pre><!-- endblock ctx_src_create_ref_1 --></small>
 
 
@@ -130,9 +132,9 @@ numbers seen from any store
           store. Setting the state in the registration complete event can look like this:</p>
         <a name="reg_complete_ref_1" id="reg_complete_ref_1"></a>
 <small><pre>
-<a href="quorum_state_java.slsrc.html#reg_complete" target="src">00075</a>                  case LBM.SRC_EVENT_UME_REGISTRATION_COMPLETE_EX:
-<a href="quorum_state_java.slsrc.html#reg_complete" target="src">00076</a>                      srcReady = 1;
-<a href="quorum_state_java.slsrc.html#reg_complete" target="src">00077</a>                      break;
+<a href="quorum_state_cs.slsrc.html#reg_complete" target="src">00084</a>                  case LBM.SRC_EVENT_UME_REGISTRATION_COMPLETE_EX:
+<a href="quorum_state_cs.slsrc.html#reg_complete" target="src">00085</a>                      srcReady = 1;
+<a href="quorum_state_cs.slsrc.html#reg_complete" target="src">00086</a>                      break;
 </pre><!-- endblock reg_complete_ref_1 --></small>
 
 
@@ -142,10 +144,11 @@ numbers seen from any store
           determine if quorum has actually been lost, like so:</p>
         <a name="unresponsive_ref_1" id="unresponsive_ref_1"></a>
 <small><pre>
-<a href="quorum_state_java.slsrc.html#unresponsive" target="src">00078</a>                  case LBM.SRC_EVENT_UME_STORE_UNRESPONSIVE:
-<a href="quorum_state_java.slsrc.html#unresponsive" target="src">00079</a>                      if (sourceEvent.dataString().contains("quorum lost"))
-<a href="quorum_state_java.slsrc.html#unresponsive" target="src">00080</a>                          srcReady = 0;
-<a href="quorum_state_java.slsrc.html#unresponsive" target="src">00081</a>                      break;
+<a href="quorum_state_cs.slsrc.html#unresponsive" target="src">00087</a>                  case LBM.SRC_EVENT_UME_STORE_UNRESPONSIVE:
+<a href="quorum_state_cs.slsrc.html#unresponsive" target="src">00088</a>                      String errorStr = sourceEvent.dataString();
+<a href="quorum_state_cs.slsrc.html#unresponsive" target="src">00089</a>                      if (errorStr.Contains("quorum lost"))
+<a href="quorum_state_cs.slsrc.html#unresponsive" target="src">00090</a>                          srcReady = 0;
+<a href="quorum_state_cs.slsrc.html#unresponsive" target="src">00091</a>                      break;
 </pre><!-- endblock unresponsive_ref_1 --></small>
 
 
@@ -156,7 +159,7 @@ numbers seen from any store
           to stdout when the source is not in the ready state</p>
         <a name="main_send_loop_ref_1" id="main_send_loop_ref_1"></a>
 <small><pre>
-<a href="quorum_state_java.slsrc.html#main_send_loop" target="src">00034</a>          while(true)
+<a href="quorum_state_cs.slsrc.html#main_send_loop" target="src">00038</a>          while (true)
 </pre><!-- endblock main_send_loop_ref_1 --></small>
 
 
@@ -166,36 +169,41 @@ numbers seen from any store
 	  notified via the unresponsive source event; in either case the source cannot send.</p>
         <a name="src_send_ref_1" id="src_send_ref_1"></a>
 <small><pre>
-<a href="quorum_state_java.slsrc.html#src_send" target="src">00036</a>              if (srcReady == 1)
-<a href="quorum_state_java.slsrc.html#src_send" target="src">00037</a>              {
-<a href="quorum_state_java.slsrc.html#src_send" target="src">00038</a>                  /*** Send a message. ***/
-<a href="quorum_state_java.slsrc.html#src_send" target="src">00039</a>                  try {
-<a href="quorum_state_java.slsrc.html#src_send" target="src">00040</a>                      src.send("test".getBytes(), "test".getBytes().length, LBM.MSG_FLUSH | LBM.SRC_NONBLOCK);
-<a href="quorum_state_java.slsrc.html#src_send" target="src">00041</a>                  }
-<a href="quorum_state_java.slsrc.html#src_send" target="src">00042</a>                  catch(LBMException ex)
-<a href="quorum_state_java.slsrc.html#src_send" target="src">00043</a>                  {
-<a href="quorum_state_java.slsrc.html#src_send" target="src">00044</a>                      /* Error trying to send, wait 1 second and try again */
-<a href="quorum_state_java.slsrc.html#src_send" target="src">00045</a>                      try {
-<a href="quorum_state_java.slsrc.html#src_send" target="src">00046</a>                          Thread.sleep(1000);
-<a href="quorum_state_java.slsrc.html#src_send" target="src">00047</a>                      }
-<a href="quorum_state_java.slsrc.html#src_send" target="src">00048</a>                      catch(InterruptedException tex) {
-<a href="quorum_state_java.slsrc.html#src_send" target="src">00049</a>                          System.err.println("Error Thread.sleep interrupted: " + tex.toString());
-<a href="quorum_state_java.slsrc.html#src_send" target="src">00050</a>                          System.exit(1);
-<a href="quorum_state_java.slsrc.html#src_send" target="src">00051</a>                      }
-<a href="quorum_state_java.slsrc.html#src_send" target="src">00052</a>                  }
-<a href="quorum_state_java.slsrc.html#src_send" target="src">00053</a>              }
-<a href="quorum_state_java.slsrc.html#src_send" target="src">00054</a>              else
-<a href="quorum_state_java.slsrc.html#src_send" target="src">00055</a>              {
-<a href="quorum_state_java.slsrc.html#src_send" target="src">00056</a>                  /* No quorum, wait 1 second and check again */
-<a href="quorum_state_java.slsrc.html#src_send" target="src">00057</a>                  System.out.println("Source is not ready to send (no quorum)");
-<a href="quorum_state_java.slsrc.html#src_send" target="src">00058</a>                  try {
-<a href="quorum_state_java.slsrc.html#src_send" target="src">00059</a>                      Thread.sleep(1000);
-<a href="quorum_state_java.slsrc.html#src_send" target="src">00060</a>                  }
-<a href="quorum_state_java.slsrc.html#src_send" target="src">00061</a>                  catch(InterruptedException tex) {
-<a href="quorum_state_java.slsrc.html#src_send" target="src">00062</a>                      System.err.println("Error Thread.sleep interrupted: " + tex.toString());
-<a href="quorum_state_java.slsrc.html#src_send" target="src">00063</a>                      System.exit(1);
-<a href="quorum_state_java.slsrc.html#src_send" target="src">00064</a>                  }
-<a href="quorum_state_java.slsrc.html#src_send" target="src">00065</a>              }
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00040</a>              if (srcReady == 1)
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00041</a>              {
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00042</a>                  /*** Send a message. ***/
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00043</a>                  try
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00044</a>                  {
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00045</a>                      src.send(Encoding.ASCII.GetBytes("test"), 4, LBM.MSG_FLUSH | LBM.SRC_NONBLOCK);
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00046</a>                  }
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00047</a>                  catch (LBMException ex)
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00048</a>                  {
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00049</a>                      /* Error trying to send, wait 1 second and try again */
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00050</a>                      try
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00051</a>                      {
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00052</a>                          System.Threading.Thread.Sleep(1000);
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00053</a>                      }
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00054</a>                      catch (Exception eex)
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00055</a>                      {
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00056</a>                          System.Console.Error.WriteLine("Error Thread.sleep interrupted: " + eex.Message);
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00057</a>                          System.Environment.Exit(1);
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00058</a>                      }
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00059</a>                  }
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00060</a>              }
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00061</a>              else
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00062</a>              {
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00063</a>                  /* No quorum, wait 1 second and check again */
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00064</a>                  System.Console.Out.Write("Source is not ready to send (no quorum)");
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00065</a>                  try
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00066</a>                  {
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00067</a>                      System.Threading.Thread.Sleep(1000);
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00068</a>                  }
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00069</a>                  catch (Exception eex)
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00070</a>                  {
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00071</a>                      System.Console.Error.WriteLine("Error Thread.sleep interrupted: " + eex.Message);
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00072</a>                      System.Environment.Exit(1);
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00073</a>                  }
+<a href="quorum_state_cs.slsrc.html#src_send" target="src">00074</a>              }
 </pre><!-- endblock src_send_ref_1 --></small>
 
 

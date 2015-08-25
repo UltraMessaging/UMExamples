@@ -7,10 +7,10 @@
     =semlit,include,../intro.sldoc=
     <p>There is one program source file, and a store configuration XML:</p>
     <ul>
-      <li><b><tt>=semlit,srcfile,quorum_state_java.slsrc,QuorumState.java=</tt></b></li>
+      <li><b><tt>=semlit,srcfile,quorum_state_cs.slsrc,QuorumState.cs=</tt></b></li>
       <li><b><tt>=semlit,srcfile,../quorum_state_store.slsrc,store.xml=</tt></b></li>
     </ul>
-    <h2>Program explanation: <tt>QuroumState.java</tt></h2>
+    <h2>Program explanation: <tt>QuorumState.cs</tt></h2>
     <h4>Create a state variable</h4>
         <p>In this example, the application will simply track whether the source has quorum using a global interger, src_ready. src_ready will
 	  initialize as 0, because the source upon creation will not be in a state where it can send.</p>

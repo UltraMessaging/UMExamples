@@ -1,0 +1,298 @@
+<!DOCTYPE html><html><head><title>QuorumState.cs</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>QuorumState.cs</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+00008
+<a href="quorum_state.sldoc.html#src_ready_int_ref_1" target="doc">00009</a>
+00010
+00011
+00012
+00013
+00014
+00015
+00016
+00017
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00018</a>
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00019</a>
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00020</a>
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00021</a>
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00022</a>
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00023</a>
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00024</a>
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00025</a>
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00026</a>
+<a href="quorum_state.sldoc.html#store_cfg_ref_1" target="doc">00027</a>
+<a href="quorum_state.sldoc.html#store_cfg_ref_1" target="doc">00028</a>
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00029</a>
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00030</a>
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00031</a>
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00032</a>
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00033</a>
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00034</a>
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00035</a>
+<a href="quorum_state.sldoc.html#ctx_src_create_ref_1" target="doc">00036</a>
+00037
+<a href="quorum_state.sldoc.html#main_send_loop_ref_1" target="doc">00038</a>
+00039
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00040</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00041</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00042</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00043</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00044</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00045</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00046</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00047</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00048</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00049</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00050</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00051</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00052</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00053</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00054</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00055</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00056</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00057</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00058</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00059</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00060</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00061</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00062</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00063</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00064</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00065</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00066</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00067</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00068</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00069</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00070</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00071</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00072</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00073</a>
+<a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00074</a>
+00075
+00076
+00077
+00078
+00079
+00080
+00081
+00082
+00083
+<a href="quorum_state.sldoc.html#reg_complete_ref_1" target="doc">00084</a>
+<a href="quorum_state.sldoc.html#reg_complete_ref_1" target="doc">00085</a>
+<a href="quorum_state.sldoc.html#reg_complete_ref_1" target="doc">00086</a>
+<a href="quorum_state.sldoc.html#unresponsive_ref_1" target="doc">00087</a>
+<a href="quorum_state.sldoc.html#unresponsive_ref_1" target="doc">00088</a>
+<a href="quorum_state.sldoc.html#unresponsive_ref_1" target="doc">00089</a>
+<a href="quorum_state.sldoc.html#unresponsive_ref_1" target="doc">00090</a>
+<a href="quorum_state.sldoc.html#unresponsive_ref_1" target="doc">00091</a>
+00092
+00093
+00094
+00095
+00096
+00097
+</td><td>  /* QuorumState.cs, see http://ultramessaging.github.io/UMExamples/quorum_state/dotnet/ */
+  using System;
+  using System.Collections.Generic;
+  using System.Text;
+  using com.latencybusters.lbm;
+  
+  public class QuorumState
+  {
+<span name="src_ready_int" id="src_ready_int"></span>      public static int srcReady = 0;
+  
+      static void Main(String[] args)
+      {
+          LBMContext ctx = null; /* Context object: container for UM "instance". */
+          LBMSource src = null; /* Source object: for sending messages. */
+  
+          SrcCB srccb = null;
+  
+<span name="ctx_src_create" id="ctx_src_create"></span>          /*** Initialization: create necessary UM objects. ***/
+          try
+          {
+              LBMTopic topic = null;
+              LBMSourceAttributes srcAttr = null;
+  
+              srccb = new SrcCB();
+              ctx = new LBMContext();
+              srcAttr = new LBMSourceAttributes();
+<span name="store_cfg" id="store_cfg"></span>              srcAttr.setValue("ume_store", "127.0.0.1:29999");
+              srcAttr.setValue("ume_store_behavior", "qc");
+              topic = ctx.allocTopic("test.topic", srcAttr);
+              src = ctx.createSource(topic, new LBMSourceEventCallback(srccb.onSourceEvent), null, null);
+          }
+          catch (LBMException ex)
+          {
+              System.Console.Error.WriteLine("Error initializing LBM objects: " + ex.Message);
+              System.Environment.Exit(1);
+          }
+  
+<span name="main_send_loop" id="main_send_loop"></span>          while (true)
+          {
+<span name="src_send" id="src_send"></span>              if (srcReady == 1)
+              {
+                  /*** Send a message. ***/
+                  try
+                  {
+                      src.send(Encoding.ASCII.GetBytes("test"), 4, LBM.MSG_FLUSH | LBM.SRC_NONBLOCK);
+                  }
+                  catch (LBMException ex)
+                  {
+                      /* Error trying to send, wait 1 second and try again */
+                      try
+                      {
+                          System.Threading.Thread.Sleep(1000);
+                      }
+                      catch (Exception eex)
+                      {
+                          System.Console.Error.WriteLine("Error Thread.sleep interrupted: " + eex.Message);
+                          System.Environment.Exit(1);
+                      }
+                  }
+              }
+              else
+              {
+                  /* No quorum, wait 1 second and check again */
+                  System.Console.Out.Write("Source is not ready to send (no quorum)");
+                  try
+                  {
+                      System.Threading.Thread.Sleep(1000);
+                  }
+                  catch (Exception eex)
+                  {
+                      System.Console.Error.WriteLine("Error Thread.sleep interrupted: " + eex.Message);
+                      System.Environment.Exit(1);
+                  }
+              }
+          }
+      } /* main */
+  
+      class SrcCB
+      {
+          public void onSourceEvent(Object arg, LBMSourceEvent sourceEvent)
+          {
+              switch (sourceEvent.type())
+              {
+<span name="reg_complete" id="reg_complete"></span>                  case LBM.SRC_EVENT_UME_REGISTRATION_COMPLETE_EX:
+                      srcReady = 1;
+                      break;
+<span name="unresponsive" id="unresponsive"></span>                  case LBM.SRC_EVENT_UME_STORE_UNRESPONSIVE:
+                      String errorStr = sourceEvent.dataString();
+                      if (errorStr.Contains("quorum lost"))
+                          srcReady = 0;
+                      break;
+              }
+              sourceEvent.dispose();
+          }
+      }
+  }/* namespace */
+  
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>
