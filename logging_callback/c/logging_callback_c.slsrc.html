@@ -1,0 +1,294 @@
+<!DOCTYPE html><html><head><title>logging_callback.c</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>logging_callback.c</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+<a href="logging_callback.sldoc.html#includes_ref_1" target="doc">00003</a>
+<a href="logging_callback.sldoc.html#includes_ref_1" target="doc">00004</a>
+<a href="logging_callback.sldoc.html#includes_ref_1" target="doc">00005</a>
+<a href="logging_callback.sldoc.html#includes_ref_1" target="doc">00006</a>
+<a href="logging_callback.sldoc.html#includes_ref_1" target="doc">00007</a>
+<a href="logging_callback.sldoc.html#includes_ref_1" target="doc">00008</a>
+<a href="logging_callback.sldoc.html#includes_ref_1" target="doc">00009</a>
+<a href="logging_callback.sldoc.html#includes_ref_1" target="doc">00010</a>
+<a href="logging_callback.sldoc.html#includes_ref_1" target="doc">00011</a>
+<a href="logging_callback.sldoc.html#includes_ref_1" target="doc">00012</a>
+<a href="logging_callback.sldoc.html#includes_ref_1" target="doc">00013</a>
+<a href="logging_callback.sldoc.html#includes_ref_1" target="doc">00014</a>
+<a href="logging_callback.sldoc.html#includes_ref_1" target="doc">00015</a>
+<a href="logging_callback.sldoc.html#includes_ref_1" target="doc">00016</a>
+00017
+00018
+<a href="logging_callback.sldoc.html#logging_cb_ref_1" target="doc">00019</a>
+<a href="logging_callback.sldoc.html#logging_cb_ref_1" target="doc">00020</a>
+<a href="logging_callback.sldoc.html#logging_cb_ref_1" target="doc">00021</a>
+<a href="logging_callback.sldoc.html#logging_cb_ref_1" target="doc">00022</a>
+<a href="logging_callback.sldoc.html#logging_cb_ref_1" target="doc">00023</a>
+00024
+00025
+00026
+00027
+00028
+00029
+00030
+00031
+00032
+00033
+<a href="logging_callback.sldoc.html#windows_ref_1" target="doc">00034</a>
+<a href="logging_callback.sldoc.html#windows_ref_1" target="doc">00035</a>
+<a href="logging_callback.sldoc.html#windows_ref_1" target="doc">00036</a>
+<a href="logging_callback.sldoc.html#windows_ref_1" target="doc">00037</a>
+<a href="logging_callback.sldoc.html#windows_ref_1" target="doc">00038</a>
+<a href="logging_callback.sldoc.html#windows_ref_1" target="doc">00039</a>
+<a href="logging_callback.sldoc.html#windows_ref_1" target="doc">00040</a>
+<a href="logging_callback.sldoc.html#windows_ref_1" target="doc">00041</a>
+<a href="logging_callback.sldoc.html#windows_ref_1" target="doc">00042</a>
+<a href="logging_callback.sldoc.html#windows_ref_1" target="doc">00043</a>
+00044
+00045
+<a href="logging_callback.sldoc.html#set_cb_ref_1" target="doc">00046</a>
+<a href="logging_callback.sldoc.html#set_cb_ref_1" target="doc">00047</a>
+<a href="logging_callback.sldoc.html#set_cb_ref_1" target="doc">00048</a>
+<a href="logging_callback.sldoc.html#set_cb_ref_1" target="doc">00049</a>
+00050
+<a href="logging_callback.sldoc.html#create_ref_1" target="doc">00051</a>
+<a href="logging_callback.sldoc.html#create_ref_1" target="doc">00052</a>
+<a href="logging_callback.sldoc.html#create_ref_1" target="doc">00053</a>
+<a href="logging_callback.sldoc.html#create_ref_1" target="doc">00054</a>
+<a href="logging_callback.sldoc.html#create_ref_1" target="doc">00055</a>
+<a href="logging_callback.sldoc.html#create_ref_1" target="doc">00056</a>
+00057
+00058
+00059
+00060
+00061
+00062
+00063
+00064
+00065
+<a href="logging_callback.sldoc.html#late_join_ref_1" target="doc">00066</a>
+<a href="logging_callback.sldoc.html#late_join_ref_1" target="doc">00067</a>
+<a href="logging_callback.sldoc.html#late_join_ref_1" target="doc">00068</a>
+<a href="logging_callback.sldoc.html#late_join_ref_1" target="doc">00069</a>
+<a href="logging_callback.sldoc.html#late_join_ref_1" target="doc">00070</a>
+00071
+00072
+00073
+00074
+00075
+00076
+00077
+00078
+00079
+00080
+00081
+00082
+00083
+00084
+00085
+00086
+00087
+00088
+00089
+00090
+00091
+00092
+00093
+00094
+00095
+</td><td>  /* Code Disclaimer? */
+  
+<span name="includes" id="includes"></span>  #include &lt;stdio.h&gt;
+  
+  #if defined(_MSC_VER)
+  /* Windows-only includes */
+  #include &lt;winsock2.h&gt;
+  #define SLEEP(s) Sleep((s)*1000)
+  #else
+  /* Unix-only includes */
+  #include &lt;stdlib.h&gt;
+  #include &lt;unistd.h&gt;
+  #define SLEEP(s) sleep(s)
+  #endif
+  
+  #include &lt;lbm/lbm.h&gt;
+  
+  /* Logging callback */
+<span name="logging_cb" id="logging_cb"></span>  int lbm_log_msg(int level, const char *message, void *clientd)
+  {
+          printf("LOG Level %d: %s\n", level, message);
+          return 0;
+  }
+  
+  main()
+  {
+      lbm_context_t *ctx;             /* pointer to context object */
+      lbm_context_attr_t * cattr;     /* pointer to context attribute object */
+      lbm_topic_t *topic;             /* pointer to topic object */
+      lbm_src_topic_attr_t *tattr;    /* pointer to source attribute object */
+      lbm_src_t *src;                 /* pointer to source object */
+      int err;                        /* return status of lbm functions (true=error) */
+  
+<span name="windows" id="windows"></span>  #if defined(_MSC_VER)
+          /* windows-specific code */
+          WSADATA wsadata;
+          int wsStat = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
+          if (wsStat != 0)
+          {
+                  printf("line %d: wsStat=%d\n",__LINE__,wsStat);
+                  exit(1);
+          }
+  #endif
+  
+          /* Setup logging callback */
+<span name="set_cb" id="set_cb"></span>          if (lbm_log(lbm_log_msg, NULL) == LBM_FAILURE) {
+                  fprintf(stderr, "lbm_log: %s\n", lbm_errmsg());
+                  exit(1);
+          }
+  
+<span name="create" id="create"></span>          err = lbm_context_create(&amp;ctx, NULL, NULL, NULL);
+          if (err)
+          {
+                  printf("line %d: %s\n", __LINE__, lbm_errmsg());
+                  exit(1);
+          }
+  
+      /* Initializing the source attribute object */
+      if (lbm_src_topic_attr_create(&amp;tattr) != 0)
+      {
+          fprintf(stderr, "lbm_src_topic_attr_create: %s\n", lbm_errmsg());
+          exit(1);
+      }
+  
+      /* Setting late_join */
+<span name="late_join" id="late_join"></span>          if (lbm_src_topic_attr_str_setopt(tattr, "late_join", "1") != 0)
+          {
+                  fprintf(stderr, "lbm_context_attr_str_setopt:late_join: %s\n", lbm_errmsg());
+                  exit(1);
+          }
+  
+      /* Allocating the topic */
+      err = lbm_src_topic_alloc(&amp;topic, ctx, "test.topic.1", tattr);
+      if (err)
+      {
+          printf("line %d: %s\n", __LINE__, lbm_errmsg());
+          exit(1);
+      }
+  
+      /* Creating the source */
+      err = lbm_src_create(&amp;src, ctx, topic, NULL, NULL, NULL);
+      if (err)
+      {
+          printf("line %d: %s\n", __LINE__, lbm_errmsg());
+          exit(1);
+      }
+  
+      /* At the very least, the following core message should print via the logging callback: */
+      /* LOG Level 5: Core-5688-539: NOTICE: Source "test.topic.1" has no retention settings (1 message retained max) */
+  
+      /* Cleanup */
+      lbm_src_delete(src);
+      lbm_context_delete(ctx);
+  }
+  
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

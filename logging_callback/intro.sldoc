@@ -1,0 +1,24 @@
+<a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>UM Logging Callback</h1>
+    <p>In this example, the application is setting a callback to handle all Ultra Messaging library logging.
+      It is incredibly important for every UM application to set the logging callback and appropriately handling
+      the data provided within the callback. For the most part, this means writing the data to the application
+      log file along with a timestamp (most applications have logging frameworks to handle timestamps and file 
+      handling).
+    <p>It may also be a good idea to watch the log level of the messages, and create alerts for messages at the
+      ERR level and higher. The possible log levels are:
+      <ul>
+	<li>LBM_LOG_EMERG</li>
+	<li>LBM_LOG_ALERT</li>
+	<li>LBM_LOG_CRIT</li>
+	<li>LBM_LOG_ERR</li>
+	<li>LBM_LOG_WARNING</li>
+	<li>LBM_LOG_NOTICE</li>
+	<li>LBM_LOG_INFO</li>
+	<li>LBM_LOG_DEBUG</li>
+      </ul>
+    <p>In this sample application, the logging callback is set and a LBM_LOG_NOTICE message is forced by enabling
+      late-join for a source without setting the 
+      =semlit,tooltip,../../tooltips/source_retransmit_retention_size_threshold.txt,retransmit_retention_size_threshold=.
+      The NOTICE message indicates that when late join is enabled and a retention threshold is not configured, only a single
+      message will be available for late join by receivers.</p>
