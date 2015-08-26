@@ -1,0 +1,90 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Late Join Example</title>
+  </head>
+  <body>
+    <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>How to enable late and detect late join</h1>
+    <p>In messaging, the concept of late join is used to describe a receiver that may join a message stream or topic "late".  In this case, late
+	would mean that the receiver may have missed one or several messages that were published before it successfully joined the transport.  In several use cases, it can 
+	be useful to still receive and process these messages in order to initialize application logic, or resolve race conditions between applications during startup.  In UM
+	the late join feature can be enabled at any source.  Doing so will enable a limited in memory buffer of messages to be maintained at the source in the event receivers
+	subscribe and request late join.</p>
+    <ul>
+      <li><b><tt><a href="late_join.cs">late_join.cs</a></tt></b>
+        - (right-click and save as "late_join.cs") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>late_join.cs</tt></h2>
+    <h4>Enabling Late Join</h4>
+        <p>Sources by default have late join disabled.  To enable late join the application must do two things.  The first is to enable late-join. This can be done as follows:</p>
+        <a name="enable_lj_ref_1" id="enable_lj_ref_1"></a>
+<small><pre>
+<a href="late_join_cs.slsrc.html#enable_lj" target="src">00026</a>              srcAttr.setValue("late_join", "1");
+</pre><!-- endblock enable_lj_ref_1 --></small>
+
+
+		<p>Once late join is enabled, you must define a retention policy.  This will determine how many messages will be buffered at the source, and thus available for late join. 
+		There are two retention policies, one based on age, the other bytes. In this case, the source will be configured to hold at least 1 byte of message(s). In effect this 
+		means that at least 1 message will be in the buffer at all times. This can be done as follows:</p>
+        <a name="configure_lj_ref_1" id="configure_lj_ref_1"></a>
+<small><pre>
+<a href="late_join_cs.slsrc.html#configure_lj" target="src">00027</a>              srcAttr.setValue("retransmit_retention_size_threshold", "1");
+</pre><!-- endblock configure_lj_ref_1 --></small>
+
+
+    <h4>Create a source, send message</h4>
+	<p>Once late join is enabled and configured, the source will send a message.  At this point, no receivers are "up", so they can't receive the message.  In this example, 
+	the receiver simply hasn't been created.  More commonly, when users start an application that sends, and another that receives simultaneously, it is very often the case
+	that the receiver can miss the first few messages published.  This is because it takes a non-zero amount of time to resolve the source and join the underlying transport.</p>
+	<a name="source_ref_1" id="source_ref_1"></a>
+<small><pre>
+<a href="late_join_cs.slsrc.html#source" target="src">00030</a>              early_src = new LBMSource(ctx, srcTopic);
+<a href="late_join_cs.slsrc.html#source" target="src">00031</a>  
+<a href="late_join_cs.slsrc.html#source" target="src">00032</a>              early_src.send(Encoding.ASCII.GetBytes("test"), 4, LBM.MSG_FLUSH | LBM.SRC_NONBLOCK);
+</pre><!-- endblock source_ref_1 --></small>
+
+
+    <h4>Creating the receiver and receiving late join</h4>
+	<p>Receivers have late join enabled by default.  It is possible to disable late join on a receiver by receiver basis.  In this example, we want to receive late join, so
+	the default does not have to be changed.  Therefore, the receiver is simply created:</p>
+	<a name="receiver_ref_1" id="receiver_ref_1"></a>
+<small><pre>
+<a href="late_join_cs.slsrc.html#receiver" target="src">00044</a>              lateRcv = new LBMReceiver(ctx, topic, onReceive, null, null);
+</pre><!-- endblock receiver_ref_1 --></small>
+
+
+	<p>The receiver will receive late join the same way it receives any live message.  One critical component to applications with late join enabled is that it should make use
+	of the late join flag.  There is no record or state kept in UMS, and as a consequence it is not only possible, but likely that receiving applications can receive duplicates 
+	via late join, especially when joining the stream due to start up or disconnects.  Therefore it is typically recommended that application level dedupe logic be applied to the 
+	message stream if there is a requirement to not process dups. In this example, we will simply use the message flags to determine if a message is late joined.  Messages can also 
+	be retransmitted via OTR, which is a separate type of retransmission that will not be covered in this example.</p>
+	<a name="callback_ref_1" id="callback_ref_1"></a>
+<small><pre>
+<a href="late_join_cs.slsrc.html#callback" target="src">00063</a>          switch (msg.type())
+<a href="late_join_cs.slsrc.html#callback" target="src">00064</a>          {
+<a href="late_join_cs.slsrc.html#callback" target="src">00065</a>              case LBM.MSG_DATA:
+<a href="late_join_cs.slsrc.html#callback" target="src">00066</a>                  if((msg.flags() &amp; LBM.MSG_FLAG_OTR)==LBM.MSG_FLAG_OTR)
+<a href="late_join_cs.slsrc.html#callback" target="src">00067</a>                      System.Console.Out.WriteLine("Processing OTR Message. SQN: " + msg.sequenceNumber());
+<a href="late_join_cs.slsrc.html#callback" target="src">00068</a>                  else if((msg.flags() &amp; LBM.MSG_FLAG_RETRANSMIT)==LBM.MSG_FLAG_RETRANSMIT)
+<a href="late_join_cs.slsrc.html#callback" target="src">00069</a>                      System.Console.Out.WriteLine("Processing Late Join Message. SQN: " + msg.sequenceNumber());
+<a href="late_join_cs.slsrc.html#callback" target="src">00070</a>                  else 
+<a href="late_join_cs.slsrc.html#callback" target="src">00071</a>                      System.Console.Out.WriteLine("Processing Normal Message. SQN: " + msg.sequenceNumber());
+<a href="late_join_cs.slsrc.html#callback" target="src">00072</a>  
+<a href="late_join_cs.slsrc.html#callback" target="src">00073</a>                  System.Console.Out.WriteLine("Msg Received: " + msg.dataString());
+</pre><!-- endblock callback_ref_1 --></small>
+
+
+    <h4>Cleanup</h4>
+	<p>Cleanup in this case is simple.  Simple close or delete all source & receiver objects, and then close or delete the context.</p>
+	<a name="cleanup_ref_1" id="cleanup_ref_1"></a>
+<small><pre>
+<a href="late_join_cs.slsrc.html#cleanup" target="src">00050</a>              early_src.close();
+<a href="late_join_cs.slsrc.html#cleanup" target="src">00051</a>              lateRcv.close();
+<a href="late_join_cs.slsrc.html#cleanup" target="src">00052</a>              ctx.close();
+</pre><!-- endblock cleanup_ref_1 --></small>
+
+
+    </body>
+</html>
+

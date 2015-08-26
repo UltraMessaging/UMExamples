@@ -1,0 +1,412 @@
+<!DOCTYPE html><html><head><title>late_join.c</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>late_join.c</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+00008
+00009
+00010
+00011
+00012
+00013
+00014
+00015
+00016
+00017
+00018
+00019
+00020
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00021</a>
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00022</a>
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00023</a>
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00024</a>
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00025</a>
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00026</a>
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00027</a>
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00028</a>
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00029</a>
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00030</a>
+00031
+00032
+00033
+00034
+00035
+00036
+00037
+00038
+00039
+00040
+00041
+00042
+00043
+00044
+00045
+00046
+00047
+00048
+00049
+00050
+00051
+00052
+00053
+00054
+00055
+00056
+00057
+00058
+00059
+00060
+00061
+00062
+00063
+00064
+00065
+00066
+00067
+00068
+00069
+00070
+00071
+00072
+00073
+00074
+00075
+00076
+00077
+00078
+00079
+00080
+00081
+00082
+00083
+00084
+00085
+00086
+00087
+00088
+00089
+<a href="late_join.sldoc.html#enable_lj_ref_1" target="doc">00090</a>
+<a href="late_join.sldoc.html#enable_lj_ref_1" target="doc">00091</a>
+<a href="late_join.sldoc.html#enable_lj_ref_1" target="doc">00092</a>
+<a href="late_join.sldoc.html#enable_lj_ref_1" target="doc">00093</a>
+<a href="late_join.sldoc.html#enable_lj_ref_1" target="doc">00094</a>
+<a href="late_join.sldoc.html#configure_lj_ref_1" target="doc">00095</a>
+<a href="late_join.sldoc.html#configure_lj_ref_1" target="doc">00096</a>
+<a href="late_join.sldoc.html#configure_lj_ref_1" target="doc">00097</a>
+<a href="late_join.sldoc.html#configure_lj_ref_1" target="doc">00098</a>
+<a href="late_join.sldoc.html#configure_lj_ref_1" target="doc">00099</a>
+00100
+00101
+00102
+00103
+00104
+00105
+00106
+00107
+00108
+00109
+<a href="late_join.sldoc.html#source_ref_1" target="doc">00110</a>
+<a href="late_join.sldoc.html#source_ref_1" target="doc">00111</a>
+<a href="late_join.sldoc.html#source_ref_1" target="doc">00112</a>
+<a href="late_join.sldoc.html#source_ref_1" target="doc">00113</a>
+<a href="late_join.sldoc.html#source_ref_1" target="doc">00114</a>
+<a href="late_join.sldoc.html#source_ref_1" target="doc">00115</a>
+<a href="late_join.sldoc.html#source_ref_1" target="doc">00116</a>
+<a href="late_join.sldoc.html#source_ref_1" target="doc">00117</a>
+<a href="late_join.sldoc.html#source_ref_1" target="doc">00118</a>
+<a href="late_join.sldoc.html#source_ref_1" target="doc">00119</a>
+<a href="late_join.sldoc.html#source_ref_1" target="doc">00120</a>
+<a href="late_join.sldoc.html#source_ref_1" target="doc">00121</a>
+<a href="late_join.sldoc.html#source_ref_1" target="doc">00122</a>
+00123
+00124
+00125
+00126
+00127
+00128
+00129
+00130
+00131
+<a href="late_join.sldoc.html#receiver_ref_1" target="doc">00132</a>
+00133
+00134
+00135
+00136
+00137
+00138
+00139
+00140
+00141
+00142
+00143
+00144
+00145
+<a href="late_join.sldoc.html#cleanup_ref_1" target="doc">00146</a>
+<a href="late_join.sldoc.html#cleanup_ref_1" target="doc">00147</a>
+<a href="late_join.sldoc.html#cleanup_ref_1" target="doc">00148</a>
+00149
+00150
+00151
+00152
+00153
+00154
+</td><td>  /* Example on setting Ultra Messaging attributes */
+  
+  #include &lt;stdio.h&gt;
+  
+  #if defined(_MSC_VER)
+  /* Windows-only includes */
+  #include &lt;winsock2.h&gt;
+  #define SLEEP(s) Sleep((s)*1000)
+  #else
+  /* Unix-only includes */
+  #include &lt;stdlib.h&gt;
+  #include &lt;unistd.h&gt;
+  #define SLEEP(s) sleep(s)
+  #endif
+  
+  #include &lt;lbm/lbm.h&gt;
+  
+  /* Received message handler (passed into lbm_rcv_create()) */
+  int rcv_handle_msg(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
+  {
+<span name="callback" id="callback"></span>      switch (msg-&gt;type) {
+      case LBM_MSG_DATA:
+          if (msg-&gt;flags &amp; LBM_MSG_FLAG_RETRANSMIT)
+              printf("Processing Late Join Message. SQN: %d\n", msg-&gt;sequence_number);
+          else if (msg-&gt;flags &amp; LBM_MSG_FLAG_OTR)
+              printf("Processing OTR Message. SQN: %d\n", msg-&gt;sequence_number);
+          else
+              printf("Normal Message. SQN: %d\n", msg-&gt;sequence_number);
+  
+          //some processing
+          break;
+      case LBM_MSG_BOS:
+          printf("Beggining of transport.\n");
+          break;
+      case LBM_MSG_EOS:
+          printf("End of transport.\n");
+          break;
+      default:
+          printf("Unknown lbm_msg_t type %x [%s][%s]\n", msg-&gt;type, msg-&gt;topic_name, msg-&gt;source);
+          break;
+      }
+      return 0;
+  }
+  
+  main()
+  {
+      lbm_context_t *ctx;                         /* pointer to context object */
+      lbm_topic_t *topic_1;                       /* pointer to topic object */
+      lbm_src_t *early_src;                       /* pointer to source object */
+      lbm_rcv_t *late_rcv;                        /* pointer to receiver object */
+      lbm_topic_t *rtopic;                        /* pointer to receiver topic object */
+      lbm_context_attr_t * cattr;                 /* pointer to context attribute object */
+      lbm_src_topic_attr_t *tattr;                /* pointer to source attribute object */
+      int err;                                    /* return status of lbm functions (true=error) */
+  
+  #if defined(_MSC_VER)
+      /* windows-specific code */
+      WSADATA wsadata;
+      int wsStat = WSAStartup(MAKEWORD(2, 2), &amp;wsadata);
+      if (wsStat != 0)
+      {
+          printf("line %d: wsStat=%d\n", __LINE__, wsStat);
+          exit(1);
+      }
+  #endif
+  
+      /* Initialize the defaults for the context attribute object */
+      if (lbm_context_attr_create(&amp;cattr) != 0)
+      {
+          fprintf(stderr, "lbm_context_attr_create: %s\n", lbm_errmsg());
+          exit(1);
+      }
+  
+      /* Creating the context */
+      err = lbm_context_create(&amp;ctx, cattr, NULL, NULL);
+      if (err)
+      {
+          printf("line %d: %s\n", __LINE__, lbm_errmsg());
+          exit(1);
+      }
+      
+      /* Initializing the source attribute object */
+      if (lbm_src_topic_attr_create(&amp;tattr) != 0)
+      {
+          fprintf(stderr, "lbm_src_topic_attr_create: %s\n", lbm_errmsg());
+          exit(1);
+      }
+      
+      /* Setting the transport via the source topic string method */
+<span name="enable_lj" id="enable_lj"></span>      if (lbm_src_topic_attr_str_setopt(tattr, "late_join", "1") != 0 )
+      {
+          fprintf(stderr, "lbm_src_topic_attr_str_setopt:transport: %s\n", lbm_errmsg());
+          exit(1);
+      }
+<span name="configure_lj" id="configure_lj"></span>      if (lbm_src_topic_attr_str_setopt(tattr, "retransmit_retention_size_threshold", "1")
+      {
+          fprintf(stderr, "lbm_src_topic_attr_str_setopt:transport: %s\n", lbm_errmsg());
+          exit(1);
+      }
+      
+      /* Allocating the source topic */
+      err = lbm_src_topic_alloc(&amp;topic_1, ctx, "test.topic", tattr);
+      if (err)
+      {
+          printf("line %d: %s\n", __LINE__, lbm_errmsg());
+          exit(1);
+      }
+  
+       /* Creating the source */
+<span name="source" id="source"></span>      err = lbm_src_create(&amp;early_src, ctx, topic_1, NULL, NULL, NULL);
+      if (err)
+      {
+          printf("line %d: %s\n", __LINE__, lbm_errmsg());
+          exit(1);
+      }
+  
+      /* Wait for topic resolution to happen */
+      Sleep(1);
+  
+      /* Send a message... we should expect no one to get it because we haven't created the receiver
+         yet. */
+      err = lbm_src_send(early_src, "Hello!", 6, LBM_MSG_FLUSH | LBM_SRC_BLOCK);
+      /* Delete the context attribute object */
+      lbm_context_attr_delete(cattr);
+  
+      err = lbm_rcv_topic_lookup(&amp;rtopic, ctx, "test.topic", NULL);
+      if (err)
+      {
+          printf("line %d: %s\n", __LINE__, lbm_errmsg());
+          exit(1);
+      }
+<span name="receiver" id="receiver"></span>      err = lbm_rcv_create(&amp;late_rcv, ctx, rtopic, rcv_handle_msg, NULL, NULL);
+      if (err)
+      {
+          printf("line %d: %s\n", __LINE__, lbm_errmsg());
+          exit(1);
+      }
+  
+      SLEEP(100000);
+  
+      /* Finished with all LBM functions, delete the receiver and context object. */
+      /* Delete the source topic attribute objects */
+      lbm_src_topic_attr_delete(tattr);
+  
+      /* Finished with all LBM functions, delete the source and context object. */
+<span name="cleanup" id="cleanup"></span>      lbm_src_delete(early_src);
+      lbm_rcv_delete(late_rcv);
+      lbm_context_delete(ctx);
+  
+  #if defined(_MSC_VER)
+      WSACleanup();
+  #endif
+  }
+  
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

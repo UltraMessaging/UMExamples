@@ -1,0 +1,288 @@
+<!DOCTYPE html><html><head><title>late_join.cs</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>late_join.cs</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+00008
+00009
+00010
+00011
+00012
+00013
+00014
+00015
+00016
+00017
+00018
+00019
+00020
+00021
+00022
+00023
+00024
+00025
+<a href="late_join.sldoc.html#enable_lj_ref_1" target="doc">00026</a>
+<a href="late_join.sldoc.html#configure_lj_ref_1" target="doc">00027</a>
+00028
+00029
+<a href="late_join.sldoc.html#source_ref_1" target="doc">00030</a>
+<a href="late_join.sldoc.html#source_ref_1" target="doc">00031</a>
+<a href="late_join.sldoc.html#source_ref_1" target="doc">00032</a>
+00033
+00034
+00035
+00036
+00037
+00038
+00039
+00040
+00041
+00042
+00043
+<a href="late_join.sldoc.html#receiver_ref_1" target="doc">00044</a>
+00045
+00046
+00047
+00048
+00049
+<a href="late_join.sldoc.html#cleanup_ref_1" target="doc">00050</a>
+<a href="late_join.sldoc.html#cleanup_ref_1" target="doc">00051</a>
+<a href="late_join.sldoc.html#cleanup_ref_1" target="doc">00052</a>
+00053
+00054
+00055
+00056
+00057
+00058
+00059
+00060
+00061
+00062
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00063</a>
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00064</a>
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00065</a>
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00066</a>
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00067</a>
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00068</a>
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00069</a>
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00070</a>
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00071</a>
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00072</a>
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00073</a>
+00074
+00075
+00076
+00077
+00078
+00079
+00080
+00081
+00082
+00083
+00084
+00085
+00086
+00087
+00088
+00089
+00090
+00091
+00092
+</td><td>  ﻿using System;
+  using System.Collections.Generic;
+  using System.Linq;
+  using System.Text;
+  using System.Threading;
+  using com.latencybusters.lbm;
+  
+  public class late_join_receiver {
+  
+      static void Main(String[] args)  {
+          LBMContext ctx = null;      /* Context object: container for UM "instance". */
+          LBMReceiver lateRcv = null; /* Receiver object: for sending messages. */
+          LBMReceiverCallback cb = new LBMReceiverCallback(onReceive);    /* Wrapping the onReceive functor in a callback */
+          LBMSource early_src = null;   /* Source object: for sending messages. */
+  
+          ctx = new LBMContext();
+  
+  
+          try
+          {
+              LBMTopic srcTopic = null;
+              LBMSourceAttributes srcAttr = null;
+  
+              srcAttr = new LBMSourceAttributes();
+  
+<span name="enable_lj" id="enable_lj"></span>              srcAttr.setValue("late_join", "1");
+<span name="configure_lj" id="configure_lj"></span>              srcAttr.setValue("retransmit_retention_size_threshold", "1");
+  
+              srcTopic = ctx.allocTopic("test.topic", srcAttr);
+<span name="source" id="source"></span>              early_src = new LBMSource(ctx, srcTopic);
+  
+              early_src.send(Encoding.ASCII.GetBytes("test"), 4, LBM.MSG_FLUSH | LBM.SRC_NONBLOCK);
+          }
+          catch (LBMException ex)
+          {
+              System.Console.Error.WriteLine("Error initializing LBM objects:  " + ex.Message);
+              System.Environment.Exit(1);
+          }
+  
+          {
+              LBMTopic topic = null;
+              topic = ctx.lookupTopic("test.topic");
+  
+<span name="receiver" id="receiver"></span>              lateRcv = new LBMReceiver(ctx, topic, onReceive, null, null);
+          }
+  
+          Thread.Sleep(100);
+  
+          try {
+<span name="cleanup" id="cleanup"></span>              early_src.close();
+              lateRcv.close();
+              ctx.close();
+          }
+          catch(LBMException ex)
+          {
+              System.Console.Error.WriteLine("Error closing LBM objects: " + ex.Message);
+              System.Environment.Exit(1);
+          }
+      }
+  
+      static int onReceive(Object cbArg, LBMMessage msg)
+      {
+<span name="callback" id="callback"></span>          switch (msg.type())
+          {
+              case LBM.MSG_DATA:
+                  if((msg.flags() &amp; LBM.MSG_FLAG_OTR)==LBM.MSG_FLAG_OTR)
+                      System.Console.Out.WriteLine("Processing OTR Message. SQN: " + msg.sequenceNumber());
+                  else if((msg.flags() &amp; LBM.MSG_FLAG_RETRANSMIT)==LBM.MSG_FLAG_RETRANSMIT)
+                      System.Console.Out.WriteLine("Processing Late Join Message. SQN: " + msg.sequenceNumber());
+                  else 
+                      System.Console.Out.WriteLine("Processing Normal Message. SQN: " + msg.sequenceNumber());
+  
+                  System.Console.Out.WriteLine("Msg Received: " + msg.dataString());
+                  break;
+              case LBM.MSG_BOS:
+                  System.Console.Out.WriteLine("[" + msg.topicName() + "][" + msg.source() + "], Beginning of Transport Session");
+                  break;
+              case LBM.MSG_EOS:
+                  System.Console.Out.WriteLine("[" + msg.topicName() + "][" + msg.source() + "], End of Transport Session");
+                  break;
+              default:
+                  System.Console.Out.WriteLine("Unknown lbm_msg_t type " + msg.type() + " [" + msg.topicName() + "][" + msg.source() + "]");
+                  break;
+          }
+          System.Console.Out.Flush();
+          msg.dispose();
+          return 0;
+      }
+  }
+  
+  
+  
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>
