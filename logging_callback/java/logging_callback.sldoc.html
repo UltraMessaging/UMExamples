@@ -1,0 +1,96 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Logging Callback</title>
+  </head>
+  <body>
+    <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>UM Logging Callback</h1>
+    <p>In this example, the application is setting a callback to handle all Ultra Messaging library logging.
+      It is incredibly important for every UM application to set the logging callback and appropriately handling
+      the data provided within the callback. For the most part, this means writing the data to the application
+      log file along with a timestamp (most applications have logging frameworks to handle timestamps and file 
+      handling).
+    <p>It may also be a good idea to watch the log level of the messages, and create alerts for messages at the
+      ERR level and higher. The possible log levels are:
+      <ul>
+	<li>LBM_LOG_EMERG</li>
+	<li>LBM_LOG_ALERT</li>
+	<li>LBM_LOG_CRIT</li>
+	<li>LBM_LOG_ERR</li>
+	<li>LBM_LOG_WARNING</li>
+	<li>LBM_LOG_NOTICE</li>
+	<li>LBM_LOG_INFO</li>
+	<li>LBM_LOG_DEBUG</li>
+      </ul>
+    <p>In this sample application, the logging callback is set and a LBM_LOG_NOTICE message is forced by enabling
+      late-join for a source without setting the 
+      <a href="#" title="Specifies the minimum size of the retained message buffer before UM can delete messages. The buffer must reach this size before UM can delete any messages older than retransmit_retention_age_threshold. For UMP, these options combined with retransmit_retention_size_limit affect the retention buffer size. A value of 0 sets the size threshold to be always triggered, in which case deletion is determined by other threshold criteria.
+
+Scope:	source
+Type:	size_t
+Units:	bytes
+Default value:	0 (threshold always triggered)
+When to Set:	Can only be set during object initialization.
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">retransmit_retention_size_threshold</a>
+.
+      The NOTICE message indicates that when late join is enabled and a retention threshold is not configured, only a single
+      message will be available for late join by receivers.</p>
+
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt><a href="LoggingCallback.java">LoggingCallback.java</a></tt></b>
+        - (right-click and save as "LoggingCallback.java") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>LoggingCallback.java</tt></h2>
+    <h4>Setting the Logging Callback</h4>
+	<p>Setting the logging callback should be the first UM API call that the application makes, before creating a context or setting 
+	  any attributes. The API lbm_log() has two parameters, the first being the application function callback that is called when 
+	  a log message is produced, and an optional client data parameter that the application can reference from within the callback
+	  itself. It can be used like this:</p>
+	<a name="set_cb_ref_1" id="set_cb_ref_1"></a>
+<small><pre>
+<a href="logging_callback_java.slsrc.html#set_cb" target="src">00017</a>              LogCB logger = new LogCB();
+<a href="logging_callback_java.slsrc.html#set_cb" target="src">00018</a>              lbm.setLogger(logger);
+</pre><!-- endblock set_cb_ref_1 --></small>
+
+
+    <h4>Defining the Logging Callback</h4>
+	<p>For the purpose of this example, the application will very simply print the log level and log data directly to stdout. If the 
+	  application is using a logging framework of any kind, here is where it should be invoked to log this data to the application 
+	  log file:</p>
+	<a name="logging_cb_ref_1" id="logging_cb_ref_1"></a>
+<small><pre>
+<a href="logging_callback_java.slsrc.html#logging_cb" target="src">00036</a>      private static class LogCB implements LBMLogging
+<a href="logging_callback_java.slsrc.html#logging_cb" target="src">00037</a>      {
+<a href="logging_callback_java.slsrc.html#logging_cb" target="src">00038</a>          public void LBMLog(int level, java.lang.String message)
+<a href="logging_callback_java.slsrc.html#logging_cb" target="src">00039</a>          {
+<a href="logging_callback_java.slsrc.html#logging_cb" target="src">00040</a>              System.out.println("LOG Level " + level + ": " + message);
+<a href="logging_callback_java.slsrc.html#logging_cb" target="src">00041</a>          }
+<a href="logging_callback_java.slsrc.html#logging_cb" target="src">00042</a>      }
+</pre><!-- endblock logging_cb_ref_1 --></small>
+
+
+    <h4>Triggering a log message</h4>
+	<p>As explained above, enabling late-join on a source without setting a 
+	  <a href="#" title="Specifies the minimum size of the retained message buffer before UM can delete messages. The buffer must reach this size before UM can delete any messages older than retransmit_retention_age_threshold. For UMP, these options combined with retransmit_retention_size_limit affect the retention buffer size. A value of 0 sets the size threshold to be always triggered, in which case deletion is determined by other threshold criteria.
+
+Scope:	source
+Type:	size_t
+Units:	bytes
+Default value:	0 (threshold always triggered)
+When to Set:	Can only be set during object initialization.
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">retransmit_retention_size_threshold</a>
+will trigger 
+	  a warning message like this:</p>
+	<p>LOG Level 5: Core-5688-539: NOTICE: Source "test.topic.1" has no retention settings (1 message retained max)</p>
+	<p>Setting the attribute looks like this:</p>
+	<a name="late_join_ref_1" id="late_join_ref_1"></a>
+<small><pre>
+<a href="logging_callback_java.slsrc.html#late_join" target="src">00022</a>              srcAttr.setValue("late_join", "1");
+</pre><!-- endblock late_join_ref_1 --></small>
+
+
+  </body>
+</html>
+

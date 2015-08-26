@@ -1,0 +1,33 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Logging Callback</title>
+  </head>
+  <body>
+    =semlit,include,../intro.sldoc=
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt>=semlit,srcfile,logging_callback_cs.slsrc,LoggingCallback.cs=</tt></b>
+        - (right-click and save as "LoggingCallback.cs") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>logging_callback.c</tt></h2>
+    <h4>Setting the Logging Callback</h4>
+	<p>Setting the logging callback should be the first UM API call that the application makes, before creating a context or setting 
+	  any attributes. The API lbm_log() has two parameters, the first being the application function callback that is called when 
+	  a log message is produced, and an optional client data parameter that the application can reference from within the callback
+	  itself. It can be used like this:</p>
+	=semlit,insert,set_cb=
+    <h4>Defining the Logging Callback</h4>
+	<p>For the purpose of this example, the application will very simply print the log level and log data directly to stdout. If the 
+	  application is using a logging framework of any kind, here is where it should be invoked to log this data to the application 
+	  log file:</p>
+	=semlit,insert,logging_cb=
+    <h4>Triggering a log message</h4>
+	<p>As explained above, enabling late-join on a source without setting a 
+	  =semlit,tooltip,../../tooltips/source_retransmit_retention_size_threshold.txt,retransmit_retention_size_threshold=will trigger 
+	  a warning message like this:</p>
+	<p>LOG Level 5: Core-5688-539: NOTICE: Source "test.topic.1" has no retention settings (1 message retained max)</p>
+	<p>Setting the attribute looks like this:</p>
+	=semlit,insert,late_join=
+  </body>
+</html>

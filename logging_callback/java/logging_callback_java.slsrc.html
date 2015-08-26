@@ -1,0 +1,190 @@
+<!DOCTYPE html><html><head><title>LoggingCallback.java</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>LoggingCallback.java</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+00008
+00009
+00010
+00011
+00012
+00013
+00014
+00015
+00016
+<a href="logging_callback.sldoc.html#set_cb_ref_1" target="doc">00017</a>
+<a href="logging_callback.sldoc.html#set_cb_ref_1" target="doc">00018</a>
+00019
+00020
+00021
+<a href="logging_callback.sldoc.html#late_join_ref_1" target="doc">00022</a>
+00023
+00024
+00025
+00026
+00027
+00028
+00029
+00030
+00031
+00032
+00033
+00034
+00035
+<a href="logging_callback.sldoc.html#logging_cb_ref_1" target="doc">00036</a>
+<a href="logging_callback.sldoc.html#logging_cb_ref_1" target="doc">00037</a>
+<a href="logging_callback.sldoc.html#logging_cb_ref_1" target="doc">00038</a>
+<a href="logging_callback.sldoc.html#logging_cb_ref_1" target="doc">00039</a>
+<a href="logging_callback.sldoc.html#logging_cb_ref_1" target="doc">00040</a>
+<a href="logging_callback.sldoc.html#logging_cb_ref_1" target="doc">00041</a>
+<a href="logging_callback.sldoc.html#logging_cb_ref_1" target="doc">00042</a>
+00043
+</td><td>  /* LoggingCallback.java, see http://ultramessaging.github.io/UMExamples/logging_callback/java/ */
+  
+  import com.latencybusters.lbm.*;
+  import java.lang.*;
+  
+  public class LoggingCallback {
+      public static void main(String[] args) throws LBMException {
+          LBMContext ctx = null; /* Context object: container for UM "instance". */
+          LBMSource src = null; /* Source object: for sending messages. */
+          LBM lbm = new LBM();
+  
+          /*** Initialization: create necessary UM objects. ***/
+          try {
+              LBMTopic topic = null;
+              LBMSourceAttributes srcAttr = null;
+  
+<span name="set_cb" id="set_cb"></span>              LogCB logger = new LogCB();
+              lbm.setLogger(logger);
+  
+              ctx = new LBMContext();
+              srcAttr = new LBMSourceAttributes();
+<span name="late_join" id="late_join"></span>              srcAttr.setValue("late_join", "1");
+              topic = ctx.allocTopic("test.topic",srcAttr);
+              src = ctx.createSource(topic, null, null, null);
+          }
+          catch(LBMException ex)
+          {
+              System.err.println("Error initializing LBM objects: " + ex.toString());
+              System.exit(1);
+          }
+  
+          /* Cleanup */
+          src.close();
+          ctx.close();
+  } /* main */
+<span name="logging_cb" id="logging_cb"></span>      private static class LogCB implements LBMLogging
+      {
+          public void LBMLog(int level, java.lang.String message)
+          {
+              System.out.println("LOG Level " + level + ": " + message);
+          }
+      }
+  } /* class LoggingCallback */
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

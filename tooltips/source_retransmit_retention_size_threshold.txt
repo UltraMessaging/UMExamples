@@ -1,0 +1,7 @@
+Specifies the minimum size of the retained message buffer before UM can delete messages. The buffer must reach this size before UM can delete any messages older than retransmit_retention_age_threshold. For UMP, these options combined with retransmit_retention_size_limit affect the retention buffer size. A value of 0 sets the size threshold to be always triggered, in which case deletion is determined by other threshold criteria.
+
+Scope:	source
+Type:	size_t
+Units:	bytes
+Default value:	0 (threshold always triggered)
+When to Set:	Can only be set during object initialization.
