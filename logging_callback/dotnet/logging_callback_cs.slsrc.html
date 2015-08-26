@@ -1,0 +1,192 @@
+<!DOCTYPE html><html><head><title>LoggingCallback.cs</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>LoggingCallback.cs</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+00008
+00009
+00010
+00011
+00012
+00013
+00014
+00015
+00016
+00017
+00018
+00019
+00020
+<a href="logging_callback.sldoc.html#set_cb_ref_1" target="doc">00021</a>
+00022
+00023
+00024
+<a href="logging_callback.sldoc.html#late_join_ref_1" target="doc">00025</a>
+00026
+00027
+00028
+00029
+00030
+00031
+00032
+00033
+00034
+00035
+00036
+00037
+00038
+00039
+<a href="logging_callback.sldoc.html#logging_cb_ref_1" target="doc">00040</a>
+<a href="logging_callback.sldoc.html#logging_cb_ref_1" target="doc">00041</a>
+<a href="logging_callback.sldoc.html#logging_cb_ref_1" target="doc">00042</a>
+<a href="logging_callback.sldoc.html#logging_cb_ref_1" target="doc">00043</a>
+00044
+</td><td>  /* LoggingCallback.cs, see http://ultramessaging.github.io/UMExamples/logging_callback/dotnet/ */
+  using System;
+  using System.Collections.Generic;
+  using System.Text;
+  using com.latencybusters.lbm;
+  
+  public class LoggingCallback
+  {
+      static void Main(String[] args)
+      {
+          LBMContext ctx = null; /* Context object: container for UM "instance". */
+          LBMSource src = null; /* Source object: for sending messages. */
+          LBM lbm = new LBM();
+  
+          /*** Initialization: create necessary UM objects. ***/
+          try
+          {
+              LBMTopic topic = null;
+              LBMSourceAttributes srcAttr = null;
+  
+<span name="set_cb" id="set_cb"></span>              lbm.setLogger(new LBMLogging(logger));
+  
+              ctx = new LBMContext();
+              srcAttr = new LBMSourceAttributes();
+<span name="late_join" id="late_join"></span>              srcAttr.setValue("late_join", "1");
+              topic = ctx.allocTopic("test.topic", srcAttr);
+              src = ctx.createSource(topic, null, null, null);
+          }
+          catch (LBMException ex)
+          {
+              System.Console.Error.Write("Error initializing LBM objects: " + ex.Message);
+              System.Environment.Exit(1);
+          }
+  
+          /* Cleanup */
+          src.close();
+          ctx.close();
+      } /* main */
+  
+<span name="logging_cb" id="logging_cb"></span>      static void logger(int level, string message)
+      {
+          System.Console.Out.Write("LOG Level " + level + ": " + message);
+      }
+  } /* class LoggingCallback */
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

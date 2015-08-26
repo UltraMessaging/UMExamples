@@ -1,0 +1,50 @@
+/* LoggingCallback.cs, see http://ultramessaging.github.io/UMExamples/logging_callback/dotnet/ */
+using System;
+using System.Collections.Generic;
+using System.Text;
+using com.latencybusters.lbm;
+
+public class LoggingCallback
+{
+    static void Main(String[] args)
+    {
+        LBMContext ctx = null; /* Context object: container for UM "instance". */
+        LBMSource src = null; /* Source object: for sending messages. */
+        LBM lbm = new LBM();
+
+        /*** Initialization: create necessary UM objects. ***/
+        try
+        {
+            LBMTopic topic = null;
+            LBMSourceAttributes srcAttr = null;
+
+            /* =semlit,block,set_cb=*/
+            lbm.setLogger(new LBMLogging(logger));
+            /* =semlit,endblock,set_cb=*/
+
+            ctx = new LBMContext();
+            srcAttr = new LBMSourceAttributes();
+            /* =semlit,block,late_join=*/
+            srcAttr.setValue("late_join", "1");
+            /* =semlit,endblock,late_join=*/
+            topic = ctx.allocTopic("test.topic", srcAttr);
+            src = ctx.createSource(topic, null, null, null);
+        }
+        catch (LBMException ex)
+        {
+            System.Console.Error.Write("Error initializing LBM objects: " + ex.Message);
+            System.Environment.Exit(1);
+        }
+
+        /* Cleanup */
+        src.close();
+        ctx.close();
+    } /* main */
+
+    /* =semlit,block,logging_cb=*/
+    static void logger(int level, string message)
+    {
+        System.Console.Out.Write("LOG Level " + level + ": " + message);
+    }
+    /* =semlit,endblock,logging_cb=*/
+} /* class LoggingCallback */

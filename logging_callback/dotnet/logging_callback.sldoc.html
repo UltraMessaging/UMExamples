@@ -39,7 +39,7 @@ When to Set:	Can only be set during object initialization.
 
     <p>There is one program source file:</p>
     <ul>
-      <li><b><tt></tt></b>
+      <li><b><tt><a href="LoggingCallback.cs">LoggingCallback.cs</a></tt></b>
         - (right-click and save as "LoggingCallback.cs") main program.</li>
     </ul>
     <h2>Program explanation: <tt>logging_callback.c</tt></h2>
@@ -48,12 +48,25 @@ When to Set:	Can only be set during object initialization.
 	  any attributes. The API lbm_log() has two parameters, the first being the application function callback that is called when 
 	  a log message is produced, and an optional client data parameter that the application can reference from within the callback
 	  itself. It can be used like this:</p>
-	
+	<a name="set_cb_ref_1" id="set_cb_ref_1"></a>
+<small><pre>
+<a href="logging_callback_cs.slsrc.html#set_cb" target="src">00021</a>              lbm.setLogger(new LBMLogging(logger));
+</pre><!-- endblock set_cb_ref_1 --></small>
+
+
     <h4>Defining the Logging Callback</h4>
 	<p>For the purpose of this example, the application will very simply print the log level and log data directly to stdout. If the 
 	  application is using a logging framework of any kind, here is where it should be invoked to log this data to the application 
 	  log file:</p>
-	
+	<a name="logging_cb_ref_1" id="logging_cb_ref_1"></a>
+<small><pre>
+<a href="logging_callback_cs.slsrc.html#logging_cb" target="src">00040</a>      static void logger(int level, string message)
+<a href="logging_callback_cs.slsrc.html#logging_cb" target="src">00041</a>      {
+<a href="logging_callback_cs.slsrc.html#logging_cb" target="src">00042</a>          System.Console.Out.Write("LOG Level " + level + ": " + message);
+<a href="logging_callback_cs.slsrc.html#logging_cb" target="src">00043</a>      }
+</pre><!-- endblock logging_cb_ref_1 --></small>
+
+
     <h4>Triggering a log message</h4>
 	<p>As explained above, enabling late-join on a source without setting a 
 	  <a href="#" title="Specifies the minimum size of the retained message buffer before UM can delete messages. The buffer must reach this size before UM can delete any messages older than retransmit_retention_age_threshold. For UMP, these options combined with retransmit_retention_size_limit affect the retention buffer size. A value of 0 sets the size threshold to be always triggered, in which case deletion is determined by other threshold criteria.
@@ -68,7 +81,12 @@ will trigger
 	  a warning message like this:</p>
 	<p>LOG Level 5: Core-5688-539: NOTICE: Source "test.topic.1" has no retention settings (1 message retained max)</p>
 	<p>Setting the attribute looks like this:</p>
-	
+	<a name="late_join_ref_1" id="late_join_ref_1"></a>
+<small><pre>
+<a href="logging_callback_cs.slsrc.html#late_join" target="src">00025</a>              srcAttr.setValue("late_join", "1");
+</pre><!-- endblock late_join_ref_1 --></small>
+
+
   </body>
 </html>
 

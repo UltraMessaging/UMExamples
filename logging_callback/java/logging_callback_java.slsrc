@@ -21,11 +21,9 @@ public class LoggingCallback {
 
 			ctx = new LBMContext();
 			srcAttr = new LBMSourceAttributes();
-			/*=semlit,block,store_cfg=*/
 			/* =semlit,block,late_join=*/
 			srcAttr.setValue("late_join", "1");
 			/* =semlit,endblock,late_join=*/
-			/*=semlit,endblock,store_cfg=*/			
 			topic = ctx.allocTopic("test.topic",srcAttr);
 			src = ctx.createSource(topic, null, null, null);
 		}
