@@ -1,0 +1,264 @@
+<!DOCTYPE html><html><head><title>late_join.java</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>late_join.java</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+00008
+00009
+00010
+00011
+00012
+00013
+00014
+00015
+00016
+00017
+00018
+<a href="late_join.sldoc.html#enable_lj_ref_1" target="doc">00019</a>
+<a href="late_join.sldoc.html#configure_lj_ref_1" target="doc">00020</a>
+00021
+00022
+<a href="late_join.sldoc.html#source_ref_1" target="doc">00023</a>
+<a href="late_join.sldoc.html#source_ref_1" target="doc">00024</a>
+<a href="late_join.sldoc.html#source_ref_1" target="doc">00025</a>
+00026
+00027
+00028
+<a href="late_join.sldoc.html#receiver_ref_1" target="doc">00029</a>
+00030
+00031
+00032
+00033
+<a href="late_join.sldoc.html#cleanup_ref_1" target="doc">00034</a>
+<a href="late_join.sldoc.html#cleanup_ref_1" target="doc">00035</a>
+<a href="late_join.sldoc.html#cleanup_ref_1" target="doc">00036</a>
+00037
+00038
+00039
+00040
+00041
+00042
+00043
+00044
+00045
+00046
+00047
+00048
+00049
+00050
+00051
+00052
+00053
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00054</a>
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00055</a>
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00056</a>
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00057</a>
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00058</a>
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00059</a>
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00060</a>
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00061</a>
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00062</a>
+<a href="late_join.sldoc.html#callback_ref_1" target="doc">00063</a>
+00064
+00065
+00066
+00067
+00068
+00069
+00070
+00071
+00072
+00073
+00074
+00075
+00076
+00077
+00078
+00079
+00080
+</td><td>  import com.latencybusters.lbm.*;
+  
+  public class late_join {
+      public static void main(String[] args) throws LBMException {
+          LBMContext ctx = null;      /* Context object: container for UM "instance". */
+          LBMReceiver late_rcv = null;    /* Source object: for sending messages. */
+          LBMSource early_source = null;      /* Used for sending messages on a single topic */
+          LBMRcvReceiver rcvCB = null;
+          LBMTopic src_topic = null;
+          
+          ctx = new LBMContext();
+          
+          {
+              LBMSourceAttributes srcAttr = null;
+  
+              srcAttr = new LBMSourceAttributes();
+              
+              /* Set configuration value using strings */
+<span name="enable_lj" id="enable_lj"></span>              srcAttr.setValue("late_join", "1");
+<span name="configure_lj" id="configure_lj"></span>              srcAttr.setValue("retransmit_retention_size_threshold", "1");
+              
+              src_topic = new LBMTopic(ctx, "test.topic", srcAttr);
+<span name="source" id="source"></span>              early_source = new LBMSource(ctx, src_topic);
+              
+              early_source.send("test".getBytes(), "test".getBytes().length, LBM.MSG_FLUSH | LBM.SRC_NONBLOCK);
+              {
+                  LBMTopic topic = null;  
+                  topic = ctx.allocTopic("test.topic");
+<span name="receiver" id="receiver"></span>                  late_rcv = new LBMReceiver(ctx, topic, rcvCB, null, null);
+              }
+          }
+          
+          try {
+<span name="cleanup" id="cleanup"></span>              late_rcv.close();
+              early_source.close();
+              ctx.close();
+          }
+          catch(LBMException ex)
+          {
+              System.err.println("Error closing LBM objects: " + ex.toString());
+              System.exit(1);
+          }
+      }
+  }
+  
+  class LBMRcvReceiver implements LBMReceiverCallback
+  {
+      /* This on receive callback is required to process messages and */
+      /* other events.  This callback is executed on the context      */
+      /*  thread.  */
+      
+      public int onReceive(Object cbArg, LBMMessage msg)
+      {
+<span name="callback" id="callback"></span>          switch (msg.type())
+          {
+              case LBM.MSG_DATA:
+                  if((msg.flags() &amp; LBM.MSG_FLAG_OTR)==LBM.MSG_FLAG_OTR)
+                      System.out.println("Processing Late Join Message. SQN: " + msg.sequenceNumber());
+                  else if((msg.flags() &amp; LBM.MSG_FLAG_RETRANSMIT)==LBM.MSG_FLAG_RETRANSMIT)
+                      System.out.println("Processing OTR Message. SQN: " + msg.sequenceNumber());
+                  else 
+                      System.out.println("Processing Normal Message. SQN: " + msg.sequenceNumber());
+                  break;
+              case LBM.MSG_BOS:
+                  System.out.println("[" + msg.topicName() + "][" + msg.source() + "], Beginning of Transport Session");
+                  break;
+              case LBM.MSG_EOS:
+                  System.out.println("[" + msg.topicName() + "][" + msg.source() + "], End of Transport Session");
+                  break;
+              default:
+                  System.out.println("Unknown lbm_msg_t type " + msg.type() + " [" + msg.topicName() + "][" + msg.source() + "]");
+                  break;
+          }
+          System.out.flush(); 
+          msg.dispose();      
+          return 0;
+      }
+  }
+  
+  
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

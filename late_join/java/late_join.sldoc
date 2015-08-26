@@ -1,0 +1,45 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Late Join Example</title>
+  </head>
+  <body>
+    <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>How to enable late and detect late join</h1>
+    <p>In messaging, the concept of late join is used to describe a receiver that may join a message stream or topic "late".  In this case, late
+	would mean that the receiver may have missed one or several messages that were published before it successfully joined the transport.  In several use cases, it can 
+	be useful to still receive and process these messages in order to initialize application logic, or resolve race conditions between applications during startup.  In UM
+	the late join feature can be enabled at any source.  Doing so will enable a limited in memory buffer of messages to be maintained at the source in the event receivers
+	subscribe and request late join.</p>
+    <ul>
+      <li><b><tt>=semlit,srcfile,late_join_java.slsrc,late_join.java=</tt></b>
+        - (right-click and save as "late_join.java") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>late_join.java</tt></h2>
+    <h4>Enabling Late Join</h4>
+        <p>Sources by default have late join disabled.  To enable late join the application must do two things.  The first is to enable late-join. This can be done as follows:</p>
+        =semlit,insert,enable_lj=
+		<p>Once late join is enabled, you must define a retention policy.  This will determine how many messages will be buffered at the source, and thus available for late join. 
+		There are two retention policies, one based on age, the other bytes. In this case, the source will be configured to hold at least 1 byte of message(s). In effect this 
+		means that at least 1 message will be in the buffer at all times. This can be done as follows:</p>
+        =semlit,insert,configure_lj=
+    <h4>Create a source, send message</h4>
+	<p>Once late join is enabled and configured, the source will send a message.  At this point, no receivers are "up", so they can't receive the message.  In this example, 
+	the receiver simply hasn't been created.  More commonly, when users start an application that sends, and another that receives simultaneously, it is very often the case
+	that the receiver can miss the first few messages published.  This is because it takes a non-zero amount of time to resolve the source and join the underlying transport.</p>
+	=semlit,insert,source=
+    <h4>Creating the receiver and receiving late join</h4>
+	<p>Receivers have late join enabled by default.  It is possible to disable late join on a receiver by receiver basis.  In this example, we want to receive late join, so
+	the default does not have to be changed.  Therefore, the receiver is simply created:</p>
+	=semlit,insert,receiver=
+	<p>The receiver will receive late join the same way it receives any live message.  One critical component to applications with late join enabled is that it should make use
+	of the late join flag.  There is no record or state kept in UMS, and as a consequence it is not only possible, but likely that receiving applications can receive duplicates 
+	via late join, especially when joining the stream due to start up or disconnects.  Therefore it is typically recommended that application level dedupe logic be applied to the 
+	message stream if there is a requirement to not process dups. In this example, we will simply use the message flags to determine if a message is late joined.  Messages can also 
+	be retransmitted via OTR, which is a separate type of retransmission that will not be covered in this example.</p>
+	=semlit,insert,callback=
+    <h4>Cleanup</h4>
+	<p>Cleanup in this case is simple.  Simple close or delete all source & receiver objects, and then close or delete the context.</p>
+	=semlit,insert,cleanup=
+    </body>
+</html>
