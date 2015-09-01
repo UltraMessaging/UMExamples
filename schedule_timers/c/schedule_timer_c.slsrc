@@ -18,6 +18,7 @@
 /* =semlit,endblock,includes=*/
 
 /* Example error checking macro.  Include after each UM call. */
+/* =semlit,block,error_check=*/
 #define EX_LBM_CHK(err) do { \
 	if ((err) < 0) { \
 		fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
@@ -25,6 +26,7 @@
 		exit(1); \
 	}  \
 } while (0)
+/* =semlit,endblock,error_check=*/
 
 /* =semlit,block,int_wait=*/
 int wait = 1;

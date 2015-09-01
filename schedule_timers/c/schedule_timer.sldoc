@@ -1,21 +1,42 @@
 <html>
   <head>
     <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
-    <title>{Insert Page title here}</title>
+    <title>Scheduling UM Timers</title>
   </head>
   <body>
     <a href="../../index.html" class="button" target="_top">Example index</a>
-    <h1>{Page header Here}</h1>
-    <p>{Sample description here}</p>
+    <h1>Scheduling UM Timers</h1>
+    <p>Ultra Messaging has a feature where developers can schedule timer function callbacks via the API, where
+       the desired function is executed in a desired number of milliseconds from when it was scheduled. The 
+       callback itself must be created by the developer, and it is executed by the UM context thread or via
+       a UM Event Queue, if an Event Queue is passed in via the API.</p>
+    <p>In this example, the application will schedule a timer callback to execute in 1 second. The main thread
+       that scheduled the timer will wait for the timer to execute, then clean up the application and exit</p>
     <p>There is one program source file:</p>
     <ul>
-      <li><b><tt>=semlit,srcfile,{semlit_src_file_here},{desired_src_output_filename}=</tt></b>
-        - (right-click and save as "{desired_src_output_filename}") main program.</li>
+      <li><b><tt>=semlit,srcfile,schedule_timer_c.slsrc,schedule_timer.c=</tt></b>
+        - (right-click and save as "schedule_timer.c") main program.</li>
     </ul>
-    <h2>Program explanation: <tt>{desired_src_output_filename}</tt></h2>
-    <h4>{Insert Block Section Title}</h4>
-        <p>{Insert block section description}</p>
-        =semlit,insert,{block name from slsrc file}=
-    {repeat blocks until end of file}
+    <h2>Program explanation: <tt>schedule_timer.c</tt></h2>
+    <h4>Initializing the Context</h4>
+        <p>Standard context attribute initializtion and context creation code. For more information on creating a context, please see the example
+          <a href="../context-create">Creating a Context</a></p>
+        =semlit,insert,ctx_create=
+    <h4>Error Checking</h4>
+        <p>Error handling can be one of the most complicated issues facing a programmer. Each application may have its own unique error
+        handling conventions. For these example programs, a very simplistic error handling approach is taken: if anything unexpected happens,
+        print a message and exit the program:</p>
+        =semlit,insert,error_check=
+        <p>The EX_LBM_CHK() macro checks a UM API return value. If negative, it assumes an error. One reason for making this a macro is so
+        that the __FILE__ and __LINE__ compiler built-ins reference the file and line of the usages of the macro, not the file and line of
+        the macro defintion itself.</p>
+        </p>Most UM functions are designed to return one of only two integer values: 0 for success and -1 for failure. The lbm.h header file
+        defines the symbols LBM_OK and LBM_FAILURE respectively for these. However, there are a few functions which can return a value of 0 or
+        greater in the event of success (for example: lbm_event_dispatch() and lbm_send_response() to name two). So the example EX_LBM_CHK()
+        macro was written to be somewhat more general. However, be aware that there are a few other functions which do not return an integer
+        status at all (for exmaple: lbm_serialize_response() to name one). Please refer to the API documentation for each UM function you call.</p>
+    <h4>Includes</h4>
+        <p>Include files for this application. Notice the Windows specific include files - these are not necessary for Linux only applications</p>
+        =semlit,insert,includes=
   </body>
 </html>
