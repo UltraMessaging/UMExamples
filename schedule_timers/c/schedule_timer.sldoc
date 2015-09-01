@@ -1,0 +1,21 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>{Insert Page title here}</title>
+  </head>
+  <body>
+    <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>{Page header Here}</h1>
+    <p>{Sample description here}</p>
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt>=semlit,srcfile,{semlit_src_file_here},{desired_src_output_filename}=</tt></b>
+        - (right-click and save as "{desired_src_output_filename}") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>{desired_src_output_filename}</tt></h2>
+    <h4>{Insert Block Section Title}</h4>
+        <p>{Insert block section description}</p>
+        =semlit,insert,{block name from slsrc file}=
+    {repeat blocks until end of file}
+  </body>
+</html>
