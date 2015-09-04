@@ -1,0 +1,118 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Scheduling UM Timers</title>
+  </head>
+  <body>
+    <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>Scheduling UM Timers</h1>
+    <p>Ultra Messaging has a feature where developers can schedule timer function callbacks via the API, where
+       the desired function is executed in a desired number of milliseconds from when it was scheduled. The 
+       callback itself must be created by the developer, and it is executed by the UM context thread or via
+       a UM Event Queue, if an Event Queue is passed in via the API.</p>
+    <p>In this example, the application will schedule a timer callback to execute in 1 second. The main thread
+       that scheduled the timer will wait for the timer to execute, then clean up the application and exit</p>
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt><a href="schedule_timers.c">schedule_timers.c</a></tt></b>
+        - (right-click and save as "schedule_timers.c") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>schedule_timers.c</tt></h2>
+    <h4>Initializing the Context</h4>
+        <p>Standard context attribute initializtion and context creation code. For more information on creating a context, please see the example
+          <a href="../context-create">Creating a Context</a></p>
+        <a name="ctx_create_ref_1" id="ctx_create_ref_1"></a>
+<small><pre>
+<a href="schedule_timers_c.slsrc.html#ctx_create" target="src">00044</a>      err = lbm_context_attr_create(&amp;cattr);
+<a href="schedule_timers_c.slsrc.html#ctx_create" target="src">00045</a>      EX_LBM_CHK(err);
+<a href="schedule_timers_c.slsrc.html#ctx_create" target="src">00046</a>  
+<a href="schedule_timers_c.slsrc.html#ctx_create" target="src">00047</a>      err = lbm_context_create(&amp;ctx, cattr, NULL, NULL);
+<a href="schedule_timers_c.slsrc.html#ctx_create" target="src">00048</a>      EX_LBM_CHK(err);
+</pre><!-- endblock ctx_create_ref_1 --></small>
+
+
+    <h4>Creating a Callback</h4>
+	<p>The callback function defined below is the application callback that will be invoked when the scheduled timer expires. This callback will
+	be executed on the UM context thread (at least for the purpose of this example it will be executed on the context thread.</p>
+	<a name="timer_cb_ref_1" id="timer_cb_ref_1"></a>
+<small><pre>
+<a href="schedule_timers_c.slsrc.html#timer_cb" target="src">00030</a>  int sample_timer_handler(lbm_context_t *ctx, const void *clientd)
+<a href="schedule_timers_c.slsrc.html#timer_cb" target="src">00031</a>  {
+<a href="schedule_timers_c.slsrc.html#timer_cb" target="src">00032</a>      printf("Timer executed. Set wait to 0 so application can cleanly exit\n");
+<a href="schedule_timers_c.slsrc.html#timer_cb" target="src">00033</a>      wait = 0;
+<a href="schedule_timers_c.slsrc.html#timer_cb" target="src">00034</a>  }
+</pre><!-- endblock timer_cb_ref_1 --></small>
+
+
+	<p>Note that inside the callback, the global "wait" variable is set to 0, this allows the main thread to stop tight-looping and exit.</p>
+    <h4>Scheduling the Timer Callback</h4>
+	<p>Here the application is actually scheduling the callback timer, set to be executed in 1000 milliseconds. The return value should be saved
+	by the application in the event that the application wishes to cancel the timer before it executes. Special care must be taken when cancelling
+	timer callback, for more information please see <a href="cancelling_timers/c/index.html>cancelling_timers</a>.</p>
+	<a name="schedule_ref_1" id="schedule_ref_1"></a>
+<small><pre>
+<a href="schedule_timers_c.slsrc.html#schedule" target="src">00050</a>      if ((timer_id = lbm_schedule_timer(ctx, sample_timer_handler, NULL, NULL, 1000)) == -1) {
+<a href="schedule_timers_c.slsrc.html#schedule" target="src">00051</a>          fprintf(stderr, "%s:%d, lbm error: '%s'\n", __FILE__, __LINE__, lbm_errmsg());
+<a href="schedule_timers_c.slsrc.html#schedule" target="src">00052</a>          exit(1);
+<a href="schedule_timers_c.slsrc.html#schedule" target="src">00053</a>      }
+</pre><!-- endblock schedule_ref_1 --></small>
+
+
+    <h4>Wait for Timer</h4>
+	<p>For the purpose of this example application, it is using the global variable "wait" as a semaphore essentially. Once the timer executes, wait
+	will be set to 0 and the application can cleanly exit by deleting the context.</p>
+	<a name="wait_ref_1" id="wait_ref_1"></a>
+<small><pre>
+<a href="schedule_timers_c.slsrc.html#wait" target="src">00056</a>      while (wait)
+<a href="schedule_timers_c.slsrc.html#wait" target="src">00057</a>          SLEEP(1);
+</pre><!-- endblock wait_ref_1 --></small>
+
+
+    <h4>Error Checking</h4>
+        <p>Error handling can be one of the most complicated issues facing a programmer. Each application may have its own unique error
+        handling conventions. For these example programs, a very simplistic error handling approach is taken: if anything unexpected happens,
+        print a message and exit the program:</p>
+        <a name="error_check_ref_1" id="error_check_ref_1"></a>
+<small><pre>
+<a href="schedule_timers_c.slsrc.html#error_check" target="src">00019</a>  #define EX_LBM_CHK(err) do { \
+<a href="schedule_timers_c.slsrc.html#error_check" target="src">00020</a>      if ((err) &lt; 0) { \
+<a href="schedule_timers_c.slsrc.html#error_check" target="src">00021</a>          fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
+<a href="schedule_timers_c.slsrc.html#error_check" target="src">00022</a>          __FILE__, __LINE__, lbm_errmsg()); \
+<a href="schedule_timers_c.slsrc.html#error_check" target="src">00023</a>          exit(1); \
+<a href="schedule_timers_c.slsrc.html#error_check" target="src">00024</a>      }  \
+<a href="schedule_timers_c.slsrc.html#error_check" target="src">00025</a>  } while (0)
+</pre><!-- endblock error_check_ref_1 --></small>
+
+
+        <p>The EX_LBM_CHK() macro checks a UM API return value. If negative, it assumes an error. One reason for making this a macro is so
+        that the __FILE__ and __LINE__ compiler built-ins reference the file and line of the usages of the macro, not the file and line of
+        the macro defintion itself.</p>
+        </p>Most UM functions are designed to return one of only two integer values: 0 for success and -1 for failure. The lbm.h header file
+        defines the symbols LBM_OK and LBM_FAILURE respectively for these. However, there are a few functions which can return a value of 0 or
+        greater in the event of success (for example: lbm_event_dispatch() and lbm_send_response() to name two). So the example EX_LBM_CHK()
+        macro was written to be somewhat more general. However, be aware that there are a few other functions which do not return an integer
+        status at all (for exmaple: lbm_serialize_response() to name one). Please refer to the API documentation for each UM function you call.</p>
+    <h4>Includes</h4>
+        <p>Include files for this application. Notice the Windows specific include files - these are not necessary for Linux only applications</p>
+        <a name="includes_ref_1" id="includes_ref_1"></a>
+<small><pre>
+<a href="schedule_timers_c.slsrc.html#includes" target="src">00003</a>  #include &lt;stdio.h&gt;
+<a href="schedule_timers_c.slsrc.html#includes" target="src">00004</a>  
+<a href="schedule_timers_c.slsrc.html#includes" target="src">00005</a>  #if defined(_MSC_VER)
+<a href="schedule_timers_c.slsrc.html#includes" target="src">00006</a>  /* Windows-only includes */
+<a href="schedule_timers_c.slsrc.html#includes" target="src">00007</a>  #include &lt;winsock2.h&gt;
+<a href="schedule_timers_c.slsrc.html#includes" target="src">00008</a>  #define SLEEP(s) Sleep((s)*1000)
+<a href="schedule_timers_c.slsrc.html#includes" target="src">00009</a>  #else
+<a href="schedule_timers_c.slsrc.html#includes" target="src">00010</a>  /* Unix-only includes */
+<a href="schedule_timers_c.slsrc.html#includes" target="src">00011</a>  #include &lt;stdlib.h&gt;
+<a href="schedule_timers_c.slsrc.html#includes" target="src">00012</a>  #include &lt;unistd.h&gt;
+<a href="schedule_timers_c.slsrc.html#includes" target="src">00013</a>  #define SLEEP(s) sleep(s)
+<a href="schedule_timers_c.slsrc.html#includes" target="src">00014</a>  #endif
+<a href="schedule_timers_c.slsrc.html#includes" target="src">00015</a>  
+<a href="schedule_timers_c.slsrc.html#includes" target="src">00016</a>  #include &lt;lbm/lbm.h&gt;
+</pre><!-- endblock includes_ref_1 --></small>
+
+
+  </body>
+</html>
+

@@ -1,6 +1,5 @@
 /* Code Disclaimer? */
 
-/* =semlit,block,includes=*/
 #include <stdio.h>
 
 #if defined(_MSC_VER)
@@ -15,10 +14,8 @@
 #endif
 
 #include <lbm/lbm.h>
-/* =semlit,endblock,includes=*/
 
 /* Example error checking macro.  Include after each UM call. */
-/* =semlit,block,error_check=*/
 #define EX_LBM_CHK(err) do { \
 	if ((err) < 0) { \
 		fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
@@ -26,20 +23,15 @@
 		exit(1); \
 	}  \
 } while (0)
-/* =semlit,endblock,error_check=*/
 
-/* =semlit,block,int_wait=*/
 int wait = 1;
-/* =semlit,endblock,int_wait=*/
 
 /* Timer callback function */
-/* =semlit,block,timer_cb=*/
 int sample_timer_handler(lbm_context_t *ctx, const void *clientd)
 {
 	printf("Timer executed. Set wait to 0 so application can cleanly exit\n");
 	wait = 0;
 }
-/* =semlit,endblock,timer_cb=*/
 
 main()
 {
@@ -49,26 +41,20 @@ main()
 	int timer_id;				/* Used to get timer id from schedule API */
 
 	/* Initialize context atrributes and create context */
-	/* =semlit,block,ctx_create=*/
 	err = lbm_context_attr_create(&cattr);
 	EX_LBM_CHK(err);
 
 	err = lbm_context_create(&ctx, cattr, NULL, NULL);
 	EX_LBM_CHK(err);
-	/* =semlit,endblock,ctx_create*/
 	
-	/* =semlit,block,schedule=*/
 	if ((timer_id = lbm_schedule_timer(ctx, sample_timer_handler, NULL, NULL, 1000)) == -1) {
 		fprintf(stderr, "%s:%d, lbm error: '%s'\n", __FILE__, __LINE__, lbm_errmsg());
 		exit(1);
 	}
-	/* =semlit,endblock,schedule=*/
 
 	/* Now wait for callback to end the wait and close the application */
-	/* =semlit,block,wait=*/
 	while (wait)
 		SLEEP(1);
-	/* =semlit,endblock,wait=*/
 
 	/* Clean up */
 	err = lbm_context_delete(ctx);

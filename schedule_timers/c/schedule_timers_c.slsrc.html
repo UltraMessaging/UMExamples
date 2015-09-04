@@ -1,0 +1,240 @@
+<!DOCTYPE html><html><head><title>schedule_timers.c</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>schedule_timers.c</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+<a href="schedule_timers.sldoc.html#includes_ref_1" target="doc">00003</a>
+<a href="schedule_timers.sldoc.html#includes_ref_1" target="doc">00004</a>
+<a href="schedule_timers.sldoc.html#includes_ref_1" target="doc">00005</a>
+<a href="schedule_timers.sldoc.html#includes_ref_1" target="doc">00006</a>
+<a href="schedule_timers.sldoc.html#includes_ref_1" target="doc">00007</a>
+<a href="schedule_timers.sldoc.html#includes_ref_1" target="doc">00008</a>
+<a href="schedule_timers.sldoc.html#includes_ref_1" target="doc">00009</a>
+<a href="schedule_timers.sldoc.html#includes_ref_1" target="doc">00010</a>
+<a href="schedule_timers.sldoc.html#includes_ref_1" target="doc">00011</a>
+<a href="schedule_timers.sldoc.html#includes_ref_1" target="doc">00012</a>
+<a href="schedule_timers.sldoc.html#includes_ref_1" target="doc">00013</a>
+<a href="schedule_timers.sldoc.html#includes_ref_1" target="doc">00014</a>
+<a href="schedule_timers.sldoc.html#includes_ref_1" target="doc">00015</a>
+<a href="schedule_timers.sldoc.html#includes_ref_1" target="doc">00016</a>
+00017
+00018
+<a href="schedule_timers.sldoc.html#error_check_ref_1" target="doc">00019</a>
+<a href="schedule_timers.sldoc.html#error_check_ref_1" target="doc">00020</a>
+<a href="schedule_timers.sldoc.html#error_check_ref_1" target="doc">00021</a>
+<a href="schedule_timers.sldoc.html#error_check_ref_1" target="doc">00022</a>
+<a href="schedule_timers.sldoc.html#error_check_ref_1" target="doc">00023</a>
+<a href="schedule_timers.sldoc.html#error_check_ref_1" target="doc">00024</a>
+<a href="schedule_timers.sldoc.html#error_check_ref_1" target="doc">00025</a>
+00026
+<a href="schedule_timers.sldoc.html#int_wait_ref_1" target="doc">00027</a>
+00028
+00029
+<a href="schedule_timers.sldoc.html#timer_cb_ref_1" target="doc">00030</a>
+<a href="schedule_timers.sldoc.html#timer_cb_ref_1" target="doc">00031</a>
+<a href="schedule_timers.sldoc.html#timer_cb_ref_1" target="doc">00032</a>
+<a href="schedule_timers.sldoc.html#timer_cb_ref_1" target="doc">00033</a>
+<a href="schedule_timers.sldoc.html#timer_cb_ref_1" target="doc">00034</a>
+00035
+00036
+00037
+00038
+00039
+00040
+00041
+00042
+00043
+<a href="schedule_timers.sldoc.html#ctx_create_ref_1" target="doc">00044</a>
+<a href="schedule_timers.sldoc.html#ctx_create_ref_1" target="doc">00045</a>
+<a href="schedule_timers.sldoc.html#ctx_create_ref_1" target="doc">00046</a>
+<a href="schedule_timers.sldoc.html#ctx_create_ref_1" target="doc">00047</a>
+<a href="schedule_timers.sldoc.html#ctx_create_ref_1" target="doc">00048</a>
+00049
+<a href="schedule_timers.sldoc.html#schedule_ref_1" target="doc">00050</a>
+<a href="schedule_timers.sldoc.html#schedule_ref_1" target="doc">00051</a>
+<a href="schedule_timers.sldoc.html#schedule_ref_1" target="doc">00052</a>
+<a href="schedule_timers.sldoc.html#schedule_ref_1" target="doc">00053</a>
+00054
+00055
+<a href="schedule_timers.sldoc.html#wait_ref_1" target="doc">00056</a>
+<a href="schedule_timers.sldoc.html#wait_ref_1" target="doc">00057</a>
+00058
+00059
+00060
+00061
+00062
+00063
+00064
+00065
+00066
+00067
+00068
+</td><td>  /* Code Disclaimer? */
+  
+<span name="includes" id="includes"></span>  #include &lt;stdio.h&gt;
+  
+  #if defined(_MSC_VER)
+  /* Windows-only includes */
+  #include &lt;winsock2.h&gt;
+  #define SLEEP(s) Sleep((s)*1000)
+  #else
+  /* Unix-only includes */
+  #include &lt;stdlib.h&gt;
+  #include &lt;unistd.h&gt;
+  #define SLEEP(s) sleep(s)
+  #endif
+  
+  #include &lt;lbm/lbm.h&gt;
+  
+  /* Example error checking macro.  Include after each UM call. */
+<span name="error_check" id="error_check"></span>  #define EX_LBM_CHK(err) do { \
+      if ((err) &lt; 0) { \
+          fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
+          __FILE__, __LINE__, lbm_errmsg()); \
+          exit(1); \
+      }  \
+  } while (0)
+  
+<span name="int_wait" id="int_wait"></span>  int wait = 1;
+  
+  /* Timer callback function */
+<span name="timer_cb" id="timer_cb"></span>  int sample_timer_handler(lbm_context_t *ctx, const void *clientd)
+  {
+      printf("Timer executed. Set wait to 0 so application can cleanly exit\n");
+      wait = 0;
+  }
+  
+  main()
+  {
+      lbm_context_t *ctx;                     /* Context object */
+      lbm_context_attr_t * cattr;             /* Context attribute object */
+      int err;                                /* Used for checking API return codes */
+      int timer_id;               /* Used to get timer id from schedule API */
+  
+      /* Initialize context atrributes and create context */
+<span name="ctx_create" id="ctx_create"></span>      err = lbm_context_attr_create(&amp;cattr);
+      EX_LBM_CHK(err);
+  
+      err = lbm_context_create(&amp;ctx, cattr, NULL, NULL);
+      EX_LBM_CHK(err);
+      
+<span name="schedule" id="schedule"></span>      if ((timer_id = lbm_schedule_timer(ctx, sample_timer_handler, NULL, NULL, 1000)) == -1) {
+          fprintf(stderr, "%s:%d, lbm error: '%s'\n", __FILE__, __LINE__, lbm_errmsg());
+          exit(1);
+      }
+  
+      /* Now wait for callback to end the wait and close the application */
+<span name="wait" id="wait"></span>      while (wait)
+          SLEEP(1);
+  
+      /* Clean up */
+      err = lbm_context_delete(ctx);
+      EX_LBM_CHK(err);
+    
+  #if defined(_MSC_VER)
+      /* Windows-specific cleanup overhead */
+      WSACleanup();
+  #endif
+  }
+  
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>
