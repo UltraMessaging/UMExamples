@@ -10,31 +10,54 @@
        the desired function is executed in a desired number of milliseconds from when it was scheduled. Applications also have
        the ability to cancel scheduled timers that have not yet executed, however special care must be taken when cancelling timer
        callbacks.</p>
-    <p>In this example, the application will schedule a timer callback to execute in 1 second. The main thread
-       that scheduled the timer will wait for the timer to execute, then clean up the application and exit</p>
+    <p>In this example, the application will schedule a timer callback to execute in 10 seconds. The main thread
+       that scheduled the timer will wait 1 second after scheduling, then proceed to safely cancel the timer.</p>
+    <p>Special care must be taken because it is very important that an application not cancel a timer that has already
+       been executed or has already been cancelled. Cancelling an old or cancelled timer could have irreparable consequences
+       on the underlying UM library itself. Therefore, users must create a small state object around the timer hanldle, and
+       be sure to take into account threading considerations (since the callback executes on the context thread, and cancelling
+       it can happen on any thread).</p>
+    <p><b>Note: </b>This sample only works when scheduling timers that do not use an event queue.</p>
+    <p>
     <p>There is one program source file:</p>
     <ul>
-      <li><b><tt>=semlit,srcfile,schedule_timers_c.slsrc,schedule_timers.c=</tt></b>
-        - (right-click and save as "schedule_timers.c") main program.</li>
+      <li><b><tt>=semlit,srcfile,cancelling_timers_c.slsrc,cancelling_timers.c=</tt></b>
+        - (right-click and save as "cancelling_timers.c") main program.</li>
     </ul>
-    <h2>Program explanation: <tt>schedule_timers.c</tt></h2>
+    <h2>Program explanation: <tt>cancelling_timers.c</tt></h2>
+    <h4>Timer State Object</h4>
+	<p>The purpose of the state object is to be able to determine the state of the timer callback at any timer, as well as store the handle
+	for the timer do it can be cancelled. In addition to state and the timer handle, there is also a sync variable which acts as a semaphore.
+	An actual semaphore was not included in this sample to maintain portability between Windows and Linux, but in a real application this should
+	be a proper semphore.</p>
+	=semlit,insert,struct_app_timer=
     <h4>Initializing the Context</h4>
         <p>Standard context attribute initializtion and context creation code. For more information on creating a context, please see the example
           <a href="../context-create">Creating a Context</a></p>
         =semlit,insert,ctx_create=
-    <h4>Creating a Callback</h4>
+    <h4>Creating a Timer Callback</h4>
 	<p>The callback function defined below is the application callback that will be invoked when the scheduled timer expires. This callback will
-	be executed on the UM context thread (at least for the purpose of this example it will be executed on the context thread.</p>
+	not end up being executed though, because it will be cancelled well in advance</p>
 	=semlit,insert,timer_cb=
-	<p>Note that inside the callback, the global "wait" variable is set to 0, this allows the main thread to stop tight-looping and exit.</p>
+    <h4>Creating a Cancel Callback</h4>
+	<p>This is the key point in the cancel timer sample, cancelling the timer using a "zero" timer callback. A zero timer callback is a scheduled
+	timer with a time value of 0, therefore is will execute nearly immediately (as soon as the context is ready). This is necessary because it
+	ensures that the actual cancel call happens prior to the timer being executed, since they both happen on the context thread, though this cannot
+	be guaranteed. What is guaranteed is that either the timer will be cancelled as expected, or the timer callback will execute and the stale handle
+	will not be executed.
+	=semlit,insert,cancel_cb=
     <h4>Scheduling the Timer Callback</h4>
-	<p>Here the application is actually scheduling the callback timer, set to be executed in 1000 milliseconds. The return value should be saved
-	by the application in the event that the application wishes to cancel the timer before it executes. Special care must be taken when cancelling
-	timer callback, for more information please see <a href="cancelling_timers/c/index.html>cancelling_timers</a>.</p>
+	<p>Here the application is actually scheduling the callback timer, set to be executed in 10000 milliseconds. The return value must be saved
+	by the application since the application wishes to cancel the timer before it executes. This is also where we set the initial state inside the 
+	statee object, set to PENDING</p>
 	=semlit,insert,schedule=
-    <h4>Wait for Timer</h4>
-	<p>For the purpose of this example application, it is using the global variable "wait" as a semaphore essentially. Once the timer executes, wait
-	will be set to 0 and the application can cleanly exit by deleting the context.</p>
+    <h4>Cancelling the Timer</h4>
+	<p>To initiate the cancel, first the application thread should check to see that the timer state is still PENDING. If so, schedule the cancel
+	callback, and pass in the state object as the client data variable</p>
+	=semlit,insert,cancel=
+    <h4>Wait</h4>
+	<p>The application thread now waits for the cancel timer to complete by waiting on the sync variable. Again, this should be a proper semaphore, but 
+	is not in this sample to maintain simple portability</p>
 	=semlit,insert,wait=
     <h4>Error Checking</h4>
         <p>Error handling can be one of the most complicated issues facing a programmer. Each application may have its own unique error

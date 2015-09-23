@@ -1,6 +1,5 @@
 /* Code Disclaimer? */
 
-/* =semlit,block,includes=*/
 #include <stdio.h>
 
 #if defined(_MSC_VER)
@@ -15,9 +14,7 @@
 #endif
 
 #include <lbm/lbm.h>
-/* =semlit,endblock,includes=*/
 
-/* =semlit,block,error_check=*/
 /* Example error checking macro.  Include after each UM call. */
 #define EX_LBM_CHK(err) do { \
 	if ((err) < 0) { \
@@ -26,23 +23,17 @@
 		exit(1); \
 	}  \
 } while (0)
-/* =semlit,endblock,error_check=*/
 
-/* =semlit,block,struct_app_timer=*/
 typedef enum {PENDING, FIRED, CANCELED} state_type_e;
 typedef struct app_timer_s {
   int id;
   state_type_e state;
   int sync;
 } app_timer_s;
-/* =semlit,endblock,struct_app_timer=*/
 
-/* =semlit,block,int_wait=*/
 int wait = 1;
-/* =semlit,endblock,int_wait=*/
 
 /* Timer callback function */
-/* =semlit,block,timer_cb=*/
 int sample_timer_handler(lbm_context_t *ctx, const void *clientd)
 {
 	struct app_timer_s *my_timer = (struct app_timer_s *)clientd;
@@ -55,9 +46,7 @@ int sample_timer_handler(lbm_context_t *ctx, const void *clientd)
 
 	return 0;
 }
-/* =semlit,endblock,timer_cb=*/
 
-/* =semlit,block,cancel_cb=*/
 int cancel_timer_cb(lbm_context_t *ctx, const void *clientd)
 {
 	struct app_timer_s *my_timer = (struct app_timer_s *)clientd;
@@ -69,7 +58,6 @@ int cancel_timer_cb(lbm_context_t *ctx, const void *clientd)
 	
 	return 0;
 }
-/* =semlit,endblock,cancel_cb=*/
 
 main()
 {
@@ -81,37 +69,29 @@ main()
 	my_timer.sync = 0;
 
 	/* Initialize context atrributes and create context */
-	/* =semlit,block,ctx_create=*/
 	err = lbm_context_attr_create(&cattr);
 	EX_LBM_CHK(err);
 
 	err = lbm_context_create(&ctx, cattr, NULL, NULL);
 	EX_LBM_CHK(err);
-	/* =semlit,endblock,ctx_create=*/
 	
-	/* =semlit,block,schedule=*/
 	my_timer.state = PENDING;
 	if ((my_timer.id = lbm_schedule_timer(ctx, sample_timer_handler, &my_timer, NULL, 10000)) == -1) {
 		fprintf(stderr, "%s:%d, lbm error: '%s'\n", __FILE__, __LINE__, lbm_errmsg());
 		exit(1);
 	}
-	/* =semlit,endblock,schedule=*/
 
 	/* Now wait for callback to end the wait and close the application */
 	SLEEP(1);
 
-	/* =semlit,block,cancel= */
 	if (my_timer.state == PENDING) {
 		lbm_schedule_timer(ctx, cancel_timer_cb, &my_timer, NULL, 0);
 		/* timer might still fire at this point. */
 		my_timer.sync = 1;
 	}
-	/* =semlit,endblock,cancel= */
 	
-	/* =semlit,block,wait=*/
 	while (my_timer.sync)
 		SLEEP(1);
-	/* =semlit,endblock,wait=*/
 
 	/* Clean up */
 	err = lbm_context_delete(ctx);

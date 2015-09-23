@@ -1,0 +1,184 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Scheduling UM Timers</title>
+  </head>
+  <body>
+    <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>Cancelling UM Timer Callbacks</h1>
+    <p>Ultra Messaging has a feature where developers can schedule timer function callbacks via the API, where
+       the desired function is executed in a desired number of milliseconds from when it was scheduled. Applications also have
+       the ability to cancel scheduled timers that have not yet executed, however special care must be taken when cancelling timer
+       callbacks.</p>
+    <p>In this example, the application will schedule a timer callback to execute in 10 seconds. The main thread
+       that scheduled the timer will wait 1 second after scheduling, then proceed to safely cancel the timer.</p>
+    <p>Special care must be taken because it is very important that an application not cancel a timer that has already
+       been executed or has already been cancelled. Cancelling an old or cancelled timer could have irreparable consequences
+       on the underlying UM library itself. Therefore, users must create a small state object around the timer hanldle, and
+       be sure to take into account threading considerations (since the callback executes on the context thread, and cancelling
+       it can happen on any thread).</p>
+    <p><b>Note: </b>This sample only works when scheduling timers that do not use an event queue.</p>
+    <p>
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt><a href="cancelling_timers.c">cancelling_timers.c</a></tt></b>
+        - (right-click and save as "cancelling_timers.c") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>cancelling_timers.c</tt></h2>
+    <h4>Timer State Object</h4>
+	<p>The purpose of the state object is to be able to determine the state of the timer callback at any timer, as well as store the handle
+	for the timer do it can be cancelled. In addition to state and the timer handle, there is also a sync variable which acts as a semaphore.
+	An actual semaphore was not included in this sample to maintain portability between Windows and Linux, but in a real application this should
+	be a proper semphore.</p>
+	<a name="struct_app_timer_ref_1" id="struct_app_timer_ref_1"></a>
+<small><pre>
+<a href="cancelling_timers_c.slsrc.html#struct_app_timer" target="src">00027</a>  typedef enum {PENDING, FIRED, CANCELED} state_type_e;
+<a href="cancelling_timers_c.slsrc.html#struct_app_timer" target="src">00028</a>  typedef struct app_timer_s {
+<a href="cancelling_timers_c.slsrc.html#struct_app_timer" target="src">00029</a>    int id;
+<a href="cancelling_timers_c.slsrc.html#struct_app_timer" target="src">00030</a>    state_type_e state;
+<a href="cancelling_timers_c.slsrc.html#struct_app_timer" target="src">00031</a>    int sync;
+<a href="cancelling_timers_c.slsrc.html#struct_app_timer" target="src">00032</a>  } app_timer_s;
+</pre><!-- endblock struct_app_timer_ref_1 --></small>
+
+
+    <h4>Initializing the Context</h4>
+        <p>Standard context attribute initializtion and context creation code. For more information on creating a context, please see the example
+          <a href="../context-create">Creating a Context</a></p>
+        <a name="ctx_create_ref_1" id="ctx_create_ref_1"></a>
+<small><pre>
+<a href="cancelling_timers_c.slsrc.html#ctx_create" target="src">00072</a>      err = lbm_context_attr_create(&amp;cattr);
+<a href="cancelling_timers_c.slsrc.html#ctx_create" target="src">00073</a>      EX_LBM_CHK(err);
+<a href="cancelling_timers_c.slsrc.html#ctx_create" target="src">00074</a>  
+<a href="cancelling_timers_c.slsrc.html#ctx_create" target="src">00075</a>      err = lbm_context_create(&amp;ctx, cattr, NULL, NULL);
+<a href="cancelling_timers_c.slsrc.html#ctx_create" target="src">00076</a>      EX_LBM_CHK(err);
+</pre><!-- endblock ctx_create_ref_1 --></small>
+
+
+    <h4>Creating a Timer Callback</h4>
+	<p>The callback function defined below is the application callback that will be invoked when the scheduled timer expires. This callback will
+	not end up being executed though, because it will be cancelled well in advance</p>
+	<a name="timer_cb_ref_1" id="timer_cb_ref_1"></a>
+<small><pre>
+<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00037</a>  int sample_timer_handler(lbm_context_t *ctx, const void *clientd)
+<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00038</a>  {
+<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00039</a>      struct app_timer_s *my_timer = (struct app_timer_s *)clientd;
+<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00040</a>      if (my_timer-&gt;state != PENDING) {  
+<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00041</a>          fprintf(stderr, "ERROR: Timer executed and should have been cancelled\n");
+<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00042</a>          exit(1);
+<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00043</a>      }
+<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00044</a>  
+<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00045</a>      fprintf(stderr, "ERROR: This timer should have been cancelled by now\n");
+<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00046</a>  
+<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00047</a>      return 0;
+<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00048</a>  }
+</pre><!-- endblock timer_cb_ref_1 --></small>
+
+
+    <h4>Creating a Cancel Callback</h4>
+	<p>This is the key point in the cancel timer sample, cancelling the timer using a "zero" timer callback. A zero timer callback is a scheduled
+	timer with a time value of 0, therefore is will execute nearly immediately (as soon as the context is ready). This is necessary because it
+	ensures that the actual cancel call happens prior to the timer being executed, since they both happen on the context thread, though this cannot
+	be guaranteed. What is guaranteed is that either the timer will be cancelled as expected, or the timer callback will execute and the stale handle
+	will not be executed.
+	<a name="cancel_cb_ref_1" id="cancel_cb_ref_1"></a>
+<small><pre>
+<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00050</a>  int cancel_timer_cb(lbm_context_t *ctx, const void *clientd)
+<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00051</a>  {
+<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00052</a>      struct app_timer_s *my_timer = (struct app_timer_s *)clientd;
+<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00053</a>      if (my_timer-&gt;state == PENDING) {
+<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00054</a>          lbm_cancel_timer(ctx, my_timer-&gt;id, NULL);
+<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00055</a>          my_timer-&gt;state = CANCELED;
+<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00056</a>      }
+<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00057</a>      my_timer-&gt;sync = 0;
+<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00058</a>      
+<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00059</a>      return 0;
+<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00060</a>  }
+</pre><!-- endblock cancel_cb_ref_1 --></small>
+
+
+    <h4>Scheduling the Timer Callback</h4>
+	<p>Here the application is actually scheduling the callback timer, set to be executed in 10000 milliseconds. The return value must be saved
+	by the application since the application wishes to cancel the timer before it executes. This is also where we set the initial state inside the 
+	statee object, set to PENDING</p>
+	<a name="schedule_ref_1" id="schedule_ref_1"></a>
+<small><pre>
+<a href="cancelling_timers_c.slsrc.html#schedule" target="src">00078</a>      my_timer.state = PENDING;
+<a href="cancelling_timers_c.slsrc.html#schedule" target="src">00079</a>      if ((my_timer.id = lbm_schedule_timer(ctx, sample_timer_handler, &amp;my_timer, NULL, 10000)) == -1) {
+<a href="cancelling_timers_c.slsrc.html#schedule" target="src">00080</a>          fprintf(stderr, "%s:%d, lbm error: '%s'\n", __FILE__, __LINE__, lbm_errmsg());
+<a href="cancelling_timers_c.slsrc.html#schedule" target="src">00081</a>          exit(1);
+<a href="cancelling_timers_c.slsrc.html#schedule" target="src">00082</a>      }
+</pre><!-- endblock schedule_ref_1 --></small>
+
+
+    <h4>Cancelling the Timer</h4>
+	<p>To initiate the cancel, first the application thread should check to see that the timer state is still PENDING. If so, schedule the cancel
+	callback, and pass in the state object as the client data variable</p>
+	<a name="cancel_ref_1" id="cancel_ref_1"></a>
+<small><pre>
+<a href="cancelling_timers_c.slsrc.html#cancel" target="src">00087</a>      if (my_timer.state == PENDING) {
+<a href="cancelling_timers_c.slsrc.html#cancel" target="src">00088</a>          lbm_schedule_timer(ctx, cancel_timer_cb, &amp;my_timer, NULL, 0);
+<a href="cancelling_timers_c.slsrc.html#cancel" target="src">00089</a>          /* timer might still fire at this point. */
+<a href="cancelling_timers_c.slsrc.html#cancel" target="src">00090</a>          my_timer.sync = 1;
+<a href="cancelling_timers_c.slsrc.html#cancel" target="src">00091</a>      }
+</pre><!-- endblock cancel_ref_1 --></small>
+
+
+    <h4>Wait</h4>
+	<p>The application thread now waits for the cancel timer to complete by waiting on the sync variable. Again, this should be a proper semaphore, but 
+	is not in this sample to maintain simple portability</p>
+	<a name="wait_ref_1" id="wait_ref_1"></a>
+<small><pre>
+<a href="cancelling_timers_c.slsrc.html#wait" target="src">00093</a>      while (my_timer.sync)
+<a href="cancelling_timers_c.slsrc.html#wait" target="src">00094</a>          SLEEP(1);
+</pre><!-- endblock wait_ref_1 --></small>
+
+
+    <h4>Error Checking</h4>
+        <p>Error handling can be one of the most complicated issues facing a programmer. Each application may have its own unique error
+        handling conventions. For these example programs, a very simplistic error handling approach is taken: if anything unexpected happens,
+        print a message and exit the program:</p>
+        <a name="error_check_ref_1" id="error_check_ref_1"></a>
+<small><pre>
+<a href="cancelling_timers_c.slsrc.html#error_check" target="src">00018</a>  /* Example error checking macro.  Include after each UM call. */
+<a href="cancelling_timers_c.slsrc.html#error_check" target="src">00019</a>  #define EX_LBM_CHK(err) do { \
+<a href="cancelling_timers_c.slsrc.html#error_check" target="src">00020</a>      if ((err) &lt; 0) { \
+<a href="cancelling_timers_c.slsrc.html#error_check" target="src">00021</a>          fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
+<a href="cancelling_timers_c.slsrc.html#error_check" target="src">00022</a>          __FILE__, __LINE__, lbm_errmsg()); \
+<a href="cancelling_timers_c.slsrc.html#error_check" target="src">00023</a>          exit(1); \
+<a href="cancelling_timers_c.slsrc.html#error_check" target="src">00024</a>      }  \
+<a href="cancelling_timers_c.slsrc.html#error_check" target="src">00025</a>  } while (0)
+</pre><!-- endblock error_check_ref_1 --></small>
+
+
+        <p>The EX_LBM_CHK() macro checks a UM API return value. If negative, it assumes an error. One reason for making this a macro is so
+        that the __FILE__ and __LINE__ compiler built-ins reference the file and line of the usages of the macro, not the file and line of
+        the macro defintion itself.</p>
+        </p>Most UM functions are designed to return one of only two integer values: 0 for success and -1 for failure. The lbm.h header file
+        defines the symbols LBM_OK and LBM_FAILURE respectively for these. However, there are a few functions which can return a value of 0 or
+        greater in the event of success (for example: lbm_event_dispatch() and lbm_send_response() to name two). So the example EX_LBM_CHK()
+        macro was written to be somewhat more general. However, be aware that there are a few other functions which do not return an integer
+        status at all (for exmaple: lbm_serialize_response() to name one). Please refer to the API documentation for each UM function you call.</p>
+    <h4>Includes</h4>
+        <p>Include files for this application. Notice the Windows specific include files - these are not necessary for Linux only applications</p>
+        <a name="includes_ref_1" id="includes_ref_1"></a>
+<small><pre>
+<a href="cancelling_timers_c.slsrc.html#includes" target="src">00003</a>  #include &lt;stdio.h&gt;
+<a href="cancelling_timers_c.slsrc.html#includes" target="src">00004</a>  
+<a href="cancelling_timers_c.slsrc.html#includes" target="src">00005</a>  #if defined(_MSC_VER)
+<a href="cancelling_timers_c.slsrc.html#includes" target="src">00006</a>  /* Windows-only includes */
+<a href="cancelling_timers_c.slsrc.html#includes" target="src">00007</a>  #include &lt;winsock2.h&gt;
+<a href="cancelling_timers_c.slsrc.html#includes" target="src">00008</a>  #define SLEEP(s) Sleep((s)*1000)
+<a href="cancelling_timers_c.slsrc.html#includes" target="src">00009</a>  #else
+<a href="cancelling_timers_c.slsrc.html#includes" target="src">00010</a>  /* Unix-only includes */
+<a href="cancelling_timers_c.slsrc.html#includes" target="src">00011</a>  #include &lt;stdlib.h&gt;
+<a href="cancelling_timers_c.slsrc.html#includes" target="src">00012</a>  #include &lt;unistd.h&gt;
+<a href="cancelling_timers_c.slsrc.html#includes" target="src">00013</a>  #define SLEEP(s) sleep(s)
+<a href="cancelling_timers_c.slsrc.html#includes" target="src">00014</a>  #endif
+<a href="cancelling_timers_c.slsrc.html#includes" target="src">00015</a>  
+<a href="cancelling_timers_c.slsrc.html#includes" target="src">00016</a>  #include &lt;lbm/lbm.h&gt;
+</pre><!-- endblock includes_ref_1 --></small>
+
+
+  </body>
+</html>
+
