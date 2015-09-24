@@ -1,0 +1,51 @@
+/* ScheduleTimers.java, see http://ultramessaging.github.io/UMExamples/schedule_timers/java/ */
+
+import com.latencybusters.lbm.*;
+
+public class ScheduleTimers {
+	public static int wait = 1;
+
+	public static void main(String[] args) throws LBMException {
+		LBMContext ctx = null; /* Context object: container for UM "instance". */
+		
+		/* =semlit,block,ctx_create=*/
+		/*** Initialization: create necessary UM objects. ***/
+		try {
+			ctx = new LBMContext();
+		}
+		catch(LBMException ex)
+		{
+			System.err.println("Error initializing LBM objects: " + ex.toString());
+			System.exit(1);
+		}
+		/* =semlit,endblock,ctx_create=*/
+
+		/* =semlit,block,schedule_timer=*/
+		callback cb = new callback();
+		LBMTimer timer = new LBMTimer(ctx,1000,cb,null);
+		/* =semlit,endblock,schedule_timer=*/
+
+		/* =semlit,block,wait=*/
+		while (wait == 1)
+		{
+			try {
+                		Thread.sleep(500);
+                	} catch (InterruptedException e) { }
+		}
+		/* =semlit,endblock,wait=*/
+
+		ctx.close();
+	} /* main */
+
+	/* =semlit,block,timer_cb=*/
+	private static class callback implements LBMTimerCallback
+	{
+		public void onExpiration(java.lang.Object cbArg)
+		{
+			System.out.println("Timer executed. Set wait to 0 so application can cleanly exit");
+			wait = 0;
+		}
+	}
+	/* =semlit,endblock,timer_cb=*/
+
+} /* class ScheduleTimers */

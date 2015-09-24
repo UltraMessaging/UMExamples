@@ -1,0 +1,81 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Scheduling UM Timers</title>
+  </head>
+  <body>
+    <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>Scheduling UM Timers</h1>
+    <p>Ultra Messaging has a feature where developers can schedule timer function callbacks via the API, where
+       the desired function is executed in a desired number of milliseconds from when it was scheduled. The 
+       callback itself must be created by the developer, and it is executed by the UM context thread or via
+       a UM Event Queue, if an Event Queue is passed in via the API.</p>
+    <p>In this example, the application will schedule a timer callback to execute in 1 second. The main thread
+       that scheduled the timer will wait for the timer to execute, then clean up the application and exit</p>
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt><a href="ScheduleTimers.java">ScheduleTimers.java</a></tt></b>
+        - (right-click and save as "ScheduleTimers.java") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>ScheduleTimers.java</tt></h2>
+    <h4>Initializing the Context</h4>
+        <p>Standard context creation code. Creating and scheduling timers only required an LBM context, no sources or receivers are needed.</p>
+        <a name="ctx_create_ref_1" id="ctx_create_ref_1"></a>
+<small><pre>
+<a href="schedule_timers_java.slsrc.html#ctx_create" target="src">00011</a>          /*** Initialization: create necessary UM objects. ***/
+<a href="schedule_timers_java.slsrc.html#ctx_create" target="src">00012</a>          try {
+<a href="schedule_timers_java.slsrc.html#ctx_create" target="src">00013</a>              ctx = new LBMContext();
+<a href="schedule_timers_java.slsrc.html#ctx_create" target="src">00014</a>          }
+<a href="schedule_timers_java.slsrc.html#ctx_create" target="src">00015</a>          catch(LBMException ex)
+<a href="schedule_timers_java.slsrc.html#ctx_create" target="src">00016</a>          {
+<a href="schedule_timers_java.slsrc.html#ctx_create" target="src">00017</a>              System.err.println("Error initializing LBM objects: " + ex.toString());
+<a href="schedule_timers_java.slsrc.html#ctx_create" target="src">00018</a>              System.exit(1);
+<a href="schedule_timers_java.slsrc.html#ctx_create" target="src">00019</a>          }
+</pre><!-- endblock ctx_create_ref_1 --></small>
+
+
+    <h4>Creating a Callback</h4>
+	<p>The callback class defined below is the application callback that will be invoked when the scheduled timer expires. This callback will
+	be executed on the UM context thread (at least for the purpose of this example it will be executed on the context thread.</p>
+	<a name="timer_cb_ref_1" id="timer_cb_ref_1"></a>
+<small><pre>
+<a href="schedule_timers_java.slsrc.html#timer_cb" target="src">00034</a>      private static class callback implements LBMTimerCallback
+<a href="schedule_timers_java.slsrc.html#timer_cb" target="src">00035</a>      {
+<a href="schedule_timers_java.slsrc.html#timer_cb" target="src">00036</a>          public void onExpiration(java.lang.Object cbArg)
+<a href="schedule_timers_java.slsrc.html#timer_cb" target="src">00037</a>          {
+<a href="schedule_timers_java.slsrc.html#timer_cb" target="src">00038</a>              System.out.println("Timer executed. Set wait to 0 so application can cleanly exit");
+<a href="schedule_timers_java.slsrc.html#timer_cb" target="src">00039</a>              wait = 0;
+<a href="schedule_timers_java.slsrc.html#timer_cb" target="src">00040</a>          }
+<a href="schedule_timers_java.slsrc.html#timer_cb" target="src">00041</a>      }
+</pre><!-- endblock timer_cb_ref_1 --></small>
+
+
+	<p>Note that inside the callback, the global "wait" variable is set to 0, this allows the main thread to stop tight-looping and exit.</p>
+    <h4>Scheduling the Timer Callback</h4>
+	<p>Here the application is actually initializing and scheduling the callback timer, set to be executed in 1000 milliseconds. The return value should be saved
+	by the application in the event that the application wishes to cancel the timer before it executes. Special care must be taken when cancelling
+	timer callbacks, for more information please see <a href="cancelling_timers/java/index.html>cancelling_timers</a>.</p>
+	<a name="schedule_timer_ref_1" id="schedule_timer_ref_1"></a>
+<small><pre>
+<a href="schedule_timers_java.slsrc.html#schedule_timer" target="src">00021</a>          callback cb = new callback();
+<a href="schedule_timers_java.slsrc.html#schedule_timer" target="src">00022</a>          LBMTimer timer = new LBMTimer(ctx,1000,cb,null);
+</pre><!-- endblock schedule_timer_ref_1 --></small>
+
+
+    <h4>Wait for Timer</h4>
+	<p>For the purpose of this example application, it is using the global variable "wait" as a semaphore essentially. Once the timer executes, wait
+	will be set to 0 and the application can cleanly exit by deleting the context.</p>
+	<a name="wait_ref_1" id="wait_ref_1"></a>
+<small><pre>
+<a href="schedule_timers_java.slsrc.html#wait" target="src">00024</a>          while (wait == 1)
+<a href="schedule_timers_java.slsrc.html#wait" target="src">00025</a>          {
+<a href="schedule_timers_java.slsrc.html#wait" target="src">00026</a>              try {
+<a href="schedule_timers_java.slsrc.html#wait" target="src">00027</a>                          Thread.sleep(500);
+<a href="schedule_timers_java.slsrc.html#wait" target="src">00028</a>                      } catch (InterruptedException e) { }
+<a href="schedule_timers_java.slsrc.html#wait" target="src">00029</a>          }
+</pre><!-- endblock wait_ref_1 --></small>
+
+
+  </body>
+</html>
+
