@@ -1,0 +1,296 @@
+<!DOCTYPE html><html><head><title>CancellingTimers.java</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>CancellingTimers.java</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+<a href="cancelling_timers.sldoc.html#states_ref_1" target="doc">00007</a>
+<a href="cancelling_timers.sldoc.html#states_ref_1" target="doc">00008</a>
+<a href="cancelling_timers.sldoc.html#states_ref_1" target="doc">00009</a>
+<a href="cancelling_timers.sldoc.html#states_ref_1" target="doc">00010</a>
+00011
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00012</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00013</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00014</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00015</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00016</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00017</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00018</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00019</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00020</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00021</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00022</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00023</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00024</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00025</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00026</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00027</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00028</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00029</a>
+00030
+00031
+00032
+00033
+<a href="cancelling_timers.sldoc.html#ctx_create_ref_1" target="doc">00034</a>
+<a href="cancelling_timers.sldoc.html#ctx_create_ref_1" target="doc">00035</a>
+<a href="cancelling_timers.sldoc.html#ctx_create_ref_1" target="doc">00036</a>
+<a href="cancelling_timers.sldoc.html#ctx_create_ref_1" target="doc">00037</a>
+<a href="cancelling_timers.sldoc.html#ctx_create_ref_1" target="doc">00038</a>
+<a href="cancelling_timers.sldoc.html#ctx_create_ref_1" target="doc">00039</a>
+<a href="cancelling_timers.sldoc.html#ctx_create_ref_1" target="doc">00040</a>
+<a href="cancelling_timers.sldoc.html#ctx_create_ref_1" target="doc">00041</a>
+<a href="cancelling_timers.sldoc.html#ctx_create_ref_1" target="doc">00042</a>
+00043
+<a href="cancelling_timers.sldoc.html#schedule_timer_ref_1" target="doc">00044</a>
+<a href="cancelling_timers.sldoc.html#schedule_timer_ref_1" target="doc">00045</a>
+00046
+00047
+00048
+00049
+00050
+<a href="cancelling_timers.sldoc.html#cancel_timer_ref_1" target="doc">00051</a>
+<a href="cancelling_timers.sldoc.html#cancel_timer_ref_1" target="doc">00052</a>
+<a href="cancelling_timers.sldoc.html#cancel_timer_ref_1" target="doc">00053</a>
+<a href="cancelling_timers.sldoc.html#cancel_timer_ref_1" target="doc">00054</a>
+<a href="cancelling_timers.sldoc.html#cancel_timer_ref_1" target="doc">00055</a>
+<a href="cancelling_timers.sldoc.html#cancel_timer_ref_1" target="doc">00056</a>
+<a href="cancelling_timers.sldoc.html#cancel_timer_ref_1" target="doc">00057</a>
+<a href="cancelling_timers.sldoc.html#cancel_timer_ref_1" target="doc">00058</a>
+00059
+00060
+00061
+00062
+<a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00063</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00064</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00065</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00066</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00067</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00068</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00069</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00070</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00071</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00072</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00073</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00074</a>
+00075
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00076</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00077</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00078</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00079</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00080</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00081</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00082</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00083</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00084</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00085</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00086</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00087</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00088</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00089</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00090</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00091</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00092</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00093</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00094</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00095</a>
+00096
+</td><td>  /* CancellingTimers.java, see http://ultramessaging.github.io/UMExamples/cancelling_timers/java/ */
+  
+  import com.latencybusters.lbm.*;
+  import java.util.concurrent.Semaphore;
+  
+  public class CancellingTimers {
+<span name="states" id="states"></span>      public enum TimerState 
+      { 
+          PENDING, FIRED, CANCELLED 
+      }
+  
+<span name="timer_cb_object" id="timer_cb_object"></span>      private static class AppTimer { 
+          LBMTimer timer;
+          public Semaphore sync = new Semaphore(1);
+          TimerState state;
+          
+          public AppTimer(LBMContext ctx, int delay, Callback cb)
+          {
+              try {
+                  this.timer = new LBMTimer(ctx,delay,cb,(java.lang.Object)this);
+              } 
+              catch(LBMException ex) 
+              { 
+                  System.err.println("Error initializing LBMTimer: " + ex.toString());
+                              System.exit(1);
+              }
+              this.state = TimerState.PENDING;
+          }
+      }
+  
+      public static void main(String[] args) throws LBMException {
+          LBMContext ctx = null; /* Context object: container for UM "instance". */
+          
+<span name="ctx_create" id="ctx_create"></span>          /*** Initialization: create necessary UM objects. ***/
+          try {
+              ctx = new LBMContext();
+          }
+          catch(LBMException ex)
+          {
+              System.err.println("Error initializing LBM objects: " + ex.toString());
+              System.exit(1);
+          }
+  
+<span name="schedule_timer" id="schedule_timer"></span>          Callback cb = new Callback();
+          AppTimer timer = new AppTimer(ctx,10000,cb);
+  
+          try {
+                      Thread.sleep(1000);
+                  } catch (InterruptedException e) { }
+  
+<span name="cancel_timer" id="cancel_timer"></span>          if (timer.state == TimerState.PENDING)
+          {
+              CancelCallback ccb = new CancelCallback();
+              LBMTimer cancelTimer = new LBMTimer(ctx,0,ccb,(java.lang.Object)timer);
+              try {
+                  timer.sync.acquire();
+              } catch (InterruptedException e) { }
+          }
+  
+          ctx.close();
+      } /* main */
+  
+<span name="timer_cb" id="timer_cb"></span>      private static class Callback implements LBMTimerCallback
+      {
+          public void onExpiration(java.lang.Object cbArg)
+          {
+              AppTimer temp = (AppTimer) cbArg;
+              if (temp.state != TimerState.PENDING)
+              {
+                  System.out.println("ERROR: Timer executed and state != PENDING.");
+              }
+              System.out.println("ERROR: This timer should have been cancelled by now");
+          }
+      }
+  
+<span name="cancel_cb" id="cancel_cb"></span>          private static class CancelCallback implements LBMTimerCallback
+          {
+                  public void onExpiration(java.lang.Object cbArg)
+                  {
+              AppTimer temp = (AppTimer) cbArg;
+              if (temp.state == TimerState.PENDING)
+              {
+                  try {
+                      temp.timer.cancel();
+                  }
+                  catch(LBMException ex)
+                              {
+                                      System.err.println("Error cancelling LBMTimer: " + ex.toString());
+                      System.exit(1);
+                              }
+                  temp.state = TimerState.CANCELLED;
+                  temp.sync.release();
+              }
+                  }
+          }
+  } /* class CancellingTimers */
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

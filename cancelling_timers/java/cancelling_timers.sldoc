@@ -21,16 +21,15 @@
     <p>
     <p>There is one program source file:</p>
     <ul>
-      <li><b><tt>=semlit,srcfile,cancelling_timers_c.slsrc,cancelling_timers.c=</tt></b>
-        - (right-click and save as "cancelling_timers.c") main program.</li>
+      <li><b><tt>=semlit,srcfile,cancelling_timers_java.slsrc,CancellingTimers.java=</tt></b>
+        - (right-click and save as "CancellingTimers.java") main program.</li>
     </ul>
-    <h2>Program explanation: <tt>cancelling_timers.c</tt></h2>
+    <h2>Program explanation: <tt>CancellingTimers.java</tt></h2>
     <h4>Timer State Object</h4>
-	<p>The purpose of the state object is to be able to determine the state of the timer callback at any time, as well as store the handle
-	for the timer so it can be cancelled. In addition to state and the timer handle, there is also a sync variable which acts as a semaphore.
-	An actual semaphore was not included in this sample, to maintain simple portability between Windows and Linux; in a real application this should
-	be a proper semphore!</p>
-	=semlit,insert,struct_app_timer=
+	<p>The purpose of the state object is to be able to determine the state of the timer callback at any timer, as well as store the handler
+	for the timer so it can be cancelled. In addition to state and the timer handle, there is also a sync semaphore used to sync the main application
+	thread with the context thread in the event of a timer being cancelled.</p>
+	=semlit,insert,timer_cb_object=
     <h4>Initializing the Context</h4>
         <p>Standard context attribute initializtion and context creation code. For more information on creating a context, please see the example
           <a href="../context-create">Creating a Context</a></p>
@@ -44,36 +43,17 @@
 	timer with a time value of 0, therefore is will execute nearly immediately (as soon as the context is ready). This is necessary because it
 	ensures that the actual cancel call happens prior to the timer being executed, since they both happen on the context thread, though this cannot
 	be guaranteed. What is guaranteed is that either the timer will be cancelled as expected, or the timer callback will execute and the stale handle
-	will not be executed.
+	will not be cancelled (which is what's really important).</p>
 	=semlit,insert,cancel_cb=
     <h4>Scheduling the Timer Callback</h4>
 	<p>Here the application is actually scheduling the callback timer, set to be executed in 10000 milliseconds. The return value must be saved
 	by the application since the application wishes to cancel the timer before it executes. This is also where we set the initial state inside the 
 	statee object, set to PENDING</p>
-	=semlit,insert,schedule=
-    <h4>Cancelling the Timer</h4>
+	=semlit,insert,schedule_timer=
+    <h4>Cancelling the Timer and Waiting</h4>
 	<p>To initiate the cancel, first the application thread should check to see that the timer state is still PENDING. If so, schedule the cancel
-	callback, and pass in the state object as the client data variable</p>
-	=semlit,insert,cancel=
-    <h4>Wait</h4>
-	<p>The application thread now waits for the cancel timer to complete by waiting on the sync variable. Again, this should be a proper semaphore, but 
-	is not in this sample to maintain simple portability</p>
-	=semlit,insert,wait=
-    <h4>Error Checking</h4>
-        <p>Error handling can be one of the most complicated issues facing a programmer. Each application may have its own unique error
-        handling conventions. For these example programs, a very simplistic error handling approach is taken: if anything unexpected happens,
-        print a message and exit the program:</p>
-        =semlit,insert,error_check=
-        <p>The EX_LBM_CHK() macro checks a UM API return value. If negative, it assumes an error. One reason for making this a macro is so
-        that the __FILE__ and __LINE__ compiler built-ins reference the file and line of the usages of the macro, not the file and line of
-        the macro defintion itself.</p>
-        </p>Most UM functions are designed to return one of only two integer values: 0 for success and -1 for failure. The lbm.h header file
-        defines the symbols LBM_OK and LBM_FAILURE respectively for these. However, there are a few functions which can return a value of 0 or
-        greater in the event of success (for example: lbm_event_dispatch() and lbm_send_response() to name two). So the example EX_LBM_CHK()
-        macro was written to be somewhat more general. However, be aware that there are a few other functions which do not return an integer
-        status at all (for exmaple: lbm_serialize_response() to name one). Please refer to the API documentation for each UM function you call.</p>
-    <h4>Includes</h4>
-        <p>Include files for this application. Notice the Windows specific include files - these are not necessary for Linux only applications</p>
-        =semlit,insert,includes=
+	callback, and pass in the state object as the client data variable. Once the cancel timer is scheduled, wait on the semaphore for the cancel callback
+	to complete.</p>
+	=semlit,insert,cancel_timer=
   </body>
 </html>

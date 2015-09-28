@@ -1,0 +1,153 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Scheduling UM Timers</title>
+  </head>
+  <body>
+    <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>Cancelling UM Timer Callbacks</h1>
+    <p>Ultra Messaging has a feature where developers can schedule timer function callbacks via the API, where
+       the desired function is executed in a desired number of milliseconds from when it was scheduled. Applications also have
+       the ability to cancel scheduled timers that have not yet executed, however special care must be taken when cancelling timer
+       callbacks.</p>
+    <p>In this example, the application will schedule a timer callback to execute in 10 seconds. The main thread
+       that scheduled the timer will wait 1 second after scheduling, then proceed to safely cancel the timer.</p>
+    <p>Special care must be taken because it is very important that an application not cancel a timer that has already
+       been executed or has already been cancelled. Cancelling an old or cancelled timer could have irreparable consequences
+       on the underlying UM library itself. Therefore, users must create a small state object around the timer hanldle, and
+       be sure to take into account threading considerations (since the callback executes on the context thread, and cancelling
+       it can happen on any thread).</p>
+    <p><b>Note: </b>This sample only works when scheduling timers that do not use an event queue.</p>
+    <p>
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt><a href="CancellingTimers.java">CancellingTimers.java</a></tt></b>
+        - (right-click and save as "CancellingTimers.java") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>CancellingTimers.java</tt></h2>
+    <h4>Timer State Object</h4>
+	<p>The purpose of the state object is to be able to determine the state of the timer callback at any timer, as well as store the handler
+	for the timer so it can be cancelled. In addition to state and the timer handle, there is also a sync semaphore used to sync the main application
+	thread with the context thread in the event of a timer being cancelled.</p>
+	<a name="timer_cb_object_ref_1" id="timer_cb_object_ref_1"></a>
+<small><pre>
+<a href="cancelling_timers_java.slsrc.html#timer_cb_object" target="src">00012</a>      private static class AppTimer { 
+<a href="cancelling_timers_java.slsrc.html#timer_cb_object" target="src">00013</a>          LBMTimer timer;
+<a href="cancelling_timers_java.slsrc.html#timer_cb_object" target="src">00014</a>          public Semaphore sync = new Semaphore(1);
+<a href="cancelling_timers_java.slsrc.html#timer_cb_object" target="src">00015</a>          TimerState state;
+<a href="cancelling_timers_java.slsrc.html#timer_cb_object" target="src">00016</a>          
+<a href="cancelling_timers_java.slsrc.html#timer_cb_object" target="src">00017</a>          public AppTimer(LBMContext ctx, int delay, Callback cb)
+<a href="cancelling_timers_java.slsrc.html#timer_cb_object" target="src">00018</a>          {
+<a href="cancelling_timers_java.slsrc.html#timer_cb_object" target="src">00019</a>              try {
+<a href="cancelling_timers_java.slsrc.html#timer_cb_object" target="src">00020</a>                  this.timer = new LBMTimer(ctx,delay,cb,(java.lang.Object)this);
+<a href="cancelling_timers_java.slsrc.html#timer_cb_object" target="src">00021</a>              } 
+<a href="cancelling_timers_java.slsrc.html#timer_cb_object" target="src">00022</a>              catch(LBMException ex) 
+<a href="cancelling_timers_java.slsrc.html#timer_cb_object" target="src">00023</a>              { 
+<a href="cancelling_timers_java.slsrc.html#timer_cb_object" target="src">00024</a>                  System.err.println("Error initializing LBMTimer: " + ex.toString());
+<a href="cancelling_timers_java.slsrc.html#timer_cb_object" target="src">00025</a>                              System.exit(1);
+<a href="cancelling_timers_java.slsrc.html#timer_cb_object" target="src">00026</a>              }
+<a href="cancelling_timers_java.slsrc.html#timer_cb_object" target="src">00027</a>              this.state = TimerState.PENDING;
+<a href="cancelling_timers_java.slsrc.html#timer_cb_object" target="src">00028</a>          }
+<a href="cancelling_timers_java.slsrc.html#timer_cb_object" target="src">00029</a>      }
+</pre><!-- endblock timer_cb_object_ref_1 --></small>
+
+
+    <h4>Initializing the Context</h4>
+        <p>Standard context attribute initializtion and context creation code. For more information on creating a context, please see the example
+          <a href="../context-create">Creating a Context</a></p>
+        <a name="ctx_create_ref_1" id="ctx_create_ref_1"></a>
+<small><pre>
+<a href="cancelling_timers_java.slsrc.html#ctx_create" target="src">00034</a>          /*** Initialization: create necessary UM objects. ***/
+<a href="cancelling_timers_java.slsrc.html#ctx_create" target="src">00035</a>          try {
+<a href="cancelling_timers_java.slsrc.html#ctx_create" target="src">00036</a>              ctx = new LBMContext();
+<a href="cancelling_timers_java.slsrc.html#ctx_create" target="src">00037</a>          }
+<a href="cancelling_timers_java.slsrc.html#ctx_create" target="src">00038</a>          catch(LBMException ex)
+<a href="cancelling_timers_java.slsrc.html#ctx_create" target="src">00039</a>          {
+<a href="cancelling_timers_java.slsrc.html#ctx_create" target="src">00040</a>              System.err.println("Error initializing LBM objects: " + ex.toString());
+<a href="cancelling_timers_java.slsrc.html#ctx_create" target="src">00041</a>              System.exit(1);
+<a href="cancelling_timers_java.slsrc.html#ctx_create" target="src">00042</a>          }
+</pre><!-- endblock ctx_create_ref_1 --></small>
+
+
+    <h4>Creating a Timer Callback</h4>
+	<p>The callback function defined below is the application callback that will be invoked when the scheduled timer expires. This callback will
+	not end up being executed though, because it will be cancelled well in advance</p>
+	<a name="timer_cb_ref_1" id="timer_cb_ref_1"></a>
+<small><pre>
+<a href="cancelling_timers_java.slsrc.html#timer_cb" target="src">00063</a>      private static class Callback implements LBMTimerCallback
+<a href="cancelling_timers_java.slsrc.html#timer_cb" target="src">00064</a>      {
+<a href="cancelling_timers_java.slsrc.html#timer_cb" target="src">00065</a>          public void onExpiration(java.lang.Object cbArg)
+<a href="cancelling_timers_java.slsrc.html#timer_cb" target="src">00066</a>          {
+<a href="cancelling_timers_java.slsrc.html#timer_cb" target="src">00067</a>              AppTimer temp = (AppTimer) cbArg;
+<a href="cancelling_timers_java.slsrc.html#timer_cb" target="src">00068</a>              if (temp.state != TimerState.PENDING)
+<a href="cancelling_timers_java.slsrc.html#timer_cb" target="src">00069</a>              {
+<a href="cancelling_timers_java.slsrc.html#timer_cb" target="src">00070</a>                  System.out.println("ERROR: Timer executed and state != PENDING.");
+<a href="cancelling_timers_java.slsrc.html#timer_cb" target="src">00071</a>              }
+<a href="cancelling_timers_java.slsrc.html#timer_cb" target="src">00072</a>              System.out.println("ERROR: This timer should have been cancelled by now");
+<a href="cancelling_timers_java.slsrc.html#timer_cb" target="src">00073</a>          }
+<a href="cancelling_timers_java.slsrc.html#timer_cb" target="src">00074</a>      }
+</pre><!-- endblock timer_cb_ref_1 --></small>
+
+
+    <h4>Creating a Cancel Callback</h4>
+	<p>This is the key point in the cancel timer sample, cancelling the timer using a "zero" timer callback. A zero timer callback is a scheduled
+	timer with a time value of 0, therefore is will execute nearly immediately (as soon as the context is ready). This is necessary because it
+	ensures that the actual cancel call happens prior to the timer being executed, since they both happen on the context thread, though this cannot
+	be guaranteed. What is guaranteed is that either the timer will be cancelled as expected, or the timer callback will execute and the stale handle
+	will not be executed.</p>
+	<a name="cancel_cb_ref_1" id="cancel_cb_ref_1"></a>
+<small><pre>
+<a href="cancelling_timers_java.slsrc.html#cancel_cb" target="src">00076</a>          private static class CancelCallback implements LBMTimerCallback
+<a href="cancelling_timers_java.slsrc.html#cancel_cb" target="src">00077</a>          {
+<a href="cancelling_timers_java.slsrc.html#cancel_cb" target="src">00078</a>                  public void onExpiration(java.lang.Object cbArg)
+<a href="cancelling_timers_java.slsrc.html#cancel_cb" target="src">00079</a>                  {
+<a href="cancelling_timers_java.slsrc.html#cancel_cb" target="src">00080</a>              AppTimer temp = (AppTimer) cbArg;
+<a href="cancelling_timers_java.slsrc.html#cancel_cb" target="src">00081</a>              if (temp.state == TimerState.PENDING)
+<a href="cancelling_timers_java.slsrc.html#cancel_cb" target="src">00082</a>              {
+<a href="cancelling_timers_java.slsrc.html#cancel_cb" target="src">00083</a>                  try {
+<a href="cancelling_timers_java.slsrc.html#cancel_cb" target="src">00084</a>                      temp.timer.cancel();
+<a href="cancelling_timers_java.slsrc.html#cancel_cb" target="src">00085</a>                  }
+<a href="cancelling_timers_java.slsrc.html#cancel_cb" target="src">00086</a>                  catch(LBMException ex)
+<a href="cancelling_timers_java.slsrc.html#cancel_cb" target="src">00087</a>                              {
+<a href="cancelling_timers_java.slsrc.html#cancel_cb" target="src">00088</a>                                      System.err.println("Error cancelling LBMTimer: " + ex.toString());
+<a href="cancelling_timers_java.slsrc.html#cancel_cb" target="src">00089</a>                      System.exit(1);
+<a href="cancelling_timers_java.slsrc.html#cancel_cb" target="src">00090</a>                              }
+<a href="cancelling_timers_java.slsrc.html#cancel_cb" target="src">00091</a>                  temp.state = TimerState.CANCELLED;
+<a href="cancelling_timers_java.slsrc.html#cancel_cb" target="src">00092</a>                  temp.sync.release();
+<a href="cancelling_timers_java.slsrc.html#cancel_cb" target="src">00093</a>              }
+<a href="cancelling_timers_java.slsrc.html#cancel_cb" target="src">00094</a>                  }
+<a href="cancelling_timers_java.slsrc.html#cancel_cb" target="src">00095</a>          }
+</pre><!-- endblock cancel_cb_ref_1 --></small>
+
+
+    <h4>Scheduling the Timer Callback</h4>
+	<p>Here the application is actually scheduling the callback timer, set to be executed in 10000 milliseconds. The return value must be saved
+	by the application since the application wishes to cancel the timer before it executes. This is also where we set the initial state inside the 
+	statee object, set to PENDING</p>
+	<a name="schedule_timer_ref_1" id="schedule_timer_ref_1"></a>
+<small><pre>
+<a href="cancelling_timers_java.slsrc.html#schedule_timer" target="src">00044</a>          Callback cb = new Callback();
+<a href="cancelling_timers_java.slsrc.html#schedule_timer" target="src">00045</a>          AppTimer timer = new AppTimer(ctx,10000,cb);
+</pre><!-- endblock schedule_timer_ref_1 --></small>
+
+
+    <h4>Cancelling the Timer and Waiting</h4>
+	<p>To initiate the cancel, first the application thread should check to see that the timer state is still PENDING. If so, schedule the cancel
+	callback, and pass in the state object as the client data variable. Once the cancel timer is scheduled, wait on the semaphore for the cancel callback
+	to complete.</p>
+	<a name="cancel_timer_ref_1" id="cancel_timer_ref_1"></a>
+<small><pre>
+<a href="cancelling_timers_java.slsrc.html#cancel_timer" target="src">00051</a>          if (timer.state == TimerState.PENDING)
+<a href="cancelling_timers_java.slsrc.html#cancel_timer" target="src">00052</a>          {
+<a href="cancelling_timers_java.slsrc.html#cancel_timer" target="src">00053</a>              CancelCallback ccb = new CancelCallback();
+<a href="cancelling_timers_java.slsrc.html#cancel_timer" target="src">00054</a>              LBMTimer cancelTimer = new LBMTimer(ctx,0,ccb,(java.lang.Object)timer);
+<a href="cancelling_timers_java.slsrc.html#cancel_timer" target="src">00055</a>              try {
+<a href="cancelling_timers_java.slsrc.html#cancel_timer" target="src">00056</a>                  timer.sync.acquire();
+<a href="cancelling_timers_java.slsrc.html#cancel_timer" target="src">00057</a>              } catch (InterruptedException e) { }
+<a href="cancelling_timers_java.slsrc.html#cancel_timer" target="src">00058</a>          }
+</pre><!-- endblock cancel_timer_ref_1 --></small>
+
+
+  </body>
+</html>
+
