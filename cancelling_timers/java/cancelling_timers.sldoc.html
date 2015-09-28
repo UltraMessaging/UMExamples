@@ -94,7 +94,7 @@
 	timer with a time value of 0, therefore is will execute nearly immediately (as soon as the context is ready). This is necessary because it
 	ensures that the actual cancel call happens prior to the timer being executed, since they both happen on the context thread, though this cannot
 	be guaranteed. What is guaranteed is that either the timer will be cancelled as expected, or the timer callback will execute and the stale handle
-	will not be executed.</p>
+	will not be cancelled (which is what's really important).</p>
 	<a name="cancel_cb_ref_1" id="cancel_cb_ref_1"></a>
 <small><pre>
 <a href="cancelling_timers_java.slsrc.html#cancel_cb" target="src">00076</a>          private static class CancelCallback implements LBMTimerCallback

@@ -26,10 +26,10 @@
     </ul>
     <h2>Program explanation: <tt>cancelling_timers.c</tt></h2>
     <h4>Timer State Object</h4>
-	<p>The purpose of the state object is to be able to determine the state of the timer callback at any timer, as well as store the handle
-	for the timer do it can be cancelled. In addition to state and the timer handle, there is also a sync variable which acts as a semaphore.
-	An actual semaphore was not included in this sample to maintain portability between Windows and Linux, but in a real application this should
-	be a proper semphore.</p>
+	<p>The purpose of the state object is to be able to determine the state of the timer callback at any time, as well as store the handle
+	for the timer so it can be cancelled. In addition to state and the timer handle, there is also a sync variable which acts as a semaphore.
+	An actual semaphore was not included in this sample, to maintain simple portability between Windows and Linux; in a real application this should
+	be a proper semphore!</p>
 	<a name="struct_app_timer_ref_1" id="struct_app_timer_ref_1"></a>
 <small><pre>
 <a href="cancelling_timers_c.slsrc.html#struct_app_timer" target="src">00027</a>  typedef enum {PENDING, FIRED, CANCELED} state_type_e;

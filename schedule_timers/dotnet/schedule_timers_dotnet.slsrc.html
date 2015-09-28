@@ -1,0 +1,220 @@
+<!DOCTYPE html><html><head><title>ScheduleTimers.cs</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>ScheduleTimers.cs</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+00008
+00009
+00010
+00011
+00012
+00013
+00014
+00015
+<a href="schedule_timers.sldoc.html#ctx_create_ref_1" target="doc">00016</a>
+<a href="schedule_timers.sldoc.html#ctx_create_ref_1" target="doc">00017</a>
+<a href="schedule_timers.sldoc.html#ctx_create_ref_1" target="doc">00018</a>
+<a href="schedule_timers.sldoc.html#ctx_create_ref_1" target="doc">00019</a>
+<a href="schedule_timers.sldoc.html#ctx_create_ref_1" target="doc">00020</a>
+<a href="schedule_timers.sldoc.html#ctx_create_ref_1" target="doc">00021</a>
+<a href="schedule_timers.sldoc.html#ctx_create_ref_1" target="doc">00022</a>
+<a href="schedule_timers.sldoc.html#ctx_create_ref_1" target="doc">00023</a>
+<a href="schedule_timers.sldoc.html#ctx_create_ref_1" target="doc">00024</a>
+00025
+<a href="schedule_timers.sldoc.html#schedule_timer_ref_1" target="doc">00026</a>
+<a href="schedule_timers.sldoc.html#schedule_timer_ref_1" target="doc">00027</a>
+00028
+<a href="schedule_timers.sldoc.html#wait_ref_1" target="doc">00029</a>
+<a href="schedule_timers.sldoc.html#wait_ref_1" target="doc">00030</a>
+<a href="schedule_timers.sldoc.html#wait_ref_1" target="doc">00031</a>
+<a href="schedule_timers.sldoc.html#wait_ref_1" target="doc">00032</a>
+<a href="schedule_timers.sldoc.html#wait_ref_1" target="doc">00033</a>
+<a href="schedule_timers.sldoc.html#wait_ref_1" target="doc">00034</a>
+<a href="schedule_timers.sldoc.html#wait_ref_1" target="doc">00035</a>
+<a href="schedule_timers.sldoc.html#wait_ref_1" target="doc">00036</a>
+<a href="schedule_timers.sldoc.html#wait_ref_1" target="doc">00037</a>
+<a href="schedule_timers.sldoc.html#wait_ref_1" target="doc">00038</a>
+<a href="schedule_timers.sldoc.html#wait_ref_1" target="doc">00039</a>
+00040
+00041
+00042
+00043
+00044
+00045
+00046
+00047
+00048
+00049
+<a href="schedule_timers.sldoc.html#timer_cb_ref_1" target="doc">00050</a>
+<a href="schedule_timers.sldoc.html#timer_cb_ref_1" target="doc">00051</a>
+<a href="schedule_timers.sldoc.html#timer_cb_ref_1" target="doc">00052</a>
+<a href="schedule_timers.sldoc.html#timer_cb_ref_1" target="doc">00053</a>
+<a href="schedule_timers.sldoc.html#timer_cb_ref_1" target="doc">00054</a>
+<a href="schedule_timers.sldoc.html#timer_cb_ref_1" target="doc">00055</a>
+<a href="schedule_timers.sldoc.html#timer_cb_ref_1" target="doc">00056</a>
+<a href="schedule_timers.sldoc.html#timer_cb_ref_1" target="doc">00057</a>
+00058
+</td><td>  /* ScheduleTimers.cs, see http://ultramessaging.github.io/UMExamples/schedule_timers/dotnet/ */
+  
+  using System;
+  using System.Collections.Generic;
+  using System.Linq;
+  using System.Text;
+  using System.Threading.Tasks;
+  using com.latencybusters.lbm;
+  
+  public class ScheduleTimers {
+          public static int wait = 1;
+  
+          static void Main(String[] args) {
+                  LBMContext ctx = null; /* Context object: container for UM "instance". */
+  
+<span name="ctx_create" id="ctx_create"></span>                  /*** Initialization: create necessary UM objects. ***/
+                  try {
+                          ctx = new LBMContext();
+                  }
+                  catch(LBMException ex)
+                  {
+                          System.Console.Error.WriteLine("Error initializing LBM objects: " + ex.Message);
+                          System.Environment.Exit(1);
+                  }
+  
+<span name="schedule_timer" id="schedule_timer"></span>                  TimerCallback cb = new TimerCallback();
+                  LBMTimer timer = new LBMTimer(ctx,1000,(LBMTimerCallback)cb.onExpiration,null);
+  
+<span name="wait" id="wait"></span>                  while (wait == 1)
+                  {
+                          try {
+                                  System.Threading.Thread.Sleep(500);
+                          } 
+                          catch (Exception eex)
+                          {
+                              System.Console.Error.WriteLine("Error System.Threading.Thread.Sleep() exception:  " + eex.Message);
+                              System.Environment.Exit(1);
+                          }
+                  }
+  
+                  ctx.close();
+          } /* main */
+  
+          public void onExpiration(Object cbArg)
+          {
+              System.Console.Out.WriteLine("Timer executed. Set wait to 0 so application can cleanly exit");
+              wait = 0;
+          }
+  
+<span name="timer_cb" id="timer_cb"></span>          public class TimerCallback 
+          {
+                  public void onExpiration(Object cbArg)
+                  {
+                      System.Console.Out.WriteLine("Timer executed. Set wait to 0 so application can cleanly exit");
+                      wait = 0;
+                  }
+          }
+  } /* class ScheduleTimers */
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>
