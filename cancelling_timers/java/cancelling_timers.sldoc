@@ -4,21 +4,7 @@
     <title>Scheduling UM Timers</title>
   </head>
   <body>
-    <a href="../../index.html" class="button" target="_top">Example index</a>
-    <h1>Cancelling UM Timer Callbacks</h1>
-    <p>Ultra Messaging has a feature where developers can schedule timer function callbacks via the API, where
-       the desired function is executed in a desired number of milliseconds from when it was scheduled. Applications also have
-       the ability to cancel scheduled timers that have not yet executed, however special care must be taken when cancelling timer
-       callbacks.</p>
-    <p>In this example, the application will schedule a timer callback to execute in 10 seconds. The main thread
-       that scheduled the timer will wait 1 second after scheduling, then proceed to safely cancel the timer.</p>
-    <p>Special care must be taken because it is very important that an application not cancel a timer that has already
-       been executed or has already been cancelled. Cancelling an old or cancelled timer could have irreparable consequences
-       on the underlying UM library itself. Therefore, users must create a small state object around the timer hanldle, and
-       be sure to take into account threading considerations (since the callback executes on the context thread, and cancelling
-       it can happen on any thread).</p>
-    <p><b>Note: </b>This sample only works when scheduling timers that do not use an event queue.</p>
-    <p>
+    =semlit,include,../intro.sldoc=
     <p>There is one program source file:</p>
     <ul>
       <li><b><tt>=semlit,srcfile,cancelling_timers_java.slsrc,CancellingTimers.java=</tt></b>

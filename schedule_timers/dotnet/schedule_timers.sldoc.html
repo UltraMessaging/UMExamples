@@ -7,11 +7,12 @@
     <a href="../../index.html" class="button" target="_top">Example index</a>
     <h1>Scheduling UM Timers</h1>
     <p>Ultra Messaging has a feature where developers can schedule timer function callbacks via the API, where
-       the desired function is executed in a desired number of milliseconds from when it was scheduled. The 
+       the desired function is executed in a desired number of milliseconds from when it was scheduled. The
        callback itself must be created by the developer, and it is executed by the UM context thread or via
        a UM Event Queue, if an Event Queue is passed in via the API.</p>
     <p>In this example, the application will schedule a timer callback to execute in 1 second. The main thread
        that scheduled the timer will wait for the timer to execute, then clean up the application and exit</p>
+
     <p>There is one program source file:</p>
     <ul>
       <li><b><tt><a href="ScheduleTimers.cs">ScheduleTimers.cs</a></tt></b>
