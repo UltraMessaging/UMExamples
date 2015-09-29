@@ -1,0 +1,18 @@
+<a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>Sequential Mode Example</h1>
+    <p>In this example, the sample below shows how to simply configure an Ultra Messaging application how to configure and run
+    in the "sequential" mode of operation.</p>
+    <p>When you create a context (lbm_context_create()) with the 
+    =semlit,tooltip,../../tooltips/context_operational_mode.txt,operational_mode=set to sequential, the context thread is NOT 
+    created. It becomes the application's responsibility to donate a thread to UM by calling lbm_context_process_events() 
+    regularly, typically in a tight loop. Use Sequential mode for circumstances where your application wants control over the 
+    attributes of the context thread. For example, some applications raise the priority of the context thread so as to obtain more 
+    consistent latencies. In sequential mode, no separate thread is spawned when a context is created.</p>
+    <p><b>Important things to note when using sequential mode</b><ul>
+      <li>Processing events consistently is a must - spending time on the thread processing events, outside of processing events, can 
+          have undesirable effects on UM components (message loss, transport timeouts, message recovery, etc.)
+      <li>Context event callbacks must still be processed in a timely manner for the same reason as above. For context level events
+          that might possibly take time to process, consider using an event queue</li>
+    </ul></p>
+    <p>This example very simply sets the attirbute to enable sequential mode, spawns a thread that spins on processing context events,
+    while the main application thread waits forever.</p>

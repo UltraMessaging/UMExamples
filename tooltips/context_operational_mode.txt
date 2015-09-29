@@ -1,0 +1,8 @@
+The mode in which UM operates to process events. Refer to Embedded and Sequential Mode for additional information.
+
+Scope:	context
+Type:	int
+When to Set:	Can only be set during object initialization.
+String value	Integer value	Description
+embedded	LBM_CTX_ATTR_OP_EMBEDDED	A thread is spawned within UM to handle processing of events (timers and socket events). Default for all.
+sequential	LBM_CTX_ATTR_OP_SEQUENTIAL	The application is responsible for calling lbm_context_process_events() to process events. Sequential mode does not support Multi-Transport Threads.
