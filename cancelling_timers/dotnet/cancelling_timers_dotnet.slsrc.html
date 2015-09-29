@@ -1,0 +1,314 @@
+<!DOCTYPE html><html><head><title>CancellingTimers.cs</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>CancellingTimers.cs</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+00008
+00009
+00010
+00011
+<a href="cancelling_timers.sldoc.html#states_ref_1" target="doc">00012</a>
+<a href="cancelling_timers.sldoc.html#states_ref_1" target="doc">00013</a>
+<a href="cancelling_timers.sldoc.html#states_ref_1" target="doc">00014</a>
+<a href="cancelling_timers.sldoc.html#states_ref_1" target="doc">00015</a>
+00016
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00017</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00018</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00019</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00020</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00021</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00022</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00023</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00024</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00025</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00026</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00027</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00028</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00029</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00030</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00031</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00032</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00033</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_object_ref_1" target="doc">00034</a>
+00035
+00036
+00037
+00038
+<a href="cancelling_timers.sldoc.html#ctx_create_ref_1" target="doc">00039</a>
+<a href="cancelling_timers.sldoc.html#ctx_create_ref_1" target="doc">00040</a>
+<a href="cancelling_timers.sldoc.html#ctx_create_ref_1" target="doc">00041</a>
+<a href="cancelling_timers.sldoc.html#ctx_create_ref_1" target="doc">00042</a>
+<a href="cancelling_timers.sldoc.html#ctx_create_ref_1" target="doc">00043</a>
+<a href="cancelling_timers.sldoc.html#ctx_create_ref_1" target="doc">00044</a>
+<a href="cancelling_timers.sldoc.html#ctx_create_ref_1" target="doc">00045</a>
+<a href="cancelling_timers.sldoc.html#ctx_create_ref_1" target="doc">00046</a>
+<a href="cancelling_timers.sldoc.html#ctx_create_ref_1" target="doc">00047</a>
+00048
+<a href="cancelling_timers.sldoc.html#schedule_timer_ref_1" target="doc">00049</a>
+<a href="cancelling_timers.sldoc.html#schedule_timer_ref_1" target="doc">00050</a>
+00051
+00052
+00053
+00054
+00055
+00056
+00057
+00058
+00059
+00060
+00061
+<a href="cancelling_timers.sldoc.html#cancel_timer_ref_1" target="doc">00062</a>
+<a href="cancelling_timers.sldoc.html#cancel_timer_ref_1" target="doc">00063</a>
+<a href="cancelling_timers.sldoc.html#cancel_timer_ref_1" target="doc">00064</a>
+<a href="cancelling_timers.sldoc.html#cancel_timer_ref_1" target="doc">00065</a>
+<a href="cancelling_timers.sldoc.html#cancel_timer_ref_1" target="doc">00066</a>
+<a href="cancelling_timers.sldoc.html#cancel_timer_ref_1" target="doc">00067</a>
+00068
+00069
+00070
+00071
+<a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00072</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00073</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00074</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00075</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00076</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00077</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00078</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00079</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00080</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00081</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00082</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00083</a>
+00084
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00085</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00086</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00087</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00088</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00089</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00090</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00091</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00092</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00093</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00094</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00095</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00096</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00097</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00098</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00099</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00100</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00101</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00102</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00103</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00104</a>
+00105
+</td><td>  /* CancellingTimers.cs, see http://ultramessaging.github.io/UMExamples/cancelling_timers/dotnet/ */
+  
+  using System;
+  using System.Collections.Generic;
+  using System.Linq;
+  using System.Text;
+  using System.Threading.Tasks;
+  using System.Threading;
+  using com.latencybusters.lbm;
+  
+  public class CancellingTimers {
+<span name="states" id="states"></span>          public enum TimerState
+          {
+                  PENDING, FIRED, CANCELLED
+          }
+  
+<span name="timer_cb_object" id="timer_cb_object"></span>          public class AppTimer {
+                  public LBMTimer timer;
+                  public Semaphore sync = new Semaphore(0,1);
+                  public TimerState state;
+  
+                  public AppTimer(LBMContext ctx, int delay, Callback cb)
+                  {
+                          try {
+                                  this.timer = new LBMTimer(ctx,delay,cb.onExpiration,(Object)this);
+                          }
+                          catch(LBMException ex)
+                          {
+                                  System.Console.Error.WriteLine("Error initializing LBMTimer: " + ex.Message);
+                                  System.Environment.Exit(1);
+                          }
+                          this.state = TimerState.PENDING;
+                  }
+          }
+  
+          static void Main(String[] args) {
+                  LBMContext ctx = null; /* Context object: container for UM "instance". */
+  
+<span name="ctx_create" id="ctx_create"></span>                  /*** Initialization: create necessary UM objects. ***/
+                  try {
+                          ctx = new LBMContext();
+                  }
+                  catch(LBMException ex)
+                  {
+                          System.Console.Error.WriteLine("Error initializing LBM objects: " + ex.Message);
+                          System.Environment.Exit(1);
+                  }
+  
+<span name="schedule_timer" id="schedule_timer"></span>                  Callback cb = new Callback();
+                  AppTimer timer = new AppTimer(ctx,10000,cb);
+  
+                  try
+                  {
+                      System.Threading.Thread.Sleep(1000);
+                  }
+                  catch (Exception eex)
+                  {
+                      System.Console.Error.WriteLine("Error System.Threading.Thread.Sleep() exception:  " + eex.Message);
+                      System.Environment.Exit(1);
+                  }
+  
+<span name="cancel_timer" id="cancel_timer"></span>                  if (timer.state == TimerState.PENDING)
+                  {
+                          CancelCallback ccb = new CancelCallback();
+                          LBMTimer cancelTimer = new LBMTimer(ctx,0,ccb.onExpiration,(Object)timer);
+                          timer.sync.WaitOne();
+                  }
+  
+                  ctx.close();
+          } /* main */
+  
+<span name="timer_cb" id="timer_cb"></span>          public class Callback
+          {
+                  public void onExpiration(Object cbArg)
+                  {
+                          AppTimer temp = (AppTimer) cbArg;
+                          if (temp.state != TimerState.PENDING)
+                          {
+                                  System.Console.Error.WriteLine("ERROR: Timer executed and state != PENDING.");
+                          }
+                          System.Console.Error.WriteLine("ERROR: This timer should have been cancelled by now");
+                  }
+          }
+  
+<span name="cancel_cb" id="cancel_cb"></span>          public class CancelCallback
+          {
+                  public void onExpiration(Object cbArg)
+                  {
+                          AppTimer temp = (AppTimer) cbArg;
+                          if (temp.state == TimerState.PENDING)
+                          {
+                                  try {
+                                          temp.timer.cancel();
+                                  }
+                                  catch(LBMException ex)
+                                  {
+                                      System.Console.Error.WriteLine("Error cancelling LBMTimer: " + ex.Message);
+                                      System.Environment.Exit(1);
+                                  }
+                                  temp.state = TimerState.CANCELLED;
+                                  temp.sync.Release();
+                          }
+                  }
+          }
+  }
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>
