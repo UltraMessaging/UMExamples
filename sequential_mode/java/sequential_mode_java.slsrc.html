@@ -1,0 +1,224 @@
+<!DOCTYPE html><html><head><title>SequentialMode.java</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>SequentialMode.java</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+00008
+00009
+<a href="sequential_mode.sldoc.html#create_ref_1" target="doc">00010</a>
+<a href="sequential_mode.sldoc.html#create_ref_1" target="doc">00011</a>
+<a href="sequential_mode.sldoc.html#create_ref_1" target="doc">00012</a>
+<a href="sequential_mode.sldoc.html#create_ref_1" target="doc">00013</a>
+<a href="sequential_mode.sldoc.html#create_ref_1" target="doc">00014</a>
+<a href="sequential_mode.sldoc.html#create_ref_1" target="doc">00015</a>
+<a href="sequential_mode.sldoc.html#create_ref_1" target="doc">00016</a>
+<a href="sequential_mode.sldoc.html#create_ref_1" target="doc">00017</a>
+<a href="sequential_mode.sldoc.html#create_ref_1" target="doc">00018</a>
+<a href="sequential_mode.sldoc.html#create_ref_1" target="doc">00019</a>
+<a href="sequential_mode.sldoc.html#create_ref_1" target="doc">00020</a>
+00021
+<a href="sequential_mode.sldoc.html#spawn_thread_ref_1" target="doc">00022</a>
+00023
+00024
+00025
+00026
+00027
+00028
+00029
+00030
+00031
+00032
+00033
+00034
+00035
+<a href="sequential_mode.sldoc.html#context_thread_ref_1" target="doc">00036</a>
+<a href="sequential_mode.sldoc.html#context_thread_ref_1" target="doc">00037</a>
+<a href="sequential_mode.sldoc.html#context_thread_ref_1" target="doc">00038</a>
+<a href="sequential_mode.sldoc.html#context_thread_ref_1" target="doc">00039</a>
+<a href="sequential_mode.sldoc.html#context_thread_ref_1" target="doc">00040</a>
+<a href="sequential_mode.sldoc.html#context_thread_ref_1" target="doc">00041</a>
+<a href="sequential_mode.sldoc.html#context_thread_ref_1" target="doc">00042</a>
+<a href="sequential_mode.sldoc.html#context_thread_ref_1" target="doc">00043</a>
+<a href="sequential_mode.sldoc.html#context_thread_ref_1" target="doc">00044</a>
+<a href="sequential_mode.sldoc.html#context_thread_ref_1" target="doc">00045</a>
+<a href="sequential_mode.sldoc.html#context_thread_ref_1" target="doc">00046</a>
+<a href="sequential_mode.sldoc.html#context_thread_ref_1" target="doc">00047</a>
+<a href="sequential_mode.sldoc.html#context_thread_ref_1" target="doc">00048</a>
+<a href="sequential_mode.sldoc.html#context_thread_ref_1" target="doc">00049</a>
+<a href="sequential_mode.sldoc.html#context_thread_ref_1" target="doc">00050</a>
+<a href="sequential_mode.sldoc.html#context_thread_ref_1" target="doc">00051</a>
+<a href="sequential_mode.sldoc.html#context_thread_ref_1" target="doc">00052</a>
+<a href="sequential_mode.sldoc.html#context_thread_ref_1" target="doc">00053</a>
+<a href="sequential_mode.sldoc.html#context_thread_ref_1" target="doc">00054</a>
+<a href="sequential_mode.sldoc.html#context_thread_ref_1" target="doc">00055</a>
+<a href="sequential_mode.sldoc.html#context_thread_ref_1" target="doc">00056</a>
+<a href="sequential_mode.sldoc.html#context_thread_ref_1" target="doc">00057</a>
+<a href="sequential_mode.sldoc.html#context_thread_ref_1" target="doc">00058</a>
+<a href="sequential_mode.sldoc.html#context_thread_ref_1" target="doc">00059</a>
+00060
+</td><td>  /* LoggingCallback.java, see http://ultramessaging.github.io/UMExamples/logging_callback/java/ */
+  
+  import com.latencybusters.lbm.*;
+  import java.lang.*;
+  
+  public class SequentialMode {
+      public static void main(String[] args) throws LBMException {
+          LBMContext ctx = null; /* Context object: container for UM "instance". */
+          
+<span name="create" id="create"></span>          /* Initialization: create necessary UM objects. */
+          try {
+              LBMContextAttributes ctxAttr = new LBMContextAttributes();
+              ctxAttr.setValue("operational_mode", "sequential");
+              ctx = new LBMContext(ctxAttr);
+          }
+          catch(LBMException ex)
+          {
+              System.err.println("Error initializing LBM objects: " + ex.toString());
+              System.exit(1);
+          }
+  
+<span name="spawn_thread" id="spawn_thread"></span>          (new Thread(new SeqThread(ctx))).start();
+  
+          while(true) 
+          { 
+              try {
+                  Thread.sleep(1000);
+              }
+              catch(InterruptedException tex) {
+                  System.err.println("Error Thread.sleep interrupted: " + tex.toString());
+                  System.exit(1);
+              }
+          }
+      } /* main */
+  
+<span name="context_thread" id="context_thread"></span>      public static class SeqThread implements Runnable
+      {
+          private LBMContext _ctx;
+  
+          public SeqThread(LBMContext ctx)
+          {
+              _ctx = ctx;
+          }
+  
+          public void run()
+          {
+              while (true)
+              {
+                  try {
+                      _ctx.processEvents(500);
+                  }
+                  catch(LBMException ex)
+                  {
+                      System.err.println("Error processing context events: " + ex.toString());
+                      System.exit(1);
+                  }
+              }
+          }
+      }
+  }
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

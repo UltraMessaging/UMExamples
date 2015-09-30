@@ -1,0 +1,29 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Logging Callback</title>
+  </head>
+  <body>
+    =semlit,include,../intro.sldoc=
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt>=semlit,srcfile,sequential_mode_java.slsrc,SequentialMode.java=</tt></b>
+        - (right-click and save as "SequentialMode.java") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>SequentialMode.java</tt></h2>
+    <h4>Initialize and Create Context</h4>
+	<p>Standard API's to create a context object. The important thing to note here is the fact that the 
+	=semlit,tooltip,../../tooltips/context_operational_mode.txt,operational_mode= is being set to "sequential".
+	Setting the operational_mode is required to take advantage of the sequential mode of operation.</p>
+	=semlit,insert,create=
+    <h4>Spawn a New Thread</h4>
+	<p>In this example, the application spawns a new thread whose sole purpose will be to process context events. The 
+	application could use this to set a higher thread priority, or possibly set the process affinity to offer better performance
+	for message delivery. Notice the thread function is "seq_thread", which will be explained in the next block.</p>
+	=semlit,insert,spawn_thread=
+    <h4>Sequential Context Thread</h4>
+	<p>Here is where the function is declared that will be the thread that processes context events. This function very simply
+	calls the process events API, ensures there are no errors, and repeats. 
+	=semlit,insert,context_thread=
+  </body>
+</html>

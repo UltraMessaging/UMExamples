@@ -29,6 +29,8 @@ set to sequential, the context thread is NOT
       <li>Context event callbacks must still be processed in a timely manner for the same reason as above. For context level events
           that might possibly take time to process, consider using an event queue</li>
     </ul></p>
+    <p>This example very simply sets the attirbute to enable sequential mode, spawns a thread that spins on processing context events,
+    while the main application thread waits forever.</p>
 
     <p>There is one program source file:</p>
     <ul>

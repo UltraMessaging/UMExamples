@@ -1,0 +1,114 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Logging Callback</title>
+  </head>
+  <body>
+    <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>Sequential Mode Example</h1>
+    <p>In this example, the sample below shows how to simply configure an Ultra Messaging application how to configure and run
+    in the "sequential" mode of operation.</p>
+    <p>When you create a context (lbm_context_create()) with the 
+    <a href="#" title="The mode in which UM operates to process events. Refer to Embedded and Sequential Mode for additional information.
+
+Scope:	context
+Type:	int
+When to Set:	Can only be set during object initialization.
+String value	Integer value	Description
+embedded	LBM_CTX_ATTR_OP_EMBEDDED	A thread is spawned within UM to handle processing of events (timers and socket events). Default for all.
+sequential	LBM_CTX_ATTR_OP_SEQUENTIAL	The application is responsible for calling lbm_context_process_events() to process events. Sequential mode does not support Multi-Transport Threads.
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">operational_mode</a>
+set to sequential, the context thread is NOT 
+    created. It becomes the application's responsibility to donate a thread to UM by calling lbm_context_process_events() 
+    regularly, typically in a tight loop. Use Sequential mode for circumstances where your application wants control over the 
+    attributes of the context thread. For example, some applications raise the priority of the context thread so as to obtain more 
+    consistent latencies. In sequential mode, no separate thread is spawned when a context is created.</p>
+    <p><b>Important things to note when using sequential mode</b><ul>
+      <li>Processing events consistently is a must - spending time on the thread processing events, outside of processing events, can 
+          have undesirable effects on UM components (message loss, transport timeouts, message recovery, etc.)
+      <li>Context event callbacks must still be processed in a timely manner for the same reason as above. For context level events
+          that might possibly take time to process, consider using an event queue</li>
+    </ul></p>
+    <p>This example very simply sets the attirbute to enable sequential mode, spawns a thread that spins on processing context events,
+    while the main application thread waits forever.</p>
+
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt><a href="SequentialMode.java">SequentialMode.java</a></tt></b>
+        - (right-click and save as "SequentialMode.java") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>SequentialMode.java</tt></h2>
+    <h4>Initialize and Create Context</h4>
+	<p>Standard API's to create a context object. The important thing to note here is the fact that the 
+	<a href="#" title="The mode in which UM operates to process events. Refer to Embedded and Sequential Mode for additional information.
+
+Scope:	context
+Type:	int
+When to Set:	Can only be set during object initialization.
+String value	Integer value	Description
+embedded	LBM_CTX_ATTR_OP_EMBEDDED	A thread is spawned within UM to handle processing of events (timers and socket events). Default for all.
+sequential	LBM_CTX_ATTR_OP_SEQUENTIAL	The application is responsible for calling lbm_context_process_events() to process events. Sequential mode does not support Multi-Transport Threads.
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">operational_mode</a>
+ is being set to "sequential".
+	Setting the operational_mode is required to take advantage of the sequential mode of operation.</p>
+	<a name="create_ref_1" id="create_ref_1"></a>
+<small><pre>
+<a href="sequential_mode_java.slsrc.html#create" target="src">00010</a>          /* Initialization: create necessary UM objects. */
+<a href="sequential_mode_java.slsrc.html#create" target="src">00011</a>          try {
+<a href="sequential_mode_java.slsrc.html#create" target="src">00012</a>              LBMContextAttributes ctxAttr = new LBMContextAttributes();
+<a href="sequential_mode_java.slsrc.html#create" target="src">00013</a>              ctxAttr.setValue("operational_mode", "sequential");
+<a href="sequential_mode_java.slsrc.html#create" target="src">00014</a>              ctx = new LBMContext(ctxAttr);
+<a href="sequential_mode_java.slsrc.html#create" target="src">00015</a>          }
+<a href="sequential_mode_java.slsrc.html#create" target="src">00016</a>          catch(LBMException ex)
+<a href="sequential_mode_java.slsrc.html#create" target="src">00017</a>          {
+<a href="sequential_mode_java.slsrc.html#create" target="src">00018</a>              System.err.println("Error initializing LBM objects: " + ex.toString());
+<a href="sequential_mode_java.slsrc.html#create" target="src">00019</a>              System.exit(1);
+<a href="sequential_mode_java.slsrc.html#create" target="src">00020</a>          }
+</pre><!-- endblock create_ref_1 --></small>
+
+
+    <h4>Spawn a New Thread</h4>
+	<p>In this example, the application spawns a new thread whose sole purpose will be to process context events. The 
+	application could use this to set a higher thread priority, or possibly set the process affinity to offer better performance
+	for message delivery. Notice the thread function is "seq_thread", which will be explained in the next block.</p>
+	<a name="spawn_thread_ref_1" id="spawn_thread_ref_1"></a>
+<small><pre>
+<a href="sequential_mode_java.slsrc.html#spawn_thread" target="src">00022</a>          (new Thread(new SeqThread(ctx))).start();
+</pre><!-- endblock spawn_thread_ref_1 --></small>
+
+
+    <h4>Sequential Context Thread</h4>
+	<p>Here is where the function is declared that will be the thread that processes context events. This function very simply
+	calls the process events API, ensures there are no errors, and repeats. 
+	<a name="context_thread_ref_1" id="context_thread_ref_1"></a>
+<small><pre>
+<a href="sequential_mode_java.slsrc.html#context_thread" target="src">00036</a>      public static class SeqThread implements Runnable
+<a href="sequential_mode_java.slsrc.html#context_thread" target="src">00037</a>      {
+<a href="sequential_mode_java.slsrc.html#context_thread" target="src">00038</a>          private LBMContext _ctx;
+<a href="sequential_mode_java.slsrc.html#context_thread" target="src">00039</a>  
+<a href="sequential_mode_java.slsrc.html#context_thread" target="src">00040</a>          public SeqThread(LBMContext ctx)
+<a href="sequential_mode_java.slsrc.html#context_thread" target="src">00041</a>          {
+<a href="sequential_mode_java.slsrc.html#context_thread" target="src">00042</a>              _ctx = ctx;
+<a href="sequential_mode_java.slsrc.html#context_thread" target="src">00043</a>          }
+<a href="sequential_mode_java.slsrc.html#context_thread" target="src">00044</a>  
+<a href="sequential_mode_java.slsrc.html#context_thread" target="src">00045</a>          public void run()
+<a href="sequential_mode_java.slsrc.html#context_thread" target="src">00046</a>          {
+<a href="sequential_mode_java.slsrc.html#context_thread" target="src">00047</a>              while (true)
+<a href="sequential_mode_java.slsrc.html#context_thread" target="src">00048</a>              {
+<a href="sequential_mode_java.slsrc.html#context_thread" target="src">00049</a>                  try {
+<a href="sequential_mode_java.slsrc.html#context_thread" target="src">00050</a>                      _ctx.processEvents(500);
+<a href="sequential_mode_java.slsrc.html#context_thread" target="src">00051</a>                  }
+<a href="sequential_mode_java.slsrc.html#context_thread" target="src">00052</a>                  catch(LBMException ex)
+<a href="sequential_mode_java.slsrc.html#context_thread" target="src">00053</a>                  {
+<a href="sequential_mode_java.slsrc.html#context_thread" target="src">00054</a>                      System.err.println("Error processing context events: " + ex.toString());
+<a href="sequential_mode_java.slsrc.html#context_thread" target="src">00055</a>                      System.exit(1);
+<a href="sequential_mode_java.slsrc.html#context_thread" target="src">00056</a>                  }
+<a href="sequential_mode_java.slsrc.html#context_thread" target="src">00057</a>              }
+<a href="sequential_mode_java.slsrc.html#context_thread" target="src">00058</a>          }
+<a href="sequential_mode_java.slsrc.html#context_thread" target="src">00059</a>      }
+</pre><!-- endblock context_thread_ref_1 --></small>
+
+
+  </body>
+</html>
+
