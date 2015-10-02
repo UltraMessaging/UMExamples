@@ -1,0 +1,416 @@
+<!DOCTYPE html><html><head><title>clean_shutdown.c</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>clean_shutdown.c</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+<a href="clean_shutdown.sldoc.html#includes_ref_1" target="doc">00003</a>
+<a href="clean_shutdown.sldoc.html#includes_ref_1" target="doc">00004</a>
+<a href="clean_shutdown.sldoc.html#includes_ref_1" target="doc">00005</a>
+<a href="clean_shutdown.sldoc.html#includes_ref_1" target="doc">00006</a>
+<a href="clean_shutdown.sldoc.html#includes_ref_1" target="doc">00007</a>
+<a href="clean_shutdown.sldoc.html#includes_ref_1" target="doc">00008</a>
+<a href="clean_shutdown.sldoc.html#includes_ref_1" target="doc">00009</a>
+<a href="clean_shutdown.sldoc.html#includes_ref_1" target="doc">00010</a>
+<a href="clean_shutdown.sldoc.html#includes_ref_1" target="doc">00011</a>
+<a href="clean_shutdown.sldoc.html#includes_ref_1" target="doc">00012</a>
+<a href="clean_shutdown.sldoc.html#includes_ref_1" target="doc">00013</a>
+<a href="clean_shutdown.sldoc.html#includes_ref_1" target="doc">00014</a>
+<a href="clean_shutdown.sldoc.html#includes_ref_1" target="doc">00015</a>
+<a href="clean_shutdown.sldoc.html#includes_ref_1" target="doc">00016</a>
+00017
+00018
+00019
+00020
+<a href="clean_shutdown.sldoc.html#error_check_ref_1" target="doc">00021</a>
+<a href="clean_shutdown.sldoc.html#error_check_ref_1" target="doc">00022</a>
+<a href="clean_shutdown.sldoc.html#error_check_ref_1" target="doc">00023</a>
+<a href="clean_shutdown.sldoc.html#error_check_ref_1" target="doc">00024</a>
+<a href="clean_shutdown.sldoc.html#error_check_ref_1" target="doc">00025</a>
+<a href="clean_shutdown.sldoc.html#error_check_ref_1" target="doc">00026</a>
+<a href="clean_shutdown.sldoc.html#error_check_ref_1" target="doc">00027</a>
+00028
+<a href="clean_shutdown.sldoc.html#eq_thread_ref_1" target="doc">00029</a>
+<a href="clean_shutdown.sldoc.html#eq_thread_ref_1" target="doc">00030</a>
+<a href="clean_shutdown.sldoc.html#eq_thread_ref_1" target="doc">00031</a>
+<a href="clean_shutdown.sldoc.html#eq_thread_ref_1" target="doc">00032</a>
+<a href="clean_shutdown.sldoc.html#eq_thread_ref_1" target="doc">00033</a>
+<a href="clean_shutdown.sldoc.html#eq_thread_ref_1" target="doc">00034</a>
+<a href="clean_shutdown.sldoc.html#eq_thread_ref_1" target="doc">00035</a>
+<a href="clean_shutdown.sldoc.html#eq_thread_ref_1" target="doc">00036</a>
+<a href="clean_shutdown.sldoc.html#eq_thread_ref_1" target="doc">00037</a>
+<a href="clean_shutdown.sldoc.html#eq_thread_ref_1" target="doc">00038</a>
+<a href="clean_shutdown.sldoc.html#eq_thread_ref_1" target="doc">00039</a>
+<a href="clean_shutdown.sldoc.html#eq_thread_ref_1" target="doc">00040</a>
+<a href="clean_shutdown.sldoc.html#eq_thread_ref_1" target="doc">00041</a>
+<a href="clean_shutdown.sldoc.html#eq_thread_ref_1" target="doc">00042</a>
+<a href="clean_shutdown.sldoc.html#eq_thread_ref_1" target="doc">00043</a>
+<a href="clean_shutdown.sldoc.html#eq_thread_ref_1" target="doc">00044</a>
+<a href="clean_shutdown.sldoc.html#eq_thread_ref_1" target="doc">00045</a>
+<a href="clean_shutdown.sldoc.html#eq_thread_ref_1" target="doc">00046</a>
+<a href="clean_shutdown.sldoc.html#eq_thread_ref_1" target="doc">00047</a>
+<a href="clean_shutdown.sldoc.html#eq_thread_ref_1" target="doc">00048</a>
+00049
+00050
+00051
+00052
+00053
+00054
+00055
+00056
+00057
+00058
+00059
+00060
+00061
+00062
+00063
+00064
+00065
+00066
+00067
+00068
+00069
+00070
+00071
+00072
+00073
+00074
+00075
+00076
+00077
+00078
+00079
+00080
+00081
+<a href="clean_shutdown.sldoc.html#windows_ref_1" target="doc">00082</a>
+<a href="clean_shutdown.sldoc.html#windows_ref_1" target="doc">00083</a>
+<a href="clean_shutdown.sldoc.html#windows_ref_1" target="doc">00084</a>
+<a href="clean_shutdown.sldoc.html#windows_ref_1" target="doc">00085</a>
+<a href="clean_shutdown.sldoc.html#windows_ref_1" target="doc">00086</a>
+<a href="clean_shutdown.sldoc.html#windows_ref_1" target="doc">00087</a>
+<a href="clean_shutdown.sldoc.html#windows_ref_1" target="doc">00088</a>
+<a href="clean_shutdown.sldoc.html#windows_ref_1" target="doc">00089</a>
+<a href="clean_shutdown.sldoc.html#windows_ref_1" target="doc">00090</a>
+<a href="clean_shutdown.sldoc.html#windows_ref_1" target="doc">00091</a>
+00092
+00093
+00094
+00095
+<a href="clean_shutdown.sldoc.html#create_ref_1" target="doc">00096</a>
+<a href="clean_shutdown.sldoc.html#create_ref_1" target="doc">00097</a>
+<a href="clean_shutdown.sldoc.html#create_ref_1" target="doc">00098</a>
+<a href="clean_shutdown.sldoc.html#create_ref_1" target="doc">00099</a>
+<a href="clean_shutdown.sldoc.html#create_ref_1" target="doc">00100</a>
+00101
+00102
+00103
+00104
+00105
+00106
+00107
+00108
+00109
+00110
+00111
+00112
+00113
+00114
+00115
+00116
+00117
+00118
+00119
+00120
+00121
+00122
+00123
+00124
+<a href="clean_shutdown.sldoc.html#spawn_thread_ref_1" target="doc">00125</a>
+<a href="clean_shutdown.sldoc.html#spawn_thread_ref_1" target="doc">00126</a>
+<a href="clean_shutdown.sldoc.html#spawn_thread_ref_1" target="doc">00127</a>
+<a href="clean_shutdown.sldoc.html#spawn_thread_ref_1" target="doc">00128</a>
+<a href="clean_shutdown.sldoc.html#spawn_thread_ref_1" target="doc">00129</a>
+<a href="clean_shutdown.sldoc.html#spawn_thread_ref_1" target="doc">00130</a>
+<a href="clean_shutdown.sldoc.html#spawn_thread_ref_1" target="doc">00131</a>
+<a href="clean_shutdown.sldoc.html#spawn_thread_ref_1" target="doc">00132</a>
+<a href="clean_shutdown.sldoc.html#spawn_thread_ref_1" target="doc">00133</a>
+<a href="clean_shutdown.sldoc.html#spawn_thread_ref_1" target="doc">00134</a>
+<a href="clean_shutdown.sldoc.html#spawn_thread_ref_1" target="doc">00135</a>
+00136
+00137
+00138
+00139
+00140
+00141
+00142
+00143
+00144
+00145
+00146
+00147
+00148
+00149
+00150
+00151
+00152
+00153
+00154
+00155
+00156
+</td><td>  /* Code Disclaimer? */
+  
+<span name="includes" id="includes"></span>  #include &lt;stdio.h&gt;
+  
+  #if defined(_MSC_VER)
+  /* Windows-only includes */
+  #include &lt;winsock2.h&gt;
+  #define SLEEP(s) Sleep((s)*1000)
+  #else
+  /* Unix-only includes */
+  #include &lt;stdlib.h&gt;
+  #include &lt;unistd.h&gt;
+  #define SLEEP(s) sleep(s)
+  #endif
+  
+  #include &lt;lbm/lbm.h&gt;
+  
+  int cleanup = 0;
+  
+  /* Example error checking macro.  Include after each UM call. */
+<span name="error_check" id="error_check"></span>    #define EX_LBM_CHK(err) do { \
+        if ((err) &lt; 0) { \
+                fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
+                __FILE__, __LINE__, lbm_errmsg()); \
+                exit(1); \
+        }  \
+    } while (0)
+  
+<span name="eq_thread" id="eq_thread"></span>  #if defined(_WIN32)
+  DWORD WINAPI eq_thread(void *arg)
+  #else
+  void *eq_thread(void *arg)
+  #endif /* _WIN32 */
+  {
+      lbm_event_queue_t *evq = (lbm_event_queue_t *) arg;
+  
+      while (1)
+      {
+          if (lbm_event_dispatch(evq, 1000) == -1)
+          {
+              printf("ERROR processing context events: %s\n", lbm_errmsg());
+              exit(1);
+          }
+  
+          if (cleanup)
+              break;
+      }
+  }
+  
+  /* Callback used to handle request message for receiver */
+  int rcv_handle_msg(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
+  {
+      int err;
+  
+      switch (msg-&gt;type) {
+          case LBM_MSG_DATA:
+              printf("LBM_MSG_DATA received\n");
+              break;
+      }
+  
+      cleanup = 1;
+  }
+  
+  main()
+  {
+      lbm_context_t *ctx;             /* pointer to context object */
+      lbm_context_attr_t * cattr;     /* pointer to context attribute object */
+      lbm_topic_t *stopic;            /* Source Topic object */
+      lbm_src_t *src;                 /* Source object */
+      lbm_src_topic_attr_t * tattr;   /* Source topic attribute object */
+      lbm_rcv_t *rcv;                 /* Receive object: for subscribing to messages. */
+      lbm_topic_t *rtopic;            /* Receiver Topic object */
+      lbm_event_queue_t *evq = NULL;  /* pointer to eventQ handle */
+      int err;                        /* return status of lbm functions (true=error) */
+  #if defined(_WIN32)
+          HANDLE wthrdh;
+  #else
+          pthread_t pthid;
+  #endif /* _WIN32 */
+  
+  
+<span name="windows" id="windows"></span>  #if defined(_MSC_VER)
+          /* windows-specific code */
+          WSADATA wsadata;
+          int wsStat = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
+          if (wsStat != 0)
+          {
+                  printf("line %d: wsStat=%d\n",__LINE__,wsStat);
+                  exit(1);
+          }
+  #endif
+  
+      err = lbm_event_queue_create(&amp;evq, NULL, NULL, NULL);
+      EX_LBM_CHK(err);
+  
+<span name="create" id="create"></span>      err = lbm_context_attr_create(&amp;cattr);
+      EX_LBM_CHK(err);
+  
+          err = lbm_context_create(&amp;ctx, cattr, NULL, NULL);
+          EX_LBM_CHK(err);
+  
+      err = lbm_rcv_topic_lookup(&amp;rtopic, ctx, "test.topic", NULL);
+      EX_LBM_CHK(err);
+  
+      err = lbm_rcv_create(&amp;rcv, ctx, rtopic, rcv_handle_msg, NULL, evq);
+      EX_LBM_CHK(err);
+  
+      err = lbm_src_topic_attr_create(&amp;tattr);
+      EX_LBM_CHK(err);
+  
+      err = lbm_src_topic_alloc(&amp;stopic, ctx, "test.topic", tattr);
+      EX_LBM_CHK(err);
+  
+      err = lbm_src_topic_attr_delete(tattr);
+      EX_LBM_CHK(err);
+  
+      err = lbm_src_create(&amp;src, ctx, stopic, NULL, NULL, NULL);
+      EX_LBM_CHK(err);
+  
+      SLEEP(1);
+  
+      err = lbm_src_send(src, "hello", 5, LBM_MSG_FLUSH);
+      EX_LBM_CHK(err);    
+  
+<span name="spawn_thread" id="spawn_thread"></span>  #if defined(_WIN32)
+      if ((wthrdh = CreateThread(NULL, 0, eq_thread, evq, 0, NULL)) == NULL) {
+          fprintf(stderr, "could not create thread\n");
+          exit(1);
+      }
+  #else
+      if (pthread_create(&amp;pthid, NULL, eq_thread, evq) != 0) {
+          fprintf(stderr, "could not spawn thread\n");
+          exit(1);
+      }
+  #endif /* _WIN32 */
+  
+      /* Wait */
+      while (!cleanup) {  
+          SLEEP(1);
+      }
+  
+      lbm_event_dispatch_unblock(evq);
+  
+  #if defined(_WIN32)
+                  WaitForSingleObject(wthrdh, INFINITE);
+  #else
+                  pthread_join(pthid, NULL);
+  #endif /* _WIN32 */
+  
+  
+      lbm_rcv_delete(rcv);
+      lbm_src_delete(src);
+      lbm_context_delete(ctx);
+      lbm_event_queue_delete(evq);
+  }
+  
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

@@ -1,0 +1,16 @@
+<a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>Clean Shutdown Example</h1>
+    <p>In this example, the sample below creates an Ultra Messaging application which includes a source, receiver,
+       and event queue. The event queue will be processed on a separate thread, and the source will publish a single 
+       message for the receiver. Once the message is consumed, the main application thread will stop the event queue,
+       and delete all UM objects in the proper order to avoid any issues.</p>
+    <p>It is important for applications to clean up all created objects in the correct order, which is:
+      <ol>
+	<li>Messages</li>
+	<li>Sources/receivers</li>
+	<li>Context</li>
+	<li>Event Queue</li>
+      </ol>
+    <p>In this example, the receiver does not retain the message via the API, so the message is automatically deleted once 
+       the callback exits. The example is also using an event queue on a separate thread, so the main application thread 
+       needs to unblock the dispatch call and wait for the thread to close before cleaning up. </p>

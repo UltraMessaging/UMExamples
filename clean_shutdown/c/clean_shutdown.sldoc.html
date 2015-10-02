@@ -1,0 +1,127 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Logging Callback</title>
+  </head>
+  <body>
+    <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>Clean Shutdown Example</h1>
+    <p>In this example, the sample below creates an Ultra Messaging application which includes a source, receiver,
+       and event queue. The event queue will be processed on a separate thread, and the source will publish a single 
+       message for the receiver. Once the message is consumed, the main application thread will stop the event queue,
+       and delete all UM objects in the proper order to avoid any issues.</p>
+    <p>It is important for applications to clean up all created objects in the correct order, which is:
+      <ol>
+	<li>Messages</li>
+	<li>Sources/receivers</li>
+	<li>Context</li>
+	<li>Event Queue</li>
+      </ol>
+    <p>In this example, the receiver does not retain the message via the API, so the message is automatically deleted once 
+       the callback exits. The example is also using an event queue on a separate thread, so the main application thread 
+       needs to unblock the dispatch call and wait for the thread to close before cleaning up. </p>
+
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt><a href="clean_shutdown.c">clean_shutdown.c</a></tt></b>
+        - (right-click and save as "clean_shutdown.c") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>clean_shutdown.c</tt></h2>
+    <h4>Initialize and Create Context</h4>
+	<a name="create_ref_1" id="create_ref_1"></a>
+<small><pre>
+<a href="clean_shutdown_c.slsrc.html#create" target="src">00096</a>      err = lbm_context_attr_create(&amp;cattr);
+<a href="clean_shutdown_c.slsrc.html#create" target="src">00097</a>      EX_LBM_CHK(err);
+<a href="clean_shutdown_c.slsrc.html#create" target="src">00098</a>  
+<a href="clean_shutdown_c.slsrc.html#create" target="src">00099</a>          err = lbm_context_create(&amp;ctx, cattr, NULL, NULL);
+<a href="clean_shutdown_c.slsrc.html#create" target="src">00100</a>          EX_LBM_CHK(err);
+</pre><!-- endblock create_ref_1 --></small>
+
+
+    <h4>Spawn a New Thread</h4>
+	<p>In this example, the application spawns a new thread whose sole purpose will be to process context events. The 
+	application could use this to set a higher thread priority, or possibly set the process affinity to offer better performance
+	for message delivery. Notice the thread function is "seq_thread", which will be explained in the next block.</p>
+	<a name="spawn_thread_ref_1" id="spawn_thread_ref_1"></a>
+<small><pre>
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00125</a>  #if defined(_WIN32)
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00126</a>      if ((wthrdh = CreateThread(NULL, 0, eq_thread, evq, 0, NULL)) == NULL) {
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00127</a>          fprintf(stderr, "could not create thread\n");
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00128</a>          exit(1);
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00129</a>      }
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00130</a>  #else
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00131</a>      if (pthread_create(&amp;pthid, NULL, eq_thread, evq) != 0) {
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00132</a>          fprintf(stderr, "could not spawn thread\n");
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00133</a>          exit(1);
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00134</a>      }
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00135</a>  #endif /* _WIN32 */
+</pre><!-- endblock spawn_thread_ref_1 --></small>
+
+
+    <h4>Error Checking</h4>
+        <p>Error handling can be one of the most complicated issues facing a programmer. Each application may have its own unique error
+        handling conventions. For these example programs, a very simplistic error handling approach is taken: if anything unexpected happens,
+        print a message and exit the program:</p>
+        <a name="error_check_ref_1" id="error_check_ref_1"></a>
+<small><pre>
+<a href="clean_shutdown_c.slsrc.html#error_check" target="src">00021</a>    #define EX_LBM_CHK(err) do { \
+<a href="clean_shutdown_c.slsrc.html#error_check" target="src">00022</a>        if ((err) &lt; 0) { \
+<a href="clean_shutdown_c.slsrc.html#error_check" target="src">00023</a>                fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
+<a href="clean_shutdown_c.slsrc.html#error_check" target="src">00024</a>                __FILE__, __LINE__, lbm_errmsg()); \
+<a href="clean_shutdown_c.slsrc.html#error_check" target="src">00025</a>                exit(1); \
+<a href="clean_shutdown_c.slsrc.html#error_check" target="src">00026</a>        }  \
+<a href="clean_shutdown_c.slsrc.html#error_check" target="src">00027</a>    } while (0)
+</pre><!-- endblock error_check_ref_1 --></small>
+
+
+        <p>The EX_LBM_CHK() macro checks a UM API return value. If negative, it assumes an error. One reason for making this a macro is so
+        that the __FILE__ and __LINE__ compiler built-ins reference the file and line of the usages of the macro, not the file and line of
+        the macro defintion itself.</p>
+        </p>Most UM functions are designed to return one of only two integer values: 0 for success and -1 for failure. The lbm.h header file
+        defines the symbols LBM_OK and LBM_FAILURE respectively for these. However, there are a few functions which can return a value of 0 or
+        greater in the event of success (for example: lbm_event_dispatch() and lbm_send_response() to name two). So the example EX_LBM_CHK()
+        macro was written to be somewhat more general. However, be aware that there are a few other functions which do not return an integer
+        status at all (for exmaple: lbm_serialize_response() to name one). Please refer to the API documentation for each UM function you call.</p>
+    <h4>Includes</h4>
+        <p>Include files for this application. Notice the Windows specific include files - these 
+	  are not necessary for Linux only applications</p>
+        <a name="includes_ref_1" id="includes_ref_1"></a>
+<small><pre>
+<a href="clean_shutdown_c.slsrc.html#includes" target="src">00003</a>  #include &lt;stdio.h&gt;
+<a href="clean_shutdown_c.slsrc.html#includes" target="src">00004</a>  
+<a href="clean_shutdown_c.slsrc.html#includes" target="src">00005</a>  #if defined(_MSC_VER)
+<a href="clean_shutdown_c.slsrc.html#includes" target="src">00006</a>  /* Windows-only includes */
+<a href="clean_shutdown_c.slsrc.html#includes" target="src">00007</a>  #include &lt;winsock2.h&gt;
+<a href="clean_shutdown_c.slsrc.html#includes" target="src">00008</a>  #define SLEEP(s) Sleep((s)*1000)
+<a href="clean_shutdown_c.slsrc.html#includes" target="src">00009</a>  #else
+<a href="clean_shutdown_c.slsrc.html#includes" target="src">00010</a>  /* Unix-only includes */
+<a href="clean_shutdown_c.slsrc.html#includes" target="src">00011</a>  #include &lt;stdlib.h&gt;
+<a href="clean_shutdown_c.slsrc.html#includes" target="src">00012</a>  #include &lt;unistd.h&gt;
+<a href="clean_shutdown_c.slsrc.html#includes" target="src">00013</a>  #define SLEEP(s) sleep(s)
+<a href="clean_shutdown_c.slsrc.html#includes" target="src">00014</a>  #endif
+<a href="clean_shutdown_c.slsrc.html#includes" target="src">00015</a>  
+<a href="clean_shutdown_c.slsrc.html#includes" target="src">00016</a>  #include &lt;lbm/lbm.h&gt;
+</pre><!-- endblock includes_ref_1 --></small>
+
+
+    <h4>Windows Only</h4>
+        <p>Windows applications must initialize the Winsock library to utilize sockets.</p>
+        <a name="windows_ref_1" id="windows_ref_1"></a>
+<small><pre>
+<a href="clean_shutdown_c.slsrc.html#windows" target="src">00082</a>  #if defined(_MSC_VER)
+<a href="clean_shutdown_c.slsrc.html#windows" target="src">00083</a>          /* windows-specific code */
+<a href="clean_shutdown_c.slsrc.html#windows" target="src">00084</a>          WSADATA wsadata;
+<a href="clean_shutdown_c.slsrc.html#windows" target="src">00085</a>          int wsStat = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
+<a href="clean_shutdown_c.slsrc.html#windows" target="src">00086</a>          if (wsStat != 0)
+<a href="clean_shutdown_c.slsrc.html#windows" target="src">00087</a>          {
+<a href="clean_shutdown_c.slsrc.html#windows" target="src">00088</a>                  printf("line %d: wsStat=%d\n",__LINE__,wsStat);
+<a href="clean_shutdown_c.slsrc.html#windows" target="src">00089</a>                  exit(1);
+<a href="clean_shutdown_c.slsrc.html#windows" target="src">00090</a>          }
+<a href="clean_shutdown_c.slsrc.html#windows" target="src">00091</a>  #endif
+</pre><!-- endblock windows_ref_1 --></small>
+
+
+        <p>If this fails, the application should exit since sockets will not be operational.</p>
+  </body>
+</html>
+

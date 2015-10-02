@@ -1,0 +1,50 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Logging Callback</title>
+  </head>
+  <body>
+    =semlit,include,../intro.sldoc=
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt>=semlit,srcfile,clean_shutdown_c.slsrc,clean_shutdown.c=</tt></b>
+        - (right-click and save as "clean_shutdown.c") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>clean_shutdown.c</tt></h2>
+    <h4>Create Event Queue and Context</h4>
+	<p>Event queue objects live outside an Ultra Messaging context, so this sample will create the event queue. When cleaning up
+	the objects later, it is important to delete the context before deleting the context. When it comes to creating and inializing
+	the objects, it does not actually matter which one gets created first. For consistency purposes, this sample will create the 
+	event queue first.</p>
+	=semlit,insert,eq_ctx_create=
+    <h4>Create Source and Receiver</h4>
+	<p>A context is needed to create a source and receiver because sources and receiver live within a UM context. As we'll see
+	later, it is important to delete all sources and receivers before deleting the context.
+    <h4>Spawn a New Thread</h4>
+	<p>In this example, the application spawns a new thread whose sole purpose will be to process context events. The 
+	application could use this to set a higher thread priority, or possibly set the process affinity to offer better performance
+	for message delivery. Notice the thread function is "seq_thread", which will be explained in the next block.</p>
+	=semlit,insert,spawn_thread=
+    <h4>Error Checking</h4>
+        <p>Error handling can be one of the most complicated issues facing a programmer. Each application may have its own unique error
+        handling conventions. For these example programs, a very simplistic error handling approach is taken: if anything unexpected happens,
+        print a message and exit the program:</p>
+        =semlit,insert,error_check=
+        <p>The EX_LBM_CHK() macro checks a UM API return value. If negative, it assumes an error. One reason for making this a macro is so
+        that the __FILE__ and __LINE__ compiler built-ins reference the file and line of the usages of the macro, not the file and line of
+        the macro defintion itself.</p>
+        </p>Most UM functions are designed to return one of only two integer values: 0 for success and -1 for failure. The lbm.h header file
+        defines the symbols LBM_OK and LBM_FAILURE respectively for these. However, there are a few functions which can return a value of 0 or
+        greater in the event of success (for example: lbm_event_dispatch() and lbm_send_response() to name two). So the example EX_LBM_CHK()
+        macro was written to be somewhat more general. However, be aware that there are a few other functions which do not return an integer
+        status at all (for exmaple: lbm_serialize_response() to name one). Please refer to the API documentation for each UM function you call.</p>
+    <h4>Includes</h4>
+        <p>Include files for this application. Notice the Windows specific include files - these 
+	  are not necessary for Linux only applications</p>
+        =semlit,insert,includes=
+    <h4>Windows Only</h4>
+        <p>Windows applications must initialize the Winsock library to utilize sockets.</p>
+        =semlit,insert,windows=
+        <p>If this fails, the application should exit since sockets will not be operational.</p>
+  </body>
+</html>
