@@ -19,12 +19,26 @@
 	=semlit,insert,eq_ctx_create=
     <h4>Create Source and Receiver</h4>
 	<p>A context is needed to create a source and receiver because sources and receiver live within a UM context. As we'll see
-	later, it is important to delete all sources and receivers before deleting the context.
-    <h4>Spawn a New Thread</h4>
-	<p>In this example, the application spawns a new thread whose sole purpose will be to process context events. The 
-	application could use this to set a higher thread priority, or possibly set the process affinity to offer better performance
-	for message delivery. Notice the thread function is "seq_thread", which will be explained in the next block.</p>
+	later, it is important to delete all sources and receivers before deleting the context.</p>
+	=semlit,insert,src_rcv_create=
+    <h4>Spawn Event Queue Thread</h4>
+	<p>In this example, the application spawns a new thread whose sole purpose will be to process event queue events. This is a typical
+	application use case as users would want an independent thread that only processes events (like messages) for better performace.</p>
 	=semlit,insert,spawn_thread=
+    <h4>Sleep, Send Message, and Wait</h4>
+	<p>The application will now sleep for 1 second to allow the receiver to discover the source via topic resolution, which should be 
+	plenty of time. After the 1 second sleep, the application will send a single message. After sending the message, the main application
+	thread will simply wait for the receiver to receive the message on the event queue.</p>
+	=semlit,insert,wait_and_send=
+    <h4>Unblock Event Queue and Kill Thread</h4>
+	<p>Now that the event queue has processed the message, it is time to join with the event queue thread. To ensure that the event queue
+	thread is not blocked on the dispatch API, we can force unblock it right from the application thread. After unblocking it, join the 
+	thread before continuing.</p>
+	=semlit,insert,unblock_join=
+    <h4>Delete Objects in the Correct Order</h4>
+	<p>By this point in the applicaiton, the receiver's message is deleted and the event queue is not waiting for any events and its thread
+	has been closed. The application can now delete all UM objects <b>in the correct order</b>.<p>
+	=semlit,insert,delete=
     <h4>Error Checking</h4>
         <p>Error handling can be one of the most complicated issues facing a programmer. Each application may have its own unique error
         handling conventions. For these example programs, a very simplistic error handling approach is taken: if anything unexpected happens,

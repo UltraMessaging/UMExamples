@@ -96,8 +96,8 @@ main()
 	err = lbm_context_attr_create(&cattr);
 	EX_LBM_CHK(err);
 
-        err = lbm_context_create(&ctx, cattr, NULL, NULL);
-        EX_LBM_CHK(err);
+	err = lbm_context_create(&ctx, cattr, NULL, NULL);
+	EX_LBM_CHK(err);
 
 	err = lbm_rcv_topic_lookup(&rtopic, ctx, "test.topic", NULL);
 	EX_LBM_CHK(err);
@@ -117,22 +117,22 @@ main()
 	err = lbm_src_create(&src, ctx, stopic, NULL, NULL, NULL);
 	EX_LBM_CHK(err);
 
+#if defined(_WIN32)
+        if ((wthrdh = CreateThread(NULL, 0, eq_thread, evq, 0, NULL)) == NULL) {
+                fprintf(stderr, "could not create thread\n");
+                exit(1);
+        }
+#else
+        if (pthread_create(&pthid, NULL, eq_thread, evq) != 0) {
+                fprintf(stderr, "could not spawn thread\n");
+                exit(1);
+        }
+#endif /* _WIN32 */
+
 	SLEEP(1);
 
 	err = lbm_src_send(src, "hello", 5, LBM_MSG_FLUSH);
 	EX_LBM_CHK(err);	
-
-#if defined(_WIN32)
-	if ((wthrdh = CreateThread(NULL, 0, eq_thread, evq, 0, NULL)) == NULL) {
-		fprintf(stderr, "could not create thread\n");
-		exit(1);
-	}
-#else
-	if (pthread_create(&pthid, NULL, eq_thread, evq) != 0) {
-		fprintf(stderr, "could not spawn thread\n");
-		exit(1);
-	}
-#endif /* _WIN32 */
 
 	/* Wait */
 	while (!cleanup) {  
@@ -146,7 +146,6 @@ main()
 #else
                 pthread_join(pthid, NULL);
 #endif /* _WIN32 */
-
 
 	lbm_rcv_delete(rcv);
 	lbm_src_delete(src);

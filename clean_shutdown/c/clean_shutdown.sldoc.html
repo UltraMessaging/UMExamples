@@ -19,7 +19,9 @@
       </ol>
     <p>In this example, the receiver does not retain the message via the API, so the message is automatically deleted once 
        the callback exits. The example is also using an event queue on a separate thread, so the main application thread 
-       needs to unblock the dispatch call and wait for the thread to close before cleaning up. </p>
+       needs to unblock the dispatch call and wait for the thread to close before cleaning up.</p>
+    <p>Please note the use of the macros determining the platform, Windows or Linux, for thread based fuctionality. This
+       sample application is intended to be portable between Windows and Linux.</p>
 
     <p>There is one program source file:</p>
     <ul>
@@ -27,35 +29,112 @@
         - (right-click and save as "clean_shutdown.c") main program.</li>
     </ul>
     <h2>Program explanation: <tt>clean_shutdown.c</tt></h2>
-    <h4>Initialize and Create Context</h4>
-	<a name="create_ref_1" id="create_ref_1"></a>
+    <h4>Create Event Queue and Context</h4>
+	<p>Event queue objects live outside an Ultra Messaging context, so this sample will create the event queue. When cleaning up
+	the objects later, it is important to delete the context before deleting the context. When it comes to creating and inializing
+	the objects, it does not actually matter which one gets created first. For consistency purposes, this sample will create the 
+	event queue first.</p>
+	<a name="eq_ctx_create_ref_1" id="eq_ctx_create_ref_1"></a>
 <small><pre>
-<a href="clean_shutdown_c.slsrc.html#create" target="src">00096</a>      err = lbm_context_attr_create(&amp;cattr);
-<a href="clean_shutdown_c.slsrc.html#create" target="src">00097</a>      EX_LBM_CHK(err);
-<a href="clean_shutdown_c.slsrc.html#create" target="src">00098</a>  
-<a href="clean_shutdown_c.slsrc.html#create" target="src">00099</a>          err = lbm_context_create(&amp;ctx, cattr, NULL, NULL);
-<a href="clean_shutdown_c.slsrc.html#create" target="src">00100</a>          EX_LBM_CHK(err);
-</pre><!-- endblock create_ref_1 --></small>
+<a href="clean_shutdown_c.slsrc.html#eq_ctx_create" target="src">00093</a>      err = lbm_event_queue_create(&amp;evq, NULL, NULL, NULL);
+<a href="clean_shutdown_c.slsrc.html#eq_ctx_create" target="src">00094</a>      EX_LBM_CHK(err);
+<a href="clean_shutdown_c.slsrc.html#eq_ctx_create" target="src">00095</a>  
+<a href="clean_shutdown_c.slsrc.html#eq_ctx_create" target="src">00096</a>      err = lbm_context_attr_create(&amp;cattr);
+<a href="clean_shutdown_c.slsrc.html#eq_ctx_create" target="src">00097</a>      EX_LBM_CHK(err);
+<a href="clean_shutdown_c.slsrc.html#eq_ctx_create" target="src">00098</a>  
+<a href="clean_shutdown_c.slsrc.html#eq_ctx_create" target="src">00099</a>      err = lbm_context_create(&amp;ctx, cattr, NULL, NULL);
+<a href="clean_shutdown_c.slsrc.html#eq_ctx_create" target="src">00100</a>      EX_LBM_CHK(err);
+</pre><!-- endblock eq_ctx_create_ref_1 --></small>
 
 
-    <h4>Spawn a New Thread</h4>
-	<p>In this example, the application spawns a new thread whose sole purpose will be to process context events. The 
-	application could use this to set a higher thread priority, or possibly set the process affinity to offer better performance
-	for message delivery. Notice the thread function is "seq_thread", which will be explained in the next block.</p>
+    <h4>Create Source and Receiver</h4>
+	<p>A context is needed to create a source and receiver because sources and receiver live within a UM context. As we'll see
+	later, it is important to delete all sources and receivers before deleting the context.</p>
+	<a name="src_rcv_create_ref_1" id="src_rcv_create_ref_1"></a>
+<small><pre>
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00102</a>      err = lbm_rcv_topic_lookup(&amp;rtopic, ctx, "test.topic", NULL);
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00103</a>      EX_LBM_CHK(err);
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00104</a>  
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00105</a>      err = lbm_rcv_create(&amp;rcv, ctx, rtopic, rcv_handle_msg, NULL, evq);
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00106</a>      EX_LBM_CHK(err);
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00107</a>  
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00108</a>      err = lbm_src_topic_attr_create(&amp;tattr);
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00109</a>      EX_LBM_CHK(err);
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00110</a>  
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00111</a>      err = lbm_src_topic_alloc(&amp;stopic, ctx, "test.topic", tattr);
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00112</a>      EX_LBM_CHK(err);
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00113</a>  
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00114</a>      err = lbm_src_topic_attr_delete(tattr);
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00115</a>      EX_LBM_CHK(err);
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00116</a>  
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00117</a>      err = lbm_src_create(&amp;src, ctx, stopic, NULL, NULL, NULL);
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00118</a>      EX_LBM_CHK(err);
+</pre><!-- endblock src_rcv_create_ref_1 --></small>
+
+
+    <h4>Spawn Event Queue Thread</h4>
+	<p>In this example, the application spawns a new thread whose sole purpose will be to process event queue events. This is a typical
+	application use case as users would want an independent thread that only processes events (like messages) for better performace.</p>
 	<a name="spawn_thread_ref_1" id="spawn_thread_ref_1"></a>
 <small><pre>
-<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00125</a>  #if defined(_WIN32)
-<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00126</a>      if ((wthrdh = CreateThread(NULL, 0, eq_thread, evq, 0, NULL)) == NULL) {
-<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00127</a>          fprintf(stderr, "could not create thread\n");
-<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00128</a>          exit(1);
-<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00129</a>      }
-<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00130</a>  #else
-<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00131</a>      if (pthread_create(&amp;pthid, NULL, eq_thread, evq) != 0) {
-<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00132</a>          fprintf(stderr, "could not spawn thread\n");
-<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00133</a>          exit(1);
-<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00134</a>      }
-<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00135</a>  #endif /* _WIN32 */
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00120</a>  #if defined(_WIN32)
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00121</a>          if ((wthrdh = CreateThread(NULL, 0, eq_thread, evq, 0, NULL)) == NULL) {
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00122</a>                  fprintf(stderr, "could not create thread\n");
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00123</a>                  exit(1);
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00124</a>          }
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00125</a>  #else
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00126</a>          if (pthread_create(&amp;pthid, NULL, eq_thread, evq) != 0) {
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00127</a>                  fprintf(stderr, "could not spawn thread\n");
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00128</a>                  exit(1);
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00129</a>          }
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00130</a>  #endif /* _WIN32 */
 </pre><!-- endblock spawn_thread_ref_1 --></small>
+
+
+    <h4>Sleep, Send Message, and Wait</h4>
+	<p>The application will now sleep for 1 second to allow the receiver to discover the source via topic resolution, which should be 
+	plenty of time. After the 1 second sleep, the application will send a single message. After sending the message, the main application
+	thread will simply wait for the receiver to receive the message on the event queue.</p>
+	<a name="wait_and_send_ref_1" id="wait_and_send_ref_1"></a>
+<small><pre>
+<a href="clean_shutdown_c.slsrc.html#wait_and_send" target="src">00132</a>      SLEEP(1);
+<a href="clean_shutdown_c.slsrc.html#wait_and_send" target="src">00133</a>  
+<a href="clean_shutdown_c.slsrc.html#wait_and_send" target="src">00134</a>      err = lbm_src_send(src, "hello", 5, LBM_MSG_FLUSH);
+<a href="clean_shutdown_c.slsrc.html#wait_and_send" target="src">00135</a>      EX_LBM_CHK(err);    
+<a href="clean_shutdown_c.slsrc.html#wait_and_send" target="src">00136</a>  
+<a href="clean_shutdown_c.slsrc.html#wait_and_send" target="src">00137</a>      /* Wait */
+<a href="clean_shutdown_c.slsrc.html#wait_and_send" target="src">00138</a>      while (!cleanup) {  
+<a href="clean_shutdown_c.slsrc.html#wait_and_send" target="src">00139</a>          SLEEP(1);
+<a href="clean_shutdown_c.slsrc.html#wait_and_send" target="src">00140</a>      }
+</pre><!-- endblock wait_and_send_ref_1 --></small>
+
+
+    <h4>Unblock Event Queue and Kill Thread</h4>
+	<p>Now that the event queue has processed the message, it is time to join with the event queue thread. To ensure that the event queue
+	thread is not blocked on the dispatch API, we can force unblock it right from the application thread. After unblocking it, join the 
+	thread before continuing.</p>
+	<a name="unblock_join_ref_1" id="unblock_join_ref_1"></a>
+<small><pre>
+<a href="clean_shutdown_c.slsrc.html#unblock_join" target="src">00142</a>      lbm_event_dispatch_unblock(evq);
+<a href="clean_shutdown_c.slsrc.html#unblock_join" target="src">00143</a>  
+<a href="clean_shutdown_c.slsrc.html#unblock_join" target="src">00144</a>  #if defined(_WIN32)
+<a href="clean_shutdown_c.slsrc.html#unblock_join" target="src">00145</a>                  WaitForSingleObject(wthrdh, INFINITE);
+<a href="clean_shutdown_c.slsrc.html#unblock_join" target="src">00146</a>  #else
+<a href="clean_shutdown_c.slsrc.html#unblock_join" target="src">00147</a>                  pthread_join(pthid, NULL);
+<a href="clean_shutdown_c.slsrc.html#unblock_join" target="src">00148</a>  #endif /* _WIN32 */
+</pre><!-- endblock unblock_join_ref_1 --></small>
+
+
+    <h4>Delete Objects in the Correct Order</h4>
+	<p>By this point in the applicaiton, the receiver's message is deleted and the event queue is not waiting for any events and its thread
+	has been closed. The application can now delete all UM objects <b>in the correct order</b>.<p>
+	<a name="delete_ref_1" id="delete_ref_1"></a>
+<small><pre>
+<a href="clean_shutdown_c.slsrc.html#delete" target="src">00150</a>      lbm_rcv_delete(rcv);
+<a href="clean_shutdown_c.slsrc.html#delete" target="src">00151</a>      lbm_src_delete(src);
+<a href="clean_shutdown_c.slsrc.html#delete" target="src">00152</a>      lbm_context_delete(ctx);
+<a href="clean_shutdown_c.slsrc.html#delete" target="src">00153</a>      lbm_event_queue_delete(evq);
+</pre><!-- endblock delete_ref_1 --></small>
 
 
     <h4>Error Checking</h4>
