@@ -1,4 +1,4 @@
-/* LoggingCallback.java, see http://ultramessaging.github.io/UMExamples/logging_callback/java/ */
+/* SequentialMode.java, see http://ultramessaging.github.io/UMExamples/sequential_mode/java/ */
 
 import com.latencybusters.lbm.*;
 import java.lang.*;

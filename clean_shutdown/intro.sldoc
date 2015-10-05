@@ -14,5 +14,3 @@
     <p>In this example, the receiver does not retain the message via the API, so the message is automatically deleted once 
        the callback exits. The example is also using an event queue on a separate thread, so the main application thread 
        needs to unblock the dispatch call and wait for the thread to close before cleaning up.</p>
-    <p>Please note the use of the macros determining the platform, Windows or Linux, for thread based fuctionality. This
-       sample application is intended to be portable between Windows and Linux.</p>

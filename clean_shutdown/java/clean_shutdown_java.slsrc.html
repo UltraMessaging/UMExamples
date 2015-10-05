@@ -1,0 +1,348 @@
+<!DOCTYPE html><html><head><title>CleanShutdown.java</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>CleanShutdown.java</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+00008
+00009
+<a href="clean_shutdown.sldoc.html#eq_ctx_create_ref_1" target="doc">00010</a>
+<a href="clean_shutdown.sldoc.html#eq_ctx_create_ref_1" target="doc">00011</a>
+<a href="clean_shutdown.sldoc.html#eq_ctx_create_ref_1" target="doc">00012</a>
+<a href="clean_shutdown.sldoc.html#eq_ctx_create_ref_1" target="doc">00013</a>
+<a href="clean_shutdown.sldoc.html#eq_ctx_create_ref_1" target="doc">00014</a>
+<a href="clean_shutdown.sldoc.html#eq_ctx_create_ref_1" target="doc">00015</a>
+<a href="clean_shutdown.sldoc.html#eq_ctx_create_ref_1" target="doc">00016</a>
+<a href="clean_shutdown.sldoc.html#eq_ctx_create_ref_1" target="doc">00017</a>
+<a href="clean_shutdown.sldoc.html#eq_ctx_create_ref_1" target="doc">00018</a>
+<a href="clean_shutdown.sldoc.html#eq_ctx_create_ref_1" target="doc">00019</a>
+<a href="clean_shutdown.sldoc.html#eq_ctx_create_ref_1" target="doc">00020</a>
+<a href="clean_shutdown.sldoc.html#eq_ctx_create_ref_1" target="doc">00021</a>
+<a href="clean_shutdown.sldoc.html#eq_ctx_create_ref_1" target="doc">00022</a>
+00023
+<a href="clean_shutdown.sldoc.html#src_rcv_create_ref_1" target="doc">00024</a>
+<a href="clean_shutdown.sldoc.html#src_rcv_create_ref_1" target="doc">00025</a>
+<a href="clean_shutdown.sldoc.html#src_rcv_create_ref_1" target="doc">00026</a>
+<a href="clean_shutdown.sldoc.html#src_rcv_create_ref_1" target="doc">00027</a>
+<a href="clean_shutdown.sldoc.html#src_rcv_create_ref_1" target="doc">00028</a>
+<a href="clean_shutdown.sldoc.html#src_rcv_create_ref_1" target="doc">00029</a>
+<a href="clean_shutdown.sldoc.html#src_rcv_create_ref_1" target="doc">00030</a>
+<a href="clean_shutdown.sldoc.html#src_rcv_create_ref_1" target="doc">00031</a>
+<a href="clean_shutdown.sldoc.html#src_rcv_create_ref_1" target="doc">00032</a>
+<a href="clean_shutdown.sldoc.html#src_rcv_create_ref_1" target="doc">00033</a>
+00034
+<a href="clean_shutdown.sldoc.html#spawn_thread_ref_1" target="doc">00035</a>
+<a href="clean_shutdown.sldoc.html#spawn_thread_ref_1" target="doc">00036</a>
+00037
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00038</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00039</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00040</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00041</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00042</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00043</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00044</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00045</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00046</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00047</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00048</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00049</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00050</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00051</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00052</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00053</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00054</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00055</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00056</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00057</a>
+00058
+<a href="clean_shutdown.sldoc.html#unblock_join_ref_1" target="doc">00059</a>
+<a href="clean_shutdown.sldoc.html#unblock_join_ref_1" target="doc">00060</a>
+00061
+<a href="clean_shutdown.sldoc.html#delete_ref_1" target="doc">00062</a>
+<a href="clean_shutdown.sldoc.html#delete_ref_1" target="doc">00063</a>
+<a href="clean_shutdown.sldoc.html#delete_ref_1" target="doc">00064</a>
+<a href="clean_shutdown.sldoc.html#delete_ref_1" target="doc">00065</a>
+00066
+00067
+00068
+00069
+00070
+00071
+00072
+00073
+00074
+00075
+00076
+00077
+00078
+00079
+00080
+00081
+00082
+00083
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00084</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00085</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00086</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00087</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00088</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00089</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00090</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00091</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00092</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00093</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00094</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00095</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00096</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00097</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00098</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00099</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00100</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00101</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00102</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00103</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00104</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00105</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00106</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00107</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00108</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00109</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00110</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00111</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00112</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00113</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00114</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00115</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00116</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00117</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00118</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00119</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00120</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00121</a>
+00122
+</td><td>  /* CleanShutdown.java, see http://ultramessaging.github.io/UMExamples/clean_shutdown/java/ */
+  
+  import com.latencybusters.lbm.*;
+  import java.lang.*;
+  
+  public class CleanShutdown {
+      public static int cleanup = 0;
+  
+      public static void main(String[] args) throws LBMException {
+<span name="eq_ctx_create" id="eq_ctx_create"></span>          LBMContext ctx = null; /* Context object: container for UM "instance". */
+          LBMEventQueue evq = new LBMEventQueue();
+  
+          /* Initialization: create necessary UM objects. */
+          try {
+              LBMContextAttributes ctxAttr = new LBMContextAttributes();
+              ctx = new LBMContext(ctxAttr);
+          }
+          catch(LBMException ex)
+          {
+              System.err.println("Error initializing LBM objects: " + ex.toString());
+              System.exit(1);
+          }
+  
+<span name="src_rcv_create" id="src_rcv_create"></span>          /* Initialize and create receiver and receiver callback */
+          ReceiverCallback myReceiverCallback = new ReceiverCallback();
+  
+          LBMReceiverAttributes rcv_attr = new LBMReceiverAttributes();
+          LBMTopic rtopic = new LBMTopic(ctx, "test.topic", rcv_attr);
+          LBMReceiver rcv = new LBMReceiver(ctx, rtopic, myReceiverCallback, evq);
+  
+          /* Initialize and create source */
+          LBMTopic stopic = new LBMTopic(ctx, "test.topic", new LBMSourceAttributes());
+          LBMSource src = new LBMSource(ctx, stopic);
+  
+<span name="spawn_thread" id="spawn_thread"></span>          EQThread evqThread = new EQThread(evq);
+          evqThread.start();
+  
+<span name="wait_and_send" id="wait_and_send"></span>          try {
+              Thread.sleep(1000);
+          }
+          catch(InterruptedException tex) {
+              System.err.println("Error Thread.sleep interrupted: " + tex.toString());
+              System.exit(1);
+          }
+          
+          src.send("hello".getBytes(), 5, LBM.MSG_FLUSH);
+  
+          while (cleanup == 0)
+          {
+              try {
+                              Thread.sleep(1000);
+                      }
+                      catch(InterruptedException tex) {
+                              System.err.println("Error Thread.sleep interrupted: " + tex.toString());
+                              System.exit(1);
+                      }
+          }
+  
+<span name="unblock_join" id="unblock_join"></span>          evq.stop();
+          evqThread.join();
+  
+<span name="delete" id="delete"></span>          src.close();
+          rcv.close();
+          ctx.close();
+          evq.close();
+  
+      } /* main */
+  
+      /* Class for receiving messages */
+      private static class ReceiverCallback implements LBMReceiverCallback {
+          public int onReceive(Object cbArg, LBMMessage msg)
+          {
+              switch (msg.type())
+              {
+                  case LBM.MSG_DATA:
+                      System.out.println("LBM_MSG_DATA received");
+                      cleanup = 1;
+                      break;
+              }
+              return 0;
+          }
+      }  /* ReceiverCallback */
+  
+<span name="context_thread" id="context_thread"></span>      public static class EQThread implements Runnable
+      {
+          private LBMEventQueue _evq;
+          private Thread myThread;
+  
+          public EQThread(LBMEventQueue evq)
+          {
+              _evq = evq;
+          }
+  
+          public void start()
+          {
+              myThread = new Thread(this);
+              myThread.start();
+          }
+  
+          public void join()
+          {
+              if (myThread != null)
+              {
+                  try {
+                      myThread.join();
+                  }
+                  catch (Exception e)
+                  {
+                      System.err.println("lbmmsrc: error\n" + e);
+                  }
+              }
+          }
+  
+          public void run()
+          {
+              while (cleanup == 0)
+              {
+                  _evq.run(1000);
+              }
+          }
+      }
+  }
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

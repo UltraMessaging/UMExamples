@@ -1,0 +1,135 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Logging Callback</title>
+  </head>
+  <body>
+    <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>Clean Shutdown Example</h1>
+    <p>In this example, the sample below creates an Ultra Messaging application which includes a source, receiver,
+       and event queue. The event queue will be processed on a separate thread, and the source will publish a single 
+       message for the receiver. Once the message is consumed, the main application thread will stop the event queue,
+       and delete all UM objects in the proper order to avoid any issues.</p>
+    <p>It is important for applications to clean up all created objects in the correct order, which is:
+      <ol>
+	<li>Messages</li>
+	<li>Sources/receivers</li>
+	<li>Context</li>
+	<li>Event Queue</li>
+      </ol>
+    <p>In this example, the receiver does not retain the message via the API, so the message is automatically deleted once 
+       the callback exits. The example is also using an event queue on a separate thread, so the main application thread 
+       needs to unblock the dispatch call and wait for the thread to close before cleaning up.</p>
+
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt><a href="CleanShutdown.java">CleanShutdown.java</a></tt></b>
+        - (right-click and save as "CleanShutdown.java") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>CleanShutdown.java</tt></h2>
+    <h4>Create Event Queue and Context</h4>
+	<p>Event queue objects live outside an Ultra Messaging context, so this sample will create the event queue. When cleaning up
+	the objects later, it is important to delete the context before deleting the context. When it comes to creating and inializing
+	the objects, it does not actually matter which one gets created first. For consistency purposes, this sample will create the 
+	event queue first.</p>
+	<a name="eq_ctx_create_ref_1" id="eq_ctx_create_ref_1"></a>
+<small><pre>
+<a href="clean_shutdown_java.slsrc.html#eq_ctx_create" target="src">00010</a>          LBMContext ctx = null; /* Context object: container for UM "instance". */
+<a href="clean_shutdown_java.slsrc.html#eq_ctx_create" target="src">00011</a>          LBMEventQueue evq = new LBMEventQueue();
+<a href="clean_shutdown_java.slsrc.html#eq_ctx_create" target="src">00012</a>  
+<a href="clean_shutdown_java.slsrc.html#eq_ctx_create" target="src">00013</a>          /* Initialization: create necessary UM objects. */
+<a href="clean_shutdown_java.slsrc.html#eq_ctx_create" target="src">00014</a>          try {
+<a href="clean_shutdown_java.slsrc.html#eq_ctx_create" target="src">00015</a>              LBMContextAttributes ctxAttr = new LBMContextAttributes();
+<a href="clean_shutdown_java.slsrc.html#eq_ctx_create" target="src">00016</a>              ctx = new LBMContext(ctxAttr);
+<a href="clean_shutdown_java.slsrc.html#eq_ctx_create" target="src">00017</a>          }
+<a href="clean_shutdown_java.slsrc.html#eq_ctx_create" target="src">00018</a>          catch(LBMException ex)
+<a href="clean_shutdown_java.slsrc.html#eq_ctx_create" target="src">00019</a>          {
+<a href="clean_shutdown_java.slsrc.html#eq_ctx_create" target="src">00020</a>              System.err.println("Error initializing LBM objects: " + ex.toString());
+<a href="clean_shutdown_java.slsrc.html#eq_ctx_create" target="src">00021</a>              System.exit(1);
+<a href="clean_shutdown_java.slsrc.html#eq_ctx_create" target="src">00022</a>          }
+</pre><!-- endblock eq_ctx_create_ref_1 --></small>
+
+
+    <h4>Create Source and Receiver</h4>
+	<p>A context is needed to create a source and receiver because sources and receiver live within a UM context. As we'll see
+	later, it is important to delete all sources and receivers before deleting the context.</p>
+	<a name="src_rcv_create_ref_1" id="src_rcv_create_ref_1"></a>
+<small><pre>
+<a href="clean_shutdown_java.slsrc.html#src_rcv_create" target="src">00024</a>          /* Initialize and create receiver and receiver callback */
+<a href="clean_shutdown_java.slsrc.html#src_rcv_create" target="src">00025</a>          ReceiverCallback myReceiverCallback = new ReceiverCallback();
+<a href="clean_shutdown_java.slsrc.html#src_rcv_create" target="src">00026</a>  
+<a href="clean_shutdown_java.slsrc.html#src_rcv_create" target="src">00027</a>          LBMReceiverAttributes rcv_attr = new LBMReceiverAttributes();
+<a href="clean_shutdown_java.slsrc.html#src_rcv_create" target="src">00028</a>          LBMTopic rtopic = new LBMTopic(ctx, "test.topic", rcv_attr);
+<a href="clean_shutdown_java.slsrc.html#src_rcv_create" target="src">00029</a>          LBMReceiver rcv = new LBMReceiver(ctx, rtopic, myReceiverCallback, evq);
+<a href="clean_shutdown_java.slsrc.html#src_rcv_create" target="src">00030</a>  
+<a href="clean_shutdown_java.slsrc.html#src_rcv_create" target="src">00031</a>          /* Initialize and create source */
+<a href="clean_shutdown_java.slsrc.html#src_rcv_create" target="src">00032</a>          LBMTopic stopic = new LBMTopic(ctx, "test.topic", new LBMSourceAttributes());
+<a href="clean_shutdown_java.slsrc.html#src_rcv_create" target="src">00033</a>          LBMSource src = new LBMSource(ctx, stopic);
+</pre><!-- endblock src_rcv_create_ref_1 --></small>
+
+
+    <h4>Spawn Event Queue Thread</h4>
+	<p>In this example, the application spawns a new thread whose sole purpose will be to process event queue events. This is a typical
+	application use case as users would want an independent thread that only processes events (like messages) for better performace.</p>
+	<a name="spawn_thread_ref_1" id="spawn_thread_ref_1"></a>
+<small><pre>
+<a href="clean_shutdown_java.slsrc.html#spawn_thread" target="src">00035</a>          EQThread evqThread = new EQThread(evq);
+<a href="clean_shutdown_java.slsrc.html#spawn_thread" target="src">00036</a>          evqThread.start();
+</pre><!-- endblock spawn_thread_ref_1 --></small>
+
+
+    <h4>Sleep, Send Message, and Wait</h4>
+	<p>The application will now sleep for 1 second to allow the receiver to discover the source via topic resolution, which should be 
+	plenty of time. After the 1 second sleep, the application will send a single message. After sending the message, the main application
+	thread will simply wait for the receiver to receive the message on the event queue.</p>
+	<a name="wait_and_send_ref_1" id="wait_and_send_ref_1"></a>
+<small><pre>
+<a href="clean_shutdown_java.slsrc.html#wait_and_send" target="src">00038</a>          try {
+<a href="clean_shutdown_java.slsrc.html#wait_and_send" target="src">00039</a>              Thread.sleep(1000);
+<a href="clean_shutdown_java.slsrc.html#wait_and_send" target="src">00040</a>          }
+<a href="clean_shutdown_java.slsrc.html#wait_and_send" target="src">00041</a>          catch(InterruptedException tex) {
+<a href="clean_shutdown_java.slsrc.html#wait_and_send" target="src">00042</a>              System.err.println("Error Thread.sleep interrupted: " + tex.toString());
+<a href="clean_shutdown_java.slsrc.html#wait_and_send" target="src">00043</a>              System.exit(1);
+<a href="clean_shutdown_java.slsrc.html#wait_and_send" target="src">00044</a>          }
+<a href="clean_shutdown_java.slsrc.html#wait_and_send" target="src">00045</a>          
+<a href="clean_shutdown_java.slsrc.html#wait_and_send" target="src">00046</a>          src.send("hello".getBytes(), 5, LBM.MSG_FLUSH);
+<a href="clean_shutdown_java.slsrc.html#wait_and_send" target="src">00047</a>  
+<a href="clean_shutdown_java.slsrc.html#wait_and_send" target="src">00048</a>          while (cleanup == 0)
+<a href="clean_shutdown_java.slsrc.html#wait_and_send" target="src">00049</a>          {
+<a href="clean_shutdown_java.slsrc.html#wait_and_send" target="src">00050</a>              try {
+<a href="clean_shutdown_java.slsrc.html#wait_and_send" target="src">00051</a>                              Thread.sleep(1000);
+<a href="clean_shutdown_java.slsrc.html#wait_and_send" target="src">00052</a>                      }
+<a href="clean_shutdown_java.slsrc.html#wait_and_send" target="src">00053</a>                      catch(InterruptedException tex) {
+<a href="clean_shutdown_java.slsrc.html#wait_and_send" target="src">00054</a>                              System.err.println("Error Thread.sleep interrupted: " + tex.toString());
+<a href="clean_shutdown_java.slsrc.html#wait_and_send" target="src">00055</a>                              System.exit(1);
+<a href="clean_shutdown_java.slsrc.html#wait_and_send" target="src">00056</a>                      }
+<a href="clean_shutdown_java.slsrc.html#wait_and_send" target="src">00057</a>          }
+</pre><!-- endblock wait_and_send_ref_1 --></small>
+
+
+    <h4>Unblock Event Queue and Kill Thread</h4>
+	<p>Now that the event queue has processed the message, it is time to join with the event queue thread. To ensure that the event queue
+	thread is not blocked on the dispatch API, we can force unblock it right from the application thread. After unblocking it, join the 
+	thread before continuing.</p>
+	<a name="unblock_join_ref_1" id="unblock_join_ref_1"></a>
+<small><pre>
+<a href="clean_shutdown_java.slsrc.html#unblock_join" target="src">00059</a>          evq.stop();
+<a href="clean_shutdown_java.slsrc.html#unblock_join" target="src">00060</a>          evqThread.join();
+</pre><!-- endblock unblock_join_ref_1 --></small>
+
+
+    <h4>Delete Objects in the Correct Order</h4>
+	<p>By this point in the applicaiton, the receiver's message is deleted and the event queue is not waiting for any events and its thread
+	has been closed. The application can now delete all UM objects <b>in the correct order</b>.<p>
+	<a name="delete_ref_1" id="delete_ref_1"></a>
+<small><pre>
+<a href="clean_shutdown_java.slsrc.html#delete" target="src">00062</a>          src.close();
+<a href="clean_shutdown_java.slsrc.html#delete" target="src">00063</a>          rcv.close();
+<a href="clean_shutdown_java.slsrc.html#delete" target="src">00064</a>          ctx.close();
+<a href="clean_shutdown_java.slsrc.html#delete" target="src">00065</a>          evq.close();
+</pre><!-- endblock delete_ref_1 --></small>
+
+
+  </body>
+</html>
+
