@@ -1,0 +1,360 @@
+<!DOCTYPE html><html><head><title>CleanShutdown.cs</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>CleanShutdown.cs</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+00008
+00009
+00010
+00011
+00012
+00013
+00014
+<a href="clean_shutdown.sldoc.html#eq_ctx_create_ref_1" target="doc">00015</a>
+<a href="clean_shutdown.sldoc.html#eq_ctx_create_ref_1" target="doc">00016</a>
+<a href="clean_shutdown.sldoc.html#eq_ctx_create_ref_1" target="doc">00017</a>
+<a href="clean_shutdown.sldoc.html#eq_ctx_create_ref_1" target="doc">00018</a>
+<a href="clean_shutdown.sldoc.html#eq_ctx_create_ref_1" target="doc">00019</a>
+<a href="clean_shutdown.sldoc.html#eq_ctx_create_ref_1" target="doc">00020</a>
+<a href="clean_shutdown.sldoc.html#eq_ctx_create_ref_1" target="doc">00021</a>
+<a href="clean_shutdown.sldoc.html#eq_ctx_create_ref_1" target="doc">00022</a>
+<a href="clean_shutdown.sldoc.html#eq_ctx_create_ref_1" target="doc">00023</a>
+<a href="clean_shutdown.sldoc.html#eq_ctx_create_ref_1" target="doc">00024</a>
+<a href="clean_shutdown.sldoc.html#eq_ctx_create_ref_1" target="doc">00025</a>
+<a href="clean_shutdown.sldoc.html#eq_ctx_create_ref_1" target="doc">00026</a>
+<a href="clean_shutdown.sldoc.html#eq_ctx_create_ref_1" target="doc">00027</a>
+00028
+<a href="clean_shutdown.sldoc.html#src_rcv_create_ref_1" target="doc">00029</a>
+<a href="clean_shutdown.sldoc.html#src_rcv_create_ref_1" target="doc">00030</a>
+<a href="clean_shutdown.sldoc.html#src_rcv_create_ref_1" target="doc">00031</a>
+<a href="clean_shutdown.sldoc.html#src_rcv_create_ref_1" target="doc">00032</a>
+<a href="clean_shutdown.sldoc.html#src_rcv_create_ref_1" target="doc">00033</a>
+<a href="clean_shutdown.sldoc.html#src_rcv_create_ref_1" target="doc">00034</a>
+<a href="clean_shutdown.sldoc.html#src_rcv_create_ref_1" target="doc">00035</a>
+<a href="clean_shutdown.sldoc.html#src_rcv_create_ref_1" target="doc">00036</a>
+<a href="clean_shutdown.sldoc.html#src_rcv_create_ref_1" target="doc">00037</a>
+<a href="clean_shutdown.sldoc.html#src_rcv_create_ref_1" target="doc">00038</a>
+00039
+<a href="clean_shutdown.sldoc.html#spawn_thread_ref_1" target="doc">00040</a>
+<a href="clean_shutdown.sldoc.html#spawn_thread_ref_1" target="doc">00041</a>
+00042
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00043</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00044</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00045</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00046</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00047</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00048</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00049</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00050</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00051</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00052</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00053</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00054</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00055</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00056</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00057</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00058</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00059</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00060</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00061</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00062</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00063</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00064</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00065</a>
+<a href="clean_shutdown.sldoc.html#wait_and_send_ref_1" target="doc">00066</a>
+00067
+<a href="clean_shutdown.sldoc.html#unblock_join_ref_1" target="doc">00068</a>
+<a href="clean_shutdown.sldoc.html#unblock_join_ref_1" target="doc">00069</a>
+00070
+<a href="clean_shutdown.sldoc.html#delete_ref_1" target="doc">00071</a>
+<a href="clean_shutdown.sldoc.html#delete_ref_1" target="doc">00072</a>
+<a href="clean_shutdown.sldoc.html#delete_ref_1" target="doc">00073</a>
+<a href="clean_shutdown.sldoc.html#delete_ref_1" target="doc">00074</a>
+00075
+00076
+00077
+00078
+00079
+00080
+00081
+00082
+00083
+00084
+00085
+00086
+00087
+00088
+00089
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00090</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00091</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00092</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00093</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00094</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00095</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00096</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00097</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00098</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00099</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00100</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00101</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00102</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00103</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00104</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00105</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00106</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00107</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00108</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00109</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00110</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00111</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00112</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00113</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00114</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00115</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00116</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00117</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00118</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00119</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00120</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00121</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00122</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00123</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00124</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00125</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00126</a>
+<a href="clean_shutdown.sldoc.html#context_thread_ref_1" target="doc">00127</a>
+00128
+</td><td>  /* CleanShutdown.cs, see http://ultramessaging.github.io/UMExamples/clean_shutdown/dotnet/ */
+  
+  using System;
+  using System.Collections.Generic;
+  using System.Linq;
+  using System.Text;
+  using System.Threading.Tasks;
+  using System.Threading;
+  using com.latencybusters.lbm;
+  
+  public class CleanShutdown {
+          public static int cleanup = 0;
+  
+          static void Main(String[] args){
+<span name="eq_ctx_create" id="eq_ctx_create"></span>                  LBMContext ctx = null; /* Context object: container for UM "instance". */
+                  LBMEventQueue evq = new LBMEventQueue();
+  
+                  /* Initialization: create necessary UM objects. */
+                  try {
+                          LBMContextAttributes ctxAttr = new LBMContextAttributes();
+                          ctx = new LBMContext(ctxAttr);
+                  }
+                  catch(LBMException ex)
+                  {
+                          System.Console.Error.WriteLine("Error initializing LBM objects: " + ex.Message);
+                          System.Environment.Exit(1);
+                  }
+  
+<span name="src_rcv_create" id="src_rcv_create"></span>                  /* Initialize and create receiver and receiver callback */
+                  LBMReceiverCallback myReceiverCallback = new LBMReceiverCallback(onReceive);
+  
+                  LBMReceiverAttributes rcv_attr = new LBMReceiverAttributes();
+                  LBMTopic rtopic = new LBMTopic(ctx, "test.topic", rcv_attr);
+                  LBMReceiver rcv = new LBMReceiver(ctx, rtopic, myReceiverCallback, evq);
+  
+                  /* Initialize and create source */
+                  LBMTopic stopic = new LBMTopic(ctx, "test.topic", new LBMSourceAttributes());
+                  LBMSource src = new LBMSource(ctx, stopic);
+  
+<span name="spawn_thread" id="spawn_thread"></span>                  EQThread evqThread = new EQThread(evq);
+                  evqThread.start();
+  
+<span name="wait_and_send" id="wait_and_send"></span>                  try
+                  {
+                      System.Threading.Thread.Sleep(1000);
+                  }
+                  catch (Exception eex)
+                  {
+                      System.Console.Error.WriteLine("Error System.Threading.Thread.Sleep() exception:  " + eex.Message);
+                      System.Environment.Exit(1);
+                  }
+  
+                  src.send(Encoding.ASCII.GetBytes("hello"), 5, LBM.MSG_FLUSH);
+  
+                  while (cleanup == 0)
+                  {  
+                      try
+                      {
+                          System.Threading.Thread.Sleep(1000);
+                      }
+                      catch (Exception eex)
+                      {
+                          System.Console.Error.WriteLine("Error System.Threading.Thread.Sleep() exception:  " + eex.Message);
+                          System.Environment.Exit(1);
+                      }
+                  }
+  
+<span name="unblock_join" id="unblock_join"></span>                  evq.stop();
+                  evqThread.join();
+  
+<span name="delete" id="delete"></span>                  src.close();
+                  rcv.close();
+                  ctx.close();
+                  evq.close();
+          } /* main */
+  
+          /* Class for receiving messages */
+          static int onReceive(Object cbArg, LBMMessage msg)
+          {
+                  switch (msg.type())
+                  {
+                          case LBM.MSG_DATA:
+                                  System.Console.Out.WriteLine("LBM_MSG_DATA received");
+                                  cleanup = 1;
+                                  break;
+                  }
+                  return 0;
+          }
+  
+<span name="context_thread" id="context_thread"></span>          public class EQThread
+          {
+                  private LBMEventQueue _evq;
+                  private Thread myThread;
+  
+                  public EQThread(LBMEventQueue evq)
+                  {
+                          _evq = evq;
+                  }
+  
+                  public void start()
+                  {
+                      myThread = new Thread(new ThreadStart(run));
+                      myThread.Start();
+                  }
+  
+                  public void join()
+                  {
+                          if (myThread != null)
+                          {
+                                  try {
+                                          myThread.Join();
+                                  }
+                                  catch (Exception e)
+                                  {
+                                          System.Console.Error.WriteLine("CleanShutdown Error:" + e);
+                                  }
+                          }
+                  }
+  
+                  public void run()
+                  {
+                          while (cleanup == 0)
+                          {
+                                  _evq.run(1000);
+                          }
+                  }
+          }
+  }
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

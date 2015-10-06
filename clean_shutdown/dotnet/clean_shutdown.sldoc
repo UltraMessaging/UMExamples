@@ -1,0 +1,43 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Logging Callback</title>
+  </head>
+  <body>
+    =semlit,include,../intro.sldoc=
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt>=semlit,srcfile,clean_shutdown_dotnet.slsrc,CleanShutdown.cs=</tt></b>
+        - (right-click and save as "CleanShutdown.cs") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>CleanShutdown.cs</tt></h2>
+    <h4>Create Event Queue and Context</h4>
+	<p>Event queue objects live outside an Ultra Messaging context, so this sample will create the event queue. When cleaning up
+	the objects later, it is important to delete the context before deleting the context. When it comes to creating and inializing
+	the objects, it does not actually matter which one gets created first. For consistency purposes, this sample will create the 
+	event queue first.</p>
+	=semlit,insert,eq_ctx_create=
+    <h4>Create Source and Receiver</h4>
+	<p>A context is needed to create a source and receiver because sources and receiver live within a UM context. As we'll see
+	later, it is important to delete all sources and receivers before deleting the context.</p>
+	=semlit,insert,src_rcv_create=
+    <h4>Spawn Event Queue Thread</h4>
+	<p>In this example, the application spawns a new thread whose sole purpose will be to process event queue events. This is a typical
+	application use case as users would want an independent thread that only processes events (like messages) for better performace.</p>
+	=semlit,insert,spawn_thread=
+    <h4>Sleep, Send Message, and Wait</h4>
+	<p>The application will now sleep for 1 second to allow the receiver to discover the source via topic resolution, which should be 
+	plenty of time. After the 1 second sleep, the application will send a single message. After sending the message, the main application
+	thread will simply wait for the receiver to receive the message on the event queue.</p>
+	=semlit,insert,wait_and_send=
+    <h4>Unblock Event Queue and Kill Thread</h4>
+	<p>Now that the event queue has processed the message, it is time to join with the event queue thread. To ensure that the event queue
+	thread is not blocked on the dispatch API, we can force unblock it right from the application thread. After unblocking it, join the 
+	thread before continuing.</p>
+	=semlit,insert,unblock_join=
+    <h4>Delete Objects in the Correct Order</h4>
+	<p>By this point in the applicaiton, the receiver's message is deleted and the event queue is not waiting for any events and its thread
+	has been closed. The application can now delete all UM objects <b>in the correct order</b>.<p>
+	=semlit,insert,delete=
+  </body>
+</html>
