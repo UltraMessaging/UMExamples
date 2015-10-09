@@ -1,0 +1,346 @@
+<!DOCTYPE html><html><head><title>seq_number_callback.c</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>seq_number_callback.c</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+00008
+00009
+00010
+00011
+00012
+00013
+00014
+00015
+00016
+00017
+00018
+00019
+00020
+00021
+00022
+00023
+00024
+00025
+00026
+00027
+00028
+00029
+00030
+00031
+00032
+00033
+00034
+00035
+00036
+00037
+00038
+00039
+00040
+00041
+00042
+00043
+00044
+00045
+00046
+00047
+00048
+00049
+00050
+00051
+00052
+00053
+00054
+00055
+00056
+00057
+00058
+00059
+00060
+00061
+00062
+00063
+00064
+00065
+00066
+00067
+00068
+00069
+00070
+00071
+00072
+00073
+00074
+00075
+00076
+00077
+00078
+00079
+00080
+00081
+00082
+00083
+00084
+00085
+00086
+00087
+00088
+00089
+00090
+00091
+00092
+00093
+00094
+00095
+00096
+00097
+00098
+00099
+00100
+00101
+00102
+00103
+00104
+00105
+00106
+00107
+00108
+00109
+00110
+00111
+00112
+00113
+00114
+00115
+00116
+00117
+00118
+00119
+00120
+00121
+</td><td>  /* request_response.c - http://ultramessaging.github.io/UMExamples */
+  
+  #include &lt;stdio.h&gt;
+  
+  #if defined(_MSC_VER)
+  /* Windows-only includes */
+  #include &lt;winsock2.h&gt;
+  #define SLEEP(s) Sleep((s)*1000)
+  #else
+  /* Unix-only includes */
+  #include &lt;stdlib.h&gt;
+  #include &lt;unistd.h&gt;
+  #define SLEEP(s) sleep(s)
+  #endif
+  
+  #include &lt;lbm/lbm.h&gt;
+  
+  /* Example error checking macro.  Include after each UM call. */
+  #define EX_LBM_CHK(err) do { \
+    if ((err) &lt; 0) { \
+        fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
+        __FILE__, __LINE__, lbm_errmsg()); \
+        exit(1); \
+    }  \
+  } while (0)
+  
+  /* Callback used to handle request message for receiver */
+  int rcv_handle_msg(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
+  {
+      int err;
+  
+      switch (msg-&gt;type) {
+          case LBM_MSG_UME_REGISTRATION_SUCCESS_EX:
+          {
+              lbm_msg_ume_registration_ex_t *reg = (lbm_msg_ume_registration_ex_t *)(msg-&gt;data);
+              printf("[%s][%s] store %u: %s UME registration successful. Sequence Number is %d.\n",
+                  msg-&gt;topic_name, msg-&gt;source, reg-&gt;store_index, reg-&gt;store,reg-&gt;sequence_number);
+  
+              break;
+          }
+          case LBM_MSG_UME_REGISTRATION_COMPLETE_EX:
+                  {
+              lbm_msg_ume_registration_complete_ex_t *reg = (lbm_msg_ume_registration_complete_ex_t *)(msg-&gt;data);
+              printf("[%s][%s] UME registration complete. SQN %x. Flags %x ",
+                  msg-&gt;topic_name, msg-&gt;source, reg-&gt;sequence_number, reg-&gt;flags);
+              break;
+          }
+          default:
+              printf("Other event, type=%x\n", msg-&gt;type);
+              break;
+      }
+  
+      return 0;
+  }
+  
+  int ume_rcv_seqnum_ex(lbm_ume_rcv_recovery_info_ex_func_info_t *info, void *clientd)
+  {
+      printf("info-&gt;low_sequence_number[%d] is the starting sequence number as determined by registration consensus.\n",info-&gt;low_sequence_number);
+      printf("info-&gt;high_sequence_number[%d] is the highest sequence number available in the persisted stores.\n", info-&gt;high_sequence_number);
+      printf("info-&gt;low_rxreq_max_sequence_number[%d] is the lowest sequence number to be requested.\n", info-&gt;low_rxreq_max_sequence_number);
+          
+      /* Overwrite this variable to set a new starting sequence number. If the message is available in the store, then the receiver will 
+         retransmission starting at this sequence number leading up to the high sequence number. If the new starting sequence number has
+         yet to be published, the receiver will discard new messages until this sequence number is sent */
+      info-&gt;low_sequence_number = 100;
+          return 0;
+  }
+  
+  main()
+  {
+      lbm_context_t *ctx;                     /* Context object */
+      lbm_context_attr_t * cattr;             /* Context attribute object */
+      lbm_rcv_t *rcv;                         /* Receive object: for subscribing to messages. */
+      lbm_topic_t *rtopic;                    /* Receiver Topic object */
+      lbm_rcv_topic_attr_t * rattr;       /* Receiver attribute object */
+      lbm_ume_rcv_recovery_info_ex_func_t cb; /* Sequence number info callback function */
+      int err;                                /* Used for checking API return codes */
+  
+  #if defined(_WIN32)
+      /* windows-specific code */
+      WSADATA wsadata;
+      int wsStat = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
+      if (wsStat != 0)
+      {
+          printf("line %d: wsStat=%d\n",__LINE__,wsStat);
+          exit(1);
+      }
+  #endif
+  
+      /* Initialize context atrributes and create context */
+      err = lbm_context_create(&amp;ctx, NULL, NULL, NULL);
+      EX_LBM_CHK(err);
+  
+      /* Create receiver for receiving request and sending response */
+      err = lbm_rcv_topic_attr_create(&amp;rattr);
+      EX_LBM_CHK(err);
+  
+      cb.func = ume_rcv_seqnum_ex;
+      cb.clientd = NULL;
+      err = lbm_rcv_topic_attr_setopt(rattr, "ume_recovery_sequence_number_info_function", &amp;cb, sizeof(cb));
+      EX_LBM_CHK(err);
+  
+      err = lbm_rcv_topic_lookup(&amp;rtopic, ctx, "test.topic", rattr);
+          EX_LBM_CHK(err);
+  
+      err = lbm_rcv_create(&amp;rcv, ctx, rtopic, rcv_handle_msg, NULL, NULL);
+      EX_LBM_CHK(err);
+  
+      while (1) { }
+  
+      err = lbm_rcv_delete(rcv);
+      EX_LBM_CHK(err);
+  
+      err = lbm_context_delete(ctx);
+      EX_LBM_CHK(err);
+  
+  #if defined(_MSC_VER)
+      /* Windows-specific cleanup overhead */
+      WSACleanup();
+  #endif
+  } /* main */
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

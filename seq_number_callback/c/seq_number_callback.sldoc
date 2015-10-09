@@ -1,0 +1,49 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>UMP Receiver Sequence Number Info Callback</title>
+  </head>
+  <body>
+    <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>UMP Receiver Sequence Number Info Callback</h1>
+    <p>UMP receivers, by default will recover messages from the store based on its configured attribute for
+    =semlit,tooltip,../../tooltips/receiver_ume_consensus_sequence_number_behavior.txt,ume_consensus_sequence_number_behavior=.
+    By default, this is configured to "majority". Consensus is based on all the sequence numbers provided to the receiver
+    during store registration events (registration success events indicate a successful registration with a sinle store). Once 
+    enough stores have registered to satisy a quorum, registration can complete. The sequence number provided in the registration
+    complete callback event indicates the starting sequence number for the source (the consensus sequence number).</p>
+    <p>UMP receivers have the ability to alter the starting sequence number by registering the receiver sequence number info
+    callback function, configured programatically with 
+    =semlit,tooltip,../../tooltips/receiver_ume_recovery_sequence_number_info_function.txt,ume_recovery_sequence_number_info_function=.
+    This callback function will be executed by the UM library immediately prior to registration complete, and it provides sequence
+    number data to the application so that the application can change the starting sequence number if desired. The specific data 
+    provided by the callback includes:
+    <ul>
+      <li>low sequence number: The starting sequence number for the receiver. Can be overwritten by the application</li>
+      <li>high sequence number: The highest sequence number available for recovery from the stores</li>
+      <li>low retransmission sequence number: The sequence number determined by consensus, with the attribute 
+    	=semlit,tooltip,../../tooltips/receiver_retransmit_request_maximum.txt,retransmit_request_maximum= taken into account</li>
+    </ul></p>
+    <p>It is highly recommended every UMP application use this function, at the very least for logging purposes. It is generally a 
+    good idea to use this callback and check with internal application logic that the receiver is starting at the correct sequence
+    number as well, to avoid the possibility of requesting retransmission for messages that may have already been consumed by a UMP
+    receiver.</p>
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt>=semlit,srcfile,seq_number_callback_c.slsrc,seq_number_callback.c=</tt></b>
+        - (right-click and save as "seq_number_callback.c") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>seq_number_callback.c</tt></h2>
+    <h4>Handle Message Callback</h4>
+        <p></p>
+        =semlit,insert,handle_msg=
+    <h4>Includes</h4>
+        <p>Include files for this application. Notice the Windows specific include files - these
+          are not necessary for Linux only applications</p>
+        =semlit,insert,includes=
+    <h4>Windows Only</h4>
+        <p>Windows applications must initialize the Winsock library to utilize sockets.</p>
+        =semlit,insert,windows=
+        <p>If this fails, the application should exit since sockets will not be operational.</p>
+  </body>
+</html>
