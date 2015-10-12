@@ -34,8 +34,34 @@
         - (right-click and save as "seq_number_callback.c") main program.</li>
     </ul>
     <h2>Program explanation: <tt>seq_number_callback.c</tt></h2>
+    <h4>Context Create</h4>
+	<p>Standard context creation.</p>
+	=semlit,insert,ctx_create=
+    <h4>Set Sequence Number Callback Attrribute</h4>
+	<p>Setting the sequence number info callback requires a callback object to be defined:</p>
+	=semlit,insert,cb_var=
+	<p>This object is used to configured the callback function, as well as application level client data to pass along to the callback
+	when it is invoked. Once the object is set, it is used as the value when setting the receiver attribute
+	=semlit,tooltip,../../tooltips/receiver_ume_recovery_sequence_number_info_function.txt,ume_recovery_sequence_number_info_function=like so:</p>
+	=semlit,insert,cb_attr=
+    <h4>The Sequence Number Callback</h4>
+	<p>Here is the actual callback function that will be executed right before registration complete. In this example, the 3 provided sequence
+	numbers are printed with explanation. In a real world application, the expectation would be to simply print the sequence numbers with the 
+	appropriate labels (high_sqn, low_sqn, low_rx_sqn). Also in this example, the application is blindly setting the starting sequence number to 100.
+	Again, in a real world application, the user should verify the starting sequence number against some internal application logic to ensure the 
+	receiver is starting at the correct sequence number.</p>
+	=semlit,insert,cb=
     <h4>Handle Message Callback</h4>
-        <p></p>
+        <p>This sample includes a message handler that handles the persistent registration events, success and complete. 
+	<ol>
+	  <li>REGISTRATION_SUCCESS - This indicates the successful registration with a <b>single</b> UMP store. 
+	  <li>REGISTRATION_COMPLETE - This indicates that the receiver has registered with at least a quorum of stores and can begin
+		accepting messages either via store retransmissions or from the live stream, depending on it's starting sequence number. 
+	</ol>
+	</p>
+	<p>When using UMP, it should be a strong application requirement to handle these registration events in the code, as well as
+	logging the data returned in each callback, such as registration ID's and sequence numbers. This data is absolutely crucial
+	for debugging any kind of issues with related to message recovery, connectivity issues, and even performance.</p>
         =semlit,insert,handle_msg=
     <h4>Includes</h4>
         <p>Include files for this application. Notice the Windows specific include files - these

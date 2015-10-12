@@ -1,0 +1,9 @@
+The behavior that the receiver will follow when determining the consensus sequence number used as the sequence number to begin reception at upon re-registration after a failure or suspension. This setting is only used when quorum-consensus is also used on the source.
+
+Scope:	receiver
+Type:	int
+When to Set:	Can only be set during object initialization.
+String value	Integer value	Description
+lowest	LBM_RCV_TOPIC_ATTR_UME_QC_SQN_BEHAVIOR_LOWEST	Consensus is determined as the lowest of the latest sequence numbers seen from any store.
+majority	LBM_RCV_TOPIC_ATTR_UME_QC_SQN_BEHAVIOR_MAJORITY	Consensus is determined as the latest sequence number agreed upon by the majority of stores within a group. Between groups, the latest of all majority decisions is used. Default for all.
+highest	LBM_RCV_TOPIC_ATTR_UME_QC_SQN_BEHAVIOR_HIGHEST	Consensus is determined as the highest of the latest sequence numbers seen from any store.

@@ -1,0 +1,7 @@
+The maximum number of messages to request, counting backward from the current latest message, when late-joining a topic. Due to network timing factors, UM may transmit an additional message. For example, a value of 5 sends 5 or possibly 6 retransmit messages to the new receiver. (Hence, you cannot request and be guaranteed to receive only 1 last message--you may get 2.) A value of 0 indicates no maximum.
+
+Scope:	receiver
+Type:	lbm_ulong_t
+Units:	messages
+Default value:	0
+When to Set:	Can only be set during object initialization.

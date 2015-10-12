@@ -1,0 +1,7 @@
+Callback function (and associated client data pointer) that is called when a receiver is about to complete registration from the stores in use by the source and the low sequence number is to be determined. The application has the ability to modify the sequence number to use if it desires. This callback is called directly in line and does not use the event queue. Therefore the callback function used should not block or it will block the context thread processing. A value of NULL for the callback turns off the callback being called.
+
+Scope:	receiver
+Type:	lbm_ume_rcv_recovery_info_ex_func_t
+Default value:	NULL
+When to Set:	Can only be set during object initialization.
+Config File:	Cannot be set from an UM configuration file.

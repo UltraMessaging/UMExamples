@@ -1,5 +1,6 @@
 /* request_response.c - http://ultramessaging.github.io/UMExamples */
 
+/* =semlit,block,includes=*/
 #include <stdio.h>
 
 #if defined(_MSC_VER)
@@ -14,6 +15,7 @@
 #endif
 
 #include <lbm/lbm.h>
+/* =semlit,endblock,includes=*/
 
 /* Example error checking macro.  Include after each UM call. */
 #define EX_LBM_CHK(err) do { \
@@ -55,6 +57,7 @@ int rcv_handle_msg(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
 }
 /* =semlit,endblock,handle_msg=*/
 
+/* =semlit,block,cb=*/
 int ume_rcv_seqnum_ex(lbm_ume_rcv_recovery_info_ex_func_info_t *info, void *clientd)
 {
 	printf("info->low_sequence_number[%d] is the starting sequence number as determined by registration consensus.\n",info->low_sequence_number);
@@ -65,8 +68,10 @@ int ume_rcv_seqnum_ex(lbm_ume_rcv_recovery_info_ex_func_info_t *info, void *clie
 	   retransmission starting at this sequence number leading up to the high sequence number. If the new starting sequence number has
 	   yet to be published, the receiver will discard new messages until this sequence number is sent */
 	info->low_sequence_number = 100;
-        return 0;
+
+	return 0;
 }
+/* =semlit,endblock,cb=*/
 
 main()
 {
@@ -75,9 +80,12 @@ main()
 	lbm_rcv_t *rcv;                         /* Receive object: for subscribing to messages. */
 	lbm_topic_t *rtopic;                    /* Receiver Topic object */
 	lbm_rcv_topic_attr_t * rattr;		/* Receiver attribute object */
+	/* =semlit,block,cb_var=*/
 	lbm_ume_rcv_recovery_info_ex_func_t cb; /* Sequence number info callback function */
+	/* =semlit,endblock,cb_var=*/
 	int err;                                /* Used for checking API return codes */
 
+/* =semlit,block,windows=*/
 #if defined(_WIN32)
 	/* windows-specific code */
 	WSADATA wsadata;
@@ -88,19 +96,24 @@ main()
 		exit(1);
 	}
 #endif
+/* =semlit,endblock,windows=*/
 
 	/* Initialize context atrributes and create context */
+	/* =semlit,block,ctx_create=*/
 	err = lbm_context_create(&ctx, NULL, NULL, NULL);
 	EX_LBM_CHK(err);
+	/* =semlit,endblock,ctx_create=*/
 
 	/* Create receiver for receiving request and sending response */
 	err = lbm_rcv_topic_attr_create(&rattr);
 	EX_LBM_CHK(err);
 
+	/* =semlit,block,cb_attr=*/
 	cb.func = ume_rcv_seqnum_ex;
 	cb.clientd = NULL;
 	err = lbm_rcv_topic_attr_setopt(rattr, "ume_recovery_sequence_number_info_function", &cb, sizeof(cb));
 	EX_LBM_CHK(err);
+	/* =semlit,endblock,cb_attr=*/
 
 	err = lbm_rcv_topic_lookup(&rtopic, ctx, "test.topic", rattr);
         EX_LBM_CHK(err);
