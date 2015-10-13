@@ -1,0 +1,142 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Handling Burst Loss</title>
+  </head>
+  <body>
+  <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>Handling Burst Loss / Determining Size of Burst</h1>
+    <p>Burst loss is an Ultra Messaging concept that deals with large amount of message fragments that have been detected as loss
+        on a given transport. Typically in a UM application, when a single message fragment is detected loss and not recovered within
+        the configured transport timeout window, that message fragment is declared unrecoverable loss. In the event of a very large fragment
+        gap, the loss could be declared unrecoverable much sooner if the size of the gap exceeds the threshold configured by the receiver
+        attribute <a href="#" title="This controls the maximum tolerable burst loss before a burst loss message is delivered to the application. A burst loss less than or equal to this size is treated normally. Larger burst loss is treated as unrecoverable immediately.
+
+Scope:	receiver
+Type:	lbm_uint_t
+Units:	number of messages
+Default value:	512
+When to Set:	Can only be set during object initialization.
+
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">delivery_control_maximum_burst_loss</a>
+ - default
+        is 512 message fragments.</p>
+    <p>The key thing about burst loss is that the size of the burst is not necessarily equal to that of the configured threshold, in fact the burst
+        is very likely much larger than the threshold. The threshold acts more as a maximum threshold in which the receiver is willing to accept
+        before giving up. The event itself does not provide the size of the burst though, it is the applications responsibility to capture that data
+        if it is necessary, and that is the purpose of this sample application, to demonstrate how to calculate the size of the burst.</p>
+    <p>Calculating the size of the burst is quite easy. The burst event callback does provide a sequence number which is the high sequence number
+        of the burst. If the application simply tracks the previously consumed sequence number, it can subtract that from the sequence number in the
+        burst event to know exactly how many message fragments are included in the burst. To successfully track the last sequence number, the
+        application will simply need to record the last sequence number received in the message callback, unrecoverable loss callback, and the
+        burst callback itself, as these are the only three callbacks that will advance the sequence number.</p>
+    <p>Note: As always, sequence numbers are assigned to message fragments, which may or may not be equal to one whole application message. If an
+        application level message exceeds the configurable UM datagram size, than a single message may take up multiple message fragments, which
+        would span over multiple sequence numbers.</p>
+
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt><a href="handle_burst.c">handle_burst.c</a></tt></b>
+        - (right-click and save as "handle_burst.c") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>handle_burst.c</tt></h2>
+    <h4>Context and Receiver Creation</h4>
+        <p>Standard context and receiver creation, with a minimal amount of options set:</p>
+        <a name="ctx_rcv_create_ref_1" id="ctx_rcv_create_ref_1"></a>
+<small><pre>
+<a href="handle_burst_c.slsrc.html#ctx_rcv_create" target="src">00076</a>      err = lbm_context_create(&amp;ctx, NULL, NULL, NULL);
+<a href="handle_burst_c.slsrc.html#ctx_rcv_create" target="src">00077</a>      EX_LBM_CHK(err);
+<a href="handle_burst_c.slsrc.html#ctx_rcv_create" target="src">00078</a>  
+<a href="handle_burst_c.slsrc.html#ctx_rcv_create" target="src">00079</a>      /* Create receiver for receiving request and sending response */
+<a href="handle_burst_c.slsrc.html#ctx_rcv_create" target="src">00080</a>      err = lbm_rcv_topic_lookup(&amp;rtopic, ctx, "test.topic", NULL);
+<a href="handle_burst_c.slsrc.html#ctx_rcv_create" target="src">00081</a>          EX_LBM_CHK(err);
+<a href="handle_burst_c.slsrc.html#ctx_rcv_create" target="src">00082</a>  
+<a href="handle_burst_c.slsrc.html#ctx_rcv_create" target="src">00083</a>      err = lbm_rcv_create(&amp;rcv, ctx, rtopic, rcv_handle_msg, NULL, NULL);
+<a href="handle_burst_c.slsrc.html#ctx_rcv_create" target="src">00084</a>      EX_LBM_CHK(err);
+</pre><!-- endblock ctx_rcv_create_ref_1 --></small>
+
+
+    <h4>Receiver Message Callback</h4>
+	<p>Here in the message callback, the sample application focuses on thress particular events:</p>
+	<ol>
+	  <li>Data - This is the event that executes when the application receives a data message</li>
+	  <li>Loss - This is the event that executes when a single message fragment becomes unrecoverable loss
+	  <li>Loss Burst - This is the event that executes when a burst of message fragments becomes unrecoverable loss. 
+	</ol>
+	<p>First the message callback. This is where the application would typically process the data inside a message, or maybe retain the message to
+	be processed later on a spearate thread. In either case, the last sequence number should be updated here:</p>
+	<a name="data_ref_1" id="data_ref_1"></a>
+<small><pre>
+<a href="handle_burst_c.slsrc.html#data" target="src">00035</a>          case LBM_MSG_DATA:
+<a href="handle_burst_c.slsrc.html#data" target="src">00036</a>              last_sqn = msg-&gt;sequence_number;
+<a href="handle_burst_c.slsrc.html#data" target="src">00037</a>              break;
+</pre><!-- endblock data_ref_1 --></small>
+
+
+	<p>Next is the unrecoverable loss event, which indicates that a single message fragment has become unrecoverable. The sequence number provided
+	in this event is the message fragment that is unrecoverable, so it should set the last sequence number variable here as well:</p>
+	<a name="loss_ref_1" id="loss_ref_1"></a>
+<small><pre>
+<a href="handle_burst_c.slsrc.html#loss" target="src">00038</a>          case LBM_MSG_UNRECOVERABLE_LOSS:
+<a href="handle_burst_c.slsrc.html#loss" target="src">00039</a>              last_sqn = msg-&gt;sequence_number;
+<a href="handle_burst_c.slsrc.html#loss" target="src">00040</a>              break;
+</pre><!-- endblock loss_ref_1 --></small>
+
+
+	<p>Finally the burst event callback. Here we can calculate the size of the burst my subtracting the last sequence number from the sequence 
+	number provided in the callback itself. Once the burst size has been calculated, update the last sequence number as well, because the very next 
+	could be another burst loss event, and the application will want to calculate the size of that burst as well:</p>
+	<a name="burst_ref_1" id="burst_ref_1"></a>
+<small><pre>
+<a href="handle_burst_c.slsrc.html#burst" target="src">00041</a>          case LBM_MSG_UNRECOVERABLE_LOSS_BURST:
+<a href="handle_burst_c.slsrc.html#burst" target="src">00042</a>          {
+<a href="handle_burst_c.slsrc.html#burst" target="src">00043</a>              int burst = msg-&gt;sequence_number - last_sqn;
+<a href="handle_burst_c.slsrc.html#burst" target="src">00044</a>              printf("WARNING: Burst loss of %d messages!\n", burst);
+<a href="handle_burst_c.slsrc.html#burst" target="src">00045</a>              last_sqn = msg-&gt;sequence_number;
+<a href="handle_burst_c.slsrc.html#burst" target="src">00046</a>              break;
+<a href="handle_burst_c.slsrc.html#burst" target="src">00047</a>          }
+</pre><!-- endblock burst_ref_1 --></small>
+
+
+    <h4>Includes</h4>
+        <p>Include files for this application. Notice the Windows specific include files - these
+          are not necessary for Linux only applications</p>
+        <a name="includes_ref_1" id="includes_ref_1"></a>
+<small><pre>
+<a href="handle_burst_c.slsrc.html#includes" target="src">00003</a>  #include &lt;stdio.h&gt;
+<a href="handle_burst_c.slsrc.html#includes" target="src">00004</a>  #if defined(_MSC_VER)
+<a href="handle_burst_c.slsrc.html#includes" target="src">00005</a>  /* Windows-only includes */
+<a href="handle_burst_c.slsrc.html#includes" target="src">00006</a>  #include &lt;winsock2.h&gt;
+<a href="handle_burst_c.slsrc.html#includes" target="src">00007</a>  #define SLEEP(s) Sleep((s)*1000)
+<a href="handle_burst_c.slsrc.html#includes" target="src">00008</a>  #else
+<a href="handle_burst_c.slsrc.html#includes" target="src">00009</a>  /* Unix-only includes */
+<a href="handle_burst_c.slsrc.html#includes" target="src">00010</a>  #include &lt;stdlib.h&gt;
+<a href="handle_burst_c.slsrc.html#includes" target="src">00011</a>  #include &lt;unistd.h&gt;
+<a href="handle_burst_c.slsrc.html#includes" target="src">00012</a>  #define SLEEP(s) sleep(s)
+<a href="handle_burst_c.slsrc.html#includes" target="src">00013</a>  #endif
+<a href="handle_burst_c.slsrc.html#includes" target="src">00014</a>  
+<a href="handle_burst_c.slsrc.html#includes" target="src">00015</a>  #include &lt;lbm/lbm.h&gt;
+</pre><!-- endblock includes_ref_1 --></small>
+
+
+    <h4>Windows Only</h4>
+        <p>Windows applications must initialize the Winsock library to utilize sockets.</p>
+        <a name="windows_ref_1" id="windows_ref_1"></a>
+<small><pre>
+<a href="handle_burst_c.slsrc.html#windows" target="src">00064</a>  #if defined(_WIN32)
+<a href="handle_burst_c.slsrc.html#windows" target="src">00065</a>      /* windows-specific code */
+<a href="handle_burst_c.slsrc.html#windows" target="src">00066</a>      WSADATA wsadata;
+<a href="handle_burst_c.slsrc.html#windows" target="src">00067</a>      int wsStat = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
+<a href="handle_burst_c.slsrc.html#windows" target="src">00068</a>      if (wsStat != 0)
+<a href="handle_burst_c.slsrc.html#windows" target="src">00069</a>      {
+<a href="handle_burst_c.slsrc.html#windows" target="src">00070</a>          printf("line %d: wsStat=%d\n",__LINE__,wsStat);
+<a href="handle_burst_c.slsrc.html#windows" target="src">00071</a>          exit(1);
+<a href="handle_burst_c.slsrc.html#windows" target="src">00072</a>      }
+<a href="handle_burst_c.slsrc.html#windows" target="src">00073</a>  #endif
+</pre><!-- endblock windows_ref_1 --></small>
+
+
+        <p>If this fails, the application should exit since sockets will not be operational.</p>
+  </body>
+</html>
+

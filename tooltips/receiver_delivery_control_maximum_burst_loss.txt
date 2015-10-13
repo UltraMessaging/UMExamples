@@ -1,0 +1,8 @@
+This controls the maximum tolerable burst loss before a burst loss message is delivered to the application. A burst loss less than or equal to this size is treated normally. Larger burst loss is treated as unrecoverable immediately.
+
+Scope:	receiver
+Type:	lbm_uint_t
+Units:	number of messages
+Default value:	512
+When to Set:	Can only be set during object initialization.
+
