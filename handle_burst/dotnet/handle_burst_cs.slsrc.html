@@ -1,0 +1,220 @@
+<!DOCTYPE html><html><head><title>HandleBurst.cs</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>HandleBurst.cs</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+00008
+00009
+00010
+00011
+00012
+00013
+00014
+00015
+00016
+00017
+00018
+00019
+00020
+<a href="handle_burst.sldoc.html#ctx_rcv_create_ref_1" target="doc">00021</a>
+<a href="handle_burst.sldoc.html#ctx_rcv_create_ref_1" target="doc">00022</a>
+<a href="handle_burst.sldoc.html#ctx_rcv_create_ref_1" target="doc">00023</a>
+<a href="handle_burst.sldoc.html#ctx_rcv_create_ref_1" target="doc">00024</a>
+<a href="handle_burst.sldoc.html#ctx_rcv_create_ref_1" target="doc">00025</a>
+<a href="handle_burst.sldoc.html#ctx_rcv_create_ref_1" target="doc">00026</a>
+<a href="handle_burst.sldoc.html#ctx_rcv_create_ref_1" target="doc">00027</a>
+<a href="handle_burst.sldoc.html#ctx_rcv_create_ref_1" target="doc">00028</a>
+00029
+00030
+00031
+00032
+00033
+00034
+00035
+00036
+00037
+00038
+00039
+00040
+<a href="handle_burst.sldoc.html#data_ref_1" target="doc">00041</a>
+<a href="handle_burst.sldoc.html#data_ref_1" target="doc">00042</a>
+<a href="handle_burst.sldoc.html#data_ref_1" target="doc">00043</a>
+<a href="handle_burst.sldoc.html#loss_ref_1" target="doc">00044</a>
+<a href="handle_burst.sldoc.html#loss_ref_1" target="doc">00045</a>
+<a href="handle_burst.sldoc.html#loss_ref_1" target="doc">00046</a>
+<a href="handle_burst.sldoc.html#burst_ref_1" target="doc">00047</a>
+<a href="handle_burst.sldoc.html#burst_ref_1" target="doc">00048</a>
+<a href="handle_burst.sldoc.html#burst_ref_1" target="doc">00049</a>
+<a href="handle_burst.sldoc.html#burst_ref_1" target="doc">00050</a>
+<a href="handle_burst.sldoc.html#burst_ref_1" target="doc">00051</a>
+00052
+00053
+00054
+00055
+00056
+00057
+00058
+</td><td>  /* HandleBurst.cs, see http://ultramessaging.github.io/UMExamples/handle_burst/dotnet/ */
+  
+  using System;
+  using System.Collections.Generic;
+  using System.Linq;
+  using System.Text;
+  using System.Threading.Tasks;
+  using com.latencybusters.lbm;
+  
+  public class HandleBurst {
+          /* Used to track the last sequence number received */
+          public static long lastSqn = 0;
+  
+          static void Main(String[] args) {
+                  LBMContext ctx = null;           /* Context object: container for UM "instance". */
+                  LBMReceiver rcv = null;          /* Receiver object: for receiving messages. */
+                  LBMTopic rtopic = null;          /* Topic object */
+                  LBMReceiverAttributes rcv_attr;  /* Receiver attribute object */
+  
+                  /*** Initialization: create necessary UM objects. ***/
+<span name="ctx_rcv_create" id="ctx_rcv_create"></span>                  /* Initialize and create receiver and receiver callback */
+                  LBMReceiverCallback myReceiverCallback = new LBMReceiverCallback(onReceive);
+  
+                  ctx = new LBMContext();
+                  rcv_attr = new LBMReceiverAttributes();
+  
+                  rtopic = new LBMTopic(ctx, "test.topic", rcv_attr);
+                  rcv = new LBMReceiver(ctx, rtopic, myReceiverCallback, null);
+  
+                  while(true)
+                  {
+  
+                  }
+          } /* main */
+  
+          /* Class for receiving messages */
+          static int onReceive(Object cbArg, LBMMessage msg)
+          {
+                  switch (msg.type())
+                  {
+<span name="data" id="data"></span>                          case LBM.MSG_DATA:
+                                  lastSqn = msg.sequenceNumber();
+                                  break;
+<span name="loss" id="loss"></span>                          case LBM.MSG_UNRECOVERABLE_LOSS:
+                                  lastSqn = msg.sequenceNumber();
+                                  break;
+<span name="burst" id="burst"></span>                          case LBM.MSG_UNRECOVERABLE_LOSS_BURST:
+                                  long burst = lastSqn - msg.sequenceNumber();
+                                  System.Console.Out.WriteLine("WARNING: Burst loss of " + burst + " messages!");
+                                  lastSqn = msg.sequenceNumber();
+                                  break;
+                          default:
+                                  System.Console.Out.WriteLine("Other event, type=" + msg.type());
+                                  break;
+                  }
+                  return 0;
+          } /* ReceiverCallback */
+  } /* class MinSrc */
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

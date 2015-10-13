@@ -1,0 +1,100 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Handling Burst Loss</title>
+  </head>
+  <body>
+  <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>Handling Burst Loss / Determining Size of Burst</h1>
+    <p>Burst loss is an Ultra Messaging concept that deals with large amount of message fragments that have been detected as loss
+        on a given transport. Typically in a UM application, when a single message fragment is detected loss and not recovered within
+        the configured transport timeout window, that message fragment is declared unrecoverable loss. In the event of a very large fragment
+        gap, the loss could be declared unrecoverable much sooner if the size of the gap exceeds the threshold configured by the receiver
+        attribute <a href="#" title="This controls the maximum tolerable burst loss before a burst loss message is delivered to the application. A burst loss less than or equal to this size is treated normally. Larger burst loss is treated as unrecoverable immediately.
+
+Scope:	receiver
+Type:	lbm_uint_t
+Units:	number of messages
+Default value:	512
+When to Set:	Can only be set during object initialization.
+
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">delivery_control_maximum_burst_loss</a>
+ - default
+        is 512 message fragments.</p>
+    <p>The key thing about burst loss is that the size of the burst is not necessarily equal to that of the configured threshold, in fact the burst
+        is very likely much larger than the threshold. The threshold acts more as a maximum threshold in which the receiver is willing to accept
+        before giving up. The event itself does not provide the size of the burst though, it is the applications responsibility to capture that data
+        if it is necessary, and that is the purpose of this sample application, to demonstrate how to calculate the size of the burst.</p>
+    <p>Calculating the size of the burst is quite easy. The burst event callback does provide a sequence number which is the high sequence number
+        of the burst. If the application simply tracks the previously consumed sequence number, it can subtract that from the sequence number in the
+        burst event to know exactly how many message fragments are included in the burst. To successfully track the last sequence number, the
+        application will simply need to record the last sequence number received in the message callback, unrecoverable loss callback, and the
+        burst callback itself, as these are the only three callbacks that will advance the sequence number.</p>
+    <p>Note: As always, sequence numbers are assigned to message fragments, which may or may not be equal to one whole application message. If an
+        application level message exceeds the configurable UM datagram size, than a single message may take up multiple message fragments, which
+        would span over multiple sequence numbers.</p>
+
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt><a href="HandleBurst.cs">HandleBurst.cs</a></tt></b>
+        - (right-click and save as "HandleBurst.cs") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>HandleBurst.cs</tt></h2>
+    <h4>Context and Receiver Creation</h4>
+        <p>Standard context and receiver creation, with a minimal amount of options set:</p>
+        <a name="ctx_rcv_create_ref_1" id="ctx_rcv_create_ref_1"></a>
+<small><pre>
+<a href="handle_burst_cs.slsrc.html#ctx_rcv_create" target="src">00021</a>                  /* Initialize and create receiver and receiver callback */
+<a href="handle_burst_cs.slsrc.html#ctx_rcv_create" target="src">00022</a>                  LBMReceiverCallback myReceiverCallback = new LBMReceiverCallback(onReceive);
+<a href="handle_burst_cs.slsrc.html#ctx_rcv_create" target="src">00023</a>  
+<a href="handle_burst_cs.slsrc.html#ctx_rcv_create" target="src">00024</a>                  ctx = new LBMContext();
+<a href="handle_burst_cs.slsrc.html#ctx_rcv_create" target="src">00025</a>                  rcv_attr = new LBMReceiverAttributes();
+<a href="handle_burst_cs.slsrc.html#ctx_rcv_create" target="src">00026</a>  
+<a href="handle_burst_cs.slsrc.html#ctx_rcv_create" target="src">00027</a>                  rtopic = new LBMTopic(ctx, "test.topic", rcv_attr);
+<a href="handle_burst_cs.slsrc.html#ctx_rcv_create" target="src">00028</a>                  rcv = new LBMReceiver(ctx, rtopic, myReceiverCallback, null);
+</pre><!-- endblock ctx_rcv_create_ref_1 --></small>
+
+
+    <h4>Receiver Message Callback</h4>
+	<p>Here in the message callback, the sample application focuses on thress particular events:</p>
+	<ol>
+	  <li>Data - This is the event that executes when the application receives a data message</li>
+	  <li>Loss - This is the event that executes when a single message fragment becomes unrecoverable loss
+	  <li>Loss Burst - This is the event that executes when a burst of message fragments becomes unrecoverable loss. 
+	</ol>
+	<p>First the message callback. This is where the application would typically process the data inside a message, or maybe retain the message to
+	be processed later on a spearate thread. In either case, the last sequence number should be updated here:</p>
+	<a name="data_ref_1" id="data_ref_1"></a>
+<small><pre>
+<a href="handle_burst_cs.slsrc.html#data" target="src">00041</a>                          case LBM.MSG_DATA:
+<a href="handle_burst_cs.slsrc.html#data" target="src">00042</a>                                  lastSqn = msg.sequenceNumber();
+<a href="handle_burst_cs.slsrc.html#data" target="src">00043</a>                                  break;
+</pre><!-- endblock data_ref_1 --></small>
+
+
+	<p>Next is the unrecoverable loss event, which indicates that a single message fragment has become unrecoverable. The sequence number provided
+	in this event is the message fragment that is unrecoverable, so it should set the last sequence number variable here as well:</p>
+	<a name="loss_ref_1" id="loss_ref_1"></a>
+<small><pre>
+<a href="handle_burst_cs.slsrc.html#loss" target="src">00044</a>                          case LBM.MSG_UNRECOVERABLE_LOSS:
+<a href="handle_burst_cs.slsrc.html#loss" target="src">00045</a>                                  lastSqn = msg.sequenceNumber();
+<a href="handle_burst_cs.slsrc.html#loss" target="src">00046</a>                                  break;
+</pre><!-- endblock loss_ref_1 --></small>
+
+
+	<p>Finally the burst event callback. Here we can calculate the size of the burst my subtracting the last sequence number from the sequence 
+	number provided in the callback itself. Once the burst size has been calculated, update the last sequence number as well, because the very next 
+	could be another burst loss event, and the application will want to calculate the size of that burst as well:</p>
+	<a name="burst_ref_1" id="burst_ref_1"></a>
+<small><pre>
+<a href="handle_burst_cs.slsrc.html#burst" target="src">00047</a>                          case LBM.MSG_UNRECOVERABLE_LOSS_BURST:
+<a href="handle_burst_cs.slsrc.html#burst" target="src">00048</a>                                  long burst = lastSqn - msg.sequenceNumber();
+<a href="handle_burst_cs.slsrc.html#burst" target="src">00049</a>                                  System.Console.Out.WriteLine("WARNING: Burst loss of " + burst + " messages!");
+<a href="handle_burst_cs.slsrc.html#burst" target="src">00050</a>                                  lastSqn = msg.sequenceNumber();
+<a href="handle_burst_cs.slsrc.html#burst" target="src">00051</a>                                  break;
+</pre><!-- endblock burst_ref_1 --></small>
+
+
+  </body>
+</html>
+

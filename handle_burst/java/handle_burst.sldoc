@@ -1,0 +1,35 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Handling Burst Loss</title>
+  </head>
+  <body>
+  =semlit,include,../intro.sldoc=
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt>=semlit,srcfile,handle_burst_java.slsrc,HandleBurst.java=</tt></b>
+        - (right-click and save as "HandleBurst.java") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>HandleBurst.java</tt></h2>
+    <h4>Context and Receiver Creation</h4>
+        <p>Standard context and receiver creation, with a minimal amount of options set:</p>
+        =semlit,insert,ctx_rcv_create=
+    <h4>Receiver Message Callback</h4>
+	<p>Here in the message callback, the sample application focuses on thress particular events:</p>
+	<ol>
+	  <li>Data - This is the event that executes when the application receives a data message</li>
+	  <li>Loss - This is the event that executes when a single message fragment becomes unrecoverable loss
+	  <li>Loss Burst - This is the event that executes when a burst of message fragments becomes unrecoverable loss. 
+	</ol>
+	<p>First the message callback. This is where the application would typically process the data inside a message, or maybe retain the message to
+	be processed later on a spearate thread. In either case, the last sequence number should be updated here:</p>
+	=semlit,insert,data=
+	<p>Next is the unrecoverable loss event, which indicates that a single message fragment has become unrecoverable. The sequence number provided
+	in this event is the message fragment that is unrecoverable, so it should set the last sequence number variable here as well:</p>
+	=semlit,insert,loss=
+	<p>Finally the burst event callback. Here we can calculate the size of the burst my subtracting the last sequence number from the sequence 
+	number provided in the callback itself. Once the burst size has been calculated, update the last sequence number as well, because the very next 
+	could be another burst loss event, and the application will want to calculate the size of that burst as well:</p>
+	=semlit,insert,burst=
+  </body>
+</html>
