@@ -7,19 +7,13 @@
     =semlit,include,../intro.sldoc=
     <p>There is one program source file:</p>
     <ul>
-      <li><b><tt>=semlit,srcfile,seq_number_callback_c.slsrc,seq_number_callback.c=</tt></b>
-        - (right-click and save as "seq_number_callback.c") main program.</li>
+      <li><b><tt>=semlit,srcfile,seq_number_callback_java.slsrc,SeqNumberCallback.java=</tt></b>
+        - (right-click and save as "SeqNumberCallback.java") main program.</li>
     </ul>
-    <h2>Program explanation: <tt>seq_number_callback.c</tt></h2>
-    <h4>Context Create</h4>
-	<p>Standard context creation.</p>
-	=semlit,insert,ctx_create=
+    <h2>Program explanation: <tt>SeqNumberCallback.java</tt></h2>
     <h4>Set Sequence Number Callback Attrribute</h4>
-	<p>Setting the sequence number info callback requires a callback object to be defined:</p>
-	=semlit,insert,cb_var=
-	<p>This object is used to configure the callback function, as well as application level client data to pass along to the callback
-	when it is invoked. Once the object is set, it is used as the value when setting the receiver attribute
-	=semlit,tooltip,../../tooltips/receiver_ume_recovery_sequence_number_info_function.txt,ume_recovery_sequence_number_info_function=like so:</p>
+	<p>The object UMERcvRecInfo is used to configure the callback function, and is defined as a class below by implementing the LBM object
+	UMERecoverySequenceNumberCallback. Once the object is set, it is passed into the setRecoverySequenceNumberCallback() method like so:</p>
 	=semlit,insert,cb_attr=
     <h4>The Sequence Number Callback</h4>
 	<p>Here is the actual callback function that will be executed right before registration complete. In this example, the 3 provided sequence
@@ -40,13 +34,5 @@
 	logging the data returned in each callback, such as registration ID's and sequence numbers. This data is absolutely crucial
 	for debugging any kind of issues with related to message recovery, connectivity issues, and even performance.</p>
         =semlit,insert,handle_msg=
-    <h4>Includes</h4>
-        <p>Include files for this application. Notice the Windows specific include files - these
-          are not necessary for Linux only applications</p>
-        =semlit,insert,includes=
-    <h4>Windows Only</h4>
-        <p>Windows applications must initialize the Winsock library to utilize sockets.</p>
-        =semlit,insert,windows=
-        <p>If this fails, the application should exit since sockets will not be operational.</p>
   </body>
 </html>

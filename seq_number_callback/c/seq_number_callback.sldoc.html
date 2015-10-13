@@ -4,7 +4,7 @@
     <title>UMP Receiver Sequence Number Info Callback</title>
   </head>
   <body>
-    <a href="../../index.html" class="button" target="_top">Example index</a>
+        <a href="../../index.html" class="button" target="_top">Example index</a>
     <h1>UMP Receiver Sequence Number Info Callback</h1>
     <p>UMP receivers, by default will recover messages from the store based on its configured attribute for
     <a href="#" title="The behavior that the receiver will follow when determining the consensus sequence number used as the sequence number to begin reception at upon re-registration after a failure or suspension. This setting is only used when quorum-consensus is also used on the source.
@@ -19,11 +19,11 @@ highest	LBM_RCV_TOPIC_ATTR_UME_QC_SQN_BEHAVIOR_HIGHEST	Consensus is determined a
 " style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">ume_consensus_sequence_number_behavior</a>
 .
     By default, this is configured to "majority". Consensus is based on all the sequence numbers provided to the receiver
-    during store registration events (registration success events indicate a successful registration with a sinle store). Once 
+    during store registration events (registration success events indicate a successful registration with a sinle store). Once
     enough stores have registered to satisy a quorum, registration can complete. The sequence number provided in the registration
     complete callback event indicates the starting sequence number for the source (the consensus sequence number).</p>
     <p>UMP receivers have the ability to alter the starting sequence number by registering the receiver sequence number info
-    callback function, configured programatically with 
+    callback function, configured programatically with
     <a href="#" title="Callback function (and associated client data pointer) that is called when a receiver is about to complete registration from the stores in use by the source and the low sequence number is to be determined. The application has the ability to modify the sequence number to use if it desires. This callback is called directly in line and does not use the event queue. Therefore the callback function used should not block or it will block the context thread processing. A value of NULL for the callback turns off the callback being called.
 
 Scope:	receiver
@@ -34,13 +34,13 @@ Config File:	Cannot be set from an UM configuration file.
 " style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">ume_recovery_sequence_number_info_function</a>
 .
     This callback function will be executed by the UM library immediately prior to registration complete, and it provides sequence
-    number data to the application so that the application can change the starting sequence number if desired. The specific data 
+    number data to the application so that the application can change the starting sequence number if desired. The specific data
     provided by the callback includes:
     <ul>
       <li>low sequence number: The starting sequence number for the receiver. Can be overwritten by the application</li>
       <li>high sequence number: The highest sequence number available for recovery from the stores</li>
-      <li>low retransmission sequence number: The sequence number determined by consensus, with the attribute 
-    	<a href="#" title="The maximum number of messages to request, counting backward from the current latest message, when late-joining a topic. Due to network timing factors, UM may transmit an additional message. For example, a value of 5 sends 5 or possibly 6 retransmit messages to the new receiver. (Hence, you cannot request and be guaranteed to receive only 1 last message--you may get 2.) A value of 0 indicates no maximum.
+      <li>low retransmission sequence number: The sequence number determined by consensus, with the attribute
+        <a href="#" title="The maximum number of messages to request, counting backward from the current latest message, when late-joining a topic. Due to network timing factors, UM may transmit an additional message. For example, a value of 5 sends 5 or possibly 6 retransmit messages to the new receiver. (Hence, you cannot request and be guaranteed to receive only 1 last message--you may get 2.) A value of 0 indicates no maximum.
 
 Scope:	receiver
 Type:	lbm_ulong_t
@@ -50,10 +50,12 @@ When to Set:	Can only be set during object initialization.
 " style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">retransmit_request_maximum</a>
  taken into account</li>
     </ul></p>
-    <p>It is highly recommended every UMP application use this function, at the very least for logging purposes. It is generally a 
+    <p>It is highly recommended every UMP application use this function, at the very least for logging purposes. It is generally a
     good idea to use this callback and check with internal application logic that the receiver is starting at the correct sequence
     number as well, to avoid the possibility of requesting retransmission for messages that may have already been consumed by a UMP
     receiver.</p>
+
+
     <p>There is one program source file:</p>
     <ul>
       <li><b><tt><a href="seq_number_callback.c">seq_number_callback.c</a></tt></b>
@@ -64,8 +66,8 @@ When to Set:	Can only be set during object initialization.
 	<p>Standard context creation.</p>
 	<a name="ctx_create_ref_1" id="ctx_create_ref_1"></a>
 <small><pre>
-<a href="seq_number_callback_c.slsrc.html#ctx_create" target="src">00091</a>      err = lbm_context_create(&amp;ctx, NULL, NULL, NULL);
-<a href="seq_number_callback_c.slsrc.html#ctx_create" target="src">00092</a>      EX_LBM_CHK(err);
+<a href="seq_number_callback_c.slsrc.html#ctx_create" target="src">00092</a>      err = lbm_context_create(&amp;ctx, NULL, NULL, NULL);
+<a href="seq_number_callback_c.slsrc.html#ctx_create" target="src">00093</a>      EX_LBM_CHK(err);
 </pre><!-- endblock ctx_create_ref_1 --></small>
 
 
@@ -73,11 +75,11 @@ When to Set:	Can only be set during object initialization.
 	<p>Setting the sequence number info callback requires a callback object to be defined:</p>
 	<a name="cb_var_ref_1" id="cb_var_ref_1"></a>
 <small><pre>
-<a href="seq_number_callback_c.slsrc.html#cb_var" target="src">00076</a>      lbm_ume_rcv_recovery_info_ex_func_t cb; /* Sequence number info callback function */
+<a href="seq_number_callback_c.slsrc.html#cb_var" target="src">00077</a>      lbm_ume_rcv_recovery_info_ex_func_t cb; /* Sequence number info callback function */
 </pre><!-- endblock cb_var_ref_1 --></small>
 
 
-	<p>This object is used to configured the callback function, as well as application level client data to pass along to the callback
+	<p>This object is used to configure the callback function, as well as application level client data to pass along to the callback
 	when it is invoked. Once the object is set, it is used as the value when setting the receiver attribute
 	<a href="#" title="Callback function (and associated client data pointer) that is called when a receiver is about to complete registration from the stores in use by the source and the low sequence number is to be determined. The application has the ability to modify the sequence number to use if it desires. This callback is called directly in line and does not use the event queue. Therefore the callback function used should not block or it will block the context thread processing. A value of NULL for the callback turns off the callback being called.
 
@@ -90,10 +92,10 @@ Config File:	Cannot be set from an UM configuration file.
 like so:</p>
 	<a name="cb_attr_ref_1" id="cb_attr_ref_1"></a>
 <small><pre>
-<a href="seq_number_callback_c.slsrc.html#cb_attr" target="src">00098</a>      cb.func = ume_rcv_seqnum_ex;
-<a href="seq_number_callback_c.slsrc.html#cb_attr" target="src">00099</a>      cb.clientd = NULL;
-<a href="seq_number_callback_c.slsrc.html#cb_attr" target="src">00100</a>      err = lbm_rcv_topic_attr_setopt(rattr, "ume_recovery_sequence_number_info_function", &amp;cb, sizeof(cb));
-<a href="seq_number_callback_c.slsrc.html#cb_attr" target="src">00101</a>      EX_LBM_CHK(err);
+<a href="seq_number_callback_c.slsrc.html#cb_attr" target="src">00099</a>      cb.func = ume_rcv_seqnum_ex;
+<a href="seq_number_callback_c.slsrc.html#cb_attr" target="src">00100</a>      cb.clientd = NULL;
+<a href="seq_number_callback_c.slsrc.html#cb_attr" target="src">00101</a>      err = lbm_rcv_topic_attr_setopt(rattr, "ume_recovery_sequence_number_info_function", &amp;cb, sizeof(cb));
+<a href="seq_number_callback_c.slsrc.html#cb_attr" target="src">00102</a>      EX_LBM_CHK(err);
 </pre><!-- endblock cb_attr_ref_1 --></small>
 
 
@@ -115,8 +117,9 @@ like so:</p>
 <a href="seq_number_callback_c.slsrc.html#cb" target="src">00063</a>         retransmission starting at this sequence number leading up to the high sequence number. If the new starting sequence number has
 <a href="seq_number_callback_c.slsrc.html#cb" target="src">00064</a>         yet to be published, the receiver will discard new messages until this sequence number is sent */
 <a href="seq_number_callback_c.slsrc.html#cb" target="src">00065</a>      info-&gt;low_sequence_number = 100;
-<a href="seq_number_callback_c.slsrc.html#cb" target="src">00066</a>          return 0;
-<a href="seq_number_callback_c.slsrc.html#cb" target="src">00067</a>  }
+<a href="seq_number_callback_c.slsrc.html#cb" target="src">00066</a>  
+<a href="seq_number_callback_c.slsrc.html#cb" target="src">00067</a>      return 0;
+<a href="seq_number_callback_c.slsrc.html#cb" target="src">00068</a>  }
 </pre><!-- endblock cb_ref_1 --></small>
 
 
@@ -189,16 +192,16 @@ like so:</p>
         <p>Windows applications must initialize the Winsock library to utilize sockets.</p>
         <a name="windows_ref_1" id="windows_ref_1"></a>
 <small><pre>
-<a href="seq_number_callback_c.slsrc.html#windows" target="src">00079</a>  #if defined(_WIN32)
-<a href="seq_number_callback_c.slsrc.html#windows" target="src">00080</a>      /* windows-specific code */
-<a href="seq_number_callback_c.slsrc.html#windows" target="src">00081</a>      WSADATA wsadata;
-<a href="seq_number_callback_c.slsrc.html#windows" target="src">00082</a>      int wsStat = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
-<a href="seq_number_callback_c.slsrc.html#windows" target="src">00083</a>      if (wsStat != 0)
-<a href="seq_number_callback_c.slsrc.html#windows" target="src">00084</a>      {
-<a href="seq_number_callback_c.slsrc.html#windows" target="src">00085</a>          printf("line %d: wsStat=%d\n",__LINE__,wsStat);
-<a href="seq_number_callback_c.slsrc.html#windows" target="src">00086</a>          exit(1);
-<a href="seq_number_callback_c.slsrc.html#windows" target="src">00087</a>      }
-<a href="seq_number_callback_c.slsrc.html#windows" target="src">00088</a>  #endif
+<a href="seq_number_callback_c.slsrc.html#windows" target="src">00080</a>  #if defined(_WIN32)
+<a href="seq_number_callback_c.slsrc.html#windows" target="src">00081</a>      /* windows-specific code */
+<a href="seq_number_callback_c.slsrc.html#windows" target="src">00082</a>      WSADATA wsadata;
+<a href="seq_number_callback_c.slsrc.html#windows" target="src">00083</a>      int wsStat = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
+<a href="seq_number_callback_c.slsrc.html#windows" target="src">00084</a>      if (wsStat != 0)
+<a href="seq_number_callback_c.slsrc.html#windows" target="src">00085</a>      {
+<a href="seq_number_callback_c.slsrc.html#windows" target="src">00086</a>          printf("line %d: wsStat=%d\n",__LINE__,wsStat);
+<a href="seq_number_callback_c.slsrc.html#windows" target="src">00087</a>          exit(1);
+<a href="seq_number_callback_c.slsrc.html#windows" target="src">00088</a>      }
+<a href="seq_number_callback_c.slsrc.html#windows" target="src">00089</a>  #endif
 </pre><!-- endblock windows_ref_1 --></small>
 
 

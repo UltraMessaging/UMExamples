@@ -1,0 +1,258 @@
+<!DOCTYPE html><html><head><title>SeqNumberCallback.java</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>SeqNumberCallback.java</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+00008
+00009
+00010
+00011
+00012
+00013
+00014
+00015
+00016
+00017
+00018
+00019
+00020
+<a href="seq_number_callback.sldoc.html#cb_attr_ref_1" target="doc">00021</a>
+<a href="seq_number_callback.sldoc.html#cb_attr_ref_1" target="doc">00022</a>
+00023
+00024
+00025
+00026
+00027
+00028
+00029
+00030
+00031
+00032
+00033
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00034</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00035</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00036</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00037</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00038</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00039</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00040</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00041</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00042</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00043</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00044</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00045</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00046</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00047</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00048</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00049</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00050</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00051</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00052</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00053</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00054</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00055</a>
+00056
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00057</a>
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00058</a>
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00059</a>
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00060</a>
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00061</a>
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00062</a>
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00063</a>
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00064</a>
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00065</a>
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00066</a>
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00067</a>
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00068</a>
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00069</a>
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00070</a>
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00071</a>
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00072</a>
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00073</a>
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00074</a>
+00075
+00076
+00077
+</td><td>  /* SeqNumberCallback.java, see http://ultramessaging.github.io/UMExamples/seq_number_callback/java/ */
+  
+  import com.latencybusters.lbm.*;
+  import java.lang.*;
+  
+  
+  public class SeqNumberCallback {
+      public static void main(String[] args) throws LBMException {
+          LBMContext ctx = null;           /* Context object: container for UM "instance". */
+          LBMReceiver rcv = null;          /* Receiver object: for receiving messages. */
+          LBMTopic rtopic = null;          /* Topic object */
+          LBMReceiverAttributes rcv_attr;  /* Receiver attribute object */
+  
+          /* Initialize and create receiver and receiver callback */
+          ReceiverCallback myReceiverCallback = new ReceiverCallback();
+  
+          /*** Initialization: create necessary UM objects. ***/
+          ctx = new LBMContext();
+          rcv_attr = new LBMReceiverAttributes();
+  
+<span name="cb_attr" id="cb_attr"></span>          UMERcvRecInfo umerecinfocb = new UMERcvRecInfo();
+                  rcv_attr.setRecoverySequenceNumberCallback(umerecinfocb, null);
+  
+          rtopic = new LBMTopic(ctx, "test.topic", rcv_attr);
+          rcv = new LBMReceiver(ctx, rtopic, myReceiverCallback, null);
+          
+          while(true)
+          {
+  
+          }
+      } /* main */
+  
+      /* Class for receiving messages */
+<span name="handle_msg" id="handle_msg"></span>      private static class ReceiverCallback implements LBMReceiverCallback {
+          public int onReceive(Object cbArg, LBMMessage msg)
+          {
+              switch (msg.type())
+                          {
+                                  case LBM.MSG_UME_REGISTRATION_SUCCESS_EX:
+                                          UMERegistrationSuccessInfo reg = msg.registrationSuccessInfo();
+                                          System.out.println("[" + msg.topicName() + "][" + msg.source() + "] store " + reg.storeIndex() + ": "
+                                                  + reg.store() + " UME registration successful. Sequence number is " + reg.sequenceNumber());
+                                          break;
+                                  case LBM.MSG_UME_REGISTRATION_COMPLETE_EX:
+                                          UMERegistrationCompleteInfo regcomplete = msg.registrationCompleteInfo();
+                                          System.out.println("[" + msg.topicName() + "][" + msg.source() + "] UME registration complete. SQN "
+                                                  + regcomplete.sequenceNumber() + ". Flags " + regcomplete.flags());
+                                          break;
+                                  default:
+                                          System.out.println("Other event, type=" + msg.type());
+                                          break;
+                          }
+              return 0;
+          }
+      }  /* ReceiverCallback */
+  
+<span name="cb" id="cb"></span>      private static class UMERcvRecInfo implements UMERecoverySequenceNumberCallback {
+          public int setRecoverySequenceNumberInfo(Object cbArg, UMERecoverySequenceNumberCallbackInfo cbInfo) {
+  
+              long new_low = 100;
+              
+              System.out.println("lowSequenceNumber["+cbInfo.lowSequenceNumber()+"] is the starting sequence number as determined by registration consensus.");
+              System.out.println("highSequenceNumber["+cbInfo.highSequenceNumber()+"] is the highest sequence number available in the persisted stores.");
+              System.out.println("lowRxReqMaxSequenceNumber["+cbInfo.lowRxReqMaxSequenceNumber()+"] is the lowest sequence number to be requested.");
+              try {
+                  cbInfo.setLowSequenceNumber(new_low);
+              }
+              catch (LBMEInvalException e) {
+                  System.err.println(e.getMessage());
+              }
+              System.out.flush();
+              return 0;
+          }
+      }
+  
+  
+  } /* class MinSrc */
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

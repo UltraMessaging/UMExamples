@@ -1,0 +1,139 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>UMP Receiver Sequence Number Info Callback</title>
+  </head>
+  <body>
+        <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>UMP Receiver Sequence Number Info Callback</h1>
+    <p>UMP receivers, by default will recover messages from the store based on its configured attribute for
+    <a href="#" title="The behavior that the receiver will follow when determining the consensus sequence number used as the sequence number to begin reception at upon re-registration after a failure or suspension. This setting is only used when quorum-consensus is also used on the source.
+
+Scope:	receiver
+Type:	int
+When to Set:	Can only be set during object initialization.
+String value	Integer value	Description
+lowest	LBM_RCV_TOPIC_ATTR_UME_QC_SQN_BEHAVIOR_LOWEST	Consensus is determined as the lowest of the latest sequence numbers seen from any store.
+majority	LBM_RCV_TOPIC_ATTR_UME_QC_SQN_BEHAVIOR_MAJORITY	Consensus is determined as the latest sequence number agreed upon by the majority of stores within a group. Between groups, the latest of all majority decisions is used. Default for all.
+highest	LBM_RCV_TOPIC_ATTR_UME_QC_SQN_BEHAVIOR_HIGHEST	Consensus is determined as the highest of the latest sequence numbers seen from any store.
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">ume_consensus_sequence_number_behavior</a>
+.
+    By default, this is configured to "majority". Consensus is based on all the sequence numbers provided to the receiver
+    during store registration events (registration success events indicate a successful registration with a sinle store). Once
+    enough stores have registered to satisy a quorum, registration can complete. The sequence number provided in the registration
+    complete callback event indicates the starting sequence number for the source (the consensus sequence number).</p>
+    <p>UMP receivers have the ability to alter the starting sequence number by registering the receiver sequence number info
+    callback function, configured programatically with
+    <a href="#" title="Callback function (and associated client data pointer) that is called when a receiver is about to complete registration from the stores in use by the source and the low sequence number is to be determined. The application has the ability to modify the sequence number to use if it desires. This callback is called directly in line and does not use the event queue. Therefore the callback function used should not block or it will block the context thread processing. A value of NULL for the callback turns off the callback being called.
+
+Scope:	receiver
+Type:	lbm_ume_rcv_recovery_info_ex_func_t
+Default value:	NULL
+When to Set:	Can only be set during object initialization.
+Config File:	Cannot be set from an UM configuration file.
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">ume_recovery_sequence_number_info_function</a>
+.
+    This callback function will be executed by the UM library immediately prior to registration complete, and it provides sequence
+    number data to the application so that the application can change the starting sequence number if desired. The specific data
+    provided by the callback includes:
+    <ul>
+      <li>low sequence number: The starting sequence number for the receiver. Can be overwritten by the application</li>
+      <li>high sequence number: The highest sequence number available for recovery from the stores</li>
+      <li>low retransmission sequence number: The sequence number determined by consensus, with the attribute
+        <a href="#" title="The maximum number of messages to request, counting backward from the current latest message, when late-joining a topic. Due to network timing factors, UM may transmit an additional message. For example, a value of 5 sends 5 or possibly 6 retransmit messages to the new receiver. (Hence, you cannot request and be guaranteed to receive only 1 last message--you may get 2.) A value of 0 indicates no maximum.
+
+Scope:	receiver
+Type:	lbm_ulong_t
+Units:	messages
+Default value:	0
+When to Set:	Can only be set during object initialization.
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">retransmit_request_maximum</a>
+ taken into account</li>
+    </ul></p>
+    <p>It is highly recommended every UMP application use this function, at the very least for logging purposes. It is generally a
+    good idea to use this callback and check with internal application logic that the receiver is starting at the correct sequence
+    number as well, to avoid the possibility of requesting retransmission for messages that may have already been consumed by a UMP
+    receiver.</p>
+
+
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt><a href="SeqNumberCallback.cs">SeqNumberCallback.cs</a></tt></b>
+        - (right-click and save as "SeqNumberCallback.cs") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>SeqNumberCallback.cs</tt></h2>
+    <h4>Set Sequence Number Callback Attrribute</h4>
+	<p>The object UMERcvRecInfo is used to configure the callback function, and is defined as a class below by implementing the LBM object
+	UMERecoverySequenceNumberCallback. Once the object is set, it is passed into the setRecoverySequenceNumberCallback() method like so:</p>
+	<a name="cb_attr_ref_1" id="cb_attr_ref_1"></a>
+<small><pre>
+<a href="seq_number_callback_cs.slsrc.html#cb_attr" target="src">00024</a>                  UMERcvRecInfo umerecinfocb = new UMERcvRecInfo();
+<a href="seq_number_callback_cs.slsrc.html#cb_attr" target="src">00025</a>                  rcv_attr.setRecoverySequenceNumberCallback(umerecinfocb.setRecoverySequenceNumberInfo, null);
+</pre><!-- endblock cb_attr_ref_1 --></small>
+
+
+    <h4>The Sequence Number Callback</h4>
+	<p>Here is the actual callback function that will be executed right before registration complete. In this example, the 3 provided sequence
+	numbers are printed with explanation. In a real world application, the expectation would be to simply print the sequence numbers with the 
+	appropriate labels (high_sqn, low_sqn, low_rx_sqn). Also in this example, the application is blindly setting the starting sequence number to 100.
+	Again, in a real world application, the user should verify the starting sequence number against some internal application logic to ensure the 
+	receiver is starting at the correct sequence number.</p>
+	<a name="cb_ref_1" id="cb_ref_1"></a>
+<small><pre>
+<a href="seq_number_callback_cs.slsrc.html#cb" target="src">00059</a>          class UMERcvRecInfo {
+<a href="seq_number_callback_cs.slsrc.html#cb" target="src">00060</a>                  public int setRecoverySequenceNumberInfo(Object cbArg, UMERecoverySequenceNumberCallbackInfo cbInfo) {
+<a href="seq_number_callback_cs.slsrc.html#cb" target="src">00061</a>  
+<a href="seq_number_callback_cs.slsrc.html#cb" target="src">00062</a>                          long new_low = 100;
+<a href="seq_number_callback_cs.slsrc.html#cb" target="src">00063</a>  
+<a href="seq_number_callback_cs.slsrc.html#cb" target="src">00064</a>                          System.Console.Out.WriteLine("lowSequenceNumber["+cbInfo.lowSequenceNumber()+"] is the starting sequence number as determined by registration consensus.");
+<a href="seq_number_callback_cs.slsrc.html#cb" target="src">00065</a>                          System.Console.Out.WriteLine("highSequenceNumber["+cbInfo.highSequenceNumber()+"] is the highest sequence number available in the persisted stores.");
+<a href="seq_number_callback_cs.slsrc.html#cb" target="src">00066</a>                          System.Console.Out.WriteLine("lowRxReqMaxSequenceNumber["+cbInfo.lowRxReqMaxSequenceNumber()+"] is the lowest sequence number to be requested.");
+<a href="seq_number_callback_cs.slsrc.html#cb" target="src">00067</a>                          
+<a href="seq_number_callback_cs.slsrc.html#cb" target="src">00068</a>                          cbInfo.setLowSequenceNumber((uint)new_low);
+<a href="seq_number_callback_cs.slsrc.html#cb" target="src">00069</a>                          System.Console.Out.Flush();
+<a href="seq_number_callback_cs.slsrc.html#cb" target="src">00070</a>                          return 0;
+<a href="seq_number_callback_cs.slsrc.html#cb" target="src">00071</a>                  }
+<a href="seq_number_callback_cs.slsrc.html#cb" target="src">00072</a>          }
+</pre><!-- endblock cb_ref_1 --></small>
+
+
+    <h4>Handle Message Callback</h4>
+        <p>This sample includes a message handler that handles the persistent registration events, success and complete. 
+	<ol>
+	  <li>REGISTRATION_SUCCESS - This indicates the successful registration with a <b>single</b> UMP store. 
+	  <li>REGISTRATION_COMPLETE - This indicates that the receiver has registered with at least a quorum of stores and can begin
+		accepting messages either via store retransmissions or from the live stream, depending on it's starting sequence number. 
+	</ol>
+	</p>
+	<p>When using UMP, it should be a strong application requirement to handle these registration events in the code, as well as
+	logging the data returned in each callback, such as registration ID's and sequence numbers. This data is absolutely crucial
+	for debugging any kind of issues with related to message recovery, connectivity issues, and even performance.</p>
+        <a name="handle_msg_ref_1" id="handle_msg_ref_1"></a>
+<small><pre>
+<a href="seq_number_callback_cs.slsrc.html#handle_msg" target="src">00037</a>          static int onReceive(Object cbArg, LBMMessage msg)
+<a href="seq_number_callback_cs.slsrc.html#handle_msg" target="src">00038</a>          {
+<a href="seq_number_callback_cs.slsrc.html#handle_msg" target="src">00039</a>                  switch (msg.type())
+<a href="seq_number_callback_cs.slsrc.html#handle_msg" target="src">00040</a>                  {
+<a href="seq_number_callback_cs.slsrc.html#handle_msg" target="src">00041</a>                          case LBM.MSG_UME_REGISTRATION_SUCCESS_EX:
+<a href="seq_number_callback_cs.slsrc.html#handle_msg" target="src">00042</a>                                  UMERegistrationSuccessInfo reg = msg.registrationSuccessInfo();
+<a href="seq_number_callback_cs.slsrc.html#handle_msg" target="src">00043</a>                                  System.Console.Out.WriteLine("[" + msg.topicName() + "][" + msg.source() + "] store " + reg.storeIndex() + ": "
+<a href="seq_number_callback_cs.slsrc.html#handle_msg" target="src">00044</a>                                          + reg.store() + " UME registration successful. Sequence number is " + reg.sequenceNumber());
+<a href="seq_number_callback_cs.slsrc.html#handle_msg" target="src">00045</a>                                  break;
+<a href="seq_number_callback_cs.slsrc.html#handle_msg" target="src">00046</a>                          case LBM.MSG_UME_REGISTRATION_COMPLETE_EX:
+<a href="seq_number_callback_cs.slsrc.html#handle_msg" target="src">00047</a>                                  UMERegistrationCompleteInfo regcomplete = msg.registrationCompleteInfo();
+<a href="seq_number_callback_cs.slsrc.html#handle_msg" target="src">00048</a>                                  System.Console.Out.WriteLine("[" + msg.topicName() + "][" + msg.source() + "] UME registration complete. SQN "
+<a href="seq_number_callback_cs.slsrc.html#handle_msg" target="src">00049</a>                                          + regcomplete.sequenceNumber() + ". Flags " + regcomplete.flags());
+<a href="seq_number_callback_cs.slsrc.html#handle_msg" target="src">00050</a>                                  break;
+<a href="seq_number_callback_cs.slsrc.html#handle_msg" target="src">00051</a>                          default:
+<a href="seq_number_callback_cs.slsrc.html#handle_msg" target="src">00052</a>                                  System.Console.Out.WriteLine("Other event, type=" + msg.type());
+<a href="seq_number_callback_cs.slsrc.html#handle_msg" target="src">00053</a>                                  break;
+<a href="seq_number_callback_cs.slsrc.html#handle_msg" target="src">00054</a>                  }
+<a href="seq_number_callback_cs.slsrc.html#handle_msg" target="src">00055</a>  
+<a href="seq_number_callback_cs.slsrc.html#handle_msg" target="src">00056</a>                  return 0;
+<a href="seq_number_callback_cs.slsrc.html#handle_msg" target="src">00057</a>          }
+</pre><!-- endblock handle_msg_ref_1 --></small>
+
+
+  </body>
+</html>
+

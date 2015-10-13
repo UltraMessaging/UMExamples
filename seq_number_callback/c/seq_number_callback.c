@@ -1,4 +1,4 @@
-/* request_response.c - http://ultramessaging.github.io/UMExamples */
+/* seq_number_callback.c - http://ultramessaging.github.io/UMExamples */
 
 #include <stdio.h>
 
@@ -63,7 +63,8 @@ int ume_rcv_seqnum_ex(lbm_ume_rcv_recovery_info_ex_func_info_t *info, void *clie
 	   retransmission starting at this sequence number leading up to the high sequence number. If the new starting sequence number has
 	   yet to be published, the receiver will discard new messages until this sequence number is sent */
 	info->low_sequence_number = 100;
-        return 0;
+
+	return 0;
 }
 
 main()

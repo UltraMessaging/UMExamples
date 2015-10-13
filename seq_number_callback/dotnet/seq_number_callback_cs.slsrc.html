@@ -1,0 +1,254 @@
+<!DOCTYPE html><html><head><title>SeqNumberCallback.cs</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>SeqNumberCallback.cs</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+00008
+00009
+00010
+00011
+00012
+00013
+00014
+00015
+00016
+00017
+00018
+00019
+00020
+00021
+00022
+00023
+<a href="seq_number_callback.sldoc.html#cb_attr_ref_1" target="doc">00024</a>
+<a href="seq_number_callback.sldoc.html#cb_attr_ref_1" target="doc">00025</a>
+00026
+00027
+00028
+00029
+00030
+00031
+00032
+00033
+00034
+00035
+00036
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00037</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00038</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00039</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00040</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00041</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00042</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00043</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00044</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00045</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00046</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00047</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00048</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00049</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00050</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00051</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00052</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00053</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00054</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00055</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00056</a>
+<a href="seq_number_callback.sldoc.html#handle_msg_ref_1" target="doc">00057</a>
+00058
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00059</a>
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00060</a>
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00061</a>
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00062</a>
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00063</a>
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00064</a>
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00065</a>
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00066</a>
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00067</a>
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00068</a>
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00069</a>
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00070</a>
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00071</a>
+<a href="seq_number_callback.sldoc.html#cb_ref_1" target="doc">00072</a>
+00073
+00074
+00075
+</td><td>  /* SeqNumberCallback.cs, see http://ultramessaging.github.io/UMExamples/seq_number_callback/dotnet/ */
+  
+  using System;
+  using System.Collections.Generic;
+  using System.Linq;
+  using System.Text;
+  using System.Threading.Tasks;
+  using com.latencybusters.lbm;
+  
+  public class SeqNumberCallback {
+          static void Main(String[] args) {
+                  LBMContext ctx = null;           /* Context object: container for UM "instance". */
+                  LBMReceiver rcv = null;          /* Receiver object: for receiving messages. */
+                  LBMTopic rtopic = null;          /* Topic object */
+                  LBMReceiverAttributes rcv_attr;  /* Receiver attribute object */
+  
+                  /* Initialize and create receiver and receiver callback */
+                  LBMReceiverCallback myReceiverCallback = new LBMReceiverCallback(onReceive);
+  
+                  /*** Initialization: create necessary UM objects. ***/
+                  ctx = new LBMContext();
+                  rcv_attr = new LBMReceiverAttributes();
+  
+<span name="cb_attr" id="cb_attr"></span>                  UMERcvRecInfo umerecinfocb = new UMERcvRecInfo();
+                  rcv_attr.setRecoverySequenceNumberCallback(umerecinfocb.setRecoverySequenceNumberInfo, null);
+  
+                  rtopic = new LBMTopic(ctx, "test.topic", rcv_attr);
+                  rcv = new LBMReceiver(ctx, rtopic, myReceiverCallback, null);
+  
+                  while(true)
+                  {
+  
+                  }
+          } /* main */
+  
+          /* Class for receiving messages */
+<span name="handle_msg" id="handle_msg"></span>          static int onReceive(Object cbArg, LBMMessage msg)
+          {
+                  switch (msg.type())
+                  {
+                          case LBM.MSG_UME_REGISTRATION_SUCCESS_EX:
+                                  UMERegistrationSuccessInfo reg = msg.registrationSuccessInfo();
+                                  System.Console.Out.WriteLine("[" + msg.topicName() + "][" + msg.source() + "] store " + reg.storeIndex() + ": "
+                                          + reg.store() + " UME registration successful. Sequence number is " + reg.sequenceNumber());
+                                  break;
+                          case LBM.MSG_UME_REGISTRATION_COMPLETE_EX:
+                                  UMERegistrationCompleteInfo regcomplete = msg.registrationCompleteInfo();
+                                  System.Console.Out.WriteLine("[" + msg.topicName() + "][" + msg.source() + "] UME registration complete. SQN "
+                                          + regcomplete.sequenceNumber() + ". Flags " + regcomplete.flags());
+                                  break;
+                          default:
+                                  System.Console.Out.WriteLine("Other event, type=" + msg.type());
+                                  break;
+                  }
+  
+                  return 0;
+          }
+  
+<span name="cb" id="cb"></span>          class UMERcvRecInfo {
+                  public int setRecoverySequenceNumberInfo(Object cbArg, UMERecoverySequenceNumberCallbackInfo cbInfo) {
+  
+                          long new_low = 100;
+  
+                          System.Console.Out.WriteLine("lowSequenceNumber["+cbInfo.lowSequenceNumber()+"] is the starting sequence number as determined by registration consensus.");
+                          System.Console.Out.WriteLine("highSequenceNumber["+cbInfo.highSequenceNumber()+"] is the highest sequence number available in the persisted stores.");
+                          System.Console.Out.WriteLine("lowRxReqMaxSequenceNumber["+cbInfo.lowRxReqMaxSequenceNumber()+"] is the lowest sequence number to be requested.");
+                          
+                          cbInfo.setLowSequenceNumber((uint)new_low);
+                          System.Console.Out.Flush();
+                          return 0;
+                  }
+          }
+  
+  
+  } /* class MinSrc */
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

@@ -1,4 +1,4 @@
-/* request_response.c - http://ultramessaging.github.io/UMExamples */
+/* seq_number_callback.c - http://ultramessaging.github.io/UMExamples */
 
 /* =semlit,block,includes=*/
 #include <stdio.h>
