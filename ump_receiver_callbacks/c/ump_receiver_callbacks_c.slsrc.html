@@ -1,0 +1,430 @@
+<!DOCTYPE html><html><head><title>ump_receiver_callbacks.c</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>ump_receiver_callbacks.c</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+<a href="ump_receiver_callbacks.sldoc.html#includes_ref_1" target="doc">00003</a>
+<a href="ump_receiver_callbacks.sldoc.html#includes_ref_1" target="doc">00004</a>
+<a href="ump_receiver_callbacks.sldoc.html#includes_ref_1" target="doc">00005</a>
+<a href="ump_receiver_callbacks.sldoc.html#includes_ref_1" target="doc">00006</a>
+<a href="ump_receiver_callbacks.sldoc.html#includes_ref_1" target="doc">00007</a>
+<a href="ump_receiver_callbacks.sldoc.html#includes_ref_1" target="doc">00008</a>
+<a href="ump_receiver_callbacks.sldoc.html#includes_ref_1" target="doc">00009</a>
+<a href="ump_receiver_callbacks.sldoc.html#includes_ref_1" target="doc">00010</a>
+<a href="ump_receiver_callbacks.sldoc.html#includes_ref_1" target="doc">00011</a>
+<a href="ump_receiver_callbacks.sldoc.html#includes_ref_1" target="doc">00012</a>
+<a href="ump_receiver_callbacks.sldoc.html#includes_ref_1" target="doc">00013</a>
+<a href="ump_receiver_callbacks.sldoc.html#includes_ref_1" target="doc">00014</a>
+<a href="ump_receiver_callbacks.sldoc.html#includes_ref_1" target="doc">00015</a>
+<a href="ump_receiver_callbacks.sldoc.html#includes_ref_1" target="doc">00016</a>
+00017
+00018
+00019
+00020
+00021
+00022
+00023
+00024
+00025
+00026
+00027
+00028
+00029
+00030
+00031
+00032
+<a href="ump_receiver_callbacks.sldoc.html#data_ref_1" target="doc">00033</a>
+<a href="ump_receiver_callbacks.sldoc.html#data_ref_1" target="doc">00034</a>
+<a href="ump_receiver_callbacks.sldoc.html#data_ref_1" target="doc">00035</a>
+<a href="ump_receiver_callbacks.sldoc.html#data_ref_1" target="doc">00036</a>
+<a href="ump_receiver_callbacks.sldoc.html#data_ref_1" target="doc">00037</a>
+<a href="ump_receiver_callbacks.sldoc.html#request_ref_1" target="doc">00038</a>
+<a href="ump_receiver_callbacks.sldoc.html#request_ref_1" target="doc">00039</a>
+<a href="ump_receiver_callbacks.sldoc.html#request_ref_1" target="doc">00040</a>
+<a href="ump_receiver_callbacks.sldoc.html#request_ref_1" target="doc">00041</a>
+<a href="ump_receiver_callbacks.sldoc.html#request_ref_1" target="doc">00042</a>
+<a href="ump_receiver_callbacks.sldoc.html#loss_ref_1" target="doc">00043</a>
+<a href="ump_receiver_callbacks.sldoc.html#loss_ref_1" target="doc">00044</a>
+<a href="ump_receiver_callbacks.sldoc.html#loss_ref_1" target="doc">00045</a>
+<a href="ump_receiver_callbacks.sldoc.html#burst_ref_1" target="doc">00046</a>
+<a href="ump_receiver_callbacks.sldoc.html#burst_ref_1" target="doc">00047</a>
+<a href="ump_receiver_callbacks.sldoc.html#burst_ref_1" target="doc">00048</a>
+<a href="ump_receiver_callbacks.sldoc.html#bos_ref_1" target="doc">00049</a>
+<a href="ump_receiver_callbacks.sldoc.html#bos_ref_1" target="doc">00050</a>
+<a href="ump_receiver_callbacks.sldoc.html#bos_ref_1" target="doc">00051</a>
+<a href="ump_receiver_callbacks.sldoc.html#eos_ref_1" target="doc">00052</a>
+<a href="ump_receiver_callbacks.sldoc.html#eos_ref_1" target="doc">00053</a>
+<a href="ump_receiver_callbacks.sldoc.html#eos_ref_1" target="doc">00054</a>
+<a href="ump_receiver_callbacks.sldoc.html#no_source_ref_1" target="doc">00055</a>
+<a href="ump_receiver_callbacks.sldoc.html#no_source_ref_1" target="doc">00056</a>
+<a href="ump_receiver_callbacks.sldoc.html#no_source_ref_1" target="doc">00057</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_error_ref_1" target="doc">00058</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_error_ref_1" target="doc">00059</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_error_ref_1" target="doc">00060</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_success_ref_1" target="doc">00061</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_success_ref_1" target="doc">00062</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_success_ref_1" target="doc">00063</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_success_ref_1" target="doc">00064</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_success_ref_1" target="doc">00065</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_success_ref_1" target="doc">00066</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_success_ref_1" target="doc">00067</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_success_ref_1" target="doc">00068</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_success_ref_1" target="doc">00069</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_success_ref_1" target="doc">00070</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_success_ref_1" target="doc">00071</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_success_ref_1" target="doc">00072</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_success_ref_1" target="doc">00073</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_success_ref_1" target="doc">00074</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_success_ref_1" target="doc">00075</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_success_ref_1" target="doc">00076</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_success_ref_1" target="doc">00077</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_complete_ref_1" target="doc">00078</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_complete_ref_1" target="doc">00079</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_complete_ref_1" target="doc">00080</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_complete_ref_1" target="doc">00081</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_complete_ref_1" target="doc">00082</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_complete_ref_1" target="doc">00083</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_complete_ref_1" target="doc">00084</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_complete_ref_1" target="doc">00085</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_complete_ref_1" target="doc">00086</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_complete_ref_1" target="doc">00087</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_complete_ref_1" target="doc">00088</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_complete_ref_1" target="doc">00089</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_complete_ref_1" target="doc">00090</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_complete_ref_1" target="doc">00091</a>
+<a href="ump_receiver_callbacks.sldoc.html#dereg_success_ref_1" target="doc">00092</a>
+<a href="ump_receiver_callbacks.sldoc.html#dereg_success_ref_1" target="doc">00093</a>
+<a href="ump_receiver_callbacks.sldoc.html#dereg_success_ref_1" target="doc">00094</a>
+<a href="ump_receiver_callbacks.sldoc.html#dereg_success_ref_1" target="doc">00095</a>
+<a href="ump_receiver_callbacks.sldoc.html#dereg_success_ref_1" target="doc">00096</a>
+<a href="ump_receiver_callbacks.sldoc.html#dereg_success_ref_1" target="doc">00097</a>
+<a href="ump_receiver_callbacks.sldoc.html#dereg_success_ref_1" target="doc">00098</a>
+<a href="ump_receiver_callbacks.sldoc.html#dereg_success_ref_1" target="doc">00099</a>
+<a href="ump_receiver_callbacks.sldoc.html#dereg_success_ref_1" target="doc">00100</a>
+<a href="ump_receiver_callbacks.sldoc.html#dereg_success_ref_1" target="doc">00101</a>
+<a href="ump_receiver_callbacks.sldoc.html#dereg_success_ref_1" target="doc">00102</a>
+<a href="ump_receiver_callbacks.sldoc.html#dereg_success_ref_1" target="doc">00103</a>
+<a href="ump_receiver_callbacks.sldoc.html#dereg_success_ref_1" target="doc">00104</a>
+<a href="ump_receiver_callbacks.sldoc.html#dereg_success_ref_1" target="doc">00105</a>
+<a href="ump_receiver_callbacks.sldoc.html#dereg_success_ref_1" target="doc">00106</a>
+<a href="ump_receiver_callbacks.sldoc.html#dereg_complete_ref_1" target="doc">00107</a>
+<a href="ump_receiver_callbacks.sldoc.html#dereg_complete_ref_1" target="doc">00108</a>
+<a href="ump_receiver_callbacks.sldoc.html#dereg_complete_ref_1" target="doc">00109</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_change_ref_1" target="doc">00110</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_change_ref_1" target="doc">00111</a>
+<a href="ump_receiver_callbacks.sldoc.html#reg_change_ref_1" target="doc">00112</a>
+<a href="ump_receiver_callbacks.sldoc.html#other_ref_1" target="doc">00113</a>
+<a href="ump_receiver_callbacks.sldoc.html#other_ref_1" target="doc">00114</a>
+<a href="ump_receiver_callbacks.sldoc.html#other_ref_1" target="doc">00115</a>
+00116
+00117
+00118
+00119
+00120
+00121
+00122
+00123
+00124
+00125
+00126
+00127
+00128
+<a href="ump_receiver_callbacks.sldoc.html#windows_ref_1" target="doc">00129</a>
+<a href="ump_receiver_callbacks.sldoc.html#windows_ref_1" target="doc">00130</a>
+<a href="ump_receiver_callbacks.sldoc.html#windows_ref_1" target="doc">00131</a>
+<a href="ump_receiver_callbacks.sldoc.html#windows_ref_1" target="doc">00132</a>
+<a href="ump_receiver_callbacks.sldoc.html#windows_ref_1" target="doc">00133</a>
+<a href="ump_receiver_callbacks.sldoc.html#windows_ref_1" target="doc">00134</a>
+<a href="ump_receiver_callbacks.sldoc.html#windows_ref_1" target="doc">00135</a>
+<a href="ump_receiver_callbacks.sldoc.html#windows_ref_1" target="doc">00136</a>
+<a href="ump_receiver_callbacks.sldoc.html#windows_ref_1" target="doc">00137</a>
+<a href="ump_receiver_callbacks.sldoc.html#windows_ref_1" target="doc">00138</a>
+00139
+<a href="ump_receiver_callbacks.sldoc.html#ctx_rcv_create_ref_1" target="doc">00140</a>
+<a href="ump_receiver_callbacks.sldoc.html#ctx_rcv_create_ref_1" target="doc">00141</a>
+<a href="ump_receiver_callbacks.sldoc.html#ctx_rcv_create_ref_1" target="doc">00142</a>
+<a href="ump_receiver_callbacks.sldoc.html#ctx_rcv_create_ref_1" target="doc">00143</a>
+<a href="ump_receiver_callbacks.sldoc.html#ctx_rcv_create_ref_1" target="doc">00144</a>
+<a href="ump_receiver_callbacks.sldoc.html#ctx_rcv_create_ref_1" target="doc">00145</a>
+<a href="ump_receiver_callbacks.sldoc.html#ctx_rcv_create_ref_1" target="doc">00146</a>
+<a href="ump_receiver_callbacks.sldoc.html#ctx_rcv_create_ref_1" target="doc">00147</a>
+<a href="ump_receiver_callbacks.sldoc.html#ctx_rcv_create_ref_1" target="doc">00148</a>
+<a href="ump_receiver_callbacks.sldoc.html#ctx_rcv_create_ref_1" target="doc">00149</a>
+00150
+00151
+00152
+00153
+00154
+00155
+00156
+00157
+00158
+00159
+00160
+00161
+00162
+00163
+</td><td>  /* ump_receiver_callbacks.c - http://ultramessaging.github.io/UMExamples */
+  
+<span name="includes" id="includes"></span>  #include &lt;stdio.h&gt;
+  
+  #if defined(_MSC_VER)
+  /* Windows-only includes */
+  #include &lt;winsock2.h&gt;
+  #define SLEEP(s) Sleep((s)*1000)
+  #else
+  /* Unix-only includes */
+  #include &lt;stdlib.h&gt;
+  #include &lt;unistd.h&gt;
+  #define SLEEP(s) sleep(s)
+  #endif
+  
+  #include &lt;lbm/lbm.h&gt;
+  
+  /* Example error checking macro.  Include after each UM call. */
+  #define EX_LBM_CHK(err) do { \
+    if ((err) &lt; 0) { \
+        fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
+        __FILE__, __LINE__, lbm_errmsg()); \
+        exit(1); \
+    }  \
+  } while (0)
+  
+  /* Callback used to handle request message for receiver */
+  int rcv_handle_msg(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
+  {
+      int err;
+  
+      switch (msg-&gt;type) {
+<span name="data" id="data"></span>          case LBM_MSG_DATA:
+              printf("DATA [%s][%s][%d]%s%s, %u bytes\n", msg-&gt;topic_name, msg-&gt;source, msg-&gt;sequence_number,
+                  ((msg-&gt;flags &amp; LBM_MSG_FLAG_UME_RETRANSMIT) ? "-RX-" : ""),
+                  ((msg-&gt;flags &amp; LBM_MSG_FLAG_OTR) ? "-OTR-" : ""), (unsigned int)msg-&gt;len);
+              break;
+<span name="request" id="request"></span>          case LBM_MSG_REQUEST:
+              printf("REQUEST [%s][%s][%d]%s%s, %u bytes\n", msg-&gt;topic_name, msg-&gt;source, msg-&gt;sequence_number,
+                                  ((msg-&gt;flags &amp; LBM_MSG_FLAG_UME_RETRANSMIT) ? "-RX-" : ""),
+                                  ((msg-&gt;flags &amp; LBM_MSG_FLAG_OTR) ? "-OTR-" : ""), (unsigned int)msg-&gt;len);
+              break;
+<span name="loss" id="loss"></span>          case LBM_MSG_UNRECOVERABLE_LOSS:
+              printf("[%s][%s][%x], LOST\n", msg-&gt;topic_name, msg-&gt;source, msg-&gt;sequence_number);
+              break;
+<span name="burst" id="burst"></span>          case LBM_MSG_UNRECOVERABLE_LOSS_BURST:
+              printf("[%s][%s][%x], LOST BURST\n", msg-&gt;topic_name, msg-&gt;source, msg-&gt;sequence_number);
+              break;
+<span name="bos" id="bos"></span>          case LBM_MSG_BOS:
+              printf("[%s][%s], Beginning of Transport Session\n", msg-&gt;topic_name, msg-&gt;source);
+              break;
+<span name="eos" id="eos"></span>          case LBM_MSG_EOS:
+              printf("[%s][%s], End of Transport Session\n", msg-&gt;topic_name, msg-&gt;source);
+              break;
+<span name="no_source" id="no_source"></span>          case LBM_MSG_NO_SOURCE_NOTIFICATION:
+              printf("[%s], no sources found for topic\n", msg-&gt;topic_name);
+              break;
+<span name="reg_error" id="reg_error"></span>          case LBM_MSG_UME_REGISTRATION_ERROR:
+              printf("[%s][%s] UME registration error: %s\n", msg-&gt;topic_name, msg-&gt;source, msg-&gt;data);
+              break;
+<span name="reg_success" id="reg_success"></span>          case LBM_MSG_UME_REGISTRATION_SUCCESS_EX:
+          {
+              lbm_msg_ume_registration_ex_t *reg = (lbm_msg_ume_registration_ex_t *)(msg-&gt;data);
+              printf("[%s][%s] store %u: %s UME registration successful. SrcRegID %u RcvRegID %u. Flags %x ",
+                  msg-&gt;topic_name, msg-&gt;source, reg-&gt;store_index, reg-&gt;store,
+                  reg-&gt;src_registration_id, reg-&gt;rcv_registration_id, reg-&gt;flags);
+              if (reg-&gt;flags &amp; LBM_MSG_UME_REGISTRATION_SUCCESS_EX_FLAG_OLD)
+                  printf("OLD[SQN %x] ", reg-&gt;sequence_number);
+              if (reg-&gt;flags &amp; LBM_MSG_UME_REGISTRATION_SUCCESS_EX_FLAG_NOCACHE)
+                  printf("NOCACHE ");
+              if (reg-&gt;flags &amp; LBM_MSG_UME_REGISTRATION_SUCCESS_EX_FLAG_RPP)
+                  printf("RPP ");
+              if (reg-&gt;flags &amp; LBM_MSG_UME_REGISTRATION_SUCCESS_EX_FLAG_SRC_SID)
+                  printf("Src Session ID 0x%" PRIx64 " ", reg-&gt;src_session_id);
+              printf("\n");
+              break;
+          }
+<span name="reg_complete" id="reg_complete"></span>          case LBM_MSG_UME_REGISTRATION_COMPLETE_EX:
+                  {
+              lbm_msg_ume_registration_complete_ex_t *reg = (lbm_msg_ume_registration_complete_ex_t *)(msg-&gt;data);
+              printf("[%s][%s] UME registration complete. SQN %x. Flags %x ",
+                  msg-&gt;topic_name, msg-&gt;source, reg-&gt;sequence_number, reg-&gt;flags);
+              if (reg-&gt;flags &amp; LBM_MSG_UME_REGISTRATION_COMPLETE_EX_FLAG_QUORUM)
+                  printf("QUORUM ");
+              if (reg-&gt;flags &amp; LBM_MSG_UME_REGISTRATION_COMPLETE_EX_FLAG_RXREQMAX)
+                  printf("RXREQMAX ");
+              if (reg-&gt;flags &amp; LBM_MSG_UME_REGISTRATION_COMPLETE_EX_FLAG_SRC_SID)
+                  printf("Src Session ID 0x%" PRIx64 " ", reg-&gt;src_session_id);
+              printf("\n");
+              break;
+          }
+<span name="dereg_success" id="dereg_success"></span>          case LBM_MSG_UME_DEREGISTRATION_SUCCESS_EX:
+          {
+              lbm_msg_ume_deregistration_ex_t *dereg = (lbm_msg_ume_deregistration_ex_t *)(msg-&gt;data);
+              printf("[%s][%s] store %u: %s UME deregistration successful. SrcRegID %u RcvRegID %u. Flags %x ",
+                  msg-&gt;topic_name, msg-&gt;source, dereg-&gt;store_index, dereg-&gt;store,
+                  dereg-&gt;src_registration_id, dereg-&gt;rcv_registration_id, dereg-&gt;flags);
+              if (dereg-&gt;flags &amp; LBM_MSG_UME_REGISTRATION_SUCCESS_EX_FLAG_OLD)
+                  printf("OLD[SQN %x] ", dereg-&gt;sequence_number);
+              if (dereg-&gt;flags &amp; LBM_MSG_UME_REGISTRATION_SUCCESS_EX_FLAG_NOCACHE)
+                  printf("NOCACHE ");
+              if (dereg-&gt;flags &amp; LBM_MSG_UME_REGISTRATION_SUCCESS_EX_FLAG_RPP)
+                  printf("RPP ");
+              printf("\n");
+              break;
+          }
+<span name="dereg_complete" id="dereg_complete"></span>          case LBM_MSG_UME_DEREGISTRATION_COMPLETE_EX:
+              printf("[%s][%s] UME deregistration complete.\n", msg-&gt;topic_name, msg-&gt;source);
+              break;
+<span name="reg_change" id="reg_change"></span>          case LBM_MSG_UME_REGISTRATION_CHANGE:
+              printf("[%s][%s] UME registration change: %s\n", msg-&gt;topic_name, msg-&gt;source, msg-&gt;data);
+              break;
+<span name="other" id="other"></span>          default:
+              printf("Other event, type=%x\n", msg-&gt;type);
+              break;
+      }
+  
+      return 0;
+  }
+  
+  main()
+  {
+      lbm_context_t *ctx;                     /* Context object */
+      lbm_context_attr_t * cattr;             /* Context attribute object */
+      lbm_rcv_t *rcv;                         /* Receive object: for subscribing to messages. */
+      lbm_topic_t *rtopic;                    /* Receiver Topic object */
+      int err;                                /* Used for checking API return codes */
+  
+<span name="windows" id="windows"></span>  #if defined(_WIN32)
+      /* windows-specific code */
+      WSADATA wsadata;
+      int wsStat = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
+      if (wsStat != 0)
+      {
+          printf("line %d: wsStat=%d\n",__LINE__,wsStat);
+          exit(1);
+      }
+  #endif
+      
+<span name="ctx_rcv_create" id="ctx_rcv_create"></span>      /* Initialize context atrributes and create context */
+      err = lbm_context_create(&amp;ctx, NULL, NULL, NULL);
+      EX_LBM_CHK(err);
+  
+      /* Create receiver for receiving request and sending response */
+      err = lbm_rcv_topic_lookup(&amp;rtopic, ctx, "test.topic", NULL);
+          EX_LBM_CHK(err);
+  
+      err = lbm_rcv_create(&amp;rcv, ctx, rtopic, rcv_handle_msg, NULL, NULL);
+      EX_LBM_CHK(err);
+  
+      while (1) { }
+  
+      err = lbm_rcv_delete(rcv);
+      EX_LBM_CHK(err);
+  
+      err = lbm_context_delete(ctx);
+      EX_LBM_CHK(err);
+  
+  #if defined(_MSC_VER)
+      /* Windows-specific cleanup overhead */
+      WSACleanup();
+  #endif
+  } /* main */
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

@@ -1,0 +1,7 @@
+The threshold for the number of unanswered topic resolution queries before UM delivers a LBM_MSG_NO_SOURCE_NOTIFICATION for the topic. The receiver does not stop querying after the delivery of this notification. A value of 0 indicates no notifications will be sent.
+
+Scope:	receiver
+Type:	lbm_ulong_t
+Units:	Number of queries
+Default value:	0 (do not notify)
+When to Set:	May be set during operation.

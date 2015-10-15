@@ -1,0 +1,7 @@
+    <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>Handling and Logging UMP Receiver Callbacks</h1>
+	<p>Most applications that use Ultra Messaging (UM) are already logging a lot of application specific data. Sometimes, these logs 
+	can be as large as multiple gigabytes, per day! So it is understandable that users will want to keep their UM specific items to a 
+	minimum and focus on the application logging. That being said, there is some crucial data that should be logged pertaining to the 
+	Ultra Messaging Persistence (UMP) framework as, without this data, debugging problems related to messaging can be near impossible. 
+	This sample offers you the data that is most important to log, and the reason why this data is so important to track.</p>
