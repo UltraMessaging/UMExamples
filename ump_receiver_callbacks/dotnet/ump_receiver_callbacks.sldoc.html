@@ -1,0 +1,242 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>UMP Receiver Callbacks Event Logging</title>
+  </head>
+  <body>
+        <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>Handling and Logging UMP Receiver Callbacks</h1>
+	<p>Most applications that use Ultra Messaging (UM) are already logging a lot of application specific data. Sometimes, these logs 
+	can be as large as multiple gigabytes, per day! So it is understandable that users will want to keep their UM specific items to a 
+	minimum and focus on the application logging. That being said, there is some crucial data that should be logged pertaining to the 
+	Ultra Messaging Persistence (UMP) framework as, without this data, debugging problems related to messaging can be near impossible. 
+	This sample offers you the data that is most important to log, and the reason why this data is so important to track.</p>
+
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt><a href="UMPReceiverCallbacks.cs">UMPReceiverCallbacks.cs</a></tt></b>
+        - (right-click and save as "UMPReceiverCallbacks.cs") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>UMPReceiverCallbacks.cs</tt></h2>
+    <h4>Context/Receiver Create</h4>
+	<p>Standard context and receiver creation. Note the message handler function passed into the receiver create function, this
+	is the callback function that will handle all the receiver callback events.</p>
+	<a name="ctx_rcv_create_ref_1" id="ctx_rcv_create_ref_1"></a>
+<small><pre>
+<a href="ump_receiver_callbacks_cs.slsrc.html#ctx_rcv_create" target="src">00017</a>                  LBMReceiverCallback myReceiverCallback = new LBMReceiverCallback(onReceive);
+<a href="ump_receiver_callbacks_cs.slsrc.html#ctx_rcv_create" target="src">00018</a>  
+<a href="ump_receiver_callbacks_cs.slsrc.html#ctx_rcv_create" target="src">00019</a>                  /*** Initialization: create necessary UM objects. ***/
+<a href="ump_receiver_callbacks_cs.slsrc.html#ctx_rcv_create" target="src">00020</a>                  ctx = new LBMContext();
+<a href="ump_receiver_callbacks_cs.slsrc.html#ctx_rcv_create" target="src">00021</a>  
+<a href="ump_receiver_callbacks_cs.slsrc.html#ctx_rcv_create" target="src">00022</a>                  rtopic = new LBMTopic(ctx, "test.topic");
+<a href="ump_receiver_callbacks_cs.slsrc.html#ctx_rcv_create" target="src">00023</a>                  rcv = new LBMReceiver(ctx, rtopic, myReceiverCallback, null);
+</pre><!-- endblock ctx_rcv_create_ref_1 --></small>
+
+
+    <h4>Handle Message Callback</h4>
+        <p>Here is the message callback. The message callback function is a single function that can be coded to deal with many
+	different callback events. Only a single event is processed at a time, therefore a switch statement works best for
+	handling the different types of events that are possible. Below is a description of each event, as well as which data 
+	is useful to log, as well as how important it is to log such data in the applications log file.</p>
+      <h3>Message Data Callback (LBM.MSG_DATA)</h3>
+	<p>This is the message type used for handling received messages. If your application is already printing the data from every 
+	message, then it would be worth logging the Ultra Messaging sequence number, topic string, and the flags in the message data 
+	structure. The sequence number can help us keep track of what messages this particular receiver consumed, the topic will help 
+	identify the receiver, and the flags can identify whether the messages are coming directly from a source or being recovered from 
+	a store.</p>
+	<p>If your application is not regularly logging data messages because it would grow the application logs too large, then this data
+	can be skipped. However, it would be useful to have the ability to enable logging as part of some kind of application debug mode.</p> 
+	<a name="data_ref_1" id="data_ref_1"></a>
+<small><pre>
+<a href="ump_receiver_callbacks_cs.slsrc.html#data" target="src">00036</a>                          case LBM.MSG_DATA:
+<a href="ump_receiver_callbacks_cs.slsrc.html#data" target="src">00037</a>                                  System.Console.Out.Write("[" + msg.topicName() + "][" + msg.source() + "][" + msg.sequenceNumber() + "]");
+<a href="ump_receiver_callbacks_cs.slsrc.html#data" target="src">00038</a>                                  if ((msg.flags() &amp; LBM.MSG_FLAG_UME_RETRANSMIT) != 0) {
+<a href="ump_receiver_callbacks_cs.slsrc.html#data" target="src">00039</a>                                          System.Console.Out.Write("-RX-");
+<a href="ump_receiver_callbacks_cs.slsrc.html#data" target="src">00040</a>                                  }
+<a href="ump_receiver_callbacks_cs.slsrc.html#data" target="src">00041</a>                                  if ((msg.flags() &amp; LBM.MSG_FLAG_OTR) != 0) {
+<a href="ump_receiver_callbacks_cs.slsrc.html#data" target="src">00042</a>                                          System.Console.Out.Write("-OTR-");
+<a href="ump_receiver_callbacks_cs.slsrc.html#data" target="src">00043</a>                                  }
+<a href="ump_receiver_callbacks_cs.slsrc.html#data" target="src">00044</a>                                  System.Console.Out.Write(", ");
+<a href="ump_receiver_callbacks_cs.slsrc.html#data" target="src">00045</a>                                  System.Console.Out.WriteLine(msg.data().Length + " bytes");
+<a href="ump_receiver_callbacks_cs.slsrc.html#data" target="src">00046</a>                                  break;
+</pre><!-- endblock data_ref_1 --></small>
+
+
+      <h3>Request Message (LBM.MSG_REQUEST)</h3>
+	<p>Similar to data messages above, the only real difference being that these messages can be responded to via the API.</p>
+	<a name="request_ref_1" id="request_ref_1"></a>
+<small><pre>
+<a href="ump_receiver_callbacks_cs.slsrc.html#request" target="src">00047</a>                          case LBM.MSG_REQUEST:
+<a href="ump_receiver_callbacks_cs.slsrc.html#request" target="src">00048</a>                                  if ((msg.flags() &amp; LBM.MSG_FLAG_UME_RETRANSMIT) != 0) {
+<a href="ump_receiver_callbacks_cs.slsrc.html#request" target="src">00049</a>                                          System.Console.Out.Write("-RX-");
+<a href="ump_receiver_callbacks_cs.slsrc.html#request" target="src">00050</a>                                  }
+<a href="ump_receiver_callbacks_cs.slsrc.html#request" target="src">00051</a>                                  if ((msg.flags() &amp; LBM.MSG_FLAG_OTR) != 0) {
+<a href="ump_receiver_callbacks_cs.slsrc.html#request" target="src">00052</a>                                          System.Console.Out.Write("-OTR-");
+<a href="ump_receiver_callbacks_cs.slsrc.html#request" target="src">00053</a>                                  }
+<a href="ump_receiver_callbacks_cs.slsrc.html#request" target="src">00054</a>                                  System.Console.Out.Write(", ");
+<a href="ump_receiver_callbacks_cs.slsrc.html#request" target="src">00055</a>                                  System.Console.Out.WriteLine(msg.data().Length + " bytes");
+<a href="ump_receiver_callbacks_cs.slsrc.html#request" target="src">00056</a>                                  break;
+</pre><!-- endblock request_ref_1 --></small>
+
+
+      <h3>Unrecoverable Loss (LBM.MSG_UNRECOVERABLE_LOSS)</h3>
+	<p>This event indicates that a single message has been declared unrecoverable, and will not be received by the application. This 
+	should always be logged. Unrecoverable Loss in a UMP environment is typically not expected and indicates a failure of the transport 
+	level recovery, so this event should be logged every time, with the topic name, the sequence number provided, and the source information. 
+	The source information will identify the source publishing the messages that have been lost.</p>
+	<a name="loss_ref_1" id="loss_ref_1"></a>
+<small><pre>
+<a href="ump_receiver_callbacks_cs.slsrc.html#loss" target="src">00063</a>                          case LBM.MSG_UNRECOVERABLE_LOSS:
+<a href="ump_receiver_callbacks_cs.slsrc.html#loss" target="src">00064</a>                                  System.Console.Out.WriteLine("[" + msg.topicName() + "][" + msg.source() + "][" + msg.sequenceNumber().ToString("x") + "], LOST");
+<a href="ump_receiver_callbacks_cs.slsrc.html#loss" target="src">00065</a>                                  break;
+</pre><!-- endblock loss_ref_1 --></small>
+
+
+      <h3>Unrecoverable Loss Burst (LBM.MSG_UNRECOVERABLE_LOSS_BURST)</h3>
+	<p>Similar to regular loss, but indicates a larger gap of messages have been decalred unrecoverable. Same as above, this should always 
+	be logged. Since this indicates a large number of messages that are unrecoverable, it is even more important to log all the data provided 
+	in the message data structure (topic name, sequence number, and source information). 
+	See sample <a href="../../handle_burst/cs/" target="_parent">handle_burst</a> for more information on handling burst loss</p>
+	<a name="burst_ref_1" id="burst_ref_1"></a>
+<small><pre>
+<a href="ump_receiver_callbacks_cs.slsrc.html#burst" target="src">00066</a>                          case LBM.MSG_UNRECOVERABLE_LOSS_BURST:
+<a href="ump_receiver_callbacks_cs.slsrc.html#burst" target="src">00067</a>                                  System.Console.Out.WriteLine("[" + msg.topicName() + "][" + msg.source() + "][" + msg.sequenceNumber().ToString("x") + "], LOST BURST");
+<a href="ump_receiver_callbacks_cs.slsrc.html#burst" target="src">00068</a>                                  break;
+</pre><!-- endblock burst_ref_1 --></small>
+
+
+      <h3>Beginning of Transport Session (LBM.MSG_BOS)</h3>
+	<p>BOS indicates that a new transport session has been detected in which messages will be received on for a specific source transport. This
+	callback should be logged, as it is useful when trying to debug connectivity issues. This should always be logged with the topic name and 
+	source information.</p>
+	<a name="bos_ref_1" id="bos_ref_1"></a>
+<small><pre>
+<a href="ump_receiver_callbacks_cs.slsrc.html#bos" target="src">00057</a>                          case LBM.MSG_BOS:
+<a href="ump_receiver_callbacks_cs.slsrc.html#bos" target="src">00058</a>                                  System.Console.Out.WriteLine("[" + msg.topicName() + "][" + msg.source() + "], Beginning of Transport Session");
+<a href="ump_receiver_callbacks_cs.slsrc.html#bos" target="src">00059</a>                                  break;
+</pre><!-- endblock bos_ref_1 --></small>
+
+
+      <h3>End of Transport Session (LBM.MSG_EOS)</h3>
+	<p>Similar as BOS, this indicates that there has been no activity on a transport and that the transport has timed out. This should always
+	be logged with the same information as BOS.</p>
+	<a name="eos_ref_1" id="eos_ref_1"></a>
+<small><pre>
+<a href="ump_receiver_callbacks_cs.slsrc.html#eos" target="src">00060</a>                          case LBM.MSG_EOS:
+<a href="ump_receiver_callbacks_cs.slsrc.html#eos" target="src">00061</a>                                  System.Console.Out.WriteLine("[" + msg.topicName() + "][" + msg.source() + "], End of Transport Session");
+<a href="ump_receiver_callbacks_cs.slsrc.html#eos" target="src">00062</a>                                  break;
+</pre><!-- endblock eos_ref_1 --></small>
+
+
+      <h3>No Source Notification (LBM.MSG_NO_SOURCE_NOTIFICATION)</h3>
+	<p>The no source notifcation callback is not enabled by default, and must be configured with 
+	<a href="#" title="The threshold for the number of unanswered topic resolution queries before UM delivers a LBM_MSG_NO_SOURCE_NOTIFICATION for the topic. The receiver does not stop querying after the delivery of this notification. A value of 0 indicates no notifications will be sent.
+
+Scope:	receiver
+Type:	lbm_ulong_t
+Units:	Number of queries
+Default value:	0 (do not notify)
+When to Set:	May be set during operation.
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">resolution_no_source_notification_threshold</a>
+.
+	For more information on setting this callback, please see sample: <a href="../../no_source_notify/cs/" target="_parent">no_source_notify</a>.
+	Logging this callback is entirely up to the developer, however it could also be useful when trying to debug connectivity issues.</p>
+	<a name="no_source_ref_1" id="no_source_ref_1"></a>
+<small><pre>
+<a href="ump_receiver_callbacks_cs.slsrc.html#no_source" target="src">00069</a>  
+</pre><!-- endblock no_source_ref_1 --></small>
+
+
+      <h3>UMP Registration Error (LBM.MSG_UME_REGISTRATION_ERROR)</h3>
+	<p>This callback event indicates an error while trying to register with a UMP store. This should be logged every time along with the topic 
+	name and error string provided in the callback.</p>
+	<a name="reg_error_ref_1" id="reg_error_ref_1"></a>
+<small><pre>
+<a href="ump_receiver_callbacks_cs.slsrc.html#reg_error" target="src">00070</a>                          case LBM.MSG_UME_REGISTRATION_ERROR:
+<a href="ump_receiver_callbacks_cs.slsrc.html#reg_error" target="src">00071</a>                                  System.Console.Out.WriteLine("[" + msg.topicName() + "][" + msg.source() + "] UME registration error: " + msg.dataString());
+<a href="ump_receiver_callbacks_cs.slsrc.html#reg_error" target="src">00072</a>                                  break;
+</pre><!-- endblock reg_error_ref_1 --></small>
+
+
+      <h3>UMP Registration Success (LBM.MSG_UME_REGISTRATION_SUCCESS_EX)</h3>
+	<p>This callback is executed every time the receiver registers to a particular store, and very much is worth logging. In particular, the 
+	topic name, store information, receiver and source RegID.s, flags, and registered sequence number. The sequence number here indicates where 
+	the store thinks this receiver is at, and is one of the deciding factors when determining the starting sequence number for the receiver. The 
+	source and receiver RegID are useful for tracking those components in the store log and store web-monitor.</p>
+	<a name="reg_success_ref_1" id="reg_success_ref_1"></a>
+<small><pre>
+<a href="ump_receiver_callbacks_cs.slsrc.html#reg_success" target="src">00073</a>                          case LBM.MSG_UME_REGISTRATION_SUCCESS_EX:
+<a href="ump_receiver_callbacks_cs.slsrc.html#reg_success" target="src">00074</a>                                  UMERegistrationSuccessInfo reg = msg.registrationSuccessInfo();
+<a href="ump_receiver_callbacks_cs.slsrc.html#reg_success" target="src">00075</a>                                  System.Console.Out.WriteLine("[" + msg.topicName() + "][" + msg.source() + "] store " + reg.storeIndex() + ": "
+<a href="ump_receiver_callbacks_cs.slsrc.html#reg_success" target="src">00076</a>                                          + reg.store() + " UME registration successful. Sequence number is " + reg.sequenceNumber());
+<a href="ump_receiver_callbacks_cs.slsrc.html#reg_success" target="src">00077</a>                                  break;
+</pre><!-- endblock reg_success_ref_1 --></small>
+
+
+      <h3>UMP Registration Complete (LBM.MSG_UME_REGISTRATION_COMPLETE_EX)</h3>
+	<p>This callback is only executed once per registration, regardless of the number of stores. Complete indicates that a quorum of stores has been 
+	registered, and the receiver is ready to start receiving messages. It is important to log the topic name, the source and receiver RegID.s, flags, 
+	and the consensus sequence number . as this is the first sequence number the receiver should consume going forward.</p>
+	<a name="reg_complete_ref_1" id="reg_complete_ref_1"></a>
+<small><pre>
+<a href="ump_receiver_callbacks_cs.slsrc.html#reg_complete" target="src">00078</a>                          case LBM.MSG_UME_REGISTRATION_COMPLETE_EX:
+<a href="ump_receiver_callbacks_cs.slsrc.html#reg_complete" target="src">00079</a>                                  UMERegistrationCompleteInfo regcomplete = msg.registrationCompleteInfo();
+<a href="ump_receiver_callbacks_cs.slsrc.html#reg_complete" target="src">00080</a>                                  System.Console.Out.WriteLine("[" + msg.topicName() + "][" + msg.source() + "] UME registration complete. SQN "
+<a href="ump_receiver_callbacks_cs.slsrc.html#reg_complete" target="src">00081</a>                                          + regcomplete.sequenceNumber() + ". Flags " + regcomplete.flags());
+<a href="ump_receiver_callbacks_cs.slsrc.html#reg_complete" target="src">00082</a>                                  break;
+</pre><!-- endblock reg_complete_ref_1 --></small>
+
+
+      <h3>UMP Deregistration Success (LBM.MSG_UME_DEREGISTRATION_SUCCESS_EX)</h3>
+	<p>This callback should be logged when using the Receiver Paced Persistence mode of operation or when using the deregistration AP. It indicates 
+	that the receiver deregistered from a particular store. The source and receiver RegID, sequence number, store information, and flags should be 
+	logged here.</p>
+	<a name="dereg_success_ref_1" id="dereg_success_ref_1"></a>
+<small><pre>
+<a href="ump_receiver_callbacks_cs.slsrc.html#dereg_success" target="src">00083</a>                          case LBM.MSG_UME_DEREGISTRATION_SUCCESS_EX:
+<a href="ump_receiver_callbacks_cs.slsrc.html#dereg_success" target="src">00084</a>                                  System.Console.Out.Write("DEREGISTRATION SUCCESSFUL ");
+<a href="ump_receiver_callbacks_cs.slsrc.html#dereg_success" target="src">00085</a>                                  UMEDeregistrationSuccessInfo dereg = msg.deregistrationSuccessInfo();
+<a href="ump_receiver_callbacks_cs.slsrc.html#dereg_success" target="src">00086</a>                                  System.Console.Out.Write("[" + msg.topicName() + "][" + msg.source() + "] store " + dereg.storeIndex() + ": "
+<a href="ump_receiver_callbacks_cs.slsrc.html#dereg_success" target="src">00087</a>                                          + dereg.store() + " UME deregistration successful. SrcRegID " + dereg.sourceRegistrationId() + " RcvRegID " + dereg.receiverRegistrationId()
+<a href="ump_receiver_callbacks_cs.slsrc.html#dereg_success" target="src">00088</a>                                          + ". Flags " + dereg.flags() + " ");
+<a href="ump_receiver_callbacks_cs.slsrc.html#dereg_success" target="src">00089</a>                                  System.Console.Out.WriteLine();
+<a href="ump_receiver_callbacks_cs.slsrc.html#dereg_success" target="src">00090</a>                                  break;
+</pre><!-- endblock dereg_success_ref_1 --></small>
+
+
+      <h3>UMP Deregistration Complete (LBM.MSG_UME_DEREGISTRATION_COMPLETE_EX)</h3>
+	<p>.Similar to the deregistration success callback; this callback indicates that the receiver has successfully deregistered from all stores, and 
+	should be logged. Topic name and source information are sufficient for this callback.</p>
+	<a name="dereg_complete_ref_1" id="dereg_complete_ref_1"></a>
+<small><pre>
+<a href="ump_receiver_callbacks_cs.slsrc.html#dereg_complete" target="src">00091</a>                          case LBM.MSG_UME_DEREGISTRATION_COMPLETE_EX:
+<a href="ump_receiver_callbacks_cs.slsrc.html#dereg_complete" target="src">00092</a>                                  System.Console.Out.WriteLine("DEREGISTRATION COMPLETE");
+<a href="ump_receiver_callbacks_cs.slsrc.html#dereg_complete" target="src">00093</a>                                  break;
+</pre><!-- endblock dereg_complete_ref_1 --></small>
+
+
+      <h3>UMP Registration Change (LBM.MSG_UME_REGISTRATION_CHANGE)</h3>
+	<p>This callback should be logged as it indicates a change in the registration status for a particular topic. Topic name, source information, and 
+	the message data should be printed here. The message data will have the change that has been made to registration.</p>
+	<a name="reg_change_ref_1" id="reg_change_ref_1"></a>
+<small><pre>
+<a href="ump_receiver_callbacks_cs.slsrc.html#reg_change" target="src">00094</a>                          case LBM.MSG_UME_REGISTRATION_CHANGE:
+<a href="ump_receiver_callbacks_cs.slsrc.html#reg_change" target="src">00095</a>                                  System.Console.Out.WriteLine("[" + msg.topicName() + "][" + msg.source() + "] UME registration change: " + msg.dataString());
+<a href="ump_receiver_callbacks_cs.slsrc.html#reg_change" target="src">00096</a>                                  break;
+</pre><!-- endblock reg_change_ref_1 --></small>
+
+
+      <h3>Other</h3>
+	<p>Lastly, it is a good idea to have a default case to log anything that the application is not expecting. As of writing this sample, there are no 
+	other callbacks that could be handled for UMP. However, new callbacks are added, so it's good in the event of a library upgrade.</p>
+	<a name="other_ref_1" id="other_ref_1"></a>
+<small><pre>
+<a href="ump_receiver_callbacks_cs.slsrc.html#other" target="src">00097</a>                          default:
+<a href="ump_receiver_callbacks_cs.slsrc.html#other" target="src">00098</a>                                  System.Console.Out.WriteLine("Other event, type=" + msg.type());
+<a href="ump_receiver_callbacks_cs.slsrc.html#other" target="src">00099</a>                                  break;
+</pre><!-- endblock other_ref_1 --></small>
+
+
+  </body>
+</html>
+
