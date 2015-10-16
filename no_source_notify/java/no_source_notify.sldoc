@@ -1,0 +1,32 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>UMP Receiver Callbacks Event Logging</title>
+  </head>
+  <body>
+    =semlit,include,../intro.sldoc=
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt>=semlit,srcfile,no_source_notify_java.slsrc,NoSourceNotify.java=</tt></b>
+        - (right-click and save as "NoSourceNotify.java") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>NoSourceNotify.java</tt></h2>
+    <h4>Variables</h4>
+	<p>First there is a public variable to define the number of queries threshold before the notification is executed</p>
+	=semlit,insert,num_queries=
+	<p>Next there is the global flag variable which the main application thread will wait on.</p>
+	=semlit,insert,no_source_var=
+    <h4>Configure the Threshold Attribute</h4>
+	<p>The receiver option 
+	=semlit,tooltip,../../tooltips/receiver_resolution_no_source_notification_threshold.txt,resolution_no_source_notification_threshold=
+	configures the notification to execute after the specified value for queries are published without an advertisement response. 
+	The attribute can be configured programatically like so:</p>
+	=semlit,insert,set_attr=
+	<p>This sample configures the query threshold to 25, which with the default topic resolution settings AND no active source for topic
+	"test.topic", the notification callback should execute within a couple seconds of the receiver being created</p>
+    <h4>Handle the Notification Callback</h4>
+	<p>Finally, the application should handle the notification callback inside the receivers message handler. For the purpose of this sample,
+	we will simply print a message to stdout.</p>
+	=semlit,insert,no_source_cb=
+  </body>
+</html>

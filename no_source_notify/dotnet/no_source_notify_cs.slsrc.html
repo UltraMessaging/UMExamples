@@ -1,0 +1,232 @@
+<!DOCTYPE html><html><head><title>NoSourceNotify.cs</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>NoSourceNotify.cs</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+00008
+00009
+00010
+<a href="no_source_notify.sldoc.html#num_queries_ref_1" target="doc">00011</a>
+00012
+<a href="no_source_notify.sldoc.html#no_source_var_ref_1" target="doc">00013</a>
+00014
+00015
+00016
+00017
+00018
+00019
+00020
+00021
+<a href="no_source_notify.sldoc.html#ctx_rcv_create_ref_1" target="doc">00022</a>
+<a href="no_source_notify.sldoc.html#ctx_rcv_create_ref_1" target="doc">00023</a>
+<a href="no_source_notify.sldoc.html#ctx_rcv_create_ref_1" target="doc">00024</a>
+<a href="no_source_notify.sldoc.html#ctx_rcv_create_ref_1" target="doc">00025</a>
+<a href="no_source_notify.sldoc.html#ctx_rcv_create_ref_1" target="doc">00026</a>
+<a href="no_source_notify.sldoc.html#set_attr_ref_1" target="doc">00027</a>
+<a href="no_source_notify.sldoc.html#set_attr_ref_1" target="doc">00028</a>
+<a href="no_source_notify.sldoc.html#ctx_rcv_create_ref_1" target="doc">00029</a>
+<a href="no_source_notify.sldoc.html#ctx_rcv_create_ref_1" target="doc">00030</a>
+<a href="no_source_notify.sldoc.html#ctx_rcv_create_ref_1" target="doc">00031</a>
+00032
+00033
+00034
+00035
+00036
+00037
+00038
+00039
+00040
+00041
+00042
+00043
+00044
+00045
+00046
+00047
+00048
+00049
+00050
+00051
+00052
+00053
+<a href="no_source_notify.sldoc.html#no_source_cb_ref_1" target="doc">00054</a>
+<a href="no_source_notify.sldoc.html#no_source_cb_ref_1" target="doc">00055</a>
+<a href="no_source_notify.sldoc.html#no_source_cb_ref_1" target="doc">00056</a>
+<a href="no_source_notify.sldoc.html#no_source_cb_ref_1" target="doc">00057</a>
+00058
+00059
+00060
+00061
+00062
+00063
+00064
+</td><td>  /* NoSourceNotify.cs, see http://ultramessaging.github.io/UMExamples/no_source_notify/dotnet/ */
+  
+  using System;
+  using System.Collections.Generic;
+  using System.Linq;
+  using System.Text;
+  using System.Threading.Tasks;
+  using com.latencybusters.lbm;
+  
+  public class NoSourceNotify {
+<span name="num_queries" id="num_queries"></span>          public static String noSourceQueries = "25";
+  
+<span name="no_source_var" id="no_source_var"></span>          public static int noSource = 0;
+  
+          static void Main(String[] args) {
+                  LBMContext ctx = null;           /* Context object: container for UM "instance". */
+                  LBMReceiver rcv = null;          /* Receiver object: for receiving messages. */
+                  LBMTopic rtopic = null;          /* Topic object */
+                  LBMReceiverAttributes rcv_attr;  /* Receiver attribute object */
+  
+                  /* Initialize and create receiver and receiver callback */
+<span name="ctx_rcv_create" id="ctx_rcv_create"></span>                  LBMReceiverCallback myReceiverCallback = new LBMReceiverCallback(onReceive);
+  
+                  /*** Initialization: create necessary UM objects. ***/
+                  ctx = new LBMContext();
+  
+<span name="set_attr" id="set_attr"></span>                  rcv_attr = new LBMReceiverAttributes();
+                  rcv_attr.setValue("resolution_no_source_notification_threshold", noSourceQueries);
+  
+                  rtopic = new LBMTopic(ctx, "test.topic", rcv_attr);
+                  rcv = new LBMReceiver(ctx, rtopic, myReceiverCallback, null);
+  
+                  while(noSource == 0) {
+                      try
+                      {
+                          System.Threading.Thread.Sleep(1000);
+                      }
+                      catch (Exception eex)
+                      {
+                          System.Console.Error.WriteLine("Error Thread.sleep interrupted: " + eex.Message);
+                          System.Environment.Exit(1);
+                      }
+                  }
+  
+                  rcv.close();
+                  ctx.close();
+          } /* main */
+  
+          /* Class for receiving messages */
+          static int onReceive(Object cbArg, LBMMessage msg)
+          {
+                  switch (msg.type())
+                  {
+<span name="no_source_cb" id="no_source_cb"></span>                          case LBM.MSG_NO_SOURCE_NOTIFICATION:
+                                  System.Console.Out.WriteLine("[" + msg.topicName() + "], no sources found for topic after " + noSourceQueries +" queries");
+                                  noSource++;
+                                  break;
+                          default:
+                                  System.Console.Out.WriteLine("Other event, type=" + msg.type());
+                                  break;
+                  }
+                  return 0;
+          } /* ReceiverCallback */
+  } /* class NoSourceNotify */
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

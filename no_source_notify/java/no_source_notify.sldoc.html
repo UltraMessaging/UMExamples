@@ -1,0 +1,84 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>UMP Receiver Callbacks Event Logging</title>
+  </head>
+  <body>
+        <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>No Source Notification Callback</h1>
+      <p>Ultra Messaging receivers have a feature where users can request a special message callback for when a
+	specific number of topic resolution queries have been sent without seeing an advertisement in response.
+	The callback is executed in the receivers message handler, where the no source information can be logged
+	or other actions can be taken as a result. The notification is disabled by default, and is configurable 
+	using the receiver scoped option
+	<a href="#" title="The threshold for the number of unanswered topic resolution queries before UM delivers a LBM_MSG_NO_SOURCE_NOTIFICATION for the topic. The receiver does not stop querying after the delivery of this notification. A value of 0 indicates no notifications will be sent.
+
+Scope:	receiver
+Type:	lbm_ulong_t
+Units:	Number of queries
+Default value:	0 (do not notify)
+When to Set:	May be set during operation.
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">resolution_no_source_notification_threshold</a>
+</p>
+      <p>This sample application will configure the callback to execute after 25 unasnwered queries, and 
+	will then set a global flag for the main thread to cleanup and exit after the notification is executed.</p>
+
+
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt><a href="NoSourceNotify.java">NoSourceNotify.java</a></tt></b>
+        - (right-click and save as "NoSourceNotify.java") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>NoSourceNotify.java</tt></h2>
+    <h4>Variables</h4>
+	<p>First there is a public variable to define the number of queries threshold before the notification is executed</p>
+	<a name="num_queries_ref_1" id="num_queries_ref_1"></a>
+<small><pre>
+<a href="no_source_notify_java.slsrc.html#num_queries" target="src">00008</a>      public static String noSourceQueries = "25";
+</pre><!-- endblock num_queries_ref_1 --></small>
+
+
+	<p>Next there is the global flag variable which the main application thread will wait on.</p>
+	<a name="no_source_var_ref_1" id="no_source_var_ref_1"></a>
+<small><pre>
+<a href="no_source_notify_java.slsrc.html#no_source_var" target="src">00010</a>      public static int noSource = 0;
+</pre><!-- endblock no_source_var_ref_1 --></small>
+
+
+    <h4>Configure the Threshold Attribute</h4>
+	<p>The receiver option 
+	<a href="#" title="The threshold for the number of unanswered topic resolution queries before UM delivers a LBM_MSG_NO_SOURCE_NOTIFICATION for the topic. The receiver does not stop querying after the delivery of this notification. A value of 0 indicates no notifications will be sent.
+
+Scope:	receiver
+Type:	lbm_ulong_t
+Units:	Number of queries
+Default value:	0 (do not notify)
+When to Set:	May be set during operation.
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">resolution_no_source_notification_threshold</a>
+
+	configures the notification to execute after the specified value for queries are published without an advertisement response. 
+	The attribute can be configured programatically like so:</p>
+	<a name="set_attr_ref_1" id="set_attr_ref_1"></a>
+<small><pre>
+<a href="no_source_notify_java.slsrc.html#set_attr" target="src">00024</a>          rcv_attr = new LBMReceiverAttributes();
+<a href="no_source_notify_java.slsrc.html#set_attr" target="src">00025</a>          rcv_attr.setValue("resolution_no_source_notification_threshold", noSourceQueries);
+</pre><!-- endblock set_attr_ref_1 --></small>
+
+
+	<p>This sample configures the query threshold to 25, which with the default topic resolution settings AND no active source for topic
+	"test.topic", the notification callback should execute within a couple seconds of the receiver being created</p>
+    <h4>Handle the Notification Callback</h4>
+	<p>Finally, the application should handle the notification callback inside the receivers message handler. For the purpose of this sample,
+	we will simply print a message to stdout.</p>
+	<a name="no_source_cb_ref_1" id="no_source_cb_ref_1"></a>
+<small><pre>
+<a href="no_source_notify_java.slsrc.html#no_source_cb" target="src">00051</a>                  case LBM.MSG_NO_SOURCE_NOTIFICATION:
+<a href="no_source_notify_java.slsrc.html#no_source_cb" target="src">00052</a>                      System.out.println("[" + msg.topicName() + "], no sources found for topic after " + noSourceQueries +" queries");
+<a href="no_source_notify_java.slsrc.html#no_source_cb" target="src">00053</a>                      noSource++;
+<a href="no_source_notify_java.slsrc.html#no_source_cb" target="src">00054</a>                      break;
+</pre><!-- endblock no_source_cb_ref_1 --></small>
+
+
+  </body>
+</html>
+

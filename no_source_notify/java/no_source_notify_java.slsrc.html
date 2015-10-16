@@ -1,0 +1,228 @@
+<!DOCTYPE html><html><head><title>NoSourceNotify.java</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>NoSourceNotify.java</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+<a href="no_source_notify.sldoc.html#num_queries_ref_1" target="doc">00008</a>
+00009
+<a href="no_source_notify.sldoc.html#no_source_var_ref_1" target="doc">00010</a>
+00011
+00012
+00013
+00014
+00015
+00016
+00017
+00018
+<a href="no_source_notify.sldoc.html#ctx_rcv_create_ref_1" target="doc">00019</a>
+<a href="no_source_notify.sldoc.html#ctx_rcv_create_ref_1" target="doc">00020</a>
+<a href="no_source_notify.sldoc.html#ctx_rcv_create_ref_1" target="doc">00021</a>
+<a href="no_source_notify.sldoc.html#ctx_rcv_create_ref_1" target="doc">00022</a>
+<a href="no_source_notify.sldoc.html#ctx_rcv_create_ref_1" target="doc">00023</a>
+<a href="no_source_notify.sldoc.html#set_attr_ref_1" target="doc">00024</a>
+<a href="no_source_notify.sldoc.html#set_attr_ref_1" target="doc">00025</a>
+<a href="no_source_notify.sldoc.html#ctx_rcv_create_ref_1" target="doc">00026</a>
+<a href="no_source_notify.sldoc.html#ctx_rcv_create_ref_1" target="doc">00027</a>
+<a href="no_source_notify.sldoc.html#ctx_rcv_create_ref_1" target="doc">00028</a>
+00029
+00030
+00031
+00032
+00033
+00034
+00035
+00036
+00037
+00038
+00039
+00040
+00041
+00042
+00043
+00044
+00045
+00046
+00047
+00048
+00049
+00050
+<a href="no_source_notify.sldoc.html#no_source_cb_ref_1" target="doc">00051</a>
+<a href="no_source_notify.sldoc.html#no_source_cb_ref_1" target="doc">00052</a>
+<a href="no_source_notify.sldoc.html#no_source_cb_ref_1" target="doc">00053</a>
+<a href="no_source_notify.sldoc.html#no_source_cb_ref_1" target="doc">00054</a>
+00055
+00056
+00057
+00058
+00059
+00060
+00061
+00062
+</td><td>  /* NoSourceNotify.java, see http://ultramessaging.github.io/UMExamples/no_source_notify/java/ */
+  
+  import com.latencybusters.lbm.*;
+  import java.lang.*;
+  
+  
+  public class NoSourceNotify {
+<span name="num_queries" id="num_queries"></span>      public static String noSourceQueries = "25";
+  
+<span name="no_source_var" id="no_source_var"></span>      public static int noSource = 0;
+  
+      public static void main(String[] args) throws LBMException {
+          LBMContext ctx = null;           /* Context object: container for UM "instance". */
+          LBMReceiver rcv = null;          /* Receiver object: for receiving messages. */
+          LBMTopic rtopic = null;          /* Topic object */
+          LBMReceiverAttributes rcv_attr;  /* Receiver attribute object */
+  
+          /* Initialize and create receiver and receiver callback */
+<span name="ctx_rcv_create" id="ctx_rcv_create"></span>          ReceiverCallback myReceiverCallback = new ReceiverCallback();
+  
+          /*** Initialization: create necessary UM objects. ***/
+          ctx = new LBMContext();
+      
+<span name="set_attr" id="set_attr"></span>          rcv_attr = new LBMReceiverAttributes();
+          rcv_attr.setValue("resolution_no_source_notification_threshold", noSourceQueries);
+  
+          rtopic = new LBMTopic(ctx, "test.topic", rcv_attr);
+          rcv = new LBMReceiver(ctx, rtopic, myReceiverCallback, null);
+  
+          while(noSource == 0) {
+              try{
+                  Thread.sleep(1000);
+              }
+              catch(InterruptedException ex)
+              {
+                  System.err.println("Error Thread.sleep interrupted: " + ex.toString());
+                  System.exit(1);
+              }
+          }
+          
+          rcv.close();
+          ctx.close();
+      } /* main */
+  
+      /* Class for receiving messages */
+      private static class ReceiverCallback implements LBMReceiverCallback {
+          public int onReceive(Object cbArg, LBMMessage msg)
+          {
+              switch (msg.type())
+              {
+<span name="no_source_cb" id="no_source_cb"></span>                  case LBM.MSG_NO_SOURCE_NOTIFICATION:
+                      System.out.println("[" + msg.topicName() + "], no sources found for topic after " + noSourceQueries +" queries");
+                      noSource++;
+                      break;
+                  default:
+                      System.out.println("Other event, type=" + msg.type());
+                      break;
+              }
+              return 0;
+          }
+      }  /* ReceiverCallback */
+  } /* class NoSourceNotify */
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>
