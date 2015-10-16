@@ -1,0 +1,124 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>UMP Receiver Callbacks Event Logging</title>
+  </head>
+  <body>
+        <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>No Source Notification Callback</h1>
+      <p>Ultra Messaging receivers have a feature where users can request a special message callback for when a
+	specific number of topic resolution queries have been sent without seeing an advertisement in response.
+	The callback is executed in the receivers message handler, where the no source information can be logged
+	or other actions can be taken as a result. The notification is disabled by default, and is configurable 
+	using the receiver scoped option
+	<a href="#" title="The threshold for the number of unanswered topic resolution queries before UM delivers a LBM_MSG_NO_SOURCE_NOTIFICATION for the topic. The receiver does not stop querying after the delivery of this notification. A value of 0 indicates no notifications will be sent.
+
+Scope:	receiver
+Type:	lbm_ulong_t
+Units:	Number of queries
+Default value:	0 (do not notify)
+When to Set:	May be set during operation.
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">resolution_no_source_notification_threshold</a>
+</p>
+      <p>This sample application will configure the callback to execute after 25 unasnwered queries, and 
+	will then set a global flag for the main thread to cleanup and exit after the notification is executed.</p>
+
+
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt><a href="no_source_notify.c">no_source_notify.c</a></tt></b>
+        - (right-click and save as "no_source_notify.c") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>no_source_notify.c</tt></h2>
+    <h4>Variables</h4>
+	<p>First there is a macro to define the number of queries threshold before the notification is executed</p>
+	<a name="num_queries_ref_1" id="num_queries_ref_1"></a>
+<small><pre>
+<a href="no_source_notify_c.slsrc.html#num_queries" target="src">00027</a>  #define NO_SOURCE_QUERIES "25"
+</pre><!-- endblock num_queries_ref_1 --></small>
+
+
+	<p>Next there is the global flag variable which the main application thread will wait on.</p>
+	<a name="no_source_var_ref_1" id="no_source_var_ref_1"></a>
+<small><pre>
+<a href="no_source_notify_c.slsrc.html#no_source_var" target="src">00029</a>  int no_source = 0;
+</pre><!-- endblock no_source_var_ref_1 --></small>
+
+
+    <h4>Configure the Threshold Attribute</h4>
+	<p>The receiver option 
+	<a href="#" title="The threshold for the number of unanswered topic resolution queries before UM delivers a LBM_MSG_NO_SOURCE_NOTIFICATION for the topic. The receiver does not stop querying after the delivery of this notification. A value of 0 indicates no notifications will be sent.
+
+Scope:	receiver
+Type:	lbm_ulong_t
+Units:	Number of queries
+Default value:	0 (do not notify)
+When to Set:	May be set during operation.
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">resolution_no_source_notification_threshold</a>
+
+	configures the notification to execute after the specified value for queries are published without an advertisement response. 
+	The attribute can be configured programatically like so:</p>
+	<a name="set_attr_ref_1" id="set_attr_ref_1"></a>
+<small><pre>
+<a href="no_source_notify_c.slsrc.html#set_attr" target="src">00075</a>      err = lbm_rcv_topic_attr_str_setopt(rattr, "resolution_no_source_notification_threshold", NO_SOURCE_QUERIES);
+<a href="no_source_notify_c.slsrc.html#set_attr" target="src">00076</a>      EX_LBM_CHK(err);    
+</pre><!-- endblock set_attr_ref_1 --></small>
+
+
+	<p>This sample configures the query threshold to 25, which with the default topic resolution settings AND no active source for topic
+	"test.topic", the notification callback should execute within a couple seconds of the receiver being created</p>
+    <h4>Handle the Notification Callback</h4>
+	<p>Finally, the application should handle the notification callback inside the receivers message handler. For the purpose of this sample,
+	we will simply print a message to stdout.</p>
+	<a name="no_source_cb_ref_1" id="no_source_cb_ref_1"></a>
+<small><pre>
+<a href="no_source_notify_c.slsrc.html#no_source_cb" target="src">00037</a>          case LBM_MSG_NO_SOURCE_NOTIFICATION:
+<a href="no_source_notify_c.slsrc.html#no_source_cb" target="src">00038</a>              printf("[%s], no sources found for topic after %s queries\n", msg-&gt;topic_name, NO_SOURCE_QUERIES);
+<a href="no_source_notify_c.slsrc.html#no_source_cb" target="src">00039</a>              no_source++;
+<a href="no_source_notify_c.slsrc.html#no_source_cb" target="src">00040</a>              break;
+</pre><!-- endblock no_source_cb_ref_1 --></small>
+
+
+    <h4>Includes</h4>
+        <p>Include files for this application. Notice the Windows specific include files - these
+          are not necessary for Linux only applications</p>
+        <a name="includes_ref_1" id="includes_ref_1"></a>
+<small><pre>
+<a href="no_source_notify_c.slsrc.html#includes" target="src">00003</a>  #include &lt;stdio.h&gt;
+<a href="no_source_notify_c.slsrc.html#includes" target="src">00004</a>  
+<a href="no_source_notify_c.slsrc.html#includes" target="src">00005</a>  #if defined(_MSC_VER)
+<a href="no_source_notify_c.slsrc.html#includes" target="src">00006</a>  /* Windows-only includes */
+<a href="no_source_notify_c.slsrc.html#includes" target="src">00007</a>  #include &lt;winsock2.h&gt;
+<a href="no_source_notify_c.slsrc.html#includes" target="src">00008</a>  #define SLEEP(s) Sleep((s)*1000)
+<a href="no_source_notify_c.slsrc.html#includes" target="src">00009</a>  #else
+<a href="no_source_notify_c.slsrc.html#includes" target="src">00010</a>  /* Unix-only includes */
+<a href="no_source_notify_c.slsrc.html#includes" target="src">00011</a>  #include &lt;stdlib.h&gt;
+<a href="no_source_notify_c.slsrc.html#includes" target="src">00012</a>  #include &lt;unistd.h&gt;
+<a href="no_source_notify_c.slsrc.html#includes" target="src">00013</a>  #define SLEEP(s) sleep(s)
+<a href="no_source_notify_c.slsrc.html#includes" target="src">00014</a>  #endif
+<a href="no_source_notify_c.slsrc.html#includes" target="src">00015</a>  
+<a href="no_source_notify_c.slsrc.html#includes" target="src">00016</a>  #include &lt;lbm/lbm.h&gt;
+</pre><!-- endblock includes_ref_1 --></small>
+
+
+    <h4>Windows Only</h4>
+        <p>Windows applications must initialize the Winsock library to utilize sockets.</p>
+        <a name="windows_ref_1" id="windows_ref_1"></a>
+<small><pre>
+<a href="no_source_notify_c.slsrc.html#windows" target="src">00057</a>  #if defined(_WIN32)
+<a href="no_source_notify_c.slsrc.html#windows" target="src">00058</a>      /* windows-specific code */
+<a href="no_source_notify_c.slsrc.html#windows" target="src">00059</a>      WSADATA wsadata;
+<a href="no_source_notify_c.slsrc.html#windows" target="src">00060</a>      int wsStat = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
+<a href="no_source_notify_c.slsrc.html#windows" target="src">00061</a>      if (wsStat != 0)
+<a href="no_source_notify_c.slsrc.html#windows" target="src">00062</a>      {
+<a href="no_source_notify_c.slsrc.html#windows" target="src">00063</a>          printf("line %d: wsStat=%d\n",__LINE__,wsStat);
+<a href="no_source_notify_c.slsrc.html#windows" target="src">00064</a>          exit(1);
+<a href="no_source_notify_c.slsrc.html#windows" target="src">00065</a>      }
+<a href="no_source_notify_c.slsrc.html#windows" target="src">00066</a>  #endif
+</pre><!-- endblock windows_ref_1 --></small>
+
+
+        <p>If this fails, the application should exit since sockets will not be operational.</p>
+  </body>
+</html>
+

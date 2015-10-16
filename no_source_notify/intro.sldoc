@@ -1,0 +1,11 @@
+    <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>No Source Notification Callback</h1>
+      <p>Ultra Messaging receivers have a feature where users can request a special message callback for when a
+	specific number of topic resolution queries have been sent without seeing an advertisement in response.
+	The callback is executed in the receivers message handler, where the no source information can be logged
+	or other actions can be taken as a result. The notification is disabled by default, and is configurable 
+	using the receiver scoped option
+	=semlit,tooltip,../../tooltips/receiver_resolution_no_source_notification_threshold.txt,resolution_no_source_notification_threshold=</p>
+      <p>This sample application will configure the callback to execute after 25 unasnwered queries, and 
+	will then set a global flag for the main thread to cleanup and exit after the notification is executed.</p>
+
