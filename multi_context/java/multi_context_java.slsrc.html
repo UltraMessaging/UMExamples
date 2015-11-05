@@ -1,0 +1,152 @@
+<!DOCTYPE html><html><head><title>MultiContext.java</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>MultiContext.java</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+<a href="multi_context.sldoc.html#import_ref_1" target="doc">00003</a>
+00004
+00005
+<a href="multi_context.sldoc.html#define_configs_ref_1" target="doc">00006</a>
+<a href="multi_context.sldoc.html#define_configs_ref_1" target="doc">00007</a>
+00008
+00009
+00010
+<a href="multi_context.sldoc.html#xml_file_ref_1" target="doc">00011</a>
+00012
+<a href="multi_context.sldoc.html#ctx_1_ref_1" target="doc">00013</a>
+<a href="multi_context.sldoc.html#ctx_1_ref_1" target="doc">00014</a>
+<a href="multi_context.sldoc.html#ctx_1_ref_1" target="doc">00015</a>
+00016
+<a href="multi_context.sldoc.html#ctx_2_ref_1" target="doc">00017</a>
+<a href="multi_context.sldoc.html#ctx_2_ref_1" target="doc">00018</a>
+<a href="multi_context.sldoc.html#ctx_2_ref_1" target="doc">00019</a>
+00020
+00021
+00022
+00023
+00024
+</td><td>  /* MultiContext.java, see http://ultramessaging.github.io/UMExamples/multi_context/java/ */
+  
+<span name="import" id="import"></span>  import com.latencybusters.lbm.*;
+  
+  public class MultiContext {
+<span name="define_configs" id="define_configs"></span>      public static String xml_conf = "./multi_context_config.xml";
+      public static String app_name = "main";
+  
+      public static void main(String[] args) throws LBMException
+      {
+<span name="xml_file" id="xml_file"></span>          LBM.setConfigurationXml(xml_conf, app_name);
+  
+<span name="ctx_1" id="ctx_1"></span>          LBMContextAttributes ctxAttrOne = new LBMContextAttributes();
+          ctxAttrOne.setFromXml("TRD1");
+          LBMContext ctxOne = new LBMContext(ctxAttrOne);
+  
+<span name="ctx_2" id="ctx_2"></span>          LBMContextAttributes ctxAttrTwo = new LBMContextAttributes();
+          ctxAttrTwo.setFromXml("TRD2");
+          LBMContext ctxTwo = new LBMContext(ctxAttrTwo);
+  
+          ctxOne.close();
+          ctxTwo.close();
+      }
+  }
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

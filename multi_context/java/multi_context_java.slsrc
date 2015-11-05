@@ -1,0 +1,34 @@
+/* MultiContext.java, see http://ultramessaging.github.io/UMExamples/multi_context/java/ */
+
+/* =semlit,block,import=*/
+import com.latencybusters.lbm.*;
+/* =semlit,endblock,import=*/
+
+public class MultiContext {
+	/* =semlit,block,define_configs=*/
+	public static String xml_conf = "./multi_context_config.xml";
+	public static String app_name = "main";
+	/* =semlit,endblock,define_configs=*/
+
+	public static void main(String[] args) throws LBMException
+	{
+		/* =semlit,block,xml_file=*/
+		LBM.setConfigurationXml(xml_conf, app_name);
+		/* =semlit,endblock,xml_file=*/
+
+		/* =semlit,block,ctx_1=*/
+		LBMContextAttributes ctxAttrOne = new LBMContextAttributes();
+		ctxAttrOne.setFromXml("TRD1");
+		LBMContext ctxOne = new LBMContext(ctxAttrOne);
+		/* =semlit,endblock,ctx_1=*/
+
+		/* =semlit,block,ctx_2=*/
+		LBMContextAttributes ctxAttrTwo = new LBMContextAttributes();
+		ctxAttrTwo.setFromXml("TRD2");
+		LBMContext ctxTwo = new LBMContext(ctxAttrTwo);
+		/* =semlit,endblock,ctx_2=*/
+
+		ctxOne.close();
+		ctxTwo.close();
+	}
+}
