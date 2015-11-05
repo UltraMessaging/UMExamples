@@ -1,0 +1,36 @@
+/* MultiContext.cs, see http://ultramessaging.github.io/UMExamples/multi_context/dotnet/ */
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using com.latencybusters.lbm;
+
+public class MultiContext {
+        /* =semlit,block,define_configs=*/
+        public static String xml_conf = "./multi_context_config.xml";
+        public static String app_name = "main";
+        /* =semlit,endblock,define_configs=*/
+
+        static void Main(String[] args) {
+                /* =semlit,block,xml_file=*/
+                LBM.setConfigurationXml(xml_conf, app_name);
+                /* =semlit,endblock,xml_file=*/
+
+                /* =semlit,block,ctx_1=*/
+                LBMContextAttributes ctxAttrOne = new LBMContextAttributes();
+                ctxAttrOne.setFromXml("TRD1");
+                LBMContext ctxOne = new LBMContext(ctxAttrOne);
+                /* =semlit,endblock,ctx_1=*/
+
+                /* =semlit,block,ctx_2=*/
+                LBMContextAttributes ctxAttrTwo = new LBMContextAttributes();
+                ctxAttrTwo.setFromXml("TRD2");
+                LBMContext ctxTwo = new LBMContext(ctxAttrTwo);
+                /* =semlit,endblock,ctx_2=*/
+
+                ctxOne.close();
+                ctxTwo.close();
+        }
+}
