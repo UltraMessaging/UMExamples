@@ -1,0 +1,21 @@
+    <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>Configuring Multiple Contexts with an XML Configuration File</h1>
+	<p>In this example, the application will be creating two contexts, and each context will exist in different topic
+	resolution domains. Each individual context configuration will be pulled from the same XML configuration file.</p>
+	<p>Topic resolution domains are an important aspect to Ultra Messaging, because only contexts that exist within the
+	same topic resolution domain can publish/subscribe to one another. The UM Dynamic Routing Option (DRO) is one method 
+	to bridge topic resolution domains, and is particularly useful for bridging topic resolution domains separated by a 
+	WAN. Other than using the DRO, building applications with multiple contexts is the only other way to bridge topic
+	resolution domains</p>
+	<p>Using multiple topic resolution domains in a messaging environment can be an extremely useful option, particularly 
+	in environments with large topic spaces and scattered topic interest. For example, in a market data environment, some
+	clients might only be interested in the latest tick for a stock, where as other clients might only be interested in 
+	option prices. In this case, it might make sense to put options and ticks in different topic resolution domains.</p>
+	<p>This type of application can be useful for multiple use cases, such as:
+	  <ol>
+	    <li><b>Message Monitor</b> - Some application use cases call for a monitoring application that simply receives messages
+		from all topic resolution environments.</li>
+	    <li><b>Bridge / Republisher</b> - Receive messages from one domain, copy and republish into another. Also useful for 
+		subscribing to inter-host protocol such as LBTIPC or LBTSMX, and republishing the messages for off-host 
+		consumption</li>
+	  </ol>

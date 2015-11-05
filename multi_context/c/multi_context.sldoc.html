@@ -1,0 +1,158 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Load Configuration File</title>
+  </head>
+  <body>
+        <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>Configuring Multiple Contexts with an XML Configuration File</h1>
+	<p>In this example, the application will be creating two contexts, and each context will exist in different topic
+	resolution domains. Each individual context configuration will be pulled from the same XML configuration file.</p>
+	<p>Topic resolution domains are an important aspect to Ultra Messaging, because only contexts that exist within the
+	same topic resolution domain can publish/subscribe to one another. The UM Dynamic Routing Option (DRO) is one method 
+	to bridge topic resolution domains, and is particularly useful for bridging topic resolution domains separated by a 
+	WAN. Other than using the DRO, building applications with multiple contexts is the only other way to bridge topic
+	resolution domains</p>
+	<p>Using multiple topic resolution domains in a messaging environment can be an extremely useful option, particularly 
+	in environments with large topic spaces and scattered topic interest. For example, in a market data environment, some
+	clients might only be interested in the latest tick for a stock, where as other clients might only be interested in 
+	option prices. In this case, it might make sense to put options and ticks in different topic resolution domains.</p>
+	<p>This type of application can be useful for multiple use cases, such as:
+	  <ol>
+	    <li><b>Message Monitor</b> - Some application use cases call for a monitoring application that simply receives messages
+		from all topic resolution environments.</li>
+	    <li><b>Bridge / Republisher</b> - Receive messages from one domain, copy and republish into another. Also useful for 
+		subscribing to inter-host protocol such as LBTIPC or LBTSMX, and republishing the messages for off-host 
+		consumption</li>
+	  </ol>
+
+    <ul>
+      <li><b><tt><a href="multi_context.c">multi_context.c</a></tt></b>
+        - (right-click and save as "multi_context.c") main program.</li>
+      <li><b><tt><a href="multi_context_config.xml">multi_context_config.xml</a></tt></b></li>
+    </ul>
+    <h2>Program explanation: <tt>multi_context.c</tt></h2>
+    <h4>Define Configuration File Name</h4>
+	<p>There are certainly a lot of different methods for getting the path and name for a configuration file, however for the purposes
+  	of this sample application, they are simply defined as macros</p>
+	<a name="define_configs_ref_1" id="define_configs_ref_1"></a>
+<small><pre>
+<a href="multi_context_c.slsrc.html#define_configs" target="src">00027</a>  #define LBM_CONFIG_XML_FILE  "multi_context_config.xml"
+<a href="multi_context_c.slsrc.html#define_configs" target="src">00028</a>  #define LBM_APPLICATION_NAME "main"
+</pre><!-- endblock define_configs_ref_1 --></small>
+
+
+	<p>Also note the LBM_APPLICATION_NAME. This is needed for loading the XML configuration file</p>
+    <h4>Load XML File</h4>
+	<p>Here is how the XML configuration file gets load into the application. It's important to note that the application name must be
+	provided here in order to ensure that this application loads the correct configurations.</p>
+	<a name="xml_file_ref_1" id="xml_file_ref_1"></a>
+<small><pre>
+<a href="multi_context_c.slsrc.html#xml_file" target="src">00049</a>      err = lbm_config_xml_file((const char *)LBM_CONFIG_XML_FILE, (const char *)LBM_APPLICATION_NAME);
+<a href="multi_context_c.slsrc.html#xml_file" target="src">00050</a>      EX_LBM_CHK(err);
+</pre><!-- endblock xml_file_ref_1 --></small>
+
+
+    <h4>Creating Context 1</h4>
+	<p>When creating a context to use a specific configuration out of an XML file, UM applications can map a context attribute object 
+	to a specific context name (TRD1) define in the XML using the appropriate API like so:</p>
+	<a name="ctx_1_ref_1" id="ctx_1_ref_1"></a>
+<small><pre>
+<a href="multi_context_c.slsrc.html#ctx_1" target="src">00052</a>      err = lbm_context_attr_create_from_xml(&amp;cattr_1, "TRD1");
+<a href="multi_context_c.slsrc.html#ctx_1" target="src">00053</a>      EX_LBM_CHK(err);
+<a href="multi_context_c.slsrc.html#ctx_1" target="src">00054</a>  
+<a href="multi_context_c.slsrc.html#ctx_1" target="src">00055</a>      err = lbm_context_create(&amp;ctx_1, cattr_1, NULL, NULL);
+<a href="multi_context_c.slsrc.html#ctx_1" target="src">00056</a>      EX_LBM_CHK(err);
+</pre><!-- endblock ctx_1_ref_1 --></small>
+
+
+	<p>Same for the second context, but note the different attribute object, and the different context name (TRD2) when initializing the 
+	context attribute object:</p>
+	<a name="ctx_2_ref_1" id="ctx_2_ref_1"></a>
+<small><pre>
+<a href="multi_context_c.slsrc.html#ctx_2" target="src">00058</a>      err = lbm_context_attr_create_from_xml(&amp;cattr_2, "TRD2");
+<a href="multi_context_c.slsrc.html#ctx_2" target="src">00059</a>      EX_LBM_CHK(err);
+<a href="multi_context_c.slsrc.html#ctx_2" target="src">00060</a>  
+<a href="multi_context_c.slsrc.html#ctx_2" target="src">00061</a>      err = lbm_context_create(&amp;ctx_2, cattr_2, NULL, NULL);
+<a href="multi_context_c.slsrc.html#ctx_2" target="src">00062</a>      EX_LBM_CHK(err);
+</pre><!-- endblock ctx_2_ref_1 --></small>
+
+
+    <h4>Error Checking</h4>
+        <p>Error handling can be one of the most complicated issues facing a programmer. Each application may have its own unique error
+        handling conventions. For these example programs, a very simplistic error handling approach is taken: if anything unexpected happens,
+        print a message and exit the program:</p>
+        <a name="error_check_ref_1" id="error_check_ref_1"></a>
+<small><pre>
+<a href="multi_context_c.slsrc.html#error_check" target="src">00018</a>  /* Example error checking macro.  Include after each UM call. */
+<a href="multi_context_c.slsrc.html#error_check" target="src">00019</a>  #define EX_LBM_CHK(err) do { \
+<a href="multi_context_c.slsrc.html#error_check" target="src">00020</a>          if ((err) &lt; 0) { \
+<a href="multi_context_c.slsrc.html#error_check" target="src">00021</a>                  fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
+<a href="multi_context_c.slsrc.html#error_check" target="src">00022</a>                  __FILE__, __LINE__, lbm_errmsg()); \
+<a href="multi_context_c.slsrc.html#error_check" target="src">00023</a>                  exit(1); \
+<a href="multi_context_c.slsrc.html#error_check" target="src">00024</a>          }  \
+<a href="multi_context_c.slsrc.html#error_check" target="src">00025</a>  } while (0)
+</pre><!-- endblock error_check_ref_1 --></small>
+
+
+        <p>The EX_LBM_CHK() macro checks a UM API return value. If negative, it assumes an error. One reason for making this a macro is so
+        that the __FILE__ and __LINE__ compiler built-ins reference the file and line of the usages of the macro, not the file and line of
+        the macro defintion itself.</p>
+        </p>Most UM functions are designed to return one of only two integer values: 0 for success and -1 for failure. The lbm.h header file
+        defines the symbols LBM_OK and LBM_FAILURE respectively for these. However, there are a few functions which can return a value of 0 or
+        greater in the event of success (for example: lbm_event_dispatch() and lbm_send_response() to name two). So the example EX_LBM_CHK()
+        macro was written to be somewhat more general. However, be aware that there are a few other functions which do not return an integer
+        status at all (for exmaple: lbm_serialize_response() to name one). Please refer to the API documentation for each UM function you call.</p>
+    <h4>Includes</h4>
+        <p>A small effort was made to provide a some portability between Unix and Windows. For example:</p>
+        <a name="includes_ref_1" id="includes_ref_1"></a>
+<small><pre>
+<a href="multi_context_c.slsrc.html#includes" target="src">00003</a>  #include &lt;stdio.h&gt;
+<a href="multi_context_c.slsrc.html#includes" target="src">00004</a>  
+<a href="multi_context_c.slsrc.html#includes" target="src">00005</a>  #if defined(_MSC_VER)
+<a href="multi_context_c.slsrc.html#includes" target="src">00006</a>  /* Windows-only includes */
+<a href="multi_context_c.slsrc.html#includes" target="src">00007</a>  #include &lt;winsock2.h&gt;
+<a href="multi_context_c.slsrc.html#includes" target="src">00008</a>  #define SLEEP(s) Sleep((s)*1000)
+<a href="multi_context_c.slsrc.html#includes" target="src">00009</a>  #else
+<a href="multi_context_c.slsrc.html#includes" target="src">00010</a>  /* Unix-only includes */
+<a href="multi_context_c.slsrc.html#includes" target="src">00011</a>  #include &lt;stdlib.h&gt;
+<a href="multi_context_c.slsrc.html#includes" target="src">00012</a>  #include &lt;unistd.h&gt;
+<a href="multi_context_c.slsrc.html#includes" target="src">00013</a>  #define SLEEP(s) sleep(s)
+<a href="multi_context_c.slsrc.html#includes" target="src">00014</a>  #endif
+<a href="multi_context_c.slsrc.html#includes" target="src">00015</a>  
+<a href="multi_context_c.slsrc.html#includes" target="src">00016</a>  #include &lt;lbm/lbm.h&gt;
+</pre><!-- endblock includes_ref_1 --></small>
+
+
+	<p>Different sets of header files should be included for Unix v.s. Windows applications.</p>
+
+    <hr>
+    <h2>Configuration Explanation</h2>
+    <h4>XML Configuration File</h4>
+	<p>Here in the application section of the XML is the definitions of the two contexts, and the different topic resolution domains for
+	each context.</p>
+	<h3>Topic Resolution Domain 1 / Context 1</h3>
+	<a name="trd1_ref_1" id="trd1_ref_1"></a>
+<small><pre>
+<a href="../multi_context_config.xml.html#trd1" target="src">00005</a>          &lt;context name="TRD1"&gt;
+<a href="../multi_context_config.xml.html#trd1" target="src">00006</a>            &lt;options type="context"&gt;
+<a href="../multi_context_config.xml.html#trd1" target="src">00007</a>              &lt;option default-value="230.29.1.10" name="resolver_multicast_address"/&gt;
+<a href="../multi_context_config.xml.html#trd1" target="src">00008</a>            &lt;/options&gt;
+<a href="../multi_context_config.xml.html#trd1" target="src">00009</a>          &lt;/context&gt;
+</pre><!-- endblock trd1_ref_1 --></small>
+
+
+	<h3>Topic Resolution Domain 2 / Context 2</h3>
+	<a name="trd2_ref_1" id="trd2_ref_1"></a>
+<small><pre>
+<a href="../multi_context_config.xml.html#trd2" target="src">00010</a>          &lt;context name="TRD2"&gt;
+<a href="../multi_context_config.xml.html#trd2" target="src">00011</a>            &lt;options type="context"&gt;
+<a href="../multi_context_config.xml.html#trd2" target="src">00012</a>              &lt;option default-value="230.29.1.20" name="resolver_multicast_address"/&gt;
+<a href="../multi_context_config.xml.html#trd2" target="src">00013</a>            &lt;/options&gt;
+<a href="../multi_context_config.xml.html#trd2" target="src">00014</a>          &lt;/context&gt;
+</pre><!-- endblock trd2_ref_1 --></small>
+
+
+      </body>
+</html>
+

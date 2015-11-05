@@ -1,0 +1,18 @@
+<um-configuration version="1.0">
+  <applications>
+    <application name="main">
+      <contexts>
+        <context name="TRD1">
+          <options type="context">
+            <option default-value="230.29.1.10" name="resolver_multicast_address"/>
+          </options>
+        </context>
+        <context name="TRD2">
+          <options type="context">
+            <option default-value="230.29.1.20" name="resolver_multicast_address"/>
+          </options>
+        </context>
+      </contexts>	
+    </application>
+  </applications>
+</um-configuration>

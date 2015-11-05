@@ -1,0 +1,58 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Load Configuration File</title>
+  </head>
+  <body>
+    =semlit,include,../intro.sldoc=
+    <ul>
+      <li><b><tt>=semlit,srcfile,multi_context_c.slsrc,multi_context.c=</tt></b>
+        - (right-click and save as "multi_context.c") main program.</li>
+      <li><b><tt>=semlit,srcfile,../multi_context_config.xml,multi_context_config.xml=</tt></b></li>
+    </ul>
+    <h2>Program explanation: <tt>multi_context.c</tt></h2>
+    <h4>Define Configuration File Name</h4>
+	<p>There are certainly a lot of different methods for getting the path and name for a configuration file, however for the purposes
+  	of this sample application, they are simply defined as macros</p>
+	=semlit,insert,define_configs=
+	<p>Also note the LBM_APPLICATION_NAME. This is needed for loading the XML configuration file</p>
+    <h4>Load XML File</h4>
+	<p>Here is how the XML configuration file gets load into the application. It's important to note that the application name must be
+	provided here in order to ensure that this application loads the correct configurations.</p>
+	=semlit,insert,xml_file=
+    <h4>Creating Context 1</h4>
+	<p>When creating a context to use a specific configuration out of an XML file, UM applications can map a context attribute object 
+	to a specific context name (TRD1) define in the XML using the appropriate API like so:</p>
+	=semlit,insert,ctx_1=
+	<p>Same for the second context, but note the different attribute object, and the different context name (TRD2) when initializing the 
+	context attribute object:</p>
+	=semlit,insert,ctx_2=
+    <h4>Error Checking</h4>
+        <p>Error handling can be one of the most complicated issues facing a programmer. Each application may have its own unique error
+        handling conventions. For these example programs, a very simplistic error handling approach is taken: if anything unexpected happens,
+        print a message and exit the program:</p>
+        =semlit,insert,error_check=
+        <p>The EX_LBM_CHK() macro checks a UM API return value. If negative, it assumes an error. One reason for making this a macro is so
+        that the __FILE__ and __LINE__ compiler built-ins reference the file and line of the usages of the macro, not the file and line of
+        the macro defintion itself.</p>
+        </p>Most UM functions are designed to return one of only two integer values: 0 for success and -1 for failure. The lbm.h header file
+        defines the symbols LBM_OK and LBM_FAILURE respectively for these. However, there are a few functions which can return a value of 0 or
+        greater in the event of success (for example: lbm_event_dispatch() and lbm_send_response() to name two). So the example EX_LBM_CHK()
+        macro was written to be somewhat more general. However, be aware that there are a few other functions which do not return an integer
+        status at all (for exmaple: lbm_serialize_response() to name one). Please refer to the API documentation for each UM function you call.</p>
+    <h4>Includes</h4>
+        <p>A small effort was made to provide a some portability between Unix and Windows. For example:</p>
+        =semlit,insert,includes=
+	<p>Different sets of header files should be included for Unix v.s. Windows applications.</p>
+
+    <hr>
+    <h2>Configuration Explanation</h2>
+    <h4>XML Configuration File</h4>
+	<p>Here in the application section of the XML is the definitions of the two contexts, and the different topic resolution domains for
+	each context.</p>
+	<h3>Topic Resolution Domain 1 / Context 1</h3>
+	=semlit,insert,trd1=
+	<h3>Topic Resolution Domain 2 / Context 2</h3>
+	=semlit,insert,trd2=
+      </body>
+</html>
