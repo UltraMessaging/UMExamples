@@ -1,0 +1,150 @@
+<!DOCTYPE html><html><head><title>store_backup.xml</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>store_backup.xml</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+00008
+00009
+00010
+00011
+00012
+00013
+00014
+00015
+00016
+00017
+00018
+00019
+00020
+00021
+00022
+00023
+</td><td>  &lt;?xml version="1.0" encoding="utf-8" ?&gt;
+    &lt;ume-store version="1.2"&gt;
+      &lt;daemon&gt;
+        &lt;log&gt;DEMO_STORE2.log&lt;/log&gt;
+        &lt;web-monitor&gt;*:8081&lt;/web-monitor&gt;
+      &lt;/daemon&gt;
+      &lt;stores&gt;
+        &lt;store name="DEMO_STORE" port="30000"&gt;
+          &lt;ume-attributes&gt;
+              &lt;option name="disk-cache-directory" value="cache2" type="store"/&gt;
+              &lt;option name="disk-state-directory" value="state2" type="store"/&gt;
+              &lt;option name="context-name" value="DEMO_STORE"/&gt;
+          &lt;/ume-attributes&gt;
+          &lt;topics&gt;
+            &lt;topic pattern=".*" type="PCRE"&gt;
+              &lt;ume-attributes&gt;
+                &lt;option name="repository-type" value="disk" type="store"/&gt;
+              &lt;/ume-attributes&gt;
+            &lt;/topic&gt;
+          &lt;/topics&gt;
+        &lt;/store&gt;
+      &lt;/stores&gt;
+    &lt;/ume-store&gt;
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

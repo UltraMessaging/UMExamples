@@ -1,0 +1,408 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+
+    <title>UMP Source Failover for Disaster Recovery</title>
+  </head>
+  <body>
+    <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>UMP Source Failover for Disaster Recovery</h1>
+	<p>Multi-datacenter deployment for UMP can seem like a challenge out of the box. Typically, use cases
+	for multi-datacenter deployments require persistent messaging for 2 or 3 datacenters. UMP is more than
+	capable of handling either scenario, however the recommended implementation for 2 or 3 datacenters is
+	different.</p>
+	<p>For a 3 datacenter solution, Informatica recommends configuring a UMP store daemon in each of the 
+	datacenters, and quorum consensus will take care of the rest (for more information on quorum/consensus
+	please refer to the product documentation). Alternatively, each datacenter could contain a group of 
+	stores, given that the stavility behavior is configured in such a way that stability is achieved
+	only when a majority of groups have stabilized a message.</p>
+	<p>For a 2 datacenter solution, quorum/consensus is still a plausible solution (and ultimately the 
+	most recommended solution by Informatica), though it is generally not used because it requires both 
+	datacenters to stabilize messages, and requires connectivity to	both datacenters to be able to send 
+	messages, and most use cases require connectivity to just a single datacenter to be able to send messages.
+	Often is the case that the datacenter where the source exists is considered the "primary" datacenter,
+	and the remote datacenter from there is the disaster recovery (DR) datacenter. It is this latter 
+	use case that this sample is intended to be used for.</p>
+	<p>The basic architecture for the 2 datacenter solution is to ensure the source application does not
+	register with stores in both datacenters simultaneously. The source simply starts, connecting only
+	to the primary store (or store group). If there is a store group failure, or datacenter failure,
+	the source can either manually be restarted and reconfigured to connect to the stores in the DR
+	datacenter, or an automatic failover solution can be coded which is demonstrated below.</p>
+	<p>Note that this sample is by no means ready for production, and is intended to be used for 
+	sample purposes only. There are fundamental flaws in this sample not addressed intentionally, and
+	are explained below.</p>
+
+    <p>There is one program source file, and a store configuration XMLs:</p>
+    <ul>
+      <li><b><tt><a href="ump_src_failover.c">ump_src_failover.c</a></tt></b></li>
+      <li><b><tt><a href="store_primary.xml">store_primary.xml</a></tt></b></li>
+      <li><b><tt><a href="store_backup.xml">store_backup.xml</a></tt></b></li>
+    </ul>
+    <h2>Program explanation: <tt>ump_src_failover.c</tt></h2>
+    <h4>Defining Store Configurations</h4>
+	<p>In this example, the primary and backup stores are configured as global variables. Also in this example, only a single store is used at 
+	a time, however in typical use cases 3 stores in each datacenter would be used for better resiliency and persistence. An alternative solution
+	to using global (or local) variables might be to use UM configuration files, configuring the the primary and backup store groups in separate
+	configuration files.</p>
+	<a name="store_configs_ref_1" id="store_configs_ref_1"></a>
+<small><pre>
+<a href="ump_src_failover_c.slsrc.html#store_configs" target="src">00035</a>  #define UMP_PRIMARY_STORE "127.0.0.1:29999"
+<a href="ump_src_failover_c.slsrc.html#store_configs" target="src">00036</a>  #define UMP_PRIMARY_SESSION_ID "100"
+<a href="ump_src_failover_c.slsrc.html#store_configs" target="src">00037</a>  #define UMP_SECONDARY_STORE "127.0.0.1:30000"
+<a href="ump_src_failover_c.slsrc.html#store_configs" target="src">00038</a>  #define UMP_SECONDARY_SESSION_ID "200"
+</pre><!-- endblock store_configs_ref_1 --></small>
+
+
+	Using the store configuration attributes <a href="#" title="Add a store specification to the list of stores specified for the source. Unlike most other UMP settings, every
+time this setting is called, it adds another store specification to the list and does NOT overwrite previous
+specifications.
+Each entry contains the IP address, TCP port, registration ID, and group index for the store. For the
+configuration file as well as string versions of this option, format the string value as
+DomainID:IP:port:RegID:GroupIDX where DomainID is the store's UM domain ID, IP is the stores IP
+address, port is the TCP port for the store, RegID is the registration ID that the source desires to use, and
+GroupIDX is the group index that the store belongs to. The DomainID, RegID and GroupIDX pieces may be
+left off the string if desired. If so, UMP assumes the value of 0 for them.
+Because each entry adds a new store specification and does not overwrite previous values, an entry or string
+with the IP address of 0.0.0.0 and TCP port of 0 causes the removal of all previous store specifications. A
+single store specification means the source uses persistence. If no stores are specified, then persistence will
+not be provided for the source.
+
+Scope:         source
+Type:          lbm_ume_store_entry_t
+When to Set:   Can only be set during object initialization
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">ume_store</a>
+and 
+	<a href="#" title="Add a store specification to the list of stores specified for the source. Unlike other UMP settings, every time this setting is called, it adds another store specification to the list and does NOT overwrite previous specifications. Each entry contains the store name, registration ID, and group index for the store. For the configuration file as well as string versions of setting this option, the string value is formatted as name:RegID:GroupIDX where name is the name of the store configured with the store attribute, context-name in the umestored XML configuration file, RegID is the registration ID that the source desires to use, and GroupIDX is the group index that the store belongs to. The RegID and GroupIDX pieces may be left off the string if desired. If so, then the value of 0 is assumed for them. Store names are restricted to 128 characters in length, and may contain only alphanumeric characters, hyphens, and underscores.
+
+Scope:	source
+Type:	lbm_ume_store_name_entry_t
+When to Set:	Can only be set during object initialization.
+
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">ume_store_name</a>
+is different than most UM configuration attributes in that when 
+	the attribute is configured more than once, rather than overwriting the previous value, additional entries are added for the attribute; this
+	is how multiple stores are configured for any given source. Because of this semantic, users can use the 
+	<a href="#" title="Add a store specification to the list of stores specified for the source. Unlike most other UMP settings, every
+time this setting is called, it adds another store specification to the list and does NOT overwrite previous
+specifications.
+Each entry contains the IP address, TCP port, registration ID, and group index for the store. For the
+configuration file as well as string versions of this option, format the string value as
+DomainID:IP:port:RegID:GroupIDX where DomainID is the store's UM domain ID, IP is the stores IP
+address, port is the TCP port for the store, RegID is the registration ID that the source desires to use, and
+GroupIDX is the group index that the store belongs to. The DomainID, RegID and GroupIDX pieces may be
+left off the string if desired. If so, UMP assumes the value of 0 for them.
+Because each entry adds a new store specification and does not overwrite previous values, an entry or string
+with the IP address of 0.0.0.0 and TCP port of 0 causes the removal of all previous store specifications. A
+single store specification means the source uses persistence. If no stores are specified, then persistence will
+not be provided for the source.
+
+Scope:         source
+Type:          lbm_ume_store_entry_t
+When to Set:   Can only be set during object initialization
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">ume_store</a>
+value of "0.0.0.0:0" to completly clear the list of entries and start over. 
+	This is recommended if changing a topic attribute object to reconfigure a source and the stores it will use once created, there it is also
+	defined as a global attribute:</p>
+	<a name="clear_store_configs_ref_1" id="clear_store_configs_ref_1"></a>
+<small><pre>
+<a href="ump_src_failover_c.slsrc.html#clear_store_configs" target="src">00039</a>  #define UMP_CLEAR_STORE_CONFIG "0.0.0.0:0"
+</pre><!-- endblock clear_store_configs_ref_1 --></small>
+
+
+    <h4>Define a Custom Source Object</h4>
+	<p>At the core of this sample, the application needs to track the state of the source, which can be the following:</p>
+	<ol>
+	<li>NOT_INIT - Not initialized, meaning the basic attribute objects have not been configured and the source object not created yet</li>
+	<li>INIT - Initialized, meaning that the attributes have been configured and source created.</li>
+	<li>READY - Ready indicates that the source has completed registration with the stores and can now send messages</li>
+	<li>UNRESP - Unresponsive, meaning that the source was previously registered with enough stores but has since lost quorum</li>
+	</ol>
+	<p>These states are offered as suggestions, more can be added based on specific application states</p>
+	<p>This source object will also track whether or not the source is currently registered to the primary or backup group of stores, as well
+	as store the pointer object to the source itself and the sources context</p>
+	<a name="app_src_struct_ref_1" id="app_src_struct_ref_1"></a>
+<small><pre>
+<a href="ump_src_failover_c.slsrc.html#app_src_struct" target="src">00041</a>  typedef enum {NOT_INIT, INIT, READY, UNRESP} state_type_e;
+<a href="ump_src_failover_c.slsrc.html#app_src_struct" target="src">00042</a>  typedef enum {PRIMARY, BACKUP} mode_type_e;
+<a href="ump_src_failover_c.slsrc.html#app_src_struct" target="src">00043</a>  typedef struct app_src_s {
+<a href="ump_src_failover_c.slsrc.html#app_src_struct" target="src">00044</a>      lbm_context_t *ctx;
+<a href="ump_src_failover_c.slsrc.html#app_src_struct" target="src">00045</a>      lbm_src_t *src;
+<a href="ump_src_failover_c.slsrc.html#app_src_struct" target="src">00046</a>      state_type_e state;
+<a href="ump_src_failover_c.slsrc.html#app_src_struct" target="src">00047</a>      mode_type_e mode;
+<a href="ump_src_failover_c.slsrc.html#app_src_struct" target="src">00048</a>  } app_src_s;
+</pre><!-- endblock app_src_struct_ref_1 --></small>
+
+
+    <h4>Create the Context</h4>
+	<p>Standard UM code to initialize and create an LBM context:</p>
+	<a name="init_create_context_ref_1" id="init_create_context_ref_1"></a>
+<small><pre>
+<a href="ump_src_failover_c.slsrc.html#init_create_context" target="src">00166</a>      err = lbm_context_attr_create(&amp;cattr);
+<a href="ump_src_failover_c.slsrc.html#init_create_context" target="src">00167</a>      EX_LBM_CHK(err);
+<a href="ump_src_failover_c.slsrc.html#init_create_context" target="src">00168</a>  
+<a href="ump_src_failover_c.slsrc.html#init_create_context" target="src">00169</a>      err = lbm_context_create(&amp;ctx, cattr, NULL, NULL);
+<a href="ump_src_failover_c.slsrc.html#init_create_context" target="src">00170</a>      EX_LBM_CHK(err);
+</pre><!-- endblock init_create_context_ref_1 --></small>
+
+
+    <h4>Initializing the Customer Source Object</h4>
+	<p>Before the source is created, the object needs to be initialized so that the following logic properly configures the source to 
+	use the correct stores. The Object also needs to be configured to point back to the main application context so the source can be
+	created within it:</p>
+	<a name="init_app_src_ref_1" id="init_app_src_ref_1"></a>
+<small><pre>
+<a href="ump_src_failover_c.slsrc.html#init_app_src" target="src">00172</a>      app_src.state = NOT_INIT;
+<a href="ump_src_failover_c.slsrc.html#init_app_src" target="src">00173</a>      app_src.mode = PRIMARY;
+<a href="ump_src_failover_c.slsrc.html#init_app_src" target="src">00174</a>      app_src.ctx = ctx;
+</pre><!-- endblock init_app_src_ref_1 --></small>
+
+
+    <h4>Configuring the Stores and Creating the Source</h4>
+	<p>By this point in the sample, the application is in the main application loop. If the state of the source is still unitialized at the top of 
+	the loop, the application intializes/creates a source:</p>
+	<a name="start_init_ref_1" id="start_init_ref_1"></a>
+<small><pre>
+<a href="ump_src_failover_c.slsrc.html#start_init" target="src">00179</a>          if (app_src.state == NOT_INIT)
+<a href="ump_src_failover_c.slsrc.html#start_init" target="src">00180</a>              init_src(&amp;app_src);
+</pre><!-- endblock start_init_ref_1 --></small>
+
+
+	<p>Once in the init_src() function, the application creates the attribute object and ensures the attribute object has a clean store list
+	by configuring <a href="#" title="Add a store specification to the list of stores specified for the source. Unlike most other UMP settings, every
+time this setting is called, it adds another store specification to the list and does NOT overwrite previous
+specifications.
+Each entry contains the IP address, TCP port, registration ID, and group index for the store. For the
+configuration file as well as string versions of this option, format the string value as
+DomainID:IP:port:RegID:GroupIDX where DomainID is the store's UM domain ID, IP is the stores IP
+address, port is the TCP port for the store, RegID is the registration ID that the source desires to use, and
+GroupIDX is the group index that the store belongs to. The DomainID, RegID and GroupIDX pieces may be
+left off the string if desired. If so, UMP assumes the value of 0 for them.
+Because each entry adds a new store specification and does not overwrite previous values, an entry or string
+with the IP address of 0.0.0.0 and TCP port of 0 causes the removal of all previous store specifications. A
+single store specification means the source uses persistence. If no stores are specified, then persistence will
+not be provided for the source.
+
+Scope:         source
+Type:          lbm_ume_store_entry_t
+When to Set:   Can only be set during object initialization
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">ume_store</a>
+to "0.0.0.0:0":</p>
+	<a name="init_source_attr_ref_1" id="init_source_attr_ref_1"></a>
+<small><pre>
+<a href="ump_src_failover_c.slsrc.html#init_source_attr" target="src">00091</a>          err = lbm_src_topic_attr_create(&amp;tattr);
+<a href="ump_src_failover_c.slsrc.html#init_source_attr" target="src">00092</a>          EX_LBM_CHK(err);
+<a href="ump_src_failover_c.slsrc.html#init_source_attr" target="src">00093</a>  
+<a href="ump_src_failover_c.slsrc.html#init_source_attr" target="src">00094</a>      err = lbm_src_topic_attr_str_setopt(tattr, "ume_store", UMP_CLEAR_STORE_CONFIG);
+<a href="ump_src_failover_c.slsrc.html#init_source_attr" target="src">00095</a>      EX_LBM_CHK(err);
+</pre><!-- endblock init_source_attr_ref_1 --></small>
+
+
+	<p>Next the sample application configured the stores it should be using based on its current mode of operation; the mode was previously 
+	initialized to PRIMARY, so it'll use the primary stores and associated SessionID:</p>
+	<a name="set_store_ref_1" id="set_store_ref_1"></a>
+<small><pre>
+<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00098</a>      if (app_src-&gt;mode == PRIMARY) 
+<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00099</a>              err = lbm_src_topic_attr_str_setopt(tattr, "ume_store", UMP_PRIMARY_STORE);
+<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00100</a>      else
+<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00101</a>          err = lbm_src_topic_attr_str_setopt(tattr, "ume_store", UMP_SECONDARY_STORE);
+<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00102</a>          EX_LBM_CHK(err);
+<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00103</a>  
+<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00104</a>      if (app_src-&gt;mode == PRIMARY)
+<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00105</a>          err = lbm_src_topic_attr_str_setopt(tattr, "ume_session_id", UMP_PRIMARY_SESSION_ID);
+<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00106</a>      else
+<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00107</a>          err = lbm_src_topic_attr_str_setopt(tattr, "ume_session_id", UMP_SECONDARY_SESSION_ID);
+<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00108</a>      EX_LBM_CHK(err);
+</pre><!-- endblock set_store_ref_1 --></small>
+
+
+	<p>Finally the sample sets the store behavior to use quorum/consensus and creates the source object:</p>
+	<a name="complete_init_ref_1" id="complete_init_ref_1"></a>
+<small><pre>
+<a href="ump_src_failover_c.slsrc.html#complete_init" target="src">00111</a>          err = lbm_src_topic_attr_str_setopt(tattr, "ume_store_behavior", "qc");
+<a href="ump_src_failover_c.slsrc.html#complete_init" target="src">00112</a>          EX_LBM_CHK(err);
+<a href="ump_src_failover_c.slsrc.html#complete_init" target="src">00113</a>  
+<a href="ump_src_failover_c.slsrc.html#complete_init" target="src">00114</a>          err = lbm_src_topic_alloc(&amp;topic, app_src-&gt;ctx, "test.topic", tattr);
+<a href="ump_src_failover_c.slsrc.html#complete_init" target="src">00115</a>          EX_LBM_CHK(err);
+<a href="ump_src_failover_c.slsrc.html#complete_init" target="src">00116</a>  
+<a href="ump_src_failover_c.slsrc.html#complete_init" target="src">00117</a>          err = lbm_src_create(&amp;(app_src-&gt;src), app_src-&gt;ctx, topic, handle_src_event, app_src, NULL);
+<a href="ump_src_failover_c.slsrc.html#complete_init" target="src">00118</a>          EX_LBM_CHK(err);
+</pre><!-- endblock complete_init_ref_1 --></small>
+
+
+	<p>Note the state for the source is now set to INIT. This means the main loop will not attempt to re-initialize at the top of every loop,
+	but also means the main loop cannot attempt to send any messages because it is not yet READY.</p>
+    <h4>Handling Source Events / Updating Source State</h4>
+	<p>Once the source is created, the application must wait for the source to complete registration with the store before it can send. The
+	registration complete event is coded into the source event handler function, and the complete event should like this:</p>
+	<a name="reg_complete_ref_1" id="reg_complete_ref_1"></a>
+<small><pre>
+<a href="ump_src_failover_c.slsrc.html#reg_complete" target="src">00062</a>          case LBM_SRC_EVENT_UME_REGISTRATION_COMPLETE_EX:
+<a href="ump_src_failover_c.slsrc.html#reg_complete" target="src">00063</a>      {
+<a href="ump_src_failover_c.slsrc.html#reg_complete" target="src">00064</a>          lbm_src_event_ume_registration_complete_ex_t *reg = (lbm_src_event_ume_registration_complete_ex_t *)ed;
+<a href="ump_src_failover_c.slsrc.html#reg_complete" target="src">00065</a>  
+<a href="ump_src_failover_c.slsrc.html#reg_complete" target="src">00066</a>          printf("UME registration complete. SQN %x.\n", reg-&gt;sequence_number);
+<a href="ump_src_failover_c.slsrc.html#reg_complete" target="src">00067</a>  
+<a href="ump_src_failover_c.slsrc.html#reg_complete" target="src">00068</a>          app_src-&gt;state = READY;
+<a href="ump_src_failover_c.slsrc.html#reg_complete" target="src">00069</a>          break;
+<a href="ump_src_failover_c.slsrc.html#reg_complete" target="src">00070</a>      }
+</pre><!-- endblock reg_complete_ref_1 --></small>
+
+
+	<p>Once registration is complete, the application can now send messages. If the source loses registration to a store, an unresponsive event
+	will be executed. Inside the unresponsive event is an error string, which specifies whether quorum has been maintained or lost. If quorum
+	is lost, the source state must be updated to note this change because it can no longer send messages:</p>
+	<a name="unresponsive_ref_1" id="unresponsive_ref_1"></a>
+<small><pre>
+<a href="ump_src_failover_c.slsrc.html#unresponsive" target="src">00071</a>      case LBM_SRC_EVENT_UME_STORE_UNRESPONSIVE:
+<a href="ump_src_failover_c.slsrc.html#unresponsive" target="src">00072</a>      {
+<a href="ump_src_failover_c.slsrc.html#unresponsive" target="src">00073</a>          const char *infostr = (const char *)ed;
+<a href="ump_src_failover_c.slsrc.html#unresponsive" target="src">00074</a>          
+<a href="ump_src_failover_c.slsrc.html#unresponsive" target="src">00075</a>          printf("UME store: %s\n", infostr);
+<a href="ump_src_failover_c.slsrc.html#unresponsive" target="src">00076</a>          if (strstr(infostr, "quorum lost") != NULL)
+<a href="ump_src_failover_c.slsrc.html#unresponsive" target="src">00077</a>              app_src-&gt;state = UNRESP;
+<a href="ump_src_failover_c.slsrc.html#unresponsive" target="src">00078</a>          break;
+<a href="ump_src_failover_c.slsrc.html#unresponsive" target="src">00079</a>      }
+</pre><!-- endblock unresponsive_ref_1 --></small>
+
+
+    <h4>Automatic Failover</h4>
+	<p>Here is where this sample application is particularly flawed. In this example application, as soon as the state changes over to unresponsive,
+	the sample starts the failover process to the backup stores. This is not recommended for a couple reasons:
+	<ol>
+	<li>There could be an issue at the source that caused the unresponsiveness and there is nothing wrong with the store. For example if resources
+	on the source host are over utilized, the source application may fail to process keepalive messages from the store which maintain connectivity
+	for a short period of time. This is likely not a valid failover scenario. </li>
+	<li>If the stores are restarted, even if it is quick, unresponsive events will be executed and would cause the switch, which is probably 
+	not a valid failover scenario</li>
+	<li>Any short-lived, transient network level issues could also cause temporary unresponsiveness, which is likely not a valid reason for
+	failover.</li>
+	</ol>
+	<p>Ultimately, using the unresponsive event solely as the reason to failover is not at all recommended because of the number of possible 
+	false alarms. That being said, UM cannot possibly determine when is the right time to failover, this decision must be thoughtfully constructed
+	based on the business logic for the use case.</p>
+	<p>So here is the <i><b>sample</b></i> application failing over once the main loop has detected the state as UNRESP:</p>
+	<a name="primary_unresp_ref_1" id="primary_unresp_ref_1"></a>
+<small><pre>
+<a href="ump_src_failover_c.slsrc.html#primary_unresp" target="src">00194</a>              if (app_src.state == UNRESP &amp;&amp; app_src.mode == PRIMARY)
+<a href="ump_src_failover_c.slsrc.html#primary_unresp" target="src">00195</a>              {
+<a href="ump_src_failover_c.slsrc.html#primary_unresp" target="src">00196</a>                  printf("Primary store unresponsive, failing over to backup\n");
+<a href="ump_src_failover_c.slsrc.html#primary_unresp" target="src">00197</a>                  failover_app_src(&amp;app_src);
+<a href="ump_src_failover_c.slsrc.html#primary_unresp" target="src">00198</a>              }
+</pre><!-- endblock primary_unresp_ref_1 --></small>
+
+
+	<h3>Delete the Source and Reset State</h3>
+	<p>Here is the second major flaw in the sample application. In the following snippet, the application will simply delete the source object
+	and reset the source state so that it can be reinitialized at the top of the main loop, but configured with the backup stores. Missing in
+	this example is what to do with any outstanding messages that have not been stabilized (messages in flight). Depending on the business logic,
+	it may need to be a requirement that the application keep a record of every message that has been sent and not stabilized. Then in the event
+	of a failover, messages that have not been stabilized will be explicitly resent to guarantee message delivery.</p>
+	<p>First, the source gets deleted:</p>
+	<a name="delete_src_ref_1" id="delete_src_ref_1"></a>
+<small><pre>
+<a href="ump_src_failover_c.slsrc.html#delete_src" target="src">00128</a>      err = lbm_src_delete(app_src-&gt;src);
+<a href="ump_src_failover_c.slsrc.html#delete_src" target="src">00129</a>      EX_LBM_CHK(err);
+</pre><!-- endblock delete_src_ref_1 --></small>
+
+
+	<p>Then the state gets updated to NOT_INIT, and the mode set to backup so the backup stores can be configured upon initialization:</p>
+	<a name="update_state_not_init_ref_1" id="update_state_not_init_ref_1"></a>
+<small><pre>
+<a href="ump_src_failover_c.slsrc.html#update_state_not_init" target="src">00131</a>      app_src-&gt;src = NULL;
+<a href="ump_src_failover_c.slsrc.html#update_state_not_init" target="src">00132</a>      app_src-&gt;state = NOT_INIT;
+<a href="ump_src_failover_c.slsrc.html#update_state_not_init" target="src">00133</a>      app_src-&gt;mode = BACKUP;
+</pre><!-- endblock update_state_not_init_ref_1 --></small>
+
+
+	<p>In the event that the backup store goes unresponsive, the sample application is simply coded to exit at this point:</p>
+	<a name="backup_unresp_ref_1" id="backup_unresp_ref_1"></a>
+<small><pre>
+<a href="ump_src_failover_c.slsrc.html#backup_unresp" target="src">00199</a>              else if (app_src.state == UNRESP &amp;&amp; app_src.mode == BACKUP)
+<a href="ump_src_failover_c.slsrc.html#backup_unresp" target="src">00200</a>              {
+<a href="ump_src_failover_c.slsrc.html#backup_unresp" target="src">00201</a>                  printf("Backup store unresponsive. Exiting\n");
+<a href="ump_src_failover_c.slsrc.html#backup_unresp" target="src">00202</a>                  exit(1);
+<a href="ump_src_failover_c.slsrc.html#backup_unresp" target="src">00203</a>              }
+</pre><!-- endblock backup_unresp_ref_1 --></small>
+
+
+    <h4>Test Procedure</h4>
+	<p>This sample can be used to test this methodology as it has been coded with the proper data being printed as if it were an actual test case.
+	It could be used to test the method in a given environment, ensuring all the networking is properly being routed. It could also be used as a 
+	smoke test of using the UM Dynamic Routing Option (DRO) for persistent routing to a DR datacenter. Here is a simple test procedure:
+	<ol>
+	<li>Configure two stores (or two groups of stores) and ensure that the are running properly (two configs are provided in this sample for a localost
+	test of the methodology).</li>
+	<li>Ensure that the global variables for the stores match the actual store IP+Port (again, they are defaulting to a localhost test case).</li>
+	<li>Complile and run the sample application. Note the registration success and complete events to the primary store</li>
+	<li>Kill the primary store group by shutting down the store(s). </li>
+	<li>The sample should print the unresponsive event, and should automatically reconnect to the backup stores fairly quickly thereafter</li>
+	<li>Kill the backup store(s) and note the application exits once the backup is detected as unresponsive</li>
+	</ol>
+    <h4>Includes</h4>
+        <p>Include files for this application. Notice the Windows specific include files - these are not necessary for Linux only applications</p>
+        <a name="includes_ref_1" id="includes_ref_1"></a>
+<small><pre>
+<a href="ump_src_failover_c.slsrc.html#includes" target="src">00003</a>  #include &lt;stdio.h&gt;
+<a href="ump_src_failover_c.slsrc.html#includes" target="src">00004</a>  #include &lt;string.h&gt;
+<a href="ump_src_failover_c.slsrc.html#includes" target="src">00005</a>  
+<a href="ump_src_failover_c.slsrc.html#includes" target="src">00006</a>  #if defined(_MSC_VER)
+<a href="ump_src_failover_c.slsrc.html#includes" target="src">00007</a>  /* Windows-only includes */
+<a href="ump_src_failover_c.slsrc.html#includes" target="src">00008</a>  #include &lt;winsock2.h&gt;
+<a href="ump_src_failover_c.slsrc.html#includes" target="src">00009</a>  #define SLEEP(s) Sleep((s)*1000)
+<a href="ump_src_failover_c.slsrc.html#includes" target="src">00010</a>  #else
+<a href="ump_src_failover_c.slsrc.html#includes" target="src">00011</a>  /* Unix-only includes */
+<a href="ump_src_failover_c.slsrc.html#includes" target="src">00012</a>  #include &lt;stdlib.h&gt;
+<a href="ump_src_failover_c.slsrc.html#includes" target="src">00013</a>  #include &lt;unistd.h&gt;
+<a href="ump_src_failover_c.slsrc.html#includes" target="src">00014</a>  #define SLEEP(s) sleep(s)
+<a href="ump_src_failover_c.slsrc.html#includes" target="src">00015</a>  #endif
+<a href="ump_src_failover_c.slsrc.html#includes" target="src">00016</a>  
+<a href="ump_src_failover_c.slsrc.html#includes" target="src">00017</a>  #include &lt;lbm/lbm.h&gt;
+</pre><!-- endblock includes_ref_1 --></small>
+
+
+    <h4>Sleep helper function</h4>
+	<p>Since sleep is different in Windows and Linux, this sleep helper function is defined as a macro to ensure compatibility when attempting to 
+	  sleep() for any number of seconds.</p>
+	<a name="sleep_macro_ref_1" id="sleep_macro_ref_1"></a>
+<small><pre>
+<a href="ump_src_failover_c.slsrc.html#sleep_macro" target="src">00019</a>  #if defined(_WIN32)
+<a href="ump_src_failover_c.slsrc.html#sleep_macro" target="src">00020</a>  #   define SLEEP_SEC(x) Sleep((x)*1000)
+<a href="ump_src_failover_c.slsrc.html#sleep_macro" target="src">00021</a>  #else
+<a href="ump_src_failover_c.slsrc.html#sleep_macro" target="src">00022</a>  #   define SLEEP_SEC(x) sleep(x)
+<a href="ump_src_failover_c.slsrc.html#sleep_macro" target="src">00023</a>  #endif
+</pre><!-- endblock sleep_macro_ref_1 --></small>
+
+
+    <h4>Store Configuration XML</h4>
+        <p>This is a store configuration file that can be used to run the umestored binary along with this example application</p>
+        <a name="store_pri_ref_1" id="store_pri_ref_1"></a>
+<small><pre>
+<a href="../store_primary_xml.slsrc.html#store_pri" target="src">00001</a>  &lt;?xml version="1.0" encoding="utf-8" ?&gt;
+<a href="../store_primary_xml.slsrc.html#store_pri" target="src">00002</a>    &lt;ume-store version="1.2"&gt;
+<a href="../store_primary_xml.slsrc.html#store_pri" target="src">00003</a>      &lt;daemon&gt;
+<a href="../store_primary_xml.slsrc.html#store_pri" target="src">00004</a>        &lt;log&gt;DEMO_STORE.log&lt;/log&gt;
+<a href="../store_primary_xml.slsrc.html#store_pri" target="src">00005</a>        &lt;web-monitor&gt;*:8080&lt;/web-monitor&gt;
+<a href="../store_primary_xml.slsrc.html#store_pri" target="src">00006</a>      &lt;/daemon&gt;
+<a href="../store_primary_xml.slsrc.html#store_pri" target="src">00007</a>      &lt;stores&gt;
+<a href="../store_primary_xml.slsrc.html#store_pri" target="src">00008</a>        &lt;store name="DEMO_STORE" port="29999"&gt;
+<a href="../store_primary_xml.slsrc.html#store_pri" target="src">00009</a>          &lt;ume-attributes&gt;
+<a href="../store_primary_xml.slsrc.html#store_pri" target="src">00010</a>              &lt;option name="disk-cache-directory" value="cache" type="store"/&gt;
+<a href="../store_primary_xml.slsrc.html#store_pri" target="src">00011</a>              &lt;option name="disk-state-directory" value="state" type="store"/&gt;
+<a href="../store_primary_xml.slsrc.html#store_pri" target="src">00012</a>              &lt;option name="context-name" value="DEMO_STORE"/&gt;
+<a href="../store_primary_xml.slsrc.html#store_pri" target="src">00013</a>          &lt;/ume-attributes&gt;
+<a href="../store_primary_xml.slsrc.html#store_pri" target="src">00014</a>          &lt;topics&gt;
+<a href="../store_primary_xml.slsrc.html#store_pri" target="src">00015</a>            &lt;topic pattern=".*" type="PCRE"&gt;
+<a href="../store_primary_xml.slsrc.html#store_pri" target="src">00016</a>              &lt;ume-attributes&gt;
+<a href="../store_primary_xml.slsrc.html#store_pri" target="src">00017</a>                &lt;option name="repository-type" value="disk" type="store"/&gt;
+<a href="../store_primary_xml.slsrc.html#store_pri" target="src">00018</a>              &lt;/ume-attributes&gt;
+<a href="../store_primary_xml.slsrc.html#store_pri" target="src">00019</a>            &lt;/topic&gt;
+<a href="../store_primary_xml.slsrc.html#store_pri" target="src">00020</a>          &lt;/topics&gt;
+<a href="../store_primary_xml.slsrc.html#store_pri" target="src">00021</a>        &lt;/store&gt;
+<a href="../store_primary_xml.slsrc.html#store_pri" target="src">00022</a>      &lt;/stores&gt;
+<a href="../store_primary_xml.slsrc.html#store_pri" target="src">00023</a>    &lt;/ume-store&gt;
+</pre><!-- endblock store_pri_ref_1 --></small>
+
+
+  </body>
+</html>
+

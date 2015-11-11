@@ -1,0 +1,26 @@
+<a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>UMP Source Failover for Disaster Recovery</h1>
+	<p>Multi-datacenter deployment for UMP can seem like a challenge out of the box. Typically, use cases
+	for multi-datacenter deployments require persistent messaging for 2 or 3 datacenters. UMP is more than
+	capable of handling either scenario, however the recommended implementation for 2 or 3 datacenters is
+	different.</p>
+	<p>For a 3 datacenter solution, Informatica recommends configuring a UMP store daemon in each of the 
+	datacenters, and quorum consensus will take care of the rest (for more information on quorum/consensus
+	please refer to the product documentation). Alternatively, each datacenter could contain a group of 
+	stores, given that the stavility behavior is configured in such a way that stability is achieved
+	only when a majority of groups have stabilized a message.</p>
+	<p>For a 2 datacenter solution, quorum/consensus is still a plausible solution (and ultimately the 
+	most recommended solution by Informatica), though it is generally not used because it requires both 
+	datacenters to stabilize messages, and requires connectivity to	both datacenters to be able to send 
+	messages, and most use cases require connectivity to just a single datacenter to be able to send messages.
+	Often is the case that the datacenter where the source exists is considered the "primary" datacenter,
+	and the remote datacenter from there is the disaster recovery (DR) datacenter. It is this latter 
+	use case that this sample is intended to be used for.</p>
+	<p>The basic architecture for the 2 datacenter solution is to ensure the source application does not
+	register with stores in both datacenters simultaneously. The source simply starts, connecting only
+	to the primary store (or store group). If there is a store group failure, or datacenter failure,
+	the source can either manually be restarted and reconfigured to connect to the stores in the DR
+	datacenter, or an automatic failover solution can be coded which is demonstrated below.</p>
+	<p>Note that this sample is by no means ready for production, and is intended to be used for 
+	sample purposes only. There are fundamental flaws in this sample not addressed intentionally, and
+	are explained below.</p>

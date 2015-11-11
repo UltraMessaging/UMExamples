@@ -1,0 +1,6 @@
+Add a store specification to the list of stores specified for the source. Unlike other UMP settings, every time this setting is called, it adds another store specification to the list and does NOT overwrite previous specifications. Each entry contains the store name, registration ID, and group index for the store. For the configuration file as well as string versions of setting this option, the string value is formatted as name:RegID:GroupIDX where name is the name of the store configured with the store attribute, context-name in the umestored XML configuration file, RegID is the registration ID that the source desires to use, and GroupIDX is the group index that the store belongs to. The RegID and GroupIDX pieces may be left off the string if desired. If so, then the value of 0 is assumed for them. Store names are restricted to 128 characters in length, and may contain only alphanumeric characters, hyphens, and underscores.
+
+Scope:	source
+Type:	lbm_ume_store_name_entry_t
+When to Set:	Can only be set during object initialization.
+

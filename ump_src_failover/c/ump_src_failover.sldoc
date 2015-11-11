@@ -1,0 +1,124 @@
+<html>
+  <head>
+    =semlit,include,../../style/head.sldoc=
+    <title>UMP Source Failover for Disaster Recovery</title>
+  </head>
+  <body>
+    =semlit,include,../intro.sldoc=
+    <p>There is one program source file, and a store configuration XMLs:</p>
+    <ul>
+      <li><b><tt>=semlit,srcfile,ump_src_failover_c.slsrc,ump_src_failover.c=</tt></b></li>
+      <li><b><tt>=semlit,srcfile,../store_primary_xml.slsrc,store_primary.xml=</tt></b></li>
+      <li><b><tt>=semlit,srcfile,../store_backup_xml.slsrc,store_backup.xml=</tt></b></li>
+    </ul>
+    <h2>Program explanation: <tt>ump_src_failover.c</tt></h2>
+    <h4>Defining Store Configurations</h4>
+	<p>In this example, the primary and backup stores are configured as global variables. Also in this example, only a single store is used at 
+	a time, however in typical use cases 3 stores in each datacenter would be used for better resiliency and persistence. An alternative solution
+	to using global (or local) variables might be to use UM configuration files, configuring the the primary and backup store groups in separate
+	configuration files.</p>
+	=semlit,insert,store_configs=
+	Using the store configuration attributes =semlit,tooltip,../../tooltips/source_ume_store.txt,ume_store=and 
+	=semlit,tooltip,../../tooltips/source_ume_store_name.txt,ume_store_name=is different than most UM configuration attributes in that when 
+	the attribute is configured more than once, rather than overwriting the previous value, additional entries are added for the attribute; this
+	is how multiple stores are configured for any given source. Because of this semantic, users can use the 
+	=semlit,tooltip,../../tooltips/source_ume_store.txt,ume_store=value of "0.0.0.0:0" to completly clear the list of entries and start over. 
+	This is recommended if changing a topic attribute object to reconfigure a source and the stores it will use once created, there it is also
+	defined as a global attribute:</p>
+	=semlit,insert,clear_store_configs=
+    <h4>Define a Custom Source Object</h4>
+	<p>At the core of this sample, the application needs to track the state of the source, which can be the following:</p>
+	<ol>
+	<li>NOT_INIT - Not initialized, meaning the basic attribute objects have not been configured and the source object not created yet</li>
+	<li>INIT - Initialized, meaning that the attributes have been configured and source created.</li>
+	<li>READY - Ready indicates that the source has completed registration with the stores and can now send messages</li>
+	<li>UNRESP - Unresponsive, meaning that the source was previously registered with enough stores but has since lost quorum</li>
+	</ol>
+	<p>These states are offered as suggestions, more can be added based on specific application states</p>
+	<p>This source object will also track whether or not the source is currently registered to the primary or backup group of stores, as well
+	as store the pointer object to the source itself and the sources context</p>
+	=semlit,insert,app_src_struct=
+    <h4>Create the Context</h4>
+	<p>Standard UM code to initialize and create an LBM context:</p>
+	=semlit,insert,init_create_context=
+    <h4>Initializing the Customer Source Object</h4>
+	<p>Before the source is created, the object needs to be initialized so that the following logic properly configures the source to 
+	use the correct stores. The Object also needs to be configured to point back to the main application context so the source can be
+	created within it:</p>
+	=semlit,insert,init_app_src=
+    <h4>Configuring the Stores and Creating the Source</h4>
+	<p>By this point in the sample, the application is in the main application loop. If the state of the source is still unitialized at the top of 
+	the loop, the application intializes/creates a source:</p>
+	=semlit,insert,start_init=
+	<p>Once in the init_src() function, the application creates the attribute object and ensures the attribute object has a clean store list
+	by configuring =semlit,tooltip,../../tooltips/source_ume_store.txt,ume_store=to "0.0.0.0:0":</p>
+	=semlit,insert,init_source_attr=
+	<p>Next the sample application configured the stores it should be using based on its current mode of operation; the mode was previously 
+	initialized to PRIMARY, so it'll use the primary stores and associated SessionID:</p>
+	=semlit,insert,set_store=
+	<p>Finally the sample sets the store behavior to use quorum/consensus and creates the source object:</p>
+	=semlit,insert,complete_init=
+	<p>Note the state for the source is now set to INIT. This means the main loop will not attempt to re-initialize at the top of every loop,
+	but also means the main loop cannot attempt to send any messages because it is not yet READY.</p>
+    <h4>Handling Source Events / Updating Source State</h4>
+	<p>Once the source is created, the application must wait for the source to complete registration with the store before it can send. The
+	registration complete event is coded into the source event handler function, and the complete event should like this:</p>
+	=semlit,insert,reg_complete=
+	<p>Once registration is complete, the application can now send messages. If the source loses registration to a store, an unresponsive event
+	will be executed. Inside the unresponsive event is an error string, which specifies whether quorum has been maintained or lost. If quorum
+	is lost, the source state must be updated to note this change because it can no longer send messages:</p>
+	=semlit,insert,unresponsive=
+    <h4>Automatic Failover</h4>
+	<p>Here is where this sample application is particularly flawed. In this example application, as soon as the state changes over to unresponsive,
+	the sample starts the failover process to the backup stores. This is not recommended for a couple reasons:
+	<ol>
+	<li>There could be an issue at the source that caused the unresponsiveness and there is nothing wrong with the store. For example if resources
+	on the source host are over utilized, the source application may fail to process keepalive messages from the store which maintain connectivity
+	for a short period of time. This is likely not a valid failover scenario. </li>
+	<li>If the stores are restarted, even if it is quick, unresponsive events will be executed and would cause the switch, which is probably 
+	not a valid failover scenario</li>
+	<li>Any short-lived, transient network level issues could also cause temporary unresponsiveness, which is likely not a valid reason for
+	failover.</li>
+	</ol>
+	<p>Ultimately, using the unresponsive event solely as the reason to failover is not at all recommended because of the number of possible 
+	false alarms. That being said, UM cannot possibly determine when is the right time to failover, this decision must be thoughtfully constructed
+	based on the business logic for the use case.</p>
+	<p>So here is the <i><b>sample</b></i> application failing over once the main loop has detected the state as UNRESP:</p>
+	=semlit,insert,primary_unresp=
+	<h3>Delete the Source and Reset State</h3>
+	<p>Here is the second major flaw in the sample application. In the following snippet, the application will simply delete the source object
+	and reset the source state so that it can be reinitialized at the top of the main loop, but configured with the backup stores. Missing in
+	this example is what to do with any outstanding messages that have not been stabilized (messages in flight). Depending on the business logic,
+	it may need to be a requirement that the application keep a record of every message that has been sent and not stabilized. Then in the event
+	of a failover, messages that have not been stabilized will be explicitly resent to guarantee message delivery.</p>
+	<p>First, the source gets deleted:</p>
+	=semlit,insert,delete_src=
+	<p>Then the state gets updated to NOT_INIT, and the mode set to backup so the backup stores can be configured upon initialization:</p>
+	=semlit,insert,update_state_not_init=
+	<p>In the event that the backup store goes unresponsive, the sample application is simply coded to exit at this point:</p>
+	=semlit,insert,backup_unresp=
+    <h4>Test Procedure</h4>
+	<p>This sample can be used to test this methodology as it has been coded with the proper data being printed as if it were an actual test case.
+	It could be used to test the method in a given environment, ensuring all the networking is properly being routed. It could also be used as a 
+	smoke test of using the UM Dynamic Routing Option (DRO) for persistent routing to a DR datacenter. Here is a simple test procedure:
+	<ol>
+	<li>Configure two stores (or two groups of stores) and ensure that the are running properly (two configs are provided in this sample for a localost
+	test of the methodology).</li>
+	<li>Ensure that the global variables for the stores match the actual store IP+Port (again, they are defaulting to a localhost test case).</li>
+	<li>Complile and run the sample application. Note the registration success and complete events to the primary store</li>
+	<li>Kill the primary store group by shutting down the store(s). </li>
+	<li>The sample should print the unresponsive event, and should automatically reconnect to the backup stores fairly quickly thereafter</li>
+	<li>Kill the backup store(s) and note the application exits once the backup is detected as unresponsive</li>
+	</ol>
+    <h4>Includes</h4>
+        <p>Include files for this application. Notice the Windows specific include files - these are not necessary for Linux only applications</p>
+        =semlit,insert,includes=
+    <h4>Sleep helper function</h4>
+	<p>Since sleep is different in Windows and Linux, this sleep helper function is defined as a macro to ensure compatibility when attempting to 
+	  sleep() for any number of seconds.</p>
+	=semlit,insert,sleep_macro=
+    <h4>Store Configuration XML</h4>
+        <p>This is a store configuration file that can be used to run the umestored binary along with this example application</p>
+        =semlit,insert,store_pri=
+  </body>
+</html>
