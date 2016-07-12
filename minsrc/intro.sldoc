@@ -1,6 +1,6 @@
 <a href="../../index.html" class="button" target="_top">Example index</a>
 
-<h1>Minimal UM Punlisher Example</h1>
+<h1>Minimal UM Publisher Example</h1>
 <p>This example demonstrates the minimal code to publish a message using UM.
 There is a corresponding minimal subscriber example at TODO.</p>
 
