@@ -1,0 +1,133 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Receiver Source Notification Callbacks (Create and Delete)</title>
+  </head>
+  <body>
+    <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>Receiver Source Notification Callbacks (Create and Delete)</h1>
+    <p>This example demonstrates how to configure and code the callbacks for when a receiver creates and deletes a 
+       delivery controller for a specific source.</p>
+    <p>Like many other callback function in UM, the source notification is configured via a receiver attribute, 
+       <a href="#" title="Callback functions (and associated client data pointer) that are called when a receiver creates or deletes a delivery controller associated with a source. For the creation function, the application has the ability to set the source client data pointer to be used in each message received from the source. This callback is called directly in line and does not use the event queue. Therefore the callback function used should not block or it will block the context thread processing. A value of NULL for the callback turns off the callback being called.
+
+Scope:	receiver
+Type:	lbm_rcv_src_notification_func_t
+Default value:	NULL
+When to Set:	Can only be set during object initialization.
+Config File:	Cannot be set from an UM configuration file.
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">source_notification_function</a>
+which
+       must be set programatically so that the appropriate function pointers can be provided.</p>
+    <p>Inside the UM library, there is a concept of a <b>transport</b> and a <b>delivery controller</b>. It is important
+       to understand the difference and characteristics of each and how it related to your application. A <b>transport</b>
+       is the network connection that is used as the medium for publishing/subscribing to messages. For example, LBTRM
+       (reliable multicast) is a transport which publishes on a specific multicast group and port. A transport may contain
+       a single UM topic, or it could contain many UM topics; it depends on how a publishing application configures itself
+       and its sources.</p>
+    <p>A <b>delivery controller</b> is the internal mechanism that takes messages from a transport for a specific topic
+       and then delivers those messages to the receiver application, given that the application has a receiver that is
+       interested in that topic.</p>
+    <p>When a new transport is detected by a UM receiver application, you may notice that the receiver application executes
+       the Beginning of Session (BOS) callback. This is great information for the application to log because it can be used
+       to help debug networking issues. However, this callback is not great at telling the application that a specific topic 
+       ready to start receiving messages. Instead, the application can use the source_notification_callback which is
+       demonstrated in this sample application. The source_notification_callback can enable a user callback to be executed
+       when delivery controller is created for a topic and a separate callback for when a delivery controller is deleted.
+    <p> 
+
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt><a href="SrcNotifyCbs.java">SrcNotifyCbs.java</a></tt></b>
+        - (right-click and save as "SrcNotifyCbs.java") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>SrcNotifyCbs.java</tt></h2>
+    <h4></h4>
+    <h4>Delivery Controller Create Callback</h4>
+	<p>Here the user callback for the delivery controller being created is defined. This function will execute every 
+	time a source is detected (when a source's topic advertisement is received by the receiver's context) that the 
+	receiver is interested in. This callback will execute before a BOS would because BOS required data on the transport
+	to be received, unlike this function which just requires a TIR on an interested source.<p>
+	<a name="create_cb_ref_1" id="create_cb_ref_1"></a>
+<small><pre>
+<a href="SrcNotifyCbs_java.slsrc.html#create_cb" target="src">00053</a>          private static class CreateSourceCbs implements LBMSourceCreationCallback {
+<a href="SrcNotifyCbs_java.slsrc.html#create_cb" target="src">00054</a>                  public Object onNewSource(String source, Object cbObj) {
+<a href="SrcNotifyCbs_java.slsrc.html#create_cb" target="src">00055</a>                          System.out.println("Delivery Controller Created: " + source);
+<a href="SrcNotifyCbs_java.slsrc.html#create_cb" target="src">00056</a>                          return 0;
+<a href="SrcNotifyCbs_java.slsrc.html#create_cb" target="src">00057</a>                  }
+<a href="SrcNotifyCbs_java.slsrc.html#create_cb" target="src">00058</a>          }  /* Delivery Controller Create */
+</pre><!-- endblock create_cb_ref_1 --></small>
+
+
+    <h4>Delivery Controller Delete Callback</h4>
+	<p>This is the user callback for when the delivery controller is deleted. A delivery controller would be deleted
+	if the topic hasn't received any data for the transport activity timeout. This is typically around the same time as 
+	an EOS, though not guaranteed if the transport remains active even if the topic is just deleted. Therefore it is better
+	to rely on this callback versus EOS, because this callback is guaranteed if no data has been received for the topic.</p>
+	<a name="delete_cb_ref_1" id="delete_cb_ref_1"></a>
+<small><pre>
+<a href="SrcNotifyCbs_java.slsrc.html#delete_cb" target="src">00061</a>          private static class DeleteSourceCbs implements LBMSourceDeletionCallback {
+<a href="SrcNotifyCbs_java.slsrc.html#delete_cb" target="src">00062</a>                  public int onSourceDelete(String source, Object cbObj, Object sourceCbObj) {
+<a href="SrcNotifyCbs_java.slsrc.html#delete_cb" target="src">00063</a>                          System.out.println("Delivery Controller Deleted: " + source);
+<a href="SrcNotifyCbs_java.slsrc.html#delete_cb" target="src">00064</a>                          return 0;
+<a href="SrcNotifyCbs_java.slsrc.html#delete_cb" target="src">00065</a>                  }
+<a href="SrcNotifyCbs_java.slsrc.html#delete_cb" target="src">00066</a>          }  /* Delivery Controller Delete */
+</pre><!-- endblock delete_cb_ref_1 --></small>
+
+
+    <h4>Standard Receive Callback</h4>
+	<p>This is the standard receiver callback where messages are processed, as well as events like BOS and EOS</p>
+	<a name="receive_cb_ref_1" id="receive_cb_ref_1"></a>
+<small><pre>
+<a href="SrcNotifyCbs_java.slsrc.html#receive_cb" target="src">00033</a>          private static class ReceiverCallback implements LBMReceiverCallback {
+<a href="SrcNotifyCbs_java.slsrc.html#receive_cb" target="src">00034</a>                  public int onReceive(Object cbArg, LBMMessage msg)
+<a href="SrcNotifyCbs_java.slsrc.html#receive_cb" target="src">00035</a>                  {
+<a href="SrcNotifyCbs_java.slsrc.html#receive_cb" target="src">00036</a>                          switch (msg.type())
+<a href="SrcNotifyCbs_java.slsrc.html#receive_cb" target="src">00037</a>                          {
+<a href="SrcNotifyCbs_java.slsrc.html#receive_cb" target="src">00038</a>                          case LBM.MSG_BOS:
+<a href="SrcNotifyCbs_java.slsrc.html#receive_cb" target="src">00039</a>                                  System.out.println("[" + msg.topicName() + "][" + msg.source() + "], Beginning of Transport Session");
+<a href="SrcNotifyCbs_java.slsrc.html#receive_cb" target="src">00040</a>                                  break;
+<a href="SrcNotifyCbs_java.slsrc.html#receive_cb" target="src">00041</a>                          case LBM.MSG_EOS:
+<a href="SrcNotifyCbs_java.slsrc.html#receive_cb" target="src">00042</a>                                  System.out.println("[" + msg.topicName() + "][" + msg.source() + "], End of Transport Session");
+<a href="SrcNotifyCbs_java.slsrc.html#receive_cb" target="src">00043</a>                                  break;
+<a href="SrcNotifyCbs_java.slsrc.html#receive_cb" target="src">00044</a>                          default:
+<a href="SrcNotifyCbs_java.slsrc.html#receive_cb" target="src">00045</a>                                  System.out.println("Other event, type=" + msg.type());
+<a href="SrcNotifyCbs_java.slsrc.html#receive_cb" target="src">00046</a>                                  break;
+<a href="SrcNotifyCbs_java.slsrc.html#receive_cb" target="src">00047</a>                          }
+<a href="SrcNotifyCbs_java.slsrc.html#receive_cb" target="src">00048</a>                          return 0;
+<a href="SrcNotifyCbs_java.slsrc.html#receive_cb" target="src">00049</a>                  }
+<a href="SrcNotifyCbs_java.slsrc.html#receive_cb" target="src">00050</a>          }  /* ReceiverCallback */
+</pre><!-- endblock receive_cb_ref_1 --></small>
+
+
+    <h4>Initialize Notify Ojects</h4>
+	<p>To properly set the receiver attribute 
+	<a href="#" title="Callback functions (and associated client data pointer) that are called when a receiver creates or deletes a delivery controller associated with a source. For the creation function, the application has the ability to set the source client data pointer to be used in each message received from the source. This callback is called directly in line and does not use the event queue. Therefore the callback function used should not block or it will block the context thread processing. A value of NULL for the callback turns off the callback being called.
+
+Scope:	receiver
+Type:	lbm_rcv_src_notification_func_t
+Default value:	NULL
+When to Set:	Can only be set during object initialization.
+Config File:	Cannot be set from an UM configuration file.
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">source_notification_function</a>
+these objects
+	can be used to set the user callbacks which have been defined above.</p>
+	<a name="srccb_var_ref_1" id="srccb_var_ref_1"></a>
+<small><pre>
+<a href="SrcNotifyCbs_java.slsrc.html#srccb_var" target="src">00014</a>                  CreateSourceCbs mySourceCreate = new CreateSourceCbs();
+<a href="SrcNotifyCbs_java.slsrc.html#srccb_var" target="src">00015</a>                  DeleteSourceCbs mySourceDelete = new DeleteSourceCbs();
+</pre><!-- endblock srccb_var_ref_1 --></small>
+
+
+    <h4>Set the Callbacks and Configure Parameter</h4>
+	<p>Finally, set the creation and deletion callback appropriately to the previously defined UM object, and then use
+	the API to configure the paramter:</p>
+	<a name="set_cbs_ref_1" id="set_cbs_ref_1"></a>
+<small><pre>
+<a href="SrcNotifyCbs_java.slsrc.html#set_cbs" target="src">00021</a>                  rcv_attr.setSourceNotificationCallbacks(mySourceCreate, mySourceDelete, null);
+</pre><!-- endblock set_cbs_ref_1 --></small>
+
+
+  </body>
+</html>
+
