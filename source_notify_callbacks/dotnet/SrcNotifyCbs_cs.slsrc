@@ -1,0 +1,76 @@
+/* SrcNotifyCbs.cs, see http://ultramessaging.github.io/UMExamples/seq_number_callback/dotnet/ */
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using com.latencybusters.lbm;
+
+public class SrcNotifyCbs {
+        static void Main(String[] args) {
+                LBMContext ctx = null;           /* Context object: container for UM "instance". */
+                LBMReceiver rcv = null;          /* Receiver object: for receiving messages. */
+                LBMTopic rtopic = null;          /* Topic object */
+                LBMReceiverAttributes rcv_attr;  /* Receiver attribute object */
+                LBM.setLicenseFile("lbm6.lic");
+                /* Initialize and create receiver and receiver callback */
+                LBMReceiverCallback myReceiverCallback = new LBMReceiverCallback(onReceive);
+                /* =semlit,block,srccb_var= */
+                LBMSourceCreationCallback mySourceCreate = new LBMSourceCreationCallback(onNewSource);
+                LBMSourceDeletionCallback mySourceDelete = new LBMSourceDeletionCallback(onSourceDelete);
+                /* =semlit,endblock,srccb_var= */
+
+                /* Initialization: create necessary UM objects. */
+                ctx = new LBMContext();
+                rcv_attr = new LBMReceiverAttributes();
+
+                /* =semlit,block,set_cbs= */
+                rcv_attr.setSourceNotificationCallbacks(mySourceCreate, mySourceDelete, null);
+                /* =semlit,endblock,set_cbs= */
+
+                rtopic = new LBMTopic(ctx, "test.topic", rcv_attr);
+                rcv = new LBMReceiver(ctx, rtopic, myReceiverCallback, null);
+
+                while(true)
+                {
+
+                }
+        } /* main */
+
+        /* Class for receiving messages */
+        /* =semlit,block,receive_cb= */
+        static int onReceive(Object cbArg, LBMMessage msg)
+        {
+                switch (msg.type())
+                {
+                case LBM.MSG_BOS:
+                        System.Console.Out.WriteLine("[" + msg.topicName() + "][" + msg.source() + "], Beginning of Transport Session");
+                        break;
+                case LBM.MSG_EOS:
+                        System.Console.Out.WriteLine("[" + msg.topicName() + "][" + msg.source() + "], End of Transport Session");
+                        break;
+                default:
+                        System.Console.Out.WriteLine("Other event, type=" + msg.type());
+                        break;
+                }
+                return 0;
+        }
+        /* =semlit,endblock,receive_cb= */
+
+        /* Class for delivery controller create callback */
+        /* =semlit,block,create_cb= */
+        public static Object onNewSource(String source, Object cbObj) {
+                System.Console.Out.WriteLine("Delivery Controller Created: " + source);
+                return 0;
+        }  /* Delivery Controller Create */
+        /* =semlit,endblock,create_cb= */
+
+        /* Class for delivery controller delete callback */
+        /* =semlit,block,delete_cb= */
+        public static int onSourceDelete(String source, Object cbObj, Object sourceCbObj) {
+                System.Console.Out.WriteLine("Delivery Controller Deleted: " + source);
+                return 0;
+        }  /* Delivery Controller Delete */
+        /* =semlit,endblock,delete_cb= */
+} /* class srcNotifyCbs */

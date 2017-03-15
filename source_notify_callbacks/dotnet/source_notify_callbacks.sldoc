@@ -1,0 +1,40 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Receiver Source Notification Callbacks (Create and Delete)</title>
+  </head>
+  <body>
+    =semlit,include,../intro.sldoc=
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt>=semlit,srcfile,SrcNotifyCbs_cs.slsrc,SrcNotifyCbs.cs=</tt></b>
+        - (right-click and save as "SrcNotifyCbs.cs") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>SrcNotifyCbs.cs</tt></h2>
+    <h4></h4>
+    <h4>Delivery Controller Create Callback</h4>
+	<p>Here the user callback for the delivery controller being created is defined. This function will execute every 
+	time a source is detected (when a source's topic advertisement is received by the receiver's context) that the 
+	receiver is interested in. This callback will execute before a BOS would because BOS required data on the transport
+	to be received, unlike this function which just requires a TIR on an interested source.<p>
+	=semlit,insert,create_cb=
+    <h4>Delivery Controller Delete Callback</h4>
+	<p>This is the user callback for when the delivery controller is deleted. A delivery controller would be deleted
+	if the topic hasn't received any data for the transport activity timeout. This is typically around the same time as 
+	an EOS, though not guaranteed if the transport remains active even if the topic is just deleted. Therefore it is better
+	to rely on this callback versus EOS, because this callback is guaranteed if no data has been received for the topic.</p>
+	=semlit,insert,delete_cb=
+    <h4>Standard Receive Callback</h4>
+	<p>This is the standard receiver callback where messages are processed, as well as events like BOS and EOS</p>
+	=semlit,insert,receive_cb=
+    <h4>Initialize Notify Ojects</h4>
+	<p>To properly set the receiver attribute 
+	=semlit,tooltip,../../tooltips/receiver_source_notification_function.txt,source_notification_function=these objects
+	can be used to set the user callbacks which have been defined above.</p>
+	=semlit,insert,srccb_var=
+    <h4>Set the Callbacks and Configure Parameter</h4>
+	<p>Finally, set the creation and deletion callback appropriately to the previously defined UM object, and then use
+	the API to configure the paramter:</p>
+	=semlit,insert,set_cbs=
+  </body>
+</html>
