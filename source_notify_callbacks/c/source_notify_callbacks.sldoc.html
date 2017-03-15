@@ -1,0 +1,173 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Receiver Source Notification Callbacks (Create and Delete)</title>
+  </head>
+  <body>
+    <a href="../../index.html" class="button" target="_top">Example index</a>
+    <h1>Receiver Source Notification Callbacks (Create and Delete)</h1>
+    <p>This example demonstrates how to configure and code the callbacks for when a receiver creates and deletes a 
+       delivery controller for a specific source.</p>
+    <p>Like many other callback function in UM, the source notification is configured via a receiver attribute, 
+       <a href="#" title="Callback functions (and associated client data pointer) that are called when a receiver creates or deletes a delivery controller associated with a source. For the creation function, the application has the ability to set the source client data pointer to be used in each message received from the source. This callback is called directly in line and does not use the event queue. Therefore the callback function used should not block or it will block the context thread processing. A value of NULL for the callback turns off the callback being called.
+
+Scope:	receiver
+Type:	lbm_rcv_src_notification_func_t
+Default value:	NULL
+When to Set:	Can only be set during object initialization.
+Config File:	Cannot be set from an UM configuration file.
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">source_notification_function</a>
+which
+       must be set programatically so that the appropriate function pointers can be provided.</p>
+    <p>Inside the UM library, there is a concept of a <b>transport</b> and a <b>delivery controller</b>. It is important
+       to understand the difference and characteristics of each and how it related to your application. A <b>transport</b>
+       is the network connection that is used as the medium for publishing/subscribing to messages. For example, LBTRM
+       (reliable multicast) is a transport which publishes on a specific multicast group and port. A transport may contain
+       a single UM topic, or it could contain many UM topics; it depends on how a publishing application configures itself
+       and its sources.</p>
+    <p>A <b>delivery controller</b> is the internal mechanism that takes messages from a transport for a specific topic
+       and then delivers those messages to the receiver application, given that the application has a receiver that is
+       interested in that topic.</p>
+    <p>When a new transport is detected by a UM receiver application, you may notice that the receiver application executes
+       the Beginning of Session (BOS) callback. This is great information for the application to log because it can be used
+       to help debug networking issues. However, this callback is not great at telling the application that a specific topic 
+       ready to start receiving messages. Instead, the application can use the source_notification_callback which is
+       demonstrated in this sample application. The source_notification_callback can enable a user callback to be executed
+       when delivery controller is created for a topic and a separate callback for when a delivery controller is deleted.
+    <p> 
+
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt><a href="source_notify_callbacks.c">source_notify_callbacks.c</a></tt></b>
+        - (right-click and save as "source_notify_callbacks.c") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>source_notify_callbacks.c</tt></h2>
+    <h4></h4>
+    <h4>Delivery Controller Create Callback</h4>
+	<p>Here the user callback for the delivery controller being created is defined. This function will execute every 
+	time a source is detected (when a source's topic advertisement is received by the receiver's context) that the 
+	receiver is interested in. This callback will execute before a BOS would because BOS required data on the transport
+	to be received, unlike this function which just requires a TIR on an interested source.<p>
+	<a name="create_cb_ref_1" id="create_cb_ref_1"></a>
+<small><pre>
+<a href="source_notify_callbacks_c.slsrc.html#create_cb" target="src">00025</a>  int new_src_notification_callback(const char *source_name, void *clientd)
+<a href="source_notify_callbacks_c.slsrc.html#create_cb" target="src">00026</a>  {
+<a href="source_notify_callbacks_c.slsrc.html#create_cb" target="src">00027</a>          printf("Delivery Controller Created: %s\n", source_name);
+<a href="source_notify_callbacks_c.slsrc.html#create_cb" target="src">00028</a>          return 0;
+<a href="source_notify_callbacks_c.slsrc.html#create_cb" target="src">00029</a>  }
+</pre><!-- endblock create_cb_ref_1 --></small>
+
+
+    <h4>Delivery Controller Delete Callback</h4>
+	<p>This is the user callback for when the delivery controller is deleted. A delivery controller would be deleted
+	if the topic hasn't received any data for the transport activity timeout. This is typically around the same time as 
+	an EOS, though not guaranteed if the transport remains active even if the topic is just deleted. Therefore it is better
+	to rely on this callback versus EOS, because this callback is guaranteed if no data has been received for the topic.</p>
+	<a name="delete_cb_ref_1" id="delete_cb_ref_1"></a>
+<small><pre>
+<a href="source_notify_callbacks_c.slsrc.html#delete_cb" target="src">00031</a>  int src_delete_notification_callback(const char *source_name, void *clientd, void* src_clientd )
+<a href="source_notify_callbacks_c.slsrc.html#delete_cb" target="src">00032</a>  {
+<a href="source_notify_callbacks_c.slsrc.html#delete_cb" target="src">00033</a>          printf("Delivery Controller Deleted: %s\n", source_name);
+<a href="source_notify_callbacks_c.slsrc.html#delete_cb" target="src">00034</a>          return 0;
+<a href="source_notify_callbacks_c.slsrc.html#delete_cb" target="src">00035</a>  }
+</pre><!-- endblock delete_cb_ref_1 --></small>
+
+
+    <h4>Standard Receive Callback</h4>
+	<p>This is the standard receiver callback where messages are processed, as well as events like BOS and EOS</p>
+	<a name="receive_cb_ref_1" id="receive_cb_ref_1"></a>
+<small><pre>
+<a href="source_notify_callbacks_c.slsrc.html#receive_cb" target="src">00038</a>  int rcv_handle_msg(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
+<a href="source_notify_callbacks_c.slsrc.html#receive_cb" target="src">00039</a>  {
+<a href="source_notify_callbacks_c.slsrc.html#receive_cb" target="src">00040</a>          int err;
+<a href="source_notify_callbacks_c.slsrc.html#receive_cb" target="src">00041</a>  
+<a href="source_notify_callbacks_c.slsrc.html#receive_cb" target="src">00042</a>          switch (msg-&gt;type) {
+<a href="source_notify_callbacks_c.slsrc.html#receive_cb" target="src">00043</a>          case LBM_MSG_BOS:
+<a href="source_notify_callbacks_c.slsrc.html#receive_cb" target="src">00044</a>                  printf("[%s][%s], Beginning of Transport Session\n", msg-&gt;topic_name, msg-&gt;source);
+<a href="source_notify_callbacks_c.slsrc.html#receive_cb" target="src">00045</a>                  break;
+<a href="source_notify_callbacks_c.slsrc.html#receive_cb" target="src">00046</a>          case LBM_MSG_EOS:
+<a href="source_notify_callbacks_c.slsrc.html#receive_cb" target="src">00047</a>                  printf("[%s][%s], End of Transport Session\n", msg-&gt;topic_name, msg-&gt;source);
+<a href="source_notify_callbacks_c.slsrc.html#receive_cb" target="src">00048</a>                  break;
+<a href="source_notify_callbacks_c.slsrc.html#receive_cb" target="src">00049</a>          default:
+<a href="source_notify_callbacks_c.slsrc.html#receive_cb" target="src">00050</a>                  printf("Other event, type=%x\n", msg-&gt;type);
+<a href="source_notify_callbacks_c.slsrc.html#receive_cb" target="src">00051</a>                  break;
+<a href="source_notify_callbacks_c.slsrc.html#receive_cb" target="src">00052</a>          }
+<a href="source_notify_callbacks_c.slsrc.html#receive_cb" target="src">00053</a>  
+<a href="source_notify_callbacks_c.slsrc.html#receive_cb" target="src">00054</a>          return 0;
+<a href="source_notify_callbacks_c.slsrc.html#receive_cb" target="src">00055</a>  }
+</pre><!-- endblock receive_cb_ref_1 --></small>
+
+
+    <h4>Declare Notify Structure</h4>
+	<p>To properly set the receiver attribute 
+	<a href="#" title="Callback functions (and associated client data pointer) that are called when a receiver creates or deletes a delivery controller associated with a source. For the creation function, the application has the ability to set the source client data pointer to be used in each message received from the source. This callback is called directly in line and does not use the event queue. Therefore the callback function used should not block or it will block the context thread processing. A value of NULL for the callback turns off the callback being called.
+
+Scope:	receiver
+Type:	lbm_rcv_src_notification_func_t
+Default value:	NULL
+When to Set:	Can only be set during object initialization.
+Config File:	Cannot be set from an UM configuration file.
+" style="color:2222ee;border-bottom:1px dotted #2222ee;text-decoration: none;">source_notification_function</a>
+this structure 
+	must be used to set the user callbacks which have been defined above.</p>
+	<a name="srccb_var_ref_1" id="srccb_var_ref_1"></a>
+<small><pre>
+<a href="source_notify_callbacks_c.slsrc.html#srccb_var" target="src">00064</a>          lbm_rcv_src_notification_func_t srccb;  /* Source notify callback structure */
+</pre><!-- endblock srccb_var_ref_1 --></small>
+
+
+    <h4>Set the Callbacks and Configure Parameter</h4>
+	<p>Finally, set the creation and deletion callback appropriately to the previously defined UM object, and then use
+	the API to configure the paramter:</p>
+	<a name="set_cbs_ref_1" id="set_cbs_ref_1"></a>
+<small><pre>
+<a href="source_notify_callbacks_c.slsrc.html#set_cbs" target="src">00086</a>          srccb.create_func = new_src_notification_callback;
+<a href="source_notify_callbacks_c.slsrc.html#set_cbs" target="src">00087</a>          srccb.delete_func = src_delete_notification_callback;
+<a href="source_notify_callbacks_c.slsrc.html#set_cbs" target="src">00088</a>  
+<a href="source_notify_callbacks_c.slsrc.html#set_cbs" target="src">00089</a>          err = lbm_rcv_topic_attr_setopt(rattr, "source_notification_function", &amp;srccb, sizeof(srccb));
+<a href="source_notify_callbacks_c.slsrc.html#set_cbs" target="src">00090</a>          EX_LBM_CHK(err);
+</pre><!-- endblock set_cbs_ref_1 --></small>
+
+
+    <h4>Includes</h4>
+        <p>Include files for this application. Notice the Windows specific include files - these
+          are not necessary for Linux only applications</p>
+        <a name="includes_ref_1" id="includes_ref_1"></a>
+<small><pre>
+<a href="source_notify_callbacks_c.slsrc.html#includes" target="src">00002</a>  #include &lt;stdio.h&gt;
+<a href="source_notify_callbacks_c.slsrc.html#includes" target="src">00003</a>  
+<a href="source_notify_callbacks_c.slsrc.html#includes" target="src">00004</a>  #if defined(_MSC_VER)
+<a href="source_notify_callbacks_c.slsrc.html#includes" target="src">00005</a>  /* Windows-only includes */
+<a href="source_notify_callbacks_c.slsrc.html#includes" target="src">00006</a>  #include &lt;winsock2.h&gt;
+<a href="source_notify_callbacks_c.slsrc.html#includes" target="src">00007</a>  #define SLEEP(s) Sleep((s)*1000)
+<a href="source_notify_callbacks_c.slsrc.html#includes" target="src">00008</a>  #else
+<a href="source_notify_callbacks_c.slsrc.html#includes" target="src">00009</a>  /* Unix-only includes */
+<a href="source_notify_callbacks_c.slsrc.html#includes" target="src">00010</a>  #include &lt;stdlib.h&gt;
+<a href="source_notify_callbacks_c.slsrc.html#includes" target="src">00011</a>  #include &lt;unistd.h&gt;
+<a href="source_notify_callbacks_c.slsrc.html#includes" target="src">00012</a>  #define SLEEP(s) sleep(s)
+<a href="source_notify_callbacks_c.slsrc.html#includes" target="src">00013</a>  #endif
+<a href="source_notify_callbacks_c.slsrc.html#includes" target="src">00014</a>  #include &lt;lbm/lbm.h&gt;
+</pre><!-- endblock includes_ref_1 --></small>
+
+
+    <h4>Windows Only</h4>
+        <p>Windows applications must initialize the Winsock library to utilize sockets.</p>
+        <a name="windows_ref_1" id="windows_ref_1"></a>
+<small><pre>
+<a href="source_notify_callbacks_c.slsrc.html#windows" target="src">00067</a>  #if defined(_WIN32)
+<a href="source_notify_callbacks_c.slsrc.html#windows" target="src">00068</a>          /* windows-specific code */
+<a href="source_notify_callbacks_c.slsrc.html#windows" target="src">00069</a>          WSADATA wsadata;
+<a href="source_notify_callbacks_c.slsrc.html#windows" target="src">00070</a>          int wsStat = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
+<a href="source_notify_callbacks_c.slsrc.html#windows" target="src">00071</a>          if (wsStat != 0)
+<a href="source_notify_callbacks_c.slsrc.html#windows" target="src">00072</a>          {
+<a href="source_notify_callbacks_c.slsrc.html#windows" target="src">00073</a>                  printf("line %d: wsStat=%d\n",__LINE__,wsStat);
+<a href="source_notify_callbacks_c.slsrc.html#windows" target="src">00074</a>                  exit(1);
+<a href="source_notify_callbacks_c.slsrc.html#windows" target="src">00075</a>          }
+<a href="source_notify_callbacks_c.slsrc.html#windows" target="src">00076</a>  #endif
+</pre><!-- endblock windows_ref_1 --></small>
+
+
+        <p>If this fails, the application should exit since sockets will not be operational.</p>
+  </body>
+</html>
+

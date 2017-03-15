@@ -1,0 +1,236 @@
+<!DOCTYPE html><html><head><title>SrcNotifyCbs.cs</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>SrcNotifyCbs.cs</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+00008
+00009
+00010
+00011
+00012
+00013
+00014
+00015
+00016
+00017
+00018
+<a href="source_notify_callbacks.sldoc.html#srccb_var_ref_1" target="doc">00019</a>
+<a href="source_notify_callbacks.sldoc.html#srccb_var_ref_1" target="doc">00020</a>
+00021
+00022
+00023
+00024
+00025
+<a href="source_notify_callbacks.sldoc.html#set_cbs_ref_1" target="doc">00026</a>
+00027
+00028
+00029
+00030
+00031
+00032
+00033
+00034
+00035
+00036
+00037
+<a href="source_notify_callbacks.sldoc.html#receive_cb_ref_1" target="doc">00038</a>
+<a href="source_notify_callbacks.sldoc.html#receive_cb_ref_1" target="doc">00039</a>
+<a href="source_notify_callbacks.sldoc.html#receive_cb_ref_1" target="doc">00040</a>
+<a href="source_notify_callbacks.sldoc.html#receive_cb_ref_1" target="doc">00041</a>
+<a href="source_notify_callbacks.sldoc.html#receive_cb_ref_1" target="doc">00042</a>
+<a href="source_notify_callbacks.sldoc.html#receive_cb_ref_1" target="doc">00043</a>
+<a href="source_notify_callbacks.sldoc.html#receive_cb_ref_1" target="doc">00044</a>
+<a href="source_notify_callbacks.sldoc.html#receive_cb_ref_1" target="doc">00045</a>
+<a href="source_notify_callbacks.sldoc.html#receive_cb_ref_1" target="doc">00046</a>
+<a href="source_notify_callbacks.sldoc.html#receive_cb_ref_1" target="doc">00047</a>
+<a href="source_notify_callbacks.sldoc.html#receive_cb_ref_1" target="doc">00048</a>
+<a href="source_notify_callbacks.sldoc.html#receive_cb_ref_1" target="doc">00049</a>
+<a href="source_notify_callbacks.sldoc.html#receive_cb_ref_1" target="doc">00050</a>
+<a href="source_notify_callbacks.sldoc.html#receive_cb_ref_1" target="doc">00051</a>
+<a href="source_notify_callbacks.sldoc.html#receive_cb_ref_1" target="doc">00052</a>
+<a href="source_notify_callbacks.sldoc.html#receive_cb_ref_1" target="doc">00053</a>
+00054
+00055
+<a href="source_notify_callbacks.sldoc.html#create_cb_ref_1" target="doc">00056</a>
+<a href="source_notify_callbacks.sldoc.html#create_cb_ref_1" target="doc">00057</a>
+<a href="source_notify_callbacks.sldoc.html#create_cb_ref_1" target="doc">00058</a>
+<a href="source_notify_callbacks.sldoc.html#create_cb_ref_1" target="doc">00059</a>
+00060
+00061
+<a href="source_notify_callbacks.sldoc.html#delete_cb_ref_1" target="doc">00062</a>
+<a href="source_notify_callbacks.sldoc.html#delete_cb_ref_1" target="doc">00063</a>
+<a href="source_notify_callbacks.sldoc.html#delete_cb_ref_1" target="doc">00064</a>
+<a href="source_notify_callbacks.sldoc.html#delete_cb_ref_1" target="doc">00065</a>
+00066
+</td><td>  /* SrcNotifyCbs.cs, see http://ultramessaging.github.io/UMExamples/seq_number_callback/dotnet/ */
+  
+  using System;
+  using System.Collections.Generic;
+  using System.Linq;
+  using System.Text;
+  using System.Threading.Tasks;
+  using com.latencybusters.lbm;
+  
+  public class SrcNotifyCbs {
+          static void Main(String[] args) {
+                  LBMContext ctx = null;           /* Context object: container for UM "instance". */
+                  LBMReceiver rcv = null;          /* Receiver object: for receiving messages. */
+                  LBMTopic rtopic = null;          /* Topic object */
+                  LBMReceiverAttributes rcv_attr;  /* Receiver attribute object */
+                  LBM.setLicenseFile("lbm6.lic");
+                  /* Initialize and create receiver and receiver callback */
+                  LBMReceiverCallback myReceiverCallback = new LBMReceiverCallback(onReceive);
+<span name="srccb_var" id="srccb_var"></span>                  LBMSourceCreationCallback mySourceCreate = new LBMSourceCreationCallback(onNewSource);
+                  LBMSourceDeletionCallback mySourceDelete = new LBMSourceDeletionCallback(onSourceDelete);
+  
+                  /* Initialization: create necessary UM objects. */
+                  ctx = new LBMContext();
+                  rcv_attr = new LBMReceiverAttributes();
+  
+<span name="set_cbs" id="set_cbs"></span>                  rcv_attr.setSourceNotificationCallbacks(mySourceCreate, mySourceDelete, null);
+  
+                  rtopic = new LBMTopic(ctx, "test.topic", rcv_attr);
+                  rcv = new LBMReceiver(ctx, rtopic, myReceiverCallback, null);
+  
+                  while(true)
+                  {
+  
+                  }
+          } /* main */
+  
+          /* Class for receiving messages */
+<span name="receive_cb" id="receive_cb"></span>          static int onReceive(Object cbArg, LBMMessage msg)
+          {
+                  switch (msg.type())
+                  {
+                  case LBM.MSG_BOS:
+                          System.Console.Out.WriteLine("[" + msg.topicName() + "][" + msg.source() + "], Beginning of Transport Session");
+                          break;
+                  case LBM.MSG_EOS:
+                          System.Console.Out.WriteLine("[" + msg.topicName() + "][" + msg.source() + "], End of Transport Session");
+                          break;
+                  default:
+                          System.Console.Out.WriteLine("Other event, type=" + msg.type());
+                          break;
+                  }
+                  return 0;
+          }
+  
+          /* Class for delivery controller create callback */
+<span name="create_cb" id="create_cb"></span>          public static Object onNewSource(String source, Object cbObj) {
+                  System.Console.Out.WriteLine("Delivery Controller Created: " + source);
+                  return 0;
+          }  /* Delivery Controller Create */
+  
+          /* Class for delivery controller delete callback */
+<span name="delete_cb" id="delete_cb"></span>          public static int onSourceDelete(String source, Object cbObj, Object sourceCbObj) {
+                  System.Console.Out.WriteLine("Delivery Controller Deleted: " + source);
+                  return 0;
+          }  /* Delivery Controller Delete */
+  } /* class srcNotifyCbs */
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

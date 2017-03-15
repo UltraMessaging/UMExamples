@@ -1,0 +1,7 @@
+Callback functions (and associated client data pointer) that are called when a receiver creates or deletes a delivery controller associated with a source. For the creation function, the application has the ability to set the source client data pointer to be used in each message received from the source. This callback is called directly in line and does not use the event queue. Therefore the callback function used should not block or it will block the context thread processing. A value of NULL for the callback turns off the callback being called.
+
+Scope:	receiver
+Type:	lbm_rcv_src_notification_func_t
+Default value:	NULL
+When to Set:	Can only be set during object initialization.
+Config File:	Cannot be set from an UM configuration file.

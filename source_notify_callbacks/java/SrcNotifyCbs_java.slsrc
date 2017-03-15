@@ -1,0 +1,77 @@
+/* SrcNotifyCbs.java, see http://ultramessaging.github.io/UMExamples/seq_number_callback/java/ */
+import com.latencybusters.lbm.*;
+import java.lang.*;
+
+public class SrcNotifyCbs {
+        public static void main(String[] args) throws LBMException {
+                LBMContext ctx = null;           /* Context object: container for UM "instance". */
+                LBMReceiver rcv = null;          /* Receiver object: for receiving messages. */
+                LBMTopic rtopic = null;          /* Topic object */
+                LBMReceiverAttributes rcv_attr;  /* Receiver attribute object */
+
+                /* Initialize and create receiver and receiver callback */
+                ReceiverCallback myReceiverCallback = new ReceiverCallback();
+		/* =semlit,block,srccb_var= */
+                CreateSourceCbs mySourceCreate = new CreateSourceCbs();
+                DeleteSourceCbs mySourceDelete = new DeleteSourceCbs();
+		/* =semlit,endblock,srccb_var= */
+
+                /* Initialization: create necessary UM objects. */
+                ctx = new LBMContext();
+                rcv_attr = new LBMReceiverAttributes();
+
+		/* =semlit,block,set_cbs= */
+                rcv_attr.setSourceNotificationCallbacks(mySourceCreate, mySourceDelete, null);
+		/* =semlit,endblock,set_cbs= */
+
+                rtopic = new LBMTopic(ctx, "test.topic", rcv_attr);
+                rcv = new LBMReceiver(ctx, rtopic, myReceiverCallback, null);
+
+                while(true)
+                {
+
+                }
+        } /* main */
+
+        /* Class for receiving messages */
+	/* =semlit,block,receive_cb= */
+        private static class ReceiverCallback implements LBMReceiverCallback {
+                public int onReceive(Object cbArg, LBMMessage msg)
+                {
+                        switch (msg.type())
+                        {
+                        case LBM.MSG_BOS:
+                                System.out.println("[" + msg.topicName() + "][" + msg.source() + "], Beginning of Transport Session");
+                                break;
+                        case LBM.MSG_EOS:
+                                System.out.println("[" + msg.topicName() + "][" + msg.source() + "], End of Transport Session");
+                                break;
+                        default:
+                                System.out.println("Other event, type=" + msg.type());
+                                break;
+                        }
+                        return 0;
+                }
+        }  /* ReceiverCallback */
+	/* =semlit,endblock,receive_cb= */
+
+        /* Class for delivery controller create callback */
+	/* =semlit,block,create_cb= */
+        private static class CreateSourceCbs implements LBMSourceCreationCallback {
+                public Object onNewSource(String source, Object cbObj) {
+                        System.out.println("Delivery Controller Created: " + source);
+                        return 0;
+                }
+        }  /* Delivery Controller Create */
+	/* =semlit,endblock,create_cb= */
+
+	/* Class for delivery controller delete callback */
+	/* =semlit,block,delete_cb= */
+        private static class DeleteSourceCbs implements LBMSourceDeletionCallback {
+                public int onSourceDelete(String source, Object cbObj, Object sourceCbObj) {
+                        System.out.println("Delivery Controller Deleted: " + source);
+                        return 0;
+                }
+        }  /* Delivery Controller Delete */
+	/* =semlit,endblock,delete_cb= */
+} /* class srcNotifyCbs */
