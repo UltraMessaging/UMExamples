@@ -45,7 +45,7 @@ int rcv_handle_msg(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
 	return 0;
 }
 
-main()
+int main(int argc, char **argv)
 {
 	lbm_context_t *ctx;                     /* Context object */
 	lbm_context_attr_t * cattr;             /* Context attribute object */
@@ -93,4 +93,5 @@ main()
 	/* Windows-specific cleanup overhead */
 	WSACleanup();
 #endif
+        return 0;
 } /* main */

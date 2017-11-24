@@ -67,7 +67,7 @@ int ume_rcv_seqnum_ex(lbm_ume_rcv_recovery_info_ex_func_info_t *info, void *clie
 	return 0;
 }
 
-main()
+int main(int argc, char **argv)
 {
 	lbm_context_t *ctx;                     /* Context object */
 	lbm_context_attr_t * cattr;             /* Context attribute object */
@@ -119,4 +119,5 @@ main()
 	/* Windows-specific cleanup overhead */
 	WSACleanup();
 #endif
+        return 0;
 } /* main */

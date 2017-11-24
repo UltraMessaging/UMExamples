@@ -7,7 +7,8 @@
     <a href="../../index.html" class="button" target="_top">Example index</a>
     <h1>Receiver Source Notification Callbacks (Create and Delete)</h1>
     <p>This example demonstrates how to configure and code the callbacks for when a receiver creates and deletes a 
-       delivery controller for a specific source.</p>
+       delivery controller for a specific source. This is typically done in support of maintaining per-source
+       state information.</p>
     <p>Like many other callback function in UM, the source notification is configured via a receiver attribute, 
        <a href="#" title="Callback functions (and associated client data pointer) that are called when a receiver creates or deletes a delivery controller associated with a source. For the creation function, the application has the ability to set the source client data pointer to be used in each message received from the source. This callback is called directly in line and does not use the event queue. Therefore the callback function used should not block or it will block the context thread processing. A value of NULL for the callback turns off the callback being called.
 
@@ -33,8 +34,7 @@ which
        to help debug networking issues. However, this callback is not great at telling the application that a specific topic 
        ready to start receiving messages. Instead, the application can use the source_notification_callback which is
        demonstrated in this sample application. The source_notification_callback can enable a user callback to be executed
-       when delivery controller is created for a topic and a separate callback for when a delivery controller is deleted.
-    <p> 
+       when delivery controller is created for a topic and a separate callback for when a delivery controller is deleted.</p> 
 
     <p>There is one program source file:</p>
     <ul>

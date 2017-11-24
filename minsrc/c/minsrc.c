@@ -83,4 +83,5 @@ int main(int argc, char **argv)
   /* Windows-specific cleanup overhead */
   WSACleanup();
 #endif
+        return 0;
 }  /* main */

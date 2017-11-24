@@ -22,7 +22,7 @@ int lbm_log_msg(int level, const char *message, void *clientd)
         return 0;
 }
 
-main()
+int main(int argc, char **argv)
 {
 	lbm_context_t *ctx;             /* pointer to context object */
 	lbm_context_attr_t * cattr;     /* pointer to context attribute object */
@@ -91,5 +91,6 @@ main()
 	/* Cleanup */
 	lbm_src_delete(src);
 	lbm_context_delete(ctx);
+        return 0;
 }
 

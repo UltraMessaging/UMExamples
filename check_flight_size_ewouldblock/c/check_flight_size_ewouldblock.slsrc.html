@@ -125,6 +125,7 @@
 00107
 00108
 00109
+00110
 </td><td>  /* Code Disclaimer? */
   
 <span name="includes" id="includes"></span>  #include &lt;stdio.h&gt;
@@ -144,7 +145,7 @@
   
 <span name="default_flight" id="default_flight"></span>  #define DEFAULT_APP_FLIGHT_SIZE 500     /* Used for checking flight size */
   
-  main()
+  int main(int argc, char **argv)
   {
 <span name="variables" id="variables"></span>      lbm_context_t *ctx;         /* Context object */
       lbm_topic_t *topic;         /* Topic object */
@@ -231,6 +232,7 @@
               }
           }
       }
+          return 0;
   }
   
   

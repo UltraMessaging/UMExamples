@@ -52,7 +52,7 @@ int handle_response(lbm_request_t *req, lbm_msg_t *msg, void *clientd)
 	}
 }
 
-main()
+int main(int argc, char **argv)
 {
 	lbm_context_t *ctx;                     /* Context object */
 	lbm_topic_t *stopic;                    /* Source Topic object */
@@ -126,4 +126,5 @@ main()
   	/* Windows-specific cleanup overhead */
   	WSACleanup();
 #endif
+        return 0;
 } /* main */

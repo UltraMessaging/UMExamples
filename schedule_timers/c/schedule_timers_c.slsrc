@@ -41,7 +41,7 @@ int sample_timer_handler(lbm_context_t *ctx, const void *clientd)
 }
 /* =semlit,endblock,timer_cb=*/
 
-main()
+int main(int argc, char **argv)
 {
 	lbm_context_t *ctx;                     /* Context object */
 	lbm_context_attr_t * cattr;             /* Context attribute object */
@@ -78,5 +78,6 @@ main()
 	/* Windows-specific cleanup overhead */
 	WSACleanup();
 #endif
+        return 0;
 }
 

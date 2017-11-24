@@ -84,6 +84,7 @@
 00066
 00067
 00068
+00069
 </td><td>  /* Code Disclaimer? */
   
 <span name="includes" id="includes"></span>  #include &lt;stdio.h&gt;
@@ -119,7 +120,7 @@
       wait = 0;
   }
   
-  main()
+  int main(int argc, char **argv)
   {
       lbm_context_t *ctx;                     /* Context object */
       lbm_context_attr_t * cattr;             /* Context attribute object */
@@ -150,6 +151,7 @@
       /* Windows-specific cleanup overhead */
       WSACleanup();
   #endif
+          return 0;
   }
   
 </td></tr></table></code>

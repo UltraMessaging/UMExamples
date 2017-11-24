@@ -179,6 +179,7 @@
 00161
 00162
 00163
+00164
 </td><td>  /* ump_receiver_callbacks.c - http://ultramessaging.github.io/UMExamples */
   
 <span name="includes" id="includes"></span>  #include &lt;stdio.h&gt;
@@ -299,7 +300,7 @@
       return 0;
   }
   
-  main()
+  int main(int argc, char **argv)
   {
       lbm_context_t *ctx;                     /* Context object */
       lbm_context_attr_t * cattr;             /* Context attribute object */
@@ -341,6 +342,7 @@
       /* Windows-specific cleanup overhead */
       WSACleanup();
   #endif
+          return 0;
   } /* main */
 </td></tr></table></code>
 

@@ -13,6 +13,10 @@
 #endif
 #include <lbm/lbm.h>
 
+typedef struct source_state_s {
+  int msgs_rcvd;  /* We want to track message count from each source sending to the topic. */
+} source_state_t;
+
 /* Example error checking macro.  Include after each UM call. */
 #define EX_LBM_CHK(err) do { \
         if ((err) < 0) { \
@@ -22,14 +26,19 @@
         }  \
 } while (0)
 
-int new_src_notification_callback(const char *source_name, void *clientd)
+void *new_src_notification_callback(const char *source_name, void *clientd)
 {
+        source_state_t *source_state = (source_state_t *)malloc(sizeof(source_state_t));
+        source_state->msgs_rcvd = 0;
+
         printf("Delivery Controller Created: %s\n", source_name);
-        return 0;
+        return source_state;  /* This will be available in the receive callback as msg->source_clientd. */
 }
 
 int src_delete_notification_callback(const char *source_name, void *clientd, void* src_clientd )
 {
+        free(src_clientd);  /* This was created by new_src_notification_callback() */
+
         printf("Delivery Controller Deleted: %s\n", source_name);
         return 0;
 }
@@ -38,8 +47,13 @@ int src_delete_notification_callback(const char *source_name, void *clientd, voi
 int rcv_handle_msg(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
 {
         int err;
+        source_state_t *source_state = (source_state_t *)msg->source_clientd;
 
         switch (msg->type) {
+        case LBM_MSG_DATA:
+                source_state->msgs_rcvd ++;
+                printf("[%s][%s], Received message %d\n", msg->topic_name, msg->source, source_state->msgs_rcvd);
+                break;
         case LBM_MSG_BOS:
                 printf("[%s][%s], Beginning of Transport Session\n", msg->topic_name, msg->source);
                 break;
@@ -54,7 +68,7 @@ int rcv_handle_msg(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
         return 0;
 }
 
-main()
+int main(int argc, char **argv)
 {
         lbm_context_t *ctx;                     /* Context object */
         lbm_context_attr_t * cattr;             /* Context attribute object */
@@ -107,4 +121,5 @@ main()
         /* Windows-specific cleanup overhead */
         WSACleanup();
 #endif
+        return 0;
 } /* main */

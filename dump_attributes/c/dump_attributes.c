@@ -15,7 +15,7 @@
 
 #include <lbm/lbm.h>
 
-main()
+int main(int argc, char **argv)
 {
 	lbm_context_t *ctx;							/* pointer to context object */
 	lbm_topic_t *topic_1;						/* pointer to topic object */
@@ -209,5 +209,6 @@ main()
 #if defined(_MSC_VER)
 	WSACleanup();
 #endif
+        return 0;
 }
 

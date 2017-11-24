@@ -33,7 +33,7 @@
 #define LBM_APPLICATION_NAME "main"
 /* =semlit,endblock,define_configs=*/
 
-main()
+int main(int argc, char **argv)
 {
         /* =semlit,block,vars=*/
         lbm_context_t *ctx_1;                   /* Context object */
@@ -85,4 +85,5 @@ main()
 #if defined(_MSC_VER)
 	WSACleanup();
 #endif	
+        return 0;
 }

@@ -30,7 +30,7 @@ int rcv_handle_msg(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
 	return 0;
 }
 
-main()
+int main(int argc, char **argv)
 {
 	lbm_context_t *ctx;							/* pointer to context object */
 	lbm_topic_t *topic_1;						/* pointer to topic object */
@@ -103,5 +103,6 @@ main()
 #if defined(_MSC_VER)
 	WSACleanup();
 #endif
+        return 0;
 }
 

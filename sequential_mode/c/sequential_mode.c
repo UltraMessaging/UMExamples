@@ -34,7 +34,7 @@ void *seq_thread(void *arg)
 	}
 }
 
-main()
+int main(int argc, char **argv)
 {
 	lbm_context_t *ctx;             /* pointer to context object */
 	lbm_context_attr_t * cattr;     /* pointer to context attribute object */
@@ -91,5 +91,6 @@ main()
 
 	/* Wait forever */
 	while (1) { }
+        return 0;
 }
 

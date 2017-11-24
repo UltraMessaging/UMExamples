@@ -123,6 +123,7 @@
 00105
 00106
 00107
+00108
 </td><td>  /* Example on setting Ultra Messaging attributes */
   
   #include &lt;stdio.h&gt;
@@ -155,7 +156,7 @@
       return 0;
   }
   
-  main()
+  int main(int argc, char **argv)
   {
       lbm_context_t *ctx;                         /* pointer to context object */
       lbm_topic_t *topic_1;                       /* pointer to topic object */
@@ -228,6 +229,7 @@
   #if defined(_MSC_VER)
       WSACleanup();
   #endif
+          return 0;
   }
   
 </td></tr></table></code>

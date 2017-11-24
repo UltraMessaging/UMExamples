@@ -62,7 +62,7 @@ int handle_response(lbm_request_t *req, lbm_msg_t *msg, void *clientd)
 }
 /* =semlit,endblock,resp_cb=*/
 
-main()
+int main(int argc, char **argv)
 {
 	/* =semlit,block,vars=*/
 	lbm_context_t *ctx;                     /* Context object */
@@ -154,4 +154,5 @@ main()
   	WSACleanup();
 #endif
 	/* =semlit,endblock,clean_win=*/
+        return 0;
 } /* main */

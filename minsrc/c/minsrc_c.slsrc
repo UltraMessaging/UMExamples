@@ -103,4 +103,5 @@ int main(int argc, char **argv)
   WSACleanup();
 #endif
 /*=semlit,endblock,wsa_clean=*/
+        return 0;
 }  /* main */

@@ -26,7 +26,7 @@
 #define LBM_CONFIG_XML_FILE  "../xml_config.xml"
 #define LBM_APPLICATION_NAME "processA"
 
-main()
+int main(int argc, char **argv)
 {
 	int err;	/* Used for checking API return codes */
 
@@ -35,4 +35,5 @@ main()
 
 	err = lbm_config_xml_file((const char *)LBM_CONFIG_XML_FILE, (const char *)LBM_APPLICATION_NAME);
 	EX_LBM_CHK(err);
+        return 0;
 }

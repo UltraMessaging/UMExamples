@@ -18,7 +18,7 @@
 /* =semlit,endblock,includes=*/
 
 /* =semlit,block,main=*/
-main()
+int main(int argc, char **argv)
 {
     /* =semlit,block,declare=*/
     lbm_context_t *ctx;    /* pointer to context object */
@@ -57,5 +57,6 @@ main()
     WSACleanup();
 #endif
     /* =semlit,endblock,winclean=*/
+        return 0;
 }
 /* =semlit,endblock,main= */
