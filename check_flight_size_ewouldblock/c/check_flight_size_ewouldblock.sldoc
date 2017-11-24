@@ -7,8 +7,8 @@
     =semlit,include,../intro.sldoc=
     <p>There is one program source file, and a store configuration XML:</p>
     <ul>
-      <li><b><tt>=semlit,srcfile,check_flight_size_ewouldblock.slsrc,check_flight_size_ewouldblock.c=</tt></b></li>
-      <li><b><tt>=semlit,srcfile,check_flight_size_ewouldblock_store.slsrc,store.xml=</tt></b></li>
+      <li><b><tt>=semlit,srcfile,check_flight_size_ewouldblock_c.slsrc,check_flight_size_ewouldblock.c=</tt></b></li>
+      <li><b><tt>=semlit,srcfile,check_flight_size_ewouldblock_store_xml.slsrc,store.xml=</tt></b></li>
     </ul>
     <h2>Program explanation: <tt>check_flight_size_ewouldblock.c</tt></h2>
     <h4>Define a Flight Size</h4>
