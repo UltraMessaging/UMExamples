@@ -121,6 +121,7 @@
 00103
 00104
 00105
+00106
 </td><td>  /* Code Disclaimer? */
   
 <span name="includes" id="includes"></span>  #include &lt;stdio.h&gt;
@@ -182,7 +183,7 @@
       return 0;
   }
   
-  main()
+  int main(int argc, void **argv)
   {
       lbm_context_t *ctx;                     /* Context object */
       lbm_context_attr_t * cattr;             /* Context attribute object */
@@ -224,6 +225,7 @@
       /* Windows-specific cleanup overhead */
       WSACleanup();
   #endif
+          return 0;
   }
   
 </td></tr></table></code>

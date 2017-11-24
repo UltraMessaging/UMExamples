@@ -44,7 +44,7 @@ int handle_src_event(lbm_src_t *src, int event, void *ed, void *cd)
 	return 0;
 }
 
-main()
+int main(int argc, char **argv)
 {
         lbm_context_t *ctx;                     /* Context object */
         lbm_topic_t *topic;                     /* Topic object */
@@ -128,4 +128,5 @@ main()
 			SLEEP_SEC(1);
 		}
 	}
+        return 0;
 }

@@ -7,10 +7,18 @@ else :
   exit 1
 fi
 
-# Find all the examples
-find * -name README.txt -print >bld.tmp
+if [ -n "$1" ]; then :
+  if [ ! -d "$1" ]; then :
+    echo "$1 not found" >&2
+    exit 1
+  fi
+  find "$1" -name README.txt -print >bld.tmp
+else :
+  # Find all the examples
+  find * -name README.txt -print >bld.tmp
+fi
 
-# Build all the semiliterate docs
+# Build the semiliterate docs
 cat bld.tmp | while read F; do :  # find each tool
   T=`dirname $F`
   cd $T
@@ -28,6 +36,7 @@ cat bld.tmp | while read F; do :  # find each tool
 done
 
 echo "bld.sh: Info: building html index files"
+find * -name README.txt -print >bld.tmp
 perl bld.pl bld.tmp
 
 rm bld.tmp

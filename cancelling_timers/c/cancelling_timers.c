@@ -59,7 +59,7 @@ int cancel_timer_cb(lbm_context_t *ctx, const void *clientd)
 	return 0;
 }
 
-main()
+int main(int argc, void **argv)
 {
 	lbm_context_t *ctx;                     /* Context object */
 	lbm_context_attr_t * cattr;             /* Context attribute object */
@@ -101,5 +101,6 @@ main()
 	/* Windows-specific cleanup overhead */
 	WSACleanup();
 #endif
+        return 0;
 }
 

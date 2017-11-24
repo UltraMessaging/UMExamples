@@ -54,6 +54,7 @@
 <a href="load_config.sldoc.html#xml_file_ref_1" target="doc">00036</a>
 <a href="load_config.sldoc.html#xml_file_ref_1" target="doc">00037</a>
 00038
+00039
 </td><td>  /* load_config.c - http://ultramessaging.github.io/UMExamples */
   
 <span name="includes" id="includes"></span>  #include &lt;stdio.h&gt;
@@ -82,7 +83,7 @@
   #define LBM_CONFIG_XML_FILE  "../xml_config.xml"
   #define LBM_APPLICATION_NAME "processA"
   
-  main()
+  int main(int argc, char **argv)
   {
 <span name="vars" id="vars"></span>      int err;    /* Used for checking API return codes */
   
@@ -91,6 +92,7 @@
   
 <span name="xml_file" id="xml_file"></span>      err = lbm_config_xml_file((const char *)LBM_CONFIG_XML_FILE, (const char *)LBM_APPLICATION_NAME);
       EX_LBM_CHK(err);
+          return 0;
   }
 </td></tr></table></code>
 

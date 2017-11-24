@@ -17,7 +17,7 @@
 #include <lbm/lbm.h>
 /* =semlit,endblock,includes=*/
 
-main()
+int main(int argc, char **argv)
 {
         /* =semlit,block,variables=*/
         lbm_context_t *ctx;                     /* Context object */
@@ -101,5 +101,6 @@ main()
 #if defined(_MSC_VER)
 	WSACleanup();
 #endif
+        return 0;
 }
 

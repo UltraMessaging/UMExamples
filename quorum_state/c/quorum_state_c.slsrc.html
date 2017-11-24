@@ -147,6 +147,7 @@
 <a href="quorum_state.sldoc.html#src_send_ref_1" target="doc">00129</a>
 00130
 00131
+00132
 </td><td>  /* Code Disclaimer? */
   
 <span name="includes" id="includes"></span>  #include &lt;stdio.h&gt;
@@ -193,7 +194,7 @@
       return 0;
   }
   
-  main()
+  int main(int argc, char **argv)
   {
 <span name="variables" id="variables"></span>          lbm_context_t *ctx;                     /* Context object */
           lbm_topic_t *topic;                     /* Topic object */
@@ -277,6 +278,7 @@
               SLEEP_SEC(1);
           }
       }
+          return 0;
   }
 </td></tr></table></code>
 

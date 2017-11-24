@@ -61,7 +61,7 @@ int rcv_handle_msg(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
 	cleanup = 1;
 }
 
-main()
+int main(int argc, char **argv)
 {
 	lbm_context_t *ctx;             /* pointer to context object */
 	lbm_context_attr_t * cattr;     /* pointer to context attribute object */
@@ -151,5 +151,6 @@ main()
 	lbm_src_delete(src);
 	lbm_context_delete(ctx);
 	lbm_event_queue_delete(evq);
+        return 0;
 }
 

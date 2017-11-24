@@ -145,6 +145,7 @@
 <a href="request_response.sldoc.html#clean_win_ref_1" target="doc">00127</a>
 <a href="request_response.sldoc.html#clean_win_ref_1" target="doc">00128</a>
 00129
+00130
 </td><td>  /* request_response.c - http://ultramessaging.github.io/UMExamples */
   
 <span name="includes" id="includes"></span>  #include &lt;stdio.h&gt;
@@ -199,7 +200,7 @@
       }
   }
   
-  main()
+  int main(int argc, char **argv)
   {
 <span name="vars" id="vars"></span>      lbm_context_t *ctx;                     /* Context object */
       lbm_topic_t *stopic;                    /* Source Topic object */
@@ -273,6 +274,7 @@
       /* Windows-specific cleanup overhead */
       WSACleanup();
   #endif
+          return 0;
   } /* main */
 </td></tr></table></code>
 

@@ -12,11 +12,18 @@
     </ul>
     <h2>Program explanation: <tt>source_notify_callbacks.c</tt></h2>
     <h4></h4>
+    <h4>Per-source State Information</h4>
+	<p>As new sources are discovered for the receiver, the user wants to create and maintain some state information
+        associated with that source. In this simple example, just keep a per-source count of messages received.</p>
+	=semlit,insert,state=
     <h4>Delivery Controller Create Callback</h4>
 	<p>Here the user callback for the delivery controller being created is defined. This function will execute every 
 	time a source is detected (when a source's topic advertisement is received by the receiver's context) that the 
-	receiver is interested in. This callback will execute before a BOS would because BOS required data on the transport
-	to be received, unlike this function which just requires a TIR on an interested source.<p>
+	receiver is interested in.
+        UM expects the function to return a pointer to the state information, which
+        will subsequently be passed to the receive callback as msg->source_clientd.
+        This callback will execute before a BOS would because BOS required data on the transport
+	to be received, unlike this function which just requires a TIR on an interested source.</p>
 	=semlit,insert,create_cb=
     <h4>Delivery Controller Delete Callback</h4>
 	<p>This is the user callback for when the delivery controller is deleted. A delivery controller would be deleted

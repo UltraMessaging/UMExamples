@@ -223,6 +223,7 @@
 00205
 00206
 00207
+00208
 </td><td>  /* ump_src_failover.c */
   
 <span name="includes" id="includes"></span>  #include &lt;stdio.h&gt;
@@ -266,45 +267,45 @@
 <span name="app_src_struct" id="app_src_struct"></span>  typedef enum {NOT_INIT, INIT, READY, UNRESP} state_type_e;
   typedef enum {PRIMARY, BACKUP} mode_type_e;
   typedef struct app_src_s {
-      lbm_context_t *ctx;
-      lbm_src_t *src;
-      state_type_e state;
-      mode_type_e mode;
+          lbm_context_t *ctx;
+          lbm_src_t *src;
+          state_type_e state;
+          mode_type_e mode;
   } app_src_s;
   
   /* Source event handler callback (passed into lbm_src_create()) */
   int handle_src_event(lbm_src_t *src, int event, void *ed, void *cd)
   {
-      struct app_src_s *app_src = (struct app_src_s *)cd;
+          struct app_src_s *app_src = (struct app_src_s *)cd;
           switch (event) {
-      /* Success event provided only for printing purposes */
-      case LBM_SRC_EVENT_UME_REGISTRATION_SUCCESS_EX:
-      {
-          lbm_src_event_ume_registration_ex_t *reg = (lbm_src_event_ume_registration_ex_t *)ed;
-          printf("UME store %u: %s registration success.\n", reg-&gt;store_index, reg-&gt;store);
-          break;
-      }
+          /* Success event provided only for printing purposes */
+          case LBM_SRC_EVENT_UME_REGISTRATION_SUCCESS_EX:
+          {
+                  lbm_src_event_ume_registration_ex_t *reg = (lbm_src_event_ume_registration_ex_t *)ed;
+                  printf("UME store %u: %s registration success.\n", reg-&gt;store_index, reg-&gt;store);
+                  break;
+          }
 <span name="reg_complete" id="reg_complete"></span>          case LBM_SRC_EVENT_UME_REGISTRATION_COMPLETE_EX:
-      {
-          lbm_src_event_ume_registration_complete_ex_t *reg = (lbm_src_event_ume_registration_complete_ex_t *)ed;
+          {
+                  lbm_src_event_ume_registration_complete_ex_t *reg = (lbm_src_event_ume_registration_complete_ex_t *)ed;
   
-          printf("UME registration complete. SQN %x.\n", reg-&gt;sequence_number);
+                  printf("UME registration complete. SQN %x.\n", reg-&gt;sequence_number);
   
-<span name="update_state_ready" id="update_state_ready"></span>          app_src-&gt;state = READY;
-          break;
-      }
-<span name="unresponsive" id="unresponsive"></span>      case LBM_SRC_EVENT_UME_STORE_UNRESPONSIVE:
-      {
-          const char *infostr = (const char *)ed;
-          
-          printf("UME store: %s\n", infostr);
-<span name="update_state_UNRESP" id="update_state_UNRESP"></span>          if (strstr(infostr, "quorum lost") != NULL)
-              app_src-&gt;state = UNRESP;
-          break;
-      }
-      }
+<span name="update_state_ready" id="update_state_ready"></span>                  app_src-&gt;state = READY;
+                  break;
+          }
+<span name="unresponsive" id="unresponsive"></span>          case LBM_SRC_EVENT_UME_STORE_UNRESPONSIVE:
+          {
+                  const char *infostr = (const char *)ed;
+                  
+                  printf("UME store: %s\n", infostr);
+<span name="update_state_UNRESP" id="update_state_UNRESP"></span>                  if (strstr(infostr, "quorum lost") != NULL)
+                          app_src-&gt;state = UNRESP;
+                  break;
+          }
+          }
   
-      return 0;
+          return 0;
   }
   
   int init_src(app_src_s *app_src)
@@ -316,21 +317,21 @@
 <span name="init_source_attr" id="init_source_attr"></span>          err = lbm_src_topic_attr_create(&amp;tattr);
           EX_LBM_CHK(err);
   
-      err = lbm_src_topic_attr_str_setopt(tattr, "ume_store", UMP_CLEAR_STORE_CONFIG);
-      EX_LBM_CHK(err);
-  
-          /* Assuming there are stores running on the localhost */
-<span name="set_store" id="set_store"></span>      if (app_src-&gt;mode == PRIMARY) 
-              err = lbm_src_topic_attr_str_setopt(tattr, "ume_store", UMP_PRIMARY_STORE);
-      else
-          err = lbm_src_topic_attr_str_setopt(tattr, "ume_store", UMP_SECONDARY_STORE);
+          err = lbm_src_topic_attr_str_setopt(tattr, "ume_store", UMP_CLEAR_STORE_CONFIG);
           EX_LBM_CHK(err);
   
-      if (app_src-&gt;mode == PRIMARY)
-          err = lbm_src_topic_attr_str_setopt(tattr, "ume_session_id", UMP_PRIMARY_SESSION_ID);
-      else
-          err = lbm_src_topic_attr_str_setopt(tattr, "ume_session_id", UMP_SECONDARY_SESSION_ID);
-      EX_LBM_CHK(err);
+          /* Assuming there are stores running on the localhost */
+<span name="set_store" id="set_store"></span>          if (app_src-&gt;mode == PRIMARY) 
+                  err = lbm_src_topic_attr_str_setopt(tattr, "ume_store", UMP_PRIMARY_STORE);
+          else
+                  err = lbm_src_topic_attr_str_setopt(tattr, "ume_store", UMP_SECONDARY_STORE);
+          EX_LBM_CHK(err);
+  
+          if (app_src-&gt;mode == PRIMARY)
+                  err = lbm_src_topic_attr_str_setopt(tattr, "ume_session_id", UMP_PRIMARY_SESSION_ID);
+          else
+                  err = lbm_src_topic_attr_str_setopt(tattr, "ume_session_id", UMP_SECONDARY_SESSION_ID);
+          EX_LBM_CHK(err);
   
           /* Need to set store behavior to Quorum-Consensus  */
 <span name="complete_init" id="complete_init"></span>          err = lbm_src_topic_attr_str_setopt(tattr, "ume_store_behavior", "qc");
@@ -342,37 +343,37 @@
           err = lbm_src_create(&amp;(app_src-&gt;src), app_src-&gt;ctx, topic, handle_src_event, app_src, NULL);
           EX_LBM_CHK(err);
   
-<span name="update_state_init" id="update_state_init"></span>      app_src-&gt;state = INIT;
+<span name="update_state_init" id="update_state_init"></span>          app_src-&gt;state = INIT;
   }
   
   void failover_app_src(app_src_s *app_src)
   {
-      int err; /* Used for checking API return codes */
-      
-      /* Delete the source */
-<span name="delete_src" id="delete_src"></span>      err = lbm_src_delete(app_src-&gt;src);
-      EX_LBM_CHK(err);
+          int err; /* Used for checking API return codes */
+          
+          /* Delete the source */
+<span name="delete_src" id="delete_src"></span>          err = lbm_src_delete(app_src-&gt;src);
+          EX_LBM_CHK(err);
   
-<span name="update_state_not_init" id="update_state_not_init"></span>      app_src-&gt;src = NULL;
-      app_src-&gt;state = NOT_INIT;
-      app_src-&gt;mode = BACKUP;
+<span name="update_state_not_init" id="update_state_not_init"></span>          app_src-&gt;src = NULL;
+          app_src-&gt;state = NOT_INIT;
+          app_src-&gt;mode = BACKUP;
   }
   
   /* Provided simply for printing the state name */
 <span name="print_state_helper" id="print_state_helper"></span>  const char* source_state(app_src_s *app_src)
   {
-      switch (app_src-&gt;state)
-      {
-          case NOT_INIT: return "NOT_INIT";
-          case INIT: return "INIT";
-          case READY: return "READY";
-          case UNRESP: return "UNRESP";
-      }
+          switch (app_src-&gt;state)
+          {
+                  case NOT_INIT: return "NOT_INIT";
+                  case INIT: return "INIT";
+                  case READY: return "READY";
+                  case UNRESP: return "UNRESP";
+          }
   }
   
-  main()
+  int main(int argc, char **argv)
   {
-<span name="variables" id="variables"></span>      app_src_s app_src;          /* App structure to track source */
+<span name="variables" id="variables"></span>          app_src_s app_src;                        /* App structure to track source */
           lbm_context_t *ctx;                     /* Context object */
           lbm_context_attr_t * cattr;             /* Context attribute object */
           int err;                                /* Used for checking API return codes */
@@ -388,47 +389,48 @@
           }
   #endif
   
-<span name="init_create_context" id="init_create_context"></span>      err = lbm_context_attr_create(&amp;cattr);
-      EX_LBM_CHK(err);
+<span name="init_create_context" id="init_create_context"></span>          err = lbm_context_attr_create(&amp;cattr);
+          EX_LBM_CHK(err);
   
-      err = lbm_context_create(&amp;ctx, cattr, NULL, NULL);
-      EX_LBM_CHK(err);
+          err = lbm_context_create(&amp;ctx, cattr, NULL, NULL);
+          EX_LBM_CHK(err);
   
-<span name="init_app_src" id="init_app_src"></span>      app_src.state = NOT_INIT;
-      app_src.mode = PRIMARY;
-      app_src.ctx = ctx;
+<span name="init_app_src" id="init_app_src"></span>          app_src.state = NOT_INIT;
+          app_src.mode = PRIMARY;
+          app_src.ctx = ctx;
   
 <span name="main_send_loop" id="main_send_loop"></span>          while(1)
           {
-          /* Initialize the source if we're not initialized */
-<span name="start_init" id="start_init"></span>          if (app_src.state == NOT_INIT)
-              init_src(&amp;app_src);
+                  /* Initialize the source if we're not initialized */
+<span name="start_init" id="start_init"></span>                  if (app_src.state == NOT_INIT)
+                          init_src(&amp;app_src);
   
-<span name="src_send" id="src_send"></span>          if (app_src.state == READY)
-          {
-                      if (lbm_src_send(app_src.src, "test", 4, LBM_SRC_NONBLOCK) == LBM_FAILURE)
-                      {
-                  /* Assume EWOULDBLOCK and wait */
-                  SLEEP_SEC(1);
-                      }
+<span name="src_send" id="src_send"></span>                  if (app_src.state == READY)
+                  {
+                          if (lbm_src_send(app_src.src, "test", 4, LBM_SRC_NONBLOCK) == LBM_FAILURE)
+                          {
+                                  /* Assume EWOULDBLOCK and wait */
+                                  SLEEP_SEC(1);
+                          }
+                  }
+                  else
+                  {
+                          /* Print a warning that the source is not ready and sleep */
+                          printf("Source cannot send: %d. Source State: %s\n", lbm_errnum(), source_state(&amp;app_src));
+<span name="primary_unresp" id="primary_unresp"></span>                          if (app_src.state == UNRESP &amp;&amp; app_src.mode == PRIMARY)
+                          {
+                                  printf("Primary store unresponsive, failing over to backup\n");
+                                  failover_app_src(&amp;app_src);
+                          }
+<span name="backup_unresp" id="backup_unresp"></span>                          else if (app_src.state == UNRESP &amp;&amp; app_src.mode == BACKUP)
+                          {
+                                  printf("Backup store unresponsive. Exiting\n");
+                                  exit(1);
+                          }
+                          SLEEP_SEC(1);
+                  }
           }
-          else
-          {
-              /* Print a warning that the source is not ready and sleep */
-              printf("Source cannot send: %d. Source State: %s\n", lbm_errnum(), source_state(&amp;app_src));
-<span name="primary_unresp" id="primary_unresp"></span>              if (app_src.state == UNRESP &amp;&amp; app_src.mode == PRIMARY)
-              {
-                  printf("Primary store unresponsive, failing over to backup\n");
-                  failover_app_src(&amp;app_src);
-              }
-<span name="backup_unresp" id="backup_unresp"></span>              else if (app_src.state == UNRESP &amp;&amp; app_src.mode == BACKUP)
-              {
-                  printf("Backup store unresponsive. Exiting\n");
-                  exit(1);
-              }
-              SLEEP_SEC(1);
-          }
-          }
+          return 0;
   }
 </td></tr></table></code>
 

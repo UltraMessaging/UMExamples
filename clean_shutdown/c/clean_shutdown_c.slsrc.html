@@ -171,6 +171,7 @@
 <a href="clean_shutdown.sldoc.html#delete_ref_1" target="doc">00153</a>
 00154
 00155
+00156
 </td><td>  /* Code Disclaimer? */
   
 <span name="includes" id="includes"></span>  #include &lt;stdio.h&gt;
@@ -234,7 +235,7 @@
       cleanup = 1;
   }
   
-  main()
+  int main(int argc, char **argv)
   {
       lbm_context_t *ctx;             /* pointer to context object */
       lbm_context_attr_t * cattr;     /* pointer to context attribute object */
@@ -324,6 +325,7 @@
       lbm_src_delete(src);
       lbm_context_delete(ctx);
       lbm_event_queue_delete(evq);
+          return 0;
   }
   
 </td></tr></table></code>

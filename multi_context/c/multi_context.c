@@ -27,7 +27,7 @@
 #define LBM_CONFIG_XML_FILE  "multi_context_config.xml"
 #define LBM_APPLICATION_NAME "main"
 
-main()
+int main(int argc, char **argv)
 {
         lbm_context_t *ctx_1;                   /* Context object */
 	lbm_context_attr_t * cattr_1;           /* pointer to context attribute object */
@@ -69,4 +69,5 @@ main()
 #if defined(_MSC_VER)
 	WSACleanup();
 #endif	
+        return 0;
 }

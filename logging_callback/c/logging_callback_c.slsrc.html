@@ -111,6 +111,7 @@
 00093
 00094
 00095
+00096
 </td><td>  /* Code Disclaimer? */
   
 <span name="includes" id="includes"></span>  #include &lt;stdio.h&gt;
@@ -135,7 +136,7 @@
           return 0;
   }
   
-  main()
+  int main(int argc, char **argv)
   {
       lbm_context_t *ctx;             /* pointer to context object */
       lbm_context_attr_t * cattr;     /* pointer to context attribute object */
@@ -204,6 +205,7 @@
       /* Cleanup */
       lbm_src_delete(src);
       lbm_context_delete(ctx);
+          return 0;
   }
   
 </td></tr></table></code>

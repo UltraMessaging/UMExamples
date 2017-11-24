@@ -88,6 +88,7 @@
 00070
 00071
 00072
+00073
 </td><td>  /* Code Disclaimer? */
   
 <span name="includes" id="includes"></span>  #include &lt;stdio.h&gt;
@@ -117,7 +118,7 @@
 <span name="define_configs" id="define_configs"></span>  #define LBM_CONFIG_XML_FILE  "multi_context_config.xml"
   #define LBM_APPLICATION_NAME "main"
   
-  main()
+  int main(int argc, char **argv)
   {
 <span name="vars" id="vars"></span>          lbm_context_t *ctx_1;                   /* Context object */
       lbm_context_attr_t * cattr_1;           /* pointer to context attribute object */
@@ -159,6 +160,7 @@
   #if defined(_MSC_VER)
       WSACleanup();
   #endif  
+          return 0;
   }
 </td></tr></table></code>
 

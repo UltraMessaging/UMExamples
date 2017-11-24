@@ -17,7 +17,7 @@
 
 #define DEFAULT_APP_FLIGHT_SIZE 500		/* Used for checking flight size */
 
-main()
+int main(int argc, char **argv)
 {
 	lbm_context_t *ctx;			/* Context object */
 	lbm_topic_t *topic;			/* Topic object */
@@ -104,6 +104,7 @@ main()
 			}
 		}
 	}
+        return 0;
 }
 
 
