@@ -1,0 +1,664 @@
+<!DOCTYPE html><html><head><title>server.c</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>server.c</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+00008
+00009
+00010
+00011
+00012
+00013
+00014
+00015
+00016
+00017
+00018
+00019
+00020
+00021
+00022
+00023
+00024
+00025
+00026
+00027
+00028
+00029
+00030
+00031
+00032
+00033
+00034
+00035
+00036
+00037
+00038
+00039
+00040
+00041
+00042
+00043
+00044
+00045
+00046
+00047
+00048
+00049
+00050
+00051
+00052
+00053
+00054
+00055
+00056
+00057
+00058
+00059
+00060
+00061
+00062
+00063
+00064
+00065
+00066
+00067
+00068
+00069
+00070
+00071
+00072
+00073
+00074
+00075
+00076
+00077
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00078</a>
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00079</a>
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00080</a>
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00081</a>
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00082</a>
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00083</a>
+<a href="src_rsp.sldoc.html#rsp_src_ok_ref_1" target="doc">00084</a>
+<a href="src_rsp.sldoc.html#rsp_src_ok_ref_1" target="doc">00085</a>
+<a href="src_rsp.sldoc.html#rsp_src_ok_ref_1" target="doc">00086</a>
+<a href="src_rsp.sldoc.html#rsp_src_ok_ref_1" target="doc">00087</a>
+<a href="src_rsp.sldoc.html#rsp_src_ok_ref_1" target="doc">00088</a>
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00089</a>
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00090</a>
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00091</a>
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00092</a>
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00093</a>
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00094</a>
+<a href="src_rsp.sldoc.html#rsp_src_config_ref_1" target="doc">00095</a>
+<a href="src_rsp.sldoc.html#rsp_src_config_ref_1" target="doc">00096</a>
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00097</a>
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00098</a>
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00099</a>
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00100</a>
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00101</a>
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00102</a>
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00103</a>
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00104</a>
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00105</a>
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00106</a>
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00107</a>
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00108</a>
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00109</a>
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00110</a>
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00111</a>
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00112</a>
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00113</a>
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00114</a>
+<a href="src_rsp.sldoc.html#do_reg2_ref_1" target="doc">00115</a>
+00116
+00117
+<a href="src_rsp.sldoc.html#do_req2_ref_1" target="doc">00118</a>
+<a href="src_rsp.sldoc.html#do_req2_ref_1" target="doc">00119</a>
+<a href="src_rsp.sldoc.html#do_req2_ref_1" target="doc">00120</a>
+<a href="src_rsp.sldoc.html#do_req2_ref_1" target="doc">00121</a>
+<a href="src_rsp.sldoc.html#do_req2_ref_1" target="doc">00122</a>
+<a href="src_rsp.sldoc.html#do_req2_ref_1" target="doc">00123</a>
+<a href="src_rsp.sldoc.html#do_req2_ref_1" target="doc">00124</a>
+<a href="src_rsp.sldoc.html#do_req2_ref_1" target="doc">00125</a>
+<a href="src_rsp.sldoc.html#do_req2_ref_1" target="doc">00126</a>
+<a href="src_rsp.sldoc.html#do_req2_ref_1" target="doc">00127</a>
+<a href="src_rsp.sldoc.html#do_req2_ref_1" target="doc">00128</a>
+<a href="src_rsp.sldoc.html#do_req2_ref_1" target="doc">00129</a>
+<a href="src_rsp.sldoc.html#do_req2_ref_1" target="doc">00130</a>
+<a href="src_rsp.sldoc.html#do_req2_ref_1" target="doc">00131</a>
+<a href="src_rsp.sldoc.html#do_req2_ref_1" target="doc">00132</a>
+<a href="src_rsp.sldoc.html#do_req2_ref_1" target="doc">00133</a>
+<a href="src_rsp.sldoc.html#do_req2_ref_1" target="doc">00134</a>
+<a href="src_rsp.sldoc.html#do_req2_ref_1" target="doc">00135</a>
+<a href="src_rsp.sldoc.html#do_req2_ref_1" target="doc">00136</a>
+<a href="src_rsp.sldoc.html#do_req2_ref_1" target="doc">00137</a>
+00138
+00139
+<a href="src_rsp.sldoc.html#do_reg0_ref_1" target="doc">00140</a>
+<a href="src_rsp.sldoc.html#do_reg0_ref_1" target="doc">00141</a>
+<a href="src_rsp.sldoc.html#do_reg0_ref_1" target="doc">00142</a>
+00143
+00144
+00145
+<a href="src_rsp.sldoc.html#do_reg1_ref_1" target="doc">00146</a>
+<a href="src_rsp.sldoc.html#do_reg1_ref_1" target="doc">00147</a>
+<a href="src_rsp.sldoc.html#do_reg1_ref_1" target="doc">00148</a>
+<a href="src_rsp.sldoc.html#do_reg1_ref_1" target="doc">00149</a>
+<a href="src_rsp.sldoc.html#do_reg1_ref_1" target="doc">00150</a>
+<a href="src_rsp.sldoc.html#do_reg1_ref_1" target="doc">00151</a>
+<a href="src_rsp.sldoc.html#do_reg1_ref_1" target="doc">00152</a>
+<a href="src_rsp.sldoc.html#do_reg1_ref_1" target="doc">00153</a>
+00154
+<a href="src_rsp.sldoc.html#do_req1_ref_1" target="doc">00155</a>
+<a href="src_rsp.sldoc.html#do_req1_ref_1" target="doc">00156</a>
+<a href="src_rsp.sldoc.html#do_req1_ref_1" target="doc">00157</a>
+<a href="src_rsp.sldoc.html#do_req1_ref_1" target="doc">00158</a>
+<a href="src_rsp.sldoc.html#do_req1_ref_1" target="doc">00159</a>
+<a href="src_rsp.sldoc.html#do_req1_ref_1" target="doc">00160</a>
+<a href="src_rsp.sldoc.html#do_req1_ref_1" target="doc">00161</a>
+<a href="src_rsp.sldoc.html#do_req1_ref_1" target="doc">00162</a>
+00163
+00164
+00165
+00166
+00167
+00168
+00169
+00170
+00171
+00172
+00173
+00174
+00175
+00176
+00177
+00178
+00179
+00180
+00181
+00182
+00183
+00184
+00185
+<a href="src_rsp.sldoc.html#start_client_ref_1" target="doc">00186</a>
+<a href="src_rsp.sldoc.html#start_client_ref_1" target="doc">00187</a>
+<a href="src_rsp.sldoc.html#start_client_ref_1" target="doc">00188</a>
+<a href="src_rsp.sldoc.html#start_client_ref_1" target="doc">00189</a>
+<a href="src_rsp.sldoc.html#start_client_ref_1" target="doc">00190</a>
+<a href="src_rsp.sldoc.html#start_client_ref_1" target="doc">00191</a>
+<a href="src_rsp.sldoc.html#start_client_ref_1" target="doc">00192</a>
+<a href="src_rsp.sldoc.html#start_client_ref_1" target="doc">00193</a>
+<a href="src_rsp.sldoc.html#start_client_ref_1" target="doc">00194</a>
+<a href="src_rsp.sldoc.html#start_client_ref_1" target="doc">00195</a>
+<a href="src_rsp.sldoc.html#start_client_ref_1" target="doc">00196</a>
+<a href="src_rsp.sldoc.html#start_client_ref_1" target="doc">00197</a>
+<a href="src_rsp.sldoc.html#start_client_ref_1" target="doc">00198</a>
+00199
+00200
+00201
+00202
+00203
+00204
+00205
+00206
+00207
+00208
+00209
+00210
+00211
+00212
+00213
+00214
+00215
+00216
+00217
+00218
+00219
+00220
+00221
+00222
+00223
+00224
+00225
+00226
+00227
+00228
+00229
+00230
+00231
+00232
+00233
+00234
+00235
+00236
+00237
+00238
+00239
+00240
+00241
+<a href="src_rsp.sldoc.html#src_notif_setopt_ref_1" target="doc">00242</a>
+<a href="src_rsp.sldoc.html#src_notif_setopt_ref_1" target="doc">00243</a>
+<a href="src_rsp.sldoc.html#src_notif_setopt_ref_1" target="doc">00244</a>
+<a href="src_rsp.sldoc.html#src_notif_setopt_ref_1" target="doc">00245</a>
+<a href="src_rsp.sldoc.html#src_notif_setopt_ref_1" target="doc">00246</a>
+<a href="src_rsp.sldoc.html#src_notif_setopt_ref_1" target="doc">00247</a>
+<a href="src_rsp.sldoc.html#src_notif_setopt_ref_1" target="doc">00248</a>
+<a href="src_rsp.sldoc.html#src_notif_setopt_ref_1" target="doc">00249</a>
+<a href="src_rsp.sldoc.html#src_notif_setopt_ref_1" target="doc">00250</a>
+<a href="src_rsp.sldoc.html#src_notif_setopt_ref_1" target="doc">00251</a>
+<a href="src_rsp.sldoc.html#src_notif_setopt_ref_1" target="doc">00252</a>
+<a href="src_rsp.sldoc.html#src_notif_setopt_ref_1" target="doc">00253</a>
+<a href="src_rsp.sldoc.html#src_notif_setopt_ref_1" target="doc">00254</a>
+<a href="src_rsp.sldoc.html#src_notif_setopt_ref_1" target="doc">00255</a>
+<a href="src_rsp.sldoc.html#src_notif_setopt_ref_1" target="doc">00256</a>
+<a href="src_rsp.sldoc.html#src_notif_setopt_ref_1" target="doc">00257</a>
+<a href="src_rsp.sldoc.html#src_notif_setopt_ref_1" target="doc">00258</a>
+<a href="src_rsp.sldoc.html#src_notif_setopt_ref_1" target="doc">00259</a>
+<a href="src_rsp.sldoc.html#src_notif_setopt_ref_1" target="doc">00260</a>
+00261
+00262
+00263
+00264
+00265
+00266
+00267
+00268
+00269
+00270
+00271
+00272
+00273
+00274
+00275
+00276
+00277
+00278
+00279
+00280
+</td><td>  /* server.c
+   *
+   * Copyright (c) 2005-2017 Informatica Corporation. All Rights Reserved.
+   * Permission is granted to licensees to use
+   * or alter this software for any purpose, including commercial applications,
+   * according to the terms laid out in the Software License Agreement.
+   *
+   * This source code example is provided by Informatica for educational
+   * and evaluation purposes only.
+   *
+   * THE SOFTWARE IS PROVIDED "AS IS" AND INFORMATICA DISCLAIMS ALL WARRANTIES
+   * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION, ANY IMPLIED WARRANTIES OF
+   * NON-INFRINGEMENT, MERCHANTABILITY OR FITNESS FOR A PARTICULAR
+   * PURPOSE.  INFORMATICA DOES NOT WARRANT THAT USE OF THE SOFTWARE WILL BE
+   * UNINTERRUPTED OR ERROR-FREE.  INFORMATICA SHALL NOT, UNDER ANY CIRCUMSTANCES, BE
+   * LIABLE TO LICENSEE FOR LOST PROFITS, CONSEQUENTIAL, INCIDENTAL, SPECIAL OR
+   * INDIRECT DAMAGES ARISING OUT OF OR RELATED TO THIS AGREEMENT OR THE
+   * TRANSACTIONS CONTEMPLATED HEREUNDER, EVEN IF INFORMATICA HAS BEEN APPRISED OF
+   * THE LIKELIHOOD OF SUCH DAMAGES.
+   */
+  
+  #include &lt;stdio.h&gt;
+  #include &lt;string.h&gt;
+  
+  #if defined(_MSC_VER)
+  /* Windows-only includes */
+  #include &lt;winsock2.h&gt;
+  #define SLEEP(s) Sleep((s)*1000)
+  #else
+  /* Unix-only includes */
+  #include &lt;stdlib.h&gt;
+  #include &lt;unistd.h&gt;
+  #define SLEEP(s) sleep(s)
+  #endif
+  
+  #include &lt;lbm/lbm.h&gt;
+  
+  
+  /* Header for request messages. */
+  typedef struct req_hdr_s {
+      char data[8];
+  } req_hdr_t;
+  
+  
+  #define MAX_RESP_SIZE 7000
+  typedef struct client_s {
+      int state;  /* 0=waiting for registration, 1=registered. */
+      char *topic_name;
+      char *source_name;
+      lbm_context_t *ctx;
+      lbm_src_t *resp_src;
+      char send_buf[MAX_RESP_SIZE + sizeof(req_hdr_t)];
+  } client_t;
+  
+  
+  /* Very simplistic LBM error handling. */
+  #define E(E_err) do { \
+      if ((E_err) &lt; 0) { \
+          fprintf(stderr, "Error, %s:%d: '%s': %s\n", \
+              __FILE__, __LINE__, #E_err, lbm_errmsg()); \
+          fflush(stderr); \
+          abort(); /* core dump */ \
+      } \
+  } while (0)
+  
+  
+  /* Null check. */
+  #define N(N_ptr) do { \
+      if ((N_ptr) == NULL) { \
+          fprintf(stderr, "Error, %s:%d: '%s' is NULL\n", \
+              __FILE__, __LINE__, #N_ptr); \
+          fflush(stderr); \
+          abort(); /* core dump */ \
+      } \
+  } while (0)
+  
+  
+<span name="do_reg2" id="do_reg2"></span>  void handle_register(client_t *client, const char *client_resp_name)
+  {
+      int err;
+      /* This work should probably be passed to a separate worker thread, but
+       * I'll do it here to simplify the code. */
+  
+<span name="rsp_src_ok" id="rsp_src_ok"></span>      if (client-&gt;state == 1) {
+          printf("Source '%s' re-confirmed\n", client-&gt;topic_name);
+          /* Reply to client. */
+          E(lbm_src_send(client-&gt;resp_src, "rOK", 4, LBM_MSG_FLUSH | LBM_SRC_NONBLOCK));
+      }
+      else if (client-&gt;state == 0) {
+          lbm_src_topic_attr_t * src_attr;
+          lbm_topic_t *lbm_topic;
+  
+          /* Create source to send responses to client. */
+          E(lbm_src_topic_attr_create(&amp;src_attr));
+<span name="rsp_src_config" id="rsp_src_config"></span>          E(lbm_src_topic_attr_str_setopt(src_attr, "transport", "lbt-ru"));
+          E(lbm_src_topic_attr_str_setopt(src_attr, "transport_lbtru_port", "12070"));
+<span name="rsp_src_config2" id="rsp_src_config2"></span>          E(lbm_src_topic_attr_str_setopt(src_attr,
+              "transport_source_side_filtering_behavior", "inclusion"));
+          E(lbm_src_topic_alloc(&amp;lbm_topic, client-&gt;ctx, client_resp_name, src_attr));
+          /* The following create can fail if a new client joins with the same
+           * response topic name as an existing client.  Should handle this cleanly. */
+          err = lbm_src_create(&amp;client-&gt;resp_src, client-&gt;ctx, lbm_topic,
+              NULL, NULL, NULL);
+          if (err) {
+              printf("Source '%s' failed; %s\n", client_resp_name, lbm_errmsg());
+          }
+          else {
+<span name="rsp_src_created" id="rsp_src_created"></span>              client-&gt;state = 1;
+              client-&gt;topic_name = strdup(client_resp_name);  N(client-&gt;topic_name);
+              printf("Source '%s' created\n", client-&gt;topic_name);
+          }
+  
+          E(lbm_src_topic_attr_delete(src_attr));
+      }
+  }  /* handle_register */
+  
+  
+<span name="do_req2" id="do_req2"></span>  void handle_req(client_t *client, req_hdr_t *req_hdr, const char *data, size_t len)
+  {
+      /* Response message is put after the header. */
+      char *response_msg = &amp;client-&gt;send_buf[sizeof(req_hdr_t)];
+  
+      /* This work should probably be passed to a separate worker thread, but
+       * I'll do it here to simplify the code. */
+  
+      /* Responses copy the header from the request. */
+      memcpy(&amp;client-&gt;send_buf[0], (char *)req_hdr, sizeof(req_hdr_t));
+  
+      /* Do the work of the request and put the response in response_msg.
+       * (For this sample, just echo back the request.) */
+      strcpy(response_msg, data);
+      
+      /* Reply to client. */
+      E(lbm_src_send(client-&gt;resp_src, client-&gt;send_buf,
+          strlen(client-&gt;send_buf) + 1, LBM_MSG_FLUSH | LBM_SRC_NONBLOCK));
+      printf("sent response to '%s'.\n", client-&gt;topic_name);
+  }  /* handle_req */
+  
+  
+<span name="do_reg0" id="do_reg0"></span>  int request_rcv_cb(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd) 
+  {
+      client_t *client = (client_t *)msg-&gt;source_clientd;
+  
+      switch (msg-&gt;type)
+      {
+<span name="do_reg1" id="do_reg1"></span>      case LBM_MSG_DATA:  /* Received a message from the client. */
+          printf("Received %ld bytes on topic %s: '%.*s'\n",
+               (long)msg-&gt;len, msg-&gt;topic_name, (int)msg-&gt;len, msg-&gt;data);
+  
+          /* Register message. */
+          if (msg-&gt;len &gt; 1 &amp;&amp; msg-&gt;data[0] == 'r') {
+              handle_register(client, &amp;msg-&gt;data[1]);
+          }
+  
+<span name="do_req1" id="do_req1"></span>          /* Request message. */
+          else if (msg-&gt;len &gt;= sizeof(req_hdr_t) &amp;&amp; msg-&gt;data[0] == 'R') {
+              req_hdr_t req_hdr;
+              memcpy((char *)&amp;req_hdr, msg-&gt;data, sizeof(req_hdr_t));
+  
+              handle_req(client, &amp;req_hdr, &amp;msg-&gt;data[sizeof(req_hdr_t)],
+                  msg-&gt;len - sizeof(req_hdr_t));
+          }
+          else {
+              printf("Ignored unrecognized command '%c'\n", msg-&gt;data[0]);
+              break;
+          }
+          break;
+  
+      case LBM_MSG_BOS:
+          printf("[%s][%s], BOS\n", msg-&gt;topic_name, msg-&gt;source);
+          break;
+  
+      case LBM_MSG_EOS:
+          printf("[%s][%s], EOS\n", msg-&gt;topic_name, msg-&gt;source);
+          break;
+  
+      default:    /* unexpected receiver event */
+          printf("Receive event type %x topic='%s', source='%s'\n", msg-&gt;type, msg-&gt;topic_name, msg-&gt;source);
+          break;
+      }  /* switch msg-&gt;type */
+  
+      return 0;
+  }  /* request_rcv_cb */
+  
+  
+<span name="start_client" id="start_client"></span>  void *start_client_source(const char *source_name, void *clientd)
+  {
+      lbm_context_t *ctx = (lbm_context_t *)clientd;;
+      client_t *new_client = (client_t *)malloc(sizeof(client_t));  N(new_client);
+  
+      new_client-&gt;state = 0;  /* Waiting for register. */
+      new_client-&gt;topic_name = NULL;
+      new_client-&gt;source_name = strdup(source_name);  N(new_client-&gt;source_name);
+      new_client-&gt;ctx = ctx;
+      new_client-&gt;resp_src = NULL;
+  
+      return new_client;
+  }  /* start_client_source */
+  
+  
+  int end_client_source(const char *source_name, void *clientd, void *source_clientd)
+  {
+      if (source_clientd) {
+          client_t *client = (client_t *)source_clientd;
+  
+          if (client-&gt;topic_name) {
+              free(client-&gt;topic_name);
+          }
+          if (client-&gt;source_name) {
+              free(client-&gt;source_name);
+          }
+  
+          E(lbm_src_delete(client-&gt;resp_src));
+  
+          free(source_clientd);
+      }
+  
+      return 0;
+  }  /* end_client_source */
+  
+  
+  int main(int argc, char **argv)
+  {
+      lbm_context_t *ctx;
+      lbm_rcv_t *rcv;  /* Receiver for requests from clients. */
+  
+  #if defined(_MSC_VER)
+      /* windows-specific code */
+      WSADATA wsadata;
+      int wsStat = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
+      if (wsStat != 0) {
+          printf("line %d: wsStat=%d\n",__LINE__,wsStat); exit(1);
+      }
+  #endif
+  
+      E(lbm_config("serv.cfg"));
+  
+      E(lbm_context_create(&amp;ctx, NULL, NULL, NULL));
+  
+      /* Create receiver for requests from clients. */
+      {
+<span name="src_notif_setopt" id="src_notif_setopt"></span>          lbm_rcv_src_notification_func_t source_notification_function;
+          lbm_rcv_topic_attr_t *rcv_attr;
+          lbm_topic_t *topic;
+  
+          E(lbm_rcv_topic_attr_create(&amp;rcv_attr));
+  
+          /* Set up per-source state management. */
+          source_notification_function.create_func = start_client_source;
+          source_notification_function.delete_func = end_client_source;
+          source_notification_function.clientd = ctx;  /* Pass this to start_client_source(). */
+          E(lbm_rcv_topic_attr_setopt(rcv_attr, "source_notification_function",
+              &amp;source_notification_function, sizeof(source_notification_function)));
+  
+          E(lbm_rcv_topic_lookup(&amp;topic, ctx, "Server1.Request", rcv_attr));
+          /* Pass context object as clientd. */
+          E(lbm_rcv_create(&amp;rcv, ctx, topic, request_rcv_cb, ctx, NULL));
+  
+          E(lbm_rcv_topic_attr_delete(rcv_attr));
+      }
+  
+      while (1) {
+          SLEEP(1);
+      }
+  
+      /* Finished all receiving from this topic, delete the receiver object. */
+      E(lbm_rcv_delete(rcv));
+  
+      /* Do not need to delete the topic object - LBM keeps track of topic
+       * objects and deletes them as-needed.  */
+  
+      /* Finished with all LBM functions, delete the context object. */
+      E(lbm_context_delete(ctx));
+  
+  #if defined(_MSC_VER)
+      WSACleanup();
+  #endif
+  
+      return 0;
+  }  /* main */
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

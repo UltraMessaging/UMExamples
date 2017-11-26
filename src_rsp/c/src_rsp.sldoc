@@ -1,0 +1,195 @@
+<html>
+  <head>
+	<link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+	<title>Source-based Request/Response</title>
+  </head>
+  <body>
+	<a href="../../index.html" class="button" target="_top">Example index</a>
+
+	<h1>How to use sources to send requests and responses.</h1>
+
+	<p>There are two source files associated with this example:</p>
+	<ul>
+		<li><b><tt>=semlit,srcfile,client_c.slsrc,client.c=</tt></b>
+		- (right-click and save as "client.c").</li>
+		<li><b><tt>=semlit,srcfile,server_c.slsrc,server.c=</tt></b>
+		- (right-click and save as "server.c").</li>
+	</ul>
+
+	<p>The UM "request/response" feature provides a convenient, easy-to-code
+	method for a classic server program to respond to a request sent by a client.
+	The feature takes care of routing the server's response message back to
+	the client that sent the request.
+	It also associates response messages with the corresponding request
+	messages, even if multiple messages are outstanding.
+	See <a href="../../request_response/c/">Request-Response Sample</a>.</p>
+
+	<p>However, there are advantages for the server to use a normal UM
+	source to send response messages:</p>
+	<ul>
+		<li>Choice of transport types.
+		UM responses are always sent with TCP.
+
+		<li>Reliability settings for non-TCP transports are under user control.
+		Can be configured to recover messages after long network outages.
+
+		<li>Extra layer of reliability.
+		The "OTR" feature can recover messages unrecoverably lost by the transport.
+
+		<li>Better application visibility.
+		Unicast transport types give connect and disconnect events for the
+		source, and receivers get BOS and EOS events.
+
+		<li>UDP-based transport types can give lower latency.
+	</ul>
+
+	<p>This sample program uses an LBT-RU source to return response messages
+	to the requesting client program.</p>
+
+    <h2>Overall Approach</h2>
+
+	<p>Clients use a UM source to send a request to a server, and the server
+	uses a UM receiver to receive it.
+	The server then uses a UM source to send a response back to only the
+	client that sent the request, and that client uses a UM receiver to
+	receive it.
+	This sample allows and arbitrary number of client programs to come and
+	go, without the server being pre-configured to know about them.</p>
+
+	<p>When a client program initializes, it creates a source to send
+	requests and a receiver to receive responses.
+	The client then exchanges one or more handshakes to register with the
+	server, and to verify round-trip connectivity.
+	This avoids initial message loss due to topic resolution.</p>
+
+    <h2>Registration</h2>
+
+	<p>The client uses the server's well-known request topic to create
+	the source.</p>
+
+	=semlit,insert,server_name=
+	<p><tt>. . .</tt></p>
+	=semlit,insert,req_src_create=
+
+	<p>The client needs a unique topic to receive is responses.
+	Using the process PID is an easy, but not robust method..</p>
+
+	=semlit,insert,client_name=
+	<p><tt>. . .</tt></p>
+	=semlit,insert,rsp_rcv_create=
+
+	<h4>Registration; Client Side</h4>
+
+	<p>The registration message that the client sends to the server is
+	all-ascii, consisting of lower-case 'r' followed by a null-terminated 
+	topic name on which the client receives responses.</p>
+
+	=semlit,insert,register_msg=
+
+	<p>The client sends registration messages repeatedly in a loop, with
+	exponential backoff delays.
+	For example, if the server is not running, the client sends registration
+	attempts at 1, 2, 4, 8, ... milliseconds, to a maximum of 1 second.</p>
+
+	=semlit,insert,register_loop=
+
+	<p>The loop exits when the client receives a registration response.</p>
+
+	=semlit,insert,register_done=
+
+	<h4>Registration; Server Side</h4>
+
+	<p>The server makes use of source notification create/delete callbacks
+	to manage client state.
+	The callbacks are configured as part of creation of the server's
+	main receiver.</p>
+
+	=semlit,insert,src_notif_setopt=
+
+	<p>Then, when the receiver discovers a new client's source,
+	start_client_source() is called.
+	That function only creates the state structure associated with the
+	new client.</p>
+
+	=semlit,insert,start_client=
+
+	<p>When the client sends its registration message, it is received by
+	the server, which uses it to create the source used for sending
+	responses.
+	The state structure created above is passed to the receiver
+	callback in <tt>msg->source_clientd</tt>.</p>
+
+	=semlit,insert,do_reg0=
+
+	<p>Registration requests start with the character 'r'.</p>
+
+	=semlit,insert,do_reg1=
+	<p><tt>. . .</tt></p>
+	=semlit,insert,do_reg2=
+
+	<p>The response source is created in a special way.
+	It is an LBT-RU transport type, with a fixed port number (the choice
+	of 12070 was arbitrary).
+	This means that all clients' sources are mapped to the same LBT-RU
+	transport session.</p>
+
+	=semlit,insert,rsp_src_config=
+
+	<p>To prevent each client's responses from being sent to all clients,
+	source-side filtering is enabled.</p>
+
+	=semlit,insert,rsp_src_config2=
+
+	<p>On successful source creation, the client state is filled in.
+	But no reply is sent to the client.
+	This is because the client has not yet had a chance to discover and
+	join the new source, so any message sent at this point would not
+	be delivered.</p>
+
+	=semlit,insert,rsp_src_created=
+
+	<p>The server could set some kind of timer to send its reply, but
+	to simplify this code, we just wait for the client to retry.
+	When the next registration request comes in, we send the OK
+	message.
+	Thus, it will always take at least 2 tries to register.</p>
+
+	=semlit,insert,rsp_src_ok=
+
+    <h2>Request/Response</h2>
+
+	<p>This example does not contain the code necessary to associate responses
+	with their requests.
+	However, the simple protocol was designed to allow this to be added.
+	A request message consists of an 8-ascii-byte header followed by the
+	application message content.
+./run.sh client
+	The first byte of the header is the character 'R' to indicate a request
+	message.
+	The other 7 bytes are currently just set to ascii '0' characters, but
+	could be used as a request ID.
+	When the server responds to requests, it uses the same header it
+	received, so the client can maintain a table of outstanding requests.
+	This logic is not included in this example.</p>
+
+	<h4>Request; Client Side</h4>
+
+	<p>In this example, the send buffer for requests is declared as an
+	arbitrary large buffer.
+	The header is initialized once.</p>
+
+	=semlit,insert,req_buf=
+
+	<p>For this simple example, 5 requests are sent.</p>
+
+	=semlit,insert,req_sends=
+
+	<h4>Response; Server Side</h4>
+
+	<p>When the server receives the request, it sends a response.<p>
+
+	=semlit,insert,do_req1=
+	<p><tt>. . .</tt></p>
+	=semlit,insert,do_req2=
+  </body>
+</html>
