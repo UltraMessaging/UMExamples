@@ -36,14 +36,11 @@
 	event queue first.</p>
 	<a name="eq_ctx_create_ref_1" id="eq_ctx_create_ref_1"></a>
 <small><pre>
-<a href="clean_shutdown_c.slsrc.html#eq_ctx_create" target="src">00093</a>      err = lbm_event_queue_create(&amp;evq, NULL, NULL, NULL);
-<a href="clean_shutdown_c.slsrc.html#eq_ctx_create" target="src">00094</a>      EX_LBM_CHK(err);
-<a href="clean_shutdown_c.slsrc.html#eq_ctx_create" target="src">00095</a>  
-<a href="clean_shutdown_c.slsrc.html#eq_ctx_create" target="src">00096</a>      err = lbm_context_attr_create(&amp;cattr);
-<a href="clean_shutdown_c.slsrc.html#eq_ctx_create" target="src">00097</a>      EX_LBM_CHK(err);
-<a href="clean_shutdown_c.slsrc.html#eq_ctx_create" target="src">00098</a>  
-<a href="clean_shutdown_c.slsrc.html#eq_ctx_create" target="src">00099</a>      err = lbm_context_create(&amp;ctx, cattr, NULL, NULL);
-<a href="clean_shutdown_c.slsrc.html#eq_ctx_create" target="src">00100</a>      EX_LBM_CHK(err);
+<a href="clean_shutdown_c.slsrc.html#eq_ctx_create" target="src">00114</a>      err = lbm_event_queue_create(&amp;evq, NULL, NULL, NULL);
+<a href="clean_shutdown_c.slsrc.html#eq_ctx_create" target="src">00115</a>      EX_LBM_CHK(err);
+<a href="clean_shutdown_c.slsrc.html#eq_ctx_create" target="src">00116</a>  
+<a href="clean_shutdown_c.slsrc.html#eq_ctx_create" target="src">00117</a>      err = lbm_context_create(&amp;ctx, NULL, NULL, NULL);
+<a href="clean_shutdown_c.slsrc.html#eq_ctx_create" target="src">00118</a>      EX_LBM_CHK(err);
 </pre><!-- endblock eq_ctx_create_ref_1 --></small>
 
 
@@ -52,23 +49,23 @@
 	later, it is important to delete all sources and receivers before deleting the context.</p>
 	<a name="src_rcv_create_ref_1" id="src_rcv_create_ref_1"></a>
 <small><pre>
-<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00102</a>      err = lbm_rcv_topic_lookup(&amp;rtopic, ctx, "test.topic", NULL);
-<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00103</a>      EX_LBM_CHK(err);
-<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00104</a>  
-<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00105</a>      err = lbm_rcv_create(&amp;rcv, ctx, rtopic, rcv_handle_msg, NULL, evq);
-<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00106</a>      EX_LBM_CHK(err);
-<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00107</a>  
-<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00108</a>      err = lbm_src_topic_attr_create(&amp;tattr);
-<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00109</a>      EX_LBM_CHK(err);
-<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00110</a>  
-<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00111</a>      err = lbm_src_topic_alloc(&amp;stopic, ctx, "test.topic", tattr);
-<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00112</a>      EX_LBM_CHK(err);
-<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00113</a>  
-<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00114</a>      err = lbm_src_topic_attr_delete(tattr);
-<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00115</a>      EX_LBM_CHK(err);
-<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00116</a>  
-<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00117</a>      err = lbm_src_create(&amp;src, ctx, stopic, NULL, NULL, NULL);
-<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00118</a>      EX_LBM_CHK(err);
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00120</a>      err = lbm_rcv_topic_lookup(&amp;rtopic, ctx, "test.topic", NULL);
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00121</a>      EX_LBM_CHK(err);
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00122</a>  
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00123</a>      err = lbm_rcv_create(&amp;rcv, ctx, rtopic, rcv_handle_msg, NULL, evq);
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00124</a>      EX_LBM_CHK(err);
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00125</a>  
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00126</a>      err = lbm_src_topic_attr_create(&amp;tattr);
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00127</a>      EX_LBM_CHK(err);
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00128</a>  
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00129</a>      err = lbm_src_topic_alloc(&amp;stopic, ctx, "test.topic", tattr);
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00130</a>      EX_LBM_CHK(err);
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00131</a>  
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00132</a>      err = lbm_src_topic_attr_delete(tattr);
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00133</a>      EX_LBM_CHK(err);
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00134</a>  
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00135</a>      err = lbm_src_create(&amp;src, ctx, stopic, NULL, NULL, NULL);
+<a href="clean_shutdown_c.slsrc.html#src_rcv_create" target="src">00136</a>      EX_LBM_CHK(err);
 </pre><!-- endblock src_rcv_create_ref_1 --></small>
 
 
@@ -77,17 +74,17 @@
 	application use case as users would want an independent thread that only processes events (like messages) for better performace.</p>
 	<a name="spawn_thread_ref_1" id="spawn_thread_ref_1"></a>
 <small><pre>
-<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00120</a>  #if defined(_WIN32)
-<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00121</a>          if ((wthrdh = CreateThread(NULL, 0, eq_thread, evq, 0, NULL)) == NULL) {
-<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00122</a>                  fprintf(stderr, "could not create thread\n");
-<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00123</a>                  exit(1);
-<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00124</a>          }
-<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00125</a>  #else
-<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00126</a>          if (pthread_create(&amp;pthid, NULL, eq_thread, evq) != 0) {
-<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00127</a>                  fprintf(stderr, "could not spawn thread\n");
-<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00128</a>                  exit(1);
-<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00129</a>          }
-<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00130</a>  #endif /* _WIN32 */
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00138</a>  #if defined(_WIN32)
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00139</a>      if ((wthrdh = CreateThread(NULL, 0, eq_thread, evq, 0, NULL)) == NULL) {
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00140</a>          fprintf(stderr, "could not create thread\n");
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00141</a>          exit(1);
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00142</a>      }
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00143</a>  #else
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00144</a>      if (pthread_create(&amp;pthid, NULL, eq_thread, evq) != 0) {
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00145</a>          fprintf(stderr, "could not spawn thread\n");
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00146</a>          exit(1);
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00147</a>      }
+<a href="clean_shutdown_c.slsrc.html#spawn_thread" target="src">00148</a>  #endif /* _WIN32 */
 </pre><!-- endblock spawn_thread_ref_1 --></small>
 
 
@@ -97,15 +94,15 @@
 	thread will simply wait for the receiver to receive the message on the event queue.</p>
 	<a name="wait_and_send_ref_1" id="wait_and_send_ref_1"></a>
 <small><pre>
-<a href="clean_shutdown_c.slsrc.html#wait_and_send" target="src">00132</a>      SLEEP(1);
-<a href="clean_shutdown_c.slsrc.html#wait_and_send" target="src">00133</a>  
-<a href="clean_shutdown_c.slsrc.html#wait_and_send" target="src">00134</a>      err = lbm_src_send(src, "hello", 5, LBM_MSG_FLUSH);
-<a href="clean_shutdown_c.slsrc.html#wait_and_send" target="src">00135</a>      EX_LBM_CHK(err);    
-<a href="clean_shutdown_c.slsrc.html#wait_and_send" target="src">00136</a>  
-<a href="clean_shutdown_c.slsrc.html#wait_and_send" target="src">00137</a>      /* Wait */
-<a href="clean_shutdown_c.slsrc.html#wait_and_send" target="src">00138</a>      while (!cleanup) {  
-<a href="clean_shutdown_c.slsrc.html#wait_and_send" target="src">00139</a>          SLEEP(1);
-<a href="clean_shutdown_c.slsrc.html#wait_and_send" target="src">00140</a>      }
+<a href="clean_shutdown_c.slsrc.html#wait_and_send" target="src">00150</a>      SLEEP(1);
+<a href="clean_shutdown_c.slsrc.html#wait_and_send" target="src">00151</a>  
+<a href="clean_shutdown_c.slsrc.html#wait_and_send" target="src">00152</a>      err = lbm_src_send(src, "hello", 5, LBM_MSG_FLUSH);
+<a href="clean_shutdown_c.slsrc.html#wait_and_send" target="src">00153</a>      EX_LBM_CHK(err);    
+<a href="clean_shutdown_c.slsrc.html#wait_and_send" target="src">00154</a>  
+<a href="clean_shutdown_c.slsrc.html#wait_and_send" target="src">00155</a>      /* Wait */
+<a href="clean_shutdown_c.slsrc.html#wait_and_send" target="src">00156</a>      while (!cleanup) {  
+<a href="clean_shutdown_c.slsrc.html#wait_and_send" target="src">00157</a>          SLEEP(1);
+<a href="clean_shutdown_c.slsrc.html#wait_and_send" target="src">00158</a>      }
 </pre><!-- endblock wait_and_send_ref_1 --></small>
 
 
@@ -115,13 +112,14 @@
 	thread before continuing.</p>
 	<a name="unblock_join_ref_1" id="unblock_join_ref_1"></a>
 <small><pre>
-<a href="clean_shutdown_c.slsrc.html#unblock_join" target="src">00142</a>      lbm_event_dispatch_unblock(evq);
-<a href="clean_shutdown_c.slsrc.html#unblock_join" target="src">00143</a>  
-<a href="clean_shutdown_c.slsrc.html#unblock_join" target="src">00144</a>  #if defined(_WIN32)
-<a href="clean_shutdown_c.slsrc.html#unblock_join" target="src">00145</a>                  WaitForSingleObject(wthrdh, INFINITE);
-<a href="clean_shutdown_c.slsrc.html#unblock_join" target="src">00146</a>  #else
-<a href="clean_shutdown_c.slsrc.html#unblock_join" target="src">00147</a>                  pthread_join(pthid, NULL);
-<a href="clean_shutdown_c.slsrc.html#unblock_join" target="src">00148</a>  #endif /* _WIN32 */
+<a href="clean_shutdown_c.slsrc.html#unblock_join" target="src">00160</a>      err = lbm_event_dispatch_unblock(evq);
+<a href="clean_shutdown_c.slsrc.html#unblock_join" target="src">00161</a>      EX_LBM_CHK(err);
+<a href="clean_shutdown_c.slsrc.html#unblock_join" target="src">00162</a>  
+<a href="clean_shutdown_c.slsrc.html#unblock_join" target="src">00163</a>  #if defined(_WIN32)
+<a href="clean_shutdown_c.slsrc.html#unblock_join" target="src">00164</a>      WaitForSingleObject(wthrdh, INFINITE);
+<a href="clean_shutdown_c.slsrc.html#unblock_join" target="src">00165</a>  #else
+<a href="clean_shutdown_c.slsrc.html#unblock_join" target="src">00166</a>      pthread_join(pthid, NULL);
+<a href="clean_shutdown_c.slsrc.html#unblock_join" target="src">00167</a>  #endif /* _WIN32 */
 </pre><!-- endblock unblock_join_ref_1 --></small>
 
 
@@ -130,10 +128,14 @@
 	has been closed. The application can now delete all UM objects <b>in the correct order</b>.<p>
 	<a name="delete_ref_1" id="delete_ref_1"></a>
 <small><pre>
-<a href="clean_shutdown_c.slsrc.html#delete" target="src">00150</a>      lbm_rcv_delete(rcv);
-<a href="clean_shutdown_c.slsrc.html#delete" target="src">00151</a>      lbm_src_delete(src);
-<a href="clean_shutdown_c.slsrc.html#delete" target="src">00152</a>      lbm_context_delete(ctx);
-<a href="clean_shutdown_c.slsrc.html#delete" target="src">00153</a>      lbm_event_queue_delete(evq);
+<a href="clean_shutdown_c.slsrc.html#delete" target="src">00169</a>      err = lbm_rcv_delete(rcv);
+<a href="clean_shutdown_c.slsrc.html#delete" target="src">00170</a>      EX_LBM_CHK(err);
+<a href="clean_shutdown_c.slsrc.html#delete" target="src">00171</a>      err = lbm_src_delete(src);
+<a href="clean_shutdown_c.slsrc.html#delete" target="src">00172</a>      EX_LBM_CHK(err);
+<a href="clean_shutdown_c.slsrc.html#delete" target="src">00173</a>      err = lbm_context_delete(ctx);
+<a href="clean_shutdown_c.slsrc.html#delete" target="src">00174</a>      EX_LBM_CHK(err);
+<a href="clean_shutdown_c.slsrc.html#delete" target="src">00175</a>      err = lbm_event_queue_delete(evq);
+<a href="clean_shutdown_c.slsrc.html#delete" target="src">00176</a>      EX_LBM_CHK(err);
 </pre><!-- endblock delete_ref_1 --></small>
 
 
@@ -143,13 +145,13 @@
         print a message and exit the program:</p>
         <a name="error_check_ref_1" id="error_check_ref_1"></a>
 <small><pre>
-<a href="clean_shutdown_c.slsrc.html#error_check" target="src">00021</a>    #define EX_LBM_CHK(err) do { \
-<a href="clean_shutdown_c.slsrc.html#error_check" target="src">00022</a>        if ((err) &lt; 0) { \
-<a href="clean_shutdown_c.slsrc.html#error_check" target="src">00023</a>                fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
-<a href="clean_shutdown_c.slsrc.html#error_check" target="src">00024</a>                __FILE__, __LINE__, lbm_errmsg()); \
-<a href="clean_shutdown_c.slsrc.html#error_check" target="src">00025</a>                exit(1); \
-<a href="clean_shutdown_c.slsrc.html#error_check" target="src">00026</a>        }  \
-<a href="clean_shutdown_c.slsrc.html#error_check" target="src">00027</a>    } while (0)
+<a href="clean_shutdown_c.slsrc.html#error_check" target="src">00041</a>  #define EX_LBM_CHK(err) do { \
+<a href="clean_shutdown_c.slsrc.html#error_check" target="src">00042</a>      if ((err) &lt; 0) { \
+<a href="clean_shutdown_c.slsrc.html#error_check" target="src">00043</a>          fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
+<a href="clean_shutdown_c.slsrc.html#error_check" target="src">00044</a>              __FILE__, __LINE__, lbm_errmsg()); \
+<a href="clean_shutdown_c.slsrc.html#error_check" target="src">00045</a>          exit(1); \
+<a href="clean_shutdown_c.slsrc.html#error_check" target="src">00046</a>      }  \
+<a href="clean_shutdown_c.slsrc.html#error_check" target="src">00047</a>  } while (0)
 </pre><!-- endblock error_check_ref_1 --></small>
 
 
@@ -166,20 +168,21 @@
 	  are not necessary for Linux only applications</p>
         <a name="includes_ref_1" id="includes_ref_1"></a>
 <small><pre>
-<a href="clean_shutdown_c.slsrc.html#includes" target="src">00003</a>  #include &lt;stdio.h&gt;
-<a href="clean_shutdown_c.slsrc.html#includes" target="src">00004</a>  
-<a href="clean_shutdown_c.slsrc.html#includes" target="src">00005</a>  #if defined(_MSC_VER)
-<a href="clean_shutdown_c.slsrc.html#includes" target="src">00006</a>  /* Windows-only includes */
-<a href="clean_shutdown_c.slsrc.html#includes" target="src">00007</a>  #include &lt;winsock2.h&gt;
-<a href="clean_shutdown_c.slsrc.html#includes" target="src">00008</a>  #define SLEEP(s) Sleep((s)*1000)
-<a href="clean_shutdown_c.slsrc.html#includes" target="src">00009</a>  #else
-<a href="clean_shutdown_c.slsrc.html#includes" target="src">00010</a>  /* Unix-only includes */
-<a href="clean_shutdown_c.slsrc.html#includes" target="src">00011</a>  #include &lt;stdlib.h&gt;
-<a href="clean_shutdown_c.slsrc.html#includes" target="src">00012</a>  #include &lt;unistd.h&gt;
-<a href="clean_shutdown_c.slsrc.html#includes" target="src">00013</a>  #define SLEEP(s) sleep(s)
-<a href="clean_shutdown_c.slsrc.html#includes" target="src">00014</a>  #endif
-<a href="clean_shutdown_c.slsrc.html#includes" target="src">00015</a>  
-<a href="clean_shutdown_c.slsrc.html#includes" target="src">00016</a>  #include &lt;lbm/lbm.h&gt;
+<a href="clean_shutdown_c.slsrc.html#includes" target="src">00022</a>  #include &lt;stdio.h&gt;
+<a href="clean_shutdown_c.slsrc.html#includes" target="src">00023</a>  #include &lt;pthread.h&gt;
+<a href="clean_shutdown_c.slsrc.html#includes" target="src">00024</a>  
+<a href="clean_shutdown_c.slsrc.html#includes" target="src">00025</a>  #if defined(_MSC_VER)
+<a href="clean_shutdown_c.slsrc.html#includes" target="src">00026</a>  /* Windows-only includes */
+<a href="clean_shutdown_c.slsrc.html#includes" target="src">00027</a>  #include &lt;winsock2.h&gt;
+<a href="clean_shutdown_c.slsrc.html#includes" target="src">00028</a>  #define SLEEP(s) Sleep((s)*1000)
+<a href="clean_shutdown_c.slsrc.html#includes" target="src">00029</a>  #else
+<a href="clean_shutdown_c.slsrc.html#includes" target="src">00030</a>  /* Unix-only includes */
+<a href="clean_shutdown_c.slsrc.html#includes" target="src">00031</a>  #include &lt;stdlib.h&gt;
+<a href="clean_shutdown_c.slsrc.html#includes" target="src">00032</a>  #include &lt;unistd.h&gt;
+<a href="clean_shutdown_c.slsrc.html#includes" target="src">00033</a>  #define SLEEP(s) sleep(s)
+<a href="clean_shutdown_c.slsrc.html#includes" target="src">00034</a>  #endif
+<a href="clean_shutdown_c.slsrc.html#includes" target="src">00035</a>  
+<a href="clean_shutdown_c.slsrc.html#includes" target="src">00036</a>  #include &lt;lbm/lbm.h&gt;
 </pre><!-- endblock includes_ref_1 --></small>
 
 
@@ -187,16 +190,16 @@
         <p>Windows applications must initialize the Winsock library to utilize sockets.</p>
         <a name="windows_ref_1" id="windows_ref_1"></a>
 <small><pre>
-<a href="clean_shutdown_c.slsrc.html#windows" target="src">00082</a>  #if defined(_MSC_VER)
-<a href="clean_shutdown_c.slsrc.html#windows" target="src">00083</a>          /* windows-specific code */
-<a href="clean_shutdown_c.slsrc.html#windows" target="src">00084</a>          WSADATA wsadata;
-<a href="clean_shutdown_c.slsrc.html#windows" target="src">00085</a>          int wsStat = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
-<a href="clean_shutdown_c.slsrc.html#windows" target="src">00086</a>          if (wsStat != 0)
-<a href="clean_shutdown_c.slsrc.html#windows" target="src">00087</a>          {
-<a href="clean_shutdown_c.slsrc.html#windows" target="src">00088</a>                  printf("line %d: wsStat=%d\n",__LINE__,wsStat);
-<a href="clean_shutdown_c.slsrc.html#windows" target="src">00089</a>                  exit(1);
-<a href="clean_shutdown_c.slsrc.html#windows" target="src">00090</a>          }
-<a href="clean_shutdown_c.slsrc.html#windows" target="src">00091</a>  #endif
+<a href="clean_shutdown_c.slsrc.html#windows" target="src">00103</a>  #if defined(_MSC_VER)
+<a href="clean_shutdown_c.slsrc.html#windows" target="src">00104</a>      /* windows-specific code */
+<a href="clean_shutdown_c.slsrc.html#windows" target="src">00105</a>      WSADATA wsadata;
+<a href="clean_shutdown_c.slsrc.html#windows" target="src">00106</a>      int wsStat = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
+<a href="clean_shutdown_c.slsrc.html#windows" target="src">00107</a>      if (wsStat != 0)
+<a href="clean_shutdown_c.slsrc.html#windows" target="src">00108</a>      {
+<a href="clean_shutdown_c.slsrc.html#windows" target="src">00109</a>          printf("line %d: wsStat=%d\n",__LINE__,wsStat);
+<a href="clean_shutdown_c.slsrc.html#windows" target="src">00110</a>          exit(1);
+<a href="clean_shutdown_c.slsrc.html#windows" target="src">00111</a>      }
+<a href="clean_shutdown_c.slsrc.html#windows" target="src">00112</a>  #endif
 </pre><!-- endblock windows_ref_1 --></small>
 
 

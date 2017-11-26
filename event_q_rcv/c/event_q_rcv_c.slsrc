@@ -1,4 +1,23 @@
-/* Example on setting Ultra Messaging attributes */
+/* event_q_rcv.c - see http://ultramessaging.github.io/UMExamples/event_q_rcv/c/index.html
+ *
+ * Copyright (c) 2005-2017 Informatica Corporation. All Rights Reserved.
+ * Permission is granted to licensees to use
+ * or alter this software for any purpose, including commercial applications,
+ * according to the terms laid out in the Software License Agreement.
+ *
+ * This source code example is provided by Informatica for educational
+ * and evaluation purposes only.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND INFORMATICA DISCLAIMS ALL WARRANTIES
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION, ANY IMPLIED WARRANTIES OF
+ * NON-INFRINGEMENT, MERCHANTABILITY OR FITNESS FOR A PARTICULAR
+ * PURPOSE.  INFORMATICA DOES NOT WARRANT THAT USE OF THE SOFTWARE WILL BE
+ * UNINTERRUPTED OR ERROR-FREE.  INFORMATICA SHALL NOT, UNDER ANY CIRCUMSTANCES, BE
+ * LIABLE TO LICENSEE FOR LOST PROFITS, CONSEQUENTIAL, INCIDENTAL, SPECIAL OR
+ * INDIRECT DAMAGES ARISING OUT OF OR RELATED TO THIS AGREEMENT OR THE
+ * TRANSACTIONS CONTEMPLATED HEREUNDER, EVEN IF INFORMATICA HAS BEEN APPRISED OF
+ * THE LIKELIHOOD OF SUCH DAMAGES.
+ */
 
 #include <stdio.h>
 
@@ -15,6 +34,16 @@
 
 #include <lbm/lbm.h>
 
+/* Example error checking macro.  Include after each UM call. */
+#define EX_LBM_CHK(err) do { \
+	if ((err) < 0) { \
+		fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
+		__FILE__, __LINE__, lbm_errmsg()); \
+		exit(1); \
+	}  \
+} while (0)
+
+
 /* Received message handler (passed into lbm_rcv_create()) */
 int rcv_handle_msg(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
 {
@@ -28,17 +57,16 @@ int rcv_handle_msg(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
 		break;
 	}
 	return 0;
-}
+}  /* rcv_handle_msg */
+
 
 int main(int argc, char **argv)
 {
-	lbm_context_t *ctx;							/* pointer to context object */
-	lbm_topic_t *topic_1;						/* pointer to topic object */
-	lbm_rcv_t *rcv;								/* pointer to source object */
-	lbm_topic_t *rtopic;						/* pointer to receiver topic object */
-	lbm_context_attr_t * cattr;					/* pointer to context attribute object */
-	int err;									/* return status of lbm functions (true=error) */
-	lbm_event_queue_t *evq = NULL;				/* pointer to eventQ handle */
+	lbm_context_t *ctx;				/* pointer to context object */
+	lbm_rcv_t *rcv;					/* pointer to source object */
+	lbm_topic_t *rtopic;			/* pointer to receiver topic object */
+	lbm_event_queue_t *evq = NULL;	/* pointer to eventQ handle */
+	int err;
 
 #if defined(_MSC_VER)
 	/* windows-specific code */
@@ -51,66 +79,46 @@ int main(int argc, char **argv)
 	}
 #endif
 
-	/* Initialize the defaults for the context attribute object */
-	if (lbm_context_attr_create(&cattr) != 0)
-	{
-		fprintf(stderr, "lbm_context_attr_create: %s\n", lbm_errmsg());
-		exit(1);
-	}
-
 	/* Creating the context */
-	err = lbm_context_create(&ctx, cattr, NULL, NULL);
-	if (err)
-	{
-		printf("line %d: %s\n", __LINE__, lbm_errmsg());
-		exit(1);
-	}
-
-	/* Delete the context attribute object */
-	lbm_context_attr_delete(cattr);
+	err = lbm_context_create(&ctx, NULL, NULL, NULL);
+	EX_LBM_CHK(err);
 
 	/* Create an event queue and associate it with a callback */
 	/* =semlit,block,evq_create= */
 	err = lbm_event_queue_create(&evq, NULL, NULL, NULL);
 	/* =semlit,endblock,evq_create= */
-	if (err == LBM_FAILURE) {
-		fprintf(stderr, "lbm_event_queue_create: %s\n", lbm_errmsg());
-		exit(1);
-	}
+	EX_LBM_CHK(err);
 
 	err = lbm_rcv_topic_lookup(&rtopic, ctx, "test.topic", NULL);
-	if (err)
-	{
-		printf("line %d: %s\n", __LINE__, lbm_errmsg());
-		exit(1);
-	}
-	
+	EX_LBM_CHK(err);
+
 	/* =semlit,block,rcv_create= */
 	err = lbm_rcv_create(&rcv, ctx, rtopic, rcv_handle_msg, NULL, evq);
 	/* =semlit,endblock,rcv_create= */
-	if (err)
-	{
-		printf("line %d: %s\n", __LINE__, lbm_errmsg());
-		exit(1);
-	}
+	EX_LBM_CHK(err);
 
-	/* This runs the eventQ for 10 seconds.  This means for the next 10 seconds */
-	/* all of the sources events will be processed on this thread.				*/
+	/* This runs the eventQ for 10 seconds.  This means for the next 10 seconds
+	 * all of the sources events will be processed on this thread.  Normally,
+	 * this is done on a separate, application-created thread. */
 	/* =semlit,block,evq_run= */
-	if (lbm_event_dispatch(evq, 10000) == LBM_FAILURE) {
+	err = lbm_event_dispatch(evq, 10000);
+	if (err == LBM_FAILURE) {
 	/* =semlit,endblock,evq_run= */
 		fprintf(stderr, "lbm_event_dispatch returned error: %s\n", lbm_errmsg());
 	}
 
 	/* Finished with all LBM functions, delete the source and context object. */
 	/* =semlit,block,evq_close= */
-	lbm_rcv_delete(rcv);
-	lbm_context_delete(ctx);
-	lbm_event_queue_delete(evq);
+	err = lbm_rcv_delete(rcv);
+	EX_LBM_CHK(err);
+	err = lbm_context_delete(ctx);
+	EX_LBM_CHK(err);
+	err = lbm_event_queue_delete(evq);
+	EX_LBM_CHK(err);
 	/* =semlit,endblock,evq_close= */
 #if defined(_MSC_VER)
 	WSACleanup();
 #endif
-        return 0;
-}
 
+	return 0;
+}  /* main */

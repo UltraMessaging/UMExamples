@@ -50,10 +50,8 @@ When to Set:	Can only be set during object initialization.
 	  itself. It can be used like this:</p>
 	<a name="set_cb_ref_1" id="set_cb_ref_1"></a>
 <small><pre>
-<a href="logging_callback_c.slsrc.html#set_cb" target="src">00046</a>          if (lbm_log(lbm_log_msg, NULL) == LBM_FAILURE) {
-<a href="logging_callback_c.slsrc.html#set_cb" target="src">00047</a>                  fprintf(stderr, "lbm_log: %s\n", lbm_errmsg());
-<a href="logging_callback_c.slsrc.html#set_cb" target="src">00048</a>                  exit(1);
-<a href="logging_callback_c.slsrc.html#set_cb" target="src">00049</a>          }
+<a href="logging_callback_c.slsrc.html#set_cb" target="src">00075</a>      err = lbm_log(lbm_log_msg, NULL);
+<a href="logging_callback_c.slsrc.html#set_cb" target="src">00076</a>      EX_LBM_CHK(err);
 </pre><!-- endblock set_cb_ref_1 --></small>
 
 
@@ -63,11 +61,12 @@ When to Set:	Can only be set during object initialization.
 	  log file:</p>
 	<a name="logging_cb_ref_1" id="logging_cb_ref_1"></a>
 <small><pre>
-<a href="logging_callback_c.slsrc.html#logging_cb" target="src">00019</a>  int lbm_log_msg(int level, const char *message, void *clientd)
-<a href="logging_callback_c.slsrc.html#logging_cb" target="src">00020</a>  {
-<a href="logging_callback_c.slsrc.html#logging_cb" target="src">00021</a>          printf("LOG Level %d: %s\n", level, message);
-<a href="logging_callback_c.slsrc.html#logging_cb" target="src">00022</a>          return 0;
-<a href="logging_callback_c.slsrc.html#logging_cb" target="src">00023</a>  }
+<a href="logging_callback_c.slsrc.html#logging_cb" target="src">00047</a>  /* Logging callback */
+<a href="logging_callback_c.slsrc.html#logging_cb" target="src">00048</a>  int lbm_log_msg(int level, const char *message, void *clientd)
+<a href="logging_callback_c.slsrc.html#logging_cb" target="src">00049</a>  {
+<a href="logging_callback_c.slsrc.html#logging_cb" target="src">00050</a>      printf("LOG Level %d: %s\n", level, message);
+<a href="logging_callback_c.slsrc.html#logging_cb" target="src">00051</a>      return 0;
+<a href="logging_callback_c.slsrc.html#logging_cb" target="src">00052</a>  }  /* lbm_log_msg */
 </pre><!-- endblock logging_cb_ref_1 --></small>
 
 
@@ -87,11 +86,8 @@ will trigger
 	<p>Setting the attribute looks like this:</p>
 	<a name="late_join_ref_1" id="late_join_ref_1"></a>
 <small><pre>
-<a href="logging_callback_c.slsrc.html#late_join" target="src">00066</a>          if (lbm_src_topic_attr_str_setopt(tattr, "late_join", "1") != 0)
-<a href="logging_callback_c.slsrc.html#late_join" target="src">00067</a>          {
-<a href="logging_callback_c.slsrc.html#late_join" target="src">00068</a>                  fprintf(stderr, "lbm_context_attr_str_setopt:late_join: %s\n", lbm_errmsg());
-<a href="logging_callback_c.slsrc.html#late_join" target="src">00069</a>                  exit(1);
-<a href="logging_callback_c.slsrc.html#late_join" target="src">00070</a>          }
+<a href="logging_callback_c.slsrc.html#late_join" target="src">00086</a>      err = lbm_src_topic_attr_str_setopt(tattr, "late_join", "1");
+<a href="logging_callback_c.slsrc.html#late_join" target="src">00087</a>      EX_LBM_CHK(err);
 </pre><!-- endblock late_join_ref_1 --></small>
 
 
@@ -100,20 +96,20 @@ will trigger
 	  are not necessary for Linux only applications</p>
         <a name="includes_ref_1" id="includes_ref_1"></a>
 <small><pre>
-<a href="logging_callback_c.slsrc.html#includes" target="src">00003</a>  #include &lt;stdio.h&gt;
-<a href="logging_callback_c.slsrc.html#includes" target="src">00004</a>  
-<a href="logging_callback_c.slsrc.html#includes" target="src">00005</a>  #if defined(_MSC_VER)
-<a href="logging_callback_c.slsrc.html#includes" target="src">00006</a>  /* Windows-only includes */
-<a href="logging_callback_c.slsrc.html#includes" target="src">00007</a>  #include &lt;winsock2.h&gt;
-<a href="logging_callback_c.slsrc.html#includes" target="src">00008</a>  #define SLEEP(s) Sleep((s)*1000)
-<a href="logging_callback_c.slsrc.html#includes" target="src">00009</a>  #else
-<a href="logging_callback_c.slsrc.html#includes" target="src">00010</a>  /* Unix-only includes */
-<a href="logging_callback_c.slsrc.html#includes" target="src">00011</a>  #include &lt;stdlib.h&gt;
-<a href="logging_callback_c.slsrc.html#includes" target="src">00012</a>  #include &lt;unistd.h&gt;
-<a href="logging_callback_c.slsrc.html#includes" target="src">00013</a>  #define SLEEP(s) sleep(s)
-<a href="logging_callback_c.slsrc.html#includes" target="src">00014</a>  #endif
-<a href="logging_callback_c.slsrc.html#includes" target="src">00015</a>  
-<a href="logging_callback_c.slsrc.html#includes" target="src">00016</a>  #include &lt;lbm/lbm.h&gt;
+<a href="logging_callback_c.slsrc.html#includes" target="src">00022</a>  #include &lt;stdio.h&gt;
+<a href="logging_callback_c.slsrc.html#includes" target="src">00023</a>  
+<a href="logging_callback_c.slsrc.html#includes" target="src">00024</a>  #if defined(_MSC_VER)
+<a href="logging_callback_c.slsrc.html#includes" target="src">00025</a>  /* Windows-only includes */
+<a href="logging_callback_c.slsrc.html#includes" target="src">00026</a>  #include &lt;winsock2.h&gt;
+<a href="logging_callback_c.slsrc.html#includes" target="src">00027</a>  #define SLEEP(s) Sleep((s)*1000)
+<a href="logging_callback_c.slsrc.html#includes" target="src">00028</a>  #else
+<a href="logging_callback_c.slsrc.html#includes" target="src">00029</a>  /* Unix-only includes */
+<a href="logging_callback_c.slsrc.html#includes" target="src">00030</a>  #include &lt;stdlib.h&gt;
+<a href="logging_callback_c.slsrc.html#includes" target="src">00031</a>  #include &lt;unistd.h&gt;
+<a href="logging_callback_c.slsrc.html#includes" target="src">00032</a>  #define SLEEP(s) sleep(s)
+<a href="logging_callback_c.slsrc.html#includes" target="src">00033</a>  #endif
+<a href="logging_callback_c.slsrc.html#includes" target="src">00034</a>  
+<a href="logging_callback_c.slsrc.html#includes" target="src">00035</a>  #include &lt;lbm/lbm.h&gt;
 </pre><!-- endblock includes_ref_1 --></small>
 
 
@@ -121,16 +117,16 @@ will trigger
         <p>Windows applications must initialize the Winsock library to utilize sockets.</p>
         <a name="windows_ref_1" id="windows_ref_1"></a>
 <small><pre>
-<a href="logging_callback_c.slsrc.html#windows" target="src">00034</a>  #if defined(_MSC_VER)
-<a href="logging_callback_c.slsrc.html#windows" target="src">00035</a>          /* windows-specific code */
-<a href="logging_callback_c.slsrc.html#windows" target="src">00036</a>          WSADATA wsadata;
-<a href="logging_callback_c.slsrc.html#windows" target="src">00037</a>          int wsStat = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
-<a href="logging_callback_c.slsrc.html#windows" target="src">00038</a>          if (wsStat != 0)
-<a href="logging_callback_c.slsrc.html#windows" target="src">00039</a>          {
-<a href="logging_callback_c.slsrc.html#windows" target="src">00040</a>                  printf("line %d: wsStat=%d\n",__LINE__,wsStat);
-<a href="logging_callback_c.slsrc.html#windows" target="src">00041</a>                  exit(1);
-<a href="logging_callback_c.slsrc.html#windows" target="src">00042</a>          }
-<a href="logging_callback_c.slsrc.html#windows" target="src">00043</a>  #endif
+<a href="logging_callback_c.slsrc.html#windows" target="src">00063</a>  #if defined(_MSC_VER)
+<a href="logging_callback_c.slsrc.html#windows" target="src">00064</a>      /* windows-specific code */
+<a href="logging_callback_c.slsrc.html#windows" target="src">00065</a>      WSADATA wsadata;
+<a href="logging_callback_c.slsrc.html#windows" target="src">00066</a>      int wsStat = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
+<a href="logging_callback_c.slsrc.html#windows" target="src">00067</a>      if (wsStat != 0)
+<a href="logging_callback_c.slsrc.html#windows" target="src">00068</a>      {
+<a href="logging_callback_c.slsrc.html#windows" target="src">00069</a>          printf("line %d: wsStat=%d\n",__LINE__,wsStat);
+<a href="logging_callback_c.slsrc.html#windows" target="src">00070</a>          exit(1);
+<a href="logging_callback_c.slsrc.html#windows" target="src">00071</a>      }
+<a href="logging_callback_c.slsrc.html#windows" target="src">00072</a>  #endif
 </pre><!-- endblock windows_ref_1 --></small>
 
 

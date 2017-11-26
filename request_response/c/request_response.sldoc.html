@@ -32,15 +32,14 @@
 	API calls</p>
 	<a name="vars_ref_1" id="vars_ref_1"></a>
 <small><pre>
-<a href="request_response_c.slsrc.html#vars" target="src">00057</a>      lbm_context_t *ctx;                     /* Context object */
-<a href="request_response_c.slsrc.html#vars" target="src">00058</a>      lbm_topic_t *stopic;                    /* Source Topic object */
-<a href="request_response_c.slsrc.html#vars" target="src">00059</a>      lbm_src_t *src;                         /* Source object */
-<a href="request_response_c.slsrc.html#vars" target="src">00060</a>      lbm_src_topic_attr_t * tattr;           /* Source topic attribute object */
-<a href="request_response_c.slsrc.html#vars" target="src">00061</a>      lbm_context_attr_t * cattr;             /* Context attribute object */
-<a href="request_response_c.slsrc.html#vars" target="src">00062</a>      lbm_rcv_t *rcv;                         /* Receive object: for subscribing to messages. */
-<a href="request_response_c.slsrc.html#vars" target="src">00063</a>      lbm_topic_t *rtopic;                    /* Receiver Topic object */
-<a href="request_response_c.slsrc.html#vars" target="src">00064</a>      lbm_request_t *req;                     /* Request object */
-<a href="request_response_c.slsrc.html#vars" target="src">00065</a>      int err;                                /* Used for checking API return codes */
+<a href="request_response_c.slsrc.html#vars" target="src">00081</a>      lbm_context_t *ctx;                     /* Context object */
+<a href="request_response_c.slsrc.html#vars" target="src">00082</a>      lbm_topic_t *stopic;                    /* Source Topic object */
+<a href="request_response_c.slsrc.html#vars" target="src">00083</a>      lbm_src_t *src;                         /* Source object */
+<a href="request_response_c.slsrc.html#vars" target="src">00084</a>      lbm_src_topic_attr_t * tattr;           /* Source topic attribute object */
+<a href="request_response_c.slsrc.html#vars" target="src">00085</a>      lbm_rcv_t *rcv;                         /* Receive object: for subscribing to messages. */
+<a href="request_response_c.slsrc.html#vars" target="src">00086</a>      lbm_topic_t *rtopic;                    /* Receiver Topic object */
+<a href="request_response_c.slsrc.html#vars" target="src">00087</a>      lbm_request_t *req;                     /* Request object */
+<a href="request_response_c.slsrc.html#vars" target="src">00088</a>      int err;
 </pre><!-- endblock vars_ref_1 --></small>
 
 
@@ -49,12 +48,12 @@
 	object (rcv). Note when calling the receiver create API, lbm_rcv_create, the fourth parameter is rcv_handle_message. </p>
 	<a name="create_rcv_ref_1" id="create_rcv_ref_1"></a>
 <small><pre>
-<a href="request_response_c.slsrc.html#create_rcv" target="src">00085</a>      /* Create receiver for receiving request and sending response */
-<a href="request_response_c.slsrc.html#create_rcv" target="src">00086</a>      err = lbm_rcv_topic_lookup(&amp;rtopic, ctx, "test.topic", NULL);
-<a href="request_response_c.slsrc.html#create_rcv" target="src">00087</a>      EX_LBM_CHK(err);
-<a href="request_response_c.slsrc.html#create_rcv" target="src">00088</a>  
-<a href="request_response_c.slsrc.html#create_rcv" target="src">00089</a>      err = lbm_rcv_create(&amp;rcv, ctx, rtopic, rcv_handle_msg, NULL, NULL);
-<a href="request_response_c.slsrc.html#create_rcv" target="src">00090</a>      EX_LBM_CHK(err);
+<a href="request_response_c.slsrc.html#create_rcv" target="src">00105</a>      /* Create receiver for receiving request and sending response */
+<a href="request_response_c.slsrc.html#create_rcv" target="src">00106</a>      err = lbm_rcv_topic_lookup(&amp;rtopic, ctx, "test.topic", NULL);
+<a href="request_response_c.slsrc.html#create_rcv" target="src">00107</a>      EX_LBM_CHK(err);
+<a href="request_response_c.slsrc.html#create_rcv" target="src">00108</a>  
+<a href="request_response_c.slsrc.html#create_rcv" target="src">00109</a>      err = lbm_rcv_create(&amp;rcv, ctx, rtopic, rcv_handle_msg, NULL, NULL);
+<a href="request_response_c.slsrc.html#create_rcv" target="src">00110</a>      EX_LBM_CHK(err);
 </pre><!-- endblock create_rcv_ref_1 --></small>
 
 
@@ -66,18 +65,20 @@
 	handled.</p>
 	<a name="rcv_cb_ref_1" id="rcv_cb_ref_1"></a>
 <small><pre>
-<a href="request_response_c.slsrc.html#rcv_cb" target="src">00031</a>  int rcv_handle_msg(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
-<a href="request_response_c.slsrc.html#rcv_cb" target="src">00032</a>  {
-<a href="request_response_c.slsrc.html#rcv_cb" target="src">00033</a>      int err;
-<a href="request_response_c.slsrc.html#rcv_cb" target="src">00034</a>  
-<a href="request_response_c.slsrc.html#rcv_cb" target="src">00035</a>      switch (msg-&gt;type) {
-<a href="request_response_c.slsrc.html#rcv_cb" target="src">00036</a>      case LBM_MSG_REQUEST:
-<a href="request_response_c.slsrc.html#rcv_cb" target="src">00037</a>          printf("LBM_MSG_REQUEST received\n");
-<a href="request_response_c.slsrc.html#rcv_cb" target="src">00038</a>          err = lbm_send_response(msg-&gt;response, "response", 8, LBM_SRC_NONBLOCK);
-<a href="request_response_c.slsrc.html#rcv_cb" target="src">00039</a>          EX_LBM_CHK(err);
-<a href="request_response_c.slsrc.html#rcv_cb" target="src">00040</a>          break;
-<a href="request_response_c.slsrc.html#rcv_cb" target="src">00041</a>      }
-<a href="request_response_c.slsrc.html#rcv_cb" target="src">00042</a>  }
+<a href="request_response_c.slsrc.html#rcv_cb" target="src">00050</a>  /* Callback used to handle request message for receiver */
+<a href="request_response_c.slsrc.html#rcv_cb" target="src">00051</a>  int rcv_handle_msg(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
+<a href="request_response_c.slsrc.html#rcv_cb" target="src">00052</a>  {
+<a href="request_response_c.slsrc.html#rcv_cb" target="src">00053</a>      int err;
+<a href="request_response_c.slsrc.html#rcv_cb" target="src">00054</a>  
+<a href="request_response_c.slsrc.html#rcv_cb" target="src">00055</a>      switch (msg-&gt;type) {
+<a href="request_response_c.slsrc.html#rcv_cb" target="src">00056</a>      case LBM_MSG_REQUEST:
+<a href="request_response_c.slsrc.html#rcv_cb" target="src">00057</a>          printf("LBM_MSG_REQUEST received\n");
+<a href="request_response_c.slsrc.html#rcv_cb" target="src">00058</a>          err = lbm_send_response(msg-&gt;response, "response", 8, LBM_SRC_NONBLOCK);
+<a href="request_response_c.slsrc.html#rcv_cb" target="src">00059</a>          EX_LBM_CHK(err);
+<a href="request_response_c.slsrc.html#rcv_cb" target="src">00060</a>          break;
+<a href="request_response_c.slsrc.html#rcv_cb" target="src">00061</a>      }
+<a href="request_response_c.slsrc.html#rcv_cb" target="src">00062</a>      return 0;
+<a href="request_response_c.slsrc.html#rcv_cb" target="src">00063</a>  }  /* rcv_handle_msg */
 </pre><!-- endblock rcv_cb_ref_1 --></small>
 
 
@@ -86,17 +87,17 @@
 	send the request:</p>
 	<a name="create_src_ref_1" id="create_src_ref_1"></a>
 <small><pre>
-<a href="request_response_c.slsrc.html#create_src" target="src">00093</a>      err = lbm_src_topic_attr_create(&amp;tattr);
-<a href="request_response_c.slsrc.html#create_src" target="src">00094</a>      EX_LBM_CHK(err);
-<a href="request_response_c.slsrc.html#create_src" target="src">00095</a>    
-<a href="request_response_c.slsrc.html#create_src" target="src">00096</a>      err = lbm_src_topic_alloc(&amp;stopic, ctx, "test.topic", tattr);
-<a href="request_response_c.slsrc.html#create_src" target="src">00097</a>      EX_LBM_CHK(err);
-<a href="request_response_c.slsrc.html#create_src" target="src">00098</a>  
-<a href="request_response_c.slsrc.html#create_src" target="src">00099</a>      err = lbm_src_topic_attr_delete(tattr);
-<a href="request_response_c.slsrc.html#create_src" target="src">00100</a>      EX_LBM_CHK(err);
-<a href="request_response_c.slsrc.html#create_src" target="src">00101</a>  
-<a href="request_response_c.slsrc.html#create_src" target="src">00102</a>      err = lbm_src_create(&amp;src, ctx, stopic, NULL, NULL, NULL);
-<a href="request_response_c.slsrc.html#create_src" target="src">00103</a>      EX_LBM_CHK(err);
+<a href="request_response_c.slsrc.html#create_src" target="src">00113</a>      err = lbm_src_topic_attr_create(&amp;tattr);
+<a href="request_response_c.slsrc.html#create_src" target="src">00114</a>      EX_LBM_CHK(err);
+<a href="request_response_c.slsrc.html#create_src" target="src">00115</a>  
+<a href="request_response_c.slsrc.html#create_src" target="src">00116</a>      err = lbm_src_topic_alloc(&amp;stopic, ctx, "test.topic", tattr);
+<a href="request_response_c.slsrc.html#create_src" target="src">00117</a>      EX_LBM_CHK(err);
+<a href="request_response_c.slsrc.html#create_src" target="src">00118</a>  
+<a href="request_response_c.slsrc.html#create_src" target="src">00119</a>      err = lbm_src_topic_attr_delete(tattr);
+<a href="request_response_c.slsrc.html#create_src" target="src">00120</a>      EX_LBM_CHK(err);
+<a href="request_response_c.slsrc.html#create_src" target="src">00121</a>  
+<a href="request_response_c.slsrc.html#create_src" target="src">00122</a>      err = lbm_src_create(&amp;src, ctx, stopic, NULL, NULL, NULL);
+<a href="request_response_c.slsrc.html#create_src" target="src">00123</a>      EX_LBM_CHK(err);
 </pre><!-- endblock create_src_ref_1 --></small>
 
 
@@ -106,8 +107,8 @@
 	handle_response:</p>
 	<a name="send_req_ref_1" id="send_req_ref_1"></a>
 <small><pre>
-<a href="request_response_c.slsrc.html#send_req" target="src">00105</a>      err = lbm_send_request(&amp;req, src, "request", 7, handle_response, NULL, NULL, 0);
-<a href="request_response_c.slsrc.html#send_req" target="src">00106</a>      EX_LBM_CHK(err);
+<a href="request_response_c.slsrc.html#send_req" target="src">00125</a>      err = lbm_send_request(&amp;req, src, "request", 7, handle_response, NULL, NULL, 0);
+<a href="request_response_c.slsrc.html#send_req" target="src">00126</a>      EX_LBM_CHK(err);
 </pre><!-- endblock send_req_ref_1 --></small>
 
 
@@ -116,15 +117,17 @@
 	lbm_msg_t struct. </p>
 	<a name="resp_cb_ref_1" id="resp_cb_ref_1"></a>
 <small><pre>
-<a href="request_response_c.slsrc.html#resp_cb" target="src">00045</a>  int handle_response(lbm_request_t *req, lbm_msg_t *msg, void *clientd)
-<a href="request_response_c.slsrc.html#resp_cb" target="src">00046</a>  {
-<a href="request_response_c.slsrc.html#resp_cb" target="src">00047</a>          switch (msg-&gt;type) {
-<a href="request_response_c.slsrc.html#resp_cb" target="src">00048</a>          case LBM_MSG_RESPONSE:
-<a href="request_response_c.slsrc.html#resp_cb" target="src">00049</a>          printf("LBM_MSG_RESPONSE received\n");
-<a href="request_response_c.slsrc.html#resp_cb" target="src">00050</a>          run = 0;
-<a href="request_response_c.slsrc.html#resp_cb" target="src">00051</a>          break;
-<a href="request_response_c.slsrc.html#resp_cb" target="src">00052</a>      }
-<a href="request_response_c.slsrc.html#resp_cb" target="src">00053</a>  }
+<a href="request_response_c.slsrc.html#resp_cb" target="src">00066</a>  /* Callback used to handle response message */
+<a href="request_response_c.slsrc.html#resp_cb" target="src">00067</a>  int handle_response(lbm_request_t *req, lbm_msg_t *msg, void *clientd)
+<a href="request_response_c.slsrc.html#resp_cb" target="src">00068</a>  {
+<a href="request_response_c.slsrc.html#resp_cb" target="src">00069</a>      switch (msg-&gt;type) {
+<a href="request_response_c.slsrc.html#resp_cb" target="src">00070</a>      case LBM_MSG_RESPONSE:
+<a href="request_response_c.slsrc.html#resp_cb" target="src">00071</a>          printf("LBM_MSG_RESPONSE received\n");
+<a href="request_response_c.slsrc.html#resp_cb" target="src">00072</a>          run = 0;
+<a href="request_response_c.slsrc.html#resp_cb" target="src">00073</a>          break;
+<a href="request_response_c.slsrc.html#resp_cb" target="src">00074</a>      }
+<a href="request_response_c.slsrc.html#resp_cb" target="src">00075</a>      return 0;
+<a href="request_response_c.slsrc.html#resp_cb" target="src">00076</a>  }  /* handle_response */
 </pre><!-- endblock resp_cb_ref_1 --></small>
 
 
@@ -138,8 +141,8 @@
 	on the context thread can result in application deadlock.</p>
 	<a name="send_resp_ref_1" id="send_resp_ref_1"></a>
 <small><pre>
-<a href="request_response_c.slsrc.html#send_resp" target="src">00038</a>          err = lbm_send_response(msg-&gt;response, "response", 8, LBM_SRC_NONBLOCK);
-<a href="request_response_c.slsrc.html#send_resp" target="src">00039</a>          EX_LBM_CHK(err);
+<a href="request_response_c.slsrc.html#send_resp" target="src">00058</a>          err = lbm_send_response(msg-&gt;response, "response", 8, LBM_SRC_NONBLOCK);
+<a href="request_response_c.slsrc.html#send_resp" target="src">00059</a>          EX_LBM_CHK(err);
 </pre><!-- endblock send_resp_ref_1 --></small>
 
 
@@ -149,9 +152,9 @@
 	will be set to 0 and the loop will break</p>
 	<a name="loop_ref_1" id="loop_ref_1"></a>
 <small><pre>
-<a href="request_response_c.slsrc.html#loop" target="src">00108</a>      while (run) {  /* loop until response received */
-<a href="request_response_c.slsrc.html#loop" target="src">00109</a>              SLEEP(1);
-<a href="request_response_c.slsrc.html#loop" target="src">00110</a>      }
+<a href="request_response_c.slsrc.html#loop" target="src">00128</a>      while (run) {  /* loop until response received */
+<a href="request_response_c.slsrc.html#loop" target="src">00129</a>          SLEEP(1);
+<a href="request_response_c.slsrc.html#loop" target="src">00130</a>      }
 </pre><!-- endblock loop_ref_1 --></small>
 
 
@@ -161,22 +164,22 @@
 	when not properly cleaned.</p>
 	<a name="del_req_ref_1" id="del_req_ref_1"></a>
 <small><pre>
-<a href="request_response_c.slsrc.html#del_req" target="src">00113</a>      err = lbm_request_delete(req);
-<a href="request_response_c.slsrc.html#del_req" target="src">00114</a>      EX_LBM_CHK(err);
+<a href="request_response_c.slsrc.html#del_req" target="src">00133</a>      err = lbm_request_delete(req);
+<a href="request_response_c.slsrc.html#del_req" target="src">00134</a>      EX_LBM_CHK(err);
 </pre><!-- endblock del_req_ref_1 --></small>
 
 
 	<p>Once the request is deleted, the source, receiver and context can be deleted</p>
 	<a name="clean_ref_1" id="clean_ref_1"></a>
 <small><pre>
-<a href="request_response_c.slsrc.html#clean" target="src">00116</a>      err = lbm_src_delete(src);
-<a href="request_response_c.slsrc.html#clean" target="src">00117</a>      EX_LBM_CHK(err);
-<a href="request_response_c.slsrc.html#clean" target="src">00118</a>      
-<a href="request_response_c.slsrc.html#clean" target="src">00119</a>      err = lbm_rcv_delete(rcv);
-<a href="request_response_c.slsrc.html#clean" target="src">00120</a>      EX_LBM_CHK(err);
-<a href="request_response_c.slsrc.html#clean" target="src">00121</a>  
-<a href="request_response_c.slsrc.html#clean" target="src">00122</a>      err = lbm_context_delete(ctx);
-<a href="request_response_c.slsrc.html#clean" target="src">00123</a>      EX_LBM_CHK(err);
+<a href="request_response_c.slsrc.html#clean" target="src">00136</a>      err = lbm_src_delete(src);
+<a href="request_response_c.slsrc.html#clean" target="src">00137</a>      EX_LBM_CHK(err);
+<a href="request_response_c.slsrc.html#clean" target="src">00138</a>      
+<a href="request_response_c.slsrc.html#clean" target="src">00139</a>      err = lbm_rcv_delete(rcv);
+<a href="request_response_c.slsrc.html#clean" target="src">00140</a>      EX_LBM_CHK(err);
+<a href="request_response_c.slsrc.html#clean" target="src">00141</a>  
+<a href="request_response_c.slsrc.html#clean" target="src">00142</a>      err = lbm_context_delete(ctx);
+<a href="request_response_c.slsrc.html#clean" target="src">00143</a>      EX_LBM_CHK(err);
 </pre><!-- endblock clean_ref_1 --></small>
 
 
@@ -186,14 +189,14 @@
 	print a message and exit the program:</p>
 	<a name="error_check_ref_1" id="error_check_ref_1"></a>
 <small><pre>
-<a href="request_response_c.slsrc.html#error_check" target="src">00018</a>  /* Example error checking macro.  Include after each UM call. */
-<a href="request_response_c.slsrc.html#error_check" target="src">00019</a>  #define EX_LBM_CHK(err) do { \
-<a href="request_response_c.slsrc.html#error_check" target="src">00020</a>      if ((err) &lt; 0) { \
-<a href="request_response_c.slsrc.html#error_check" target="src">00021</a>              fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
-<a href="request_response_c.slsrc.html#error_check" target="src">00022</a>              __FILE__, __LINE__, lbm_errmsg()); \
-<a href="request_response_c.slsrc.html#error_check" target="src">00023</a>              exit(1); \
-<a href="request_response_c.slsrc.html#error_check" target="src">00024</a>      }  \
-<a href="request_response_c.slsrc.html#error_check" target="src">00025</a>  } while (0)
+<a href="request_response_c.slsrc.html#error_check" target="src">00037</a>  /* Example error checking macro.  Include after each UM call. */
+<a href="request_response_c.slsrc.html#error_check" target="src">00038</a>  #define EX_LBM_CHK(err) do { \
+<a href="request_response_c.slsrc.html#error_check" target="src">00039</a>      if ((err) &lt; 0) { \
+<a href="request_response_c.slsrc.html#error_check" target="src">00040</a>          fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
+<a href="request_response_c.slsrc.html#error_check" target="src">00041</a>              __FILE__, __LINE__, lbm_errmsg()); \
+<a href="request_response_c.slsrc.html#error_check" target="src">00042</a>          exit(1); \
+<a href="request_response_c.slsrc.html#error_check" target="src">00043</a>      }  \
+<a href="request_response_c.slsrc.html#error_check" target="src">00044</a>  } while (0)
 </pre><!-- endblock error_check_ref_1 --></small>
 
 
@@ -209,26 +212,26 @@
 	<p>Windows applications must initialize the Winsock library to utilize sockets.</p>
 	<a name="init_win_ref_1" id="init_win_ref_1"></a>
 <small><pre>
-<a href="request_response_c.slsrc.html#init_win" target="src">00067</a>  #if defined(_WIN32)
-<a href="request_response_c.slsrc.html#init_win" target="src">00068</a>          /* windows-specific code */
-<a href="request_response_c.slsrc.html#init_win" target="src">00069</a>          WSADATA wsadata;
-<a href="request_response_c.slsrc.html#init_win" target="src">00070</a>          int wsStat = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
-<a href="request_response_c.slsrc.html#init_win" target="src">00071</a>          if (wsStat != 0)
-<a href="request_response_c.slsrc.html#init_win" target="src">00072</a>          {
-<a href="request_response_c.slsrc.html#init_win" target="src">00073</a>                  printf("line %d: wsStat=%d\n",__LINE__,wsStat);
-<a href="request_response_c.slsrc.html#init_win" target="src">00074</a>                  exit(1);
-<a href="request_response_c.slsrc.html#init_win" target="src">00075</a>          }
-<a href="request_response_c.slsrc.html#init_win" target="src">00076</a>  #endif
+<a href="request_response_c.slsrc.html#init_win" target="src">00090</a>  #if defined(_WIN32)
+<a href="request_response_c.slsrc.html#init_win" target="src">00091</a>      /* windows-specific code */
+<a href="request_response_c.slsrc.html#init_win" target="src">00092</a>      WSADATA wsadata;
+<a href="request_response_c.slsrc.html#init_win" target="src">00093</a>      int wsStat = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
+<a href="request_response_c.slsrc.html#init_win" target="src">00094</a>      if (wsStat != 0)
+<a href="request_response_c.slsrc.html#init_win" target="src">00095</a>      {
+<a href="request_response_c.slsrc.html#init_win" target="src">00096</a>          printf("line %d: wsStat=%d\n",__LINE__,wsStat);
+<a href="request_response_c.slsrc.html#init_win" target="src">00097</a>          exit(1);
+<a href="request_response_c.slsrc.html#init_win" target="src">00098</a>      }
+<a href="request_response_c.slsrc.html#init_win" target="src">00099</a>  #endif
 </pre><!-- endblock init_win_ref_1 --></small>
 
 
 	<p>A well-structured Windows networking application will also call WSACleanup() after before exit</p>
 	<a name="clean_win_ref_1" id="clean_win_ref_1"></a>
 <small><pre>
-<a href="request_response_c.slsrc.html#clean_win" target="src">00125</a>  #if defined(_MSC_VER)
-<a href="request_response_c.slsrc.html#clean_win" target="src">00126</a>      /* Windows-specific cleanup overhead */
-<a href="request_response_c.slsrc.html#clean_win" target="src">00127</a>      WSACleanup();
-<a href="request_response_c.slsrc.html#clean_win" target="src">00128</a>  #endif
+<a href="request_response_c.slsrc.html#clean_win" target="src">00145</a>  #if defined(_MSC_VER)
+<a href="request_response_c.slsrc.html#clean_win" target="src">00146</a>      /* Windows-specific cleanup overhead */
+<a href="request_response_c.slsrc.html#clean_win" target="src">00147</a>      WSACleanup();
+<a href="request_response_c.slsrc.html#clean_win" target="src">00148</a>  #endif
 </pre><!-- endblock clean_win_ref_1 --></small>
 
 
@@ -236,20 +239,20 @@
         <p>A small effort was made to provide a some portability between Unix and Windows. For example:</p>
         <a name="includes_ref_1" id="includes_ref_1"></a>
 <small><pre>
-<a href="request_response_c.slsrc.html#includes" target="src">00003</a>  #include &lt;stdio.h&gt;
-<a href="request_response_c.slsrc.html#includes" target="src">00004</a>  
-<a href="request_response_c.slsrc.html#includes" target="src">00005</a>  #if defined(_MSC_VER)
-<a href="request_response_c.slsrc.html#includes" target="src">00006</a>  /* Windows-only includes */
-<a href="request_response_c.slsrc.html#includes" target="src">00007</a>  #include &lt;winsock2.h&gt;
-<a href="request_response_c.slsrc.html#includes" target="src">00008</a>  #define SLEEP(s) Sleep((s)*1000)
-<a href="request_response_c.slsrc.html#includes" target="src">00009</a>  #else
-<a href="request_response_c.slsrc.html#includes" target="src">00010</a>  /* Unix-only includes */
-<a href="request_response_c.slsrc.html#includes" target="src">00011</a>  #include &lt;stdlib.h&gt;
-<a href="request_response_c.slsrc.html#includes" target="src">00012</a>  #include &lt;unistd.h&gt;
-<a href="request_response_c.slsrc.html#includes" target="src">00013</a>  #define SLEEP(s) sleep(s)
-<a href="request_response_c.slsrc.html#includes" target="src">00014</a>  #endif
-<a href="request_response_c.slsrc.html#includes" target="src">00015</a>  
-<a href="request_response_c.slsrc.html#includes" target="src">00016</a>  #include &lt;lbm/lbm.h&gt;
+<a href="request_response_c.slsrc.html#includes" target="src">00022</a>  #include &lt;stdio.h&gt;
+<a href="request_response_c.slsrc.html#includes" target="src">00023</a>  
+<a href="request_response_c.slsrc.html#includes" target="src">00024</a>  #if defined(_MSC_VER)
+<a href="request_response_c.slsrc.html#includes" target="src">00025</a>  /* Windows-only includes */
+<a href="request_response_c.slsrc.html#includes" target="src">00026</a>  #include &lt;winsock2.h&gt;
+<a href="request_response_c.slsrc.html#includes" target="src">00027</a>  #define SLEEP(s) Sleep((s)*1000)
+<a href="request_response_c.slsrc.html#includes" target="src">00028</a>  #else
+<a href="request_response_c.slsrc.html#includes" target="src">00029</a>  /* Unix-only includes */
+<a href="request_response_c.slsrc.html#includes" target="src">00030</a>  #include &lt;stdlib.h&gt;
+<a href="request_response_c.slsrc.html#includes" target="src">00031</a>  #include &lt;unistd.h&gt;
+<a href="request_response_c.slsrc.html#includes" target="src">00032</a>  #define SLEEP(s) sleep(s)
+<a href="request_response_c.slsrc.html#includes" target="src">00033</a>  #endif
+<a href="request_response_c.slsrc.html#includes" target="src">00034</a>  
+<a href="request_response_c.slsrc.html#includes" target="src">00035</a>  #include &lt;lbm/lbm.h&gt;
 </pre><!-- endblock includes_ref_1 --></small>
 
 

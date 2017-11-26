@@ -22,7 +22,7 @@
         <p>The eventQ is initialized by calling lbm_event_queue_create with no other arguments: </p>
         <a name="evq_create_ref_1" id="evq_create_ref_1"></a>
 <small><pre>
-<a href="event_q_rcv_c.slsrc.html#evq_create" target="src">00073</a>      err = lbm_event_queue_create(&amp;evq, NULL, NULL, NULL);
+<a href="event_q_rcv_c.slsrc.html#evq_create" target="src">00087</a>      err = lbm_event_queue_create(&amp;evq, NULL, NULL, NULL);
 </pre><!-- endblock evq_create_ref_1 --></small>
 
 
@@ -31,7 +31,7 @@
 		events will be delivered to the event queue.  They will not be processed until lbm_event_dispatch is called with the event queue.</p>
 	<a name="rcv_create_ref_1" id="rcv_create_ref_1"></a>
 <small><pre>
-<a href="event_q_rcv_c.slsrc.html#rcv_create" target="src">00086</a>      err = lbm_rcv_create(&amp;rcv, ctx, rtopic, rcv_handle_msg, NULL, evq);
+<a href="event_q_rcv_c.slsrc.html#rcv_create" target="src">00093</a>      err = lbm_rcv_create(&amp;rcv, ctx, rtopic, rcv_handle_msg, NULL, evq);
 </pre><!-- endblock rcv_create_ref_1 --></small>
 
 
@@ -41,7 +41,8 @@
 	the main() thread will execute events for 10 seconds.</p>
 	<a name="evq_run_ref_1" id="evq_run_ref_1"></a>
 <small><pre>
-<a href="event_q_rcv_c.slsrc.html#evq_run" target="src">00095</a>      if (lbm_event_dispatch(evq, 10000) == LBM_FAILURE) {
+<a href="event_q_rcv_c.slsrc.html#evq_run" target="src">00099</a>      err = lbm_event_dispatch(evq, 10000);
+<a href="event_q_rcv_c.slsrc.html#evq_run" target="src">00100</a>      if (err == LBM_FAILURE) {
 </pre><!-- endblock evq_run_ref_1 --></small>
 
 
@@ -52,9 +53,12 @@
 	queue is empty and no new events are being generated, the event queue can safely be delete()'ed.</p>
 	<a name="evq_close_ref_1" id="evq_close_ref_1"></a>
 <small><pre>
-<a href="event_q_rcv_c.slsrc.html#evq_close" target="src">00100</a>      lbm_rcv_delete(rcv);
-<a href="event_q_rcv_c.slsrc.html#evq_close" target="src">00101</a>      lbm_context_delete(ctx);
-<a href="event_q_rcv_c.slsrc.html#evq_close" target="src">00102</a>      lbm_event_queue_delete(evq);
+<a href="event_q_rcv_c.slsrc.html#evq_close" target="src">00105</a>      err = lbm_rcv_delete(rcv);
+<a href="event_q_rcv_c.slsrc.html#evq_close" target="src">00106</a>      EX_LBM_CHK(err);
+<a href="event_q_rcv_c.slsrc.html#evq_close" target="src">00107</a>      err = lbm_context_delete(ctx);
+<a href="event_q_rcv_c.slsrc.html#evq_close" target="src">00108</a>      EX_LBM_CHK(err);
+<a href="event_q_rcv_c.slsrc.html#evq_close" target="src">00109</a>      err = lbm_event_queue_delete(evq);
+<a href="event_q_rcv_c.slsrc.html#evq_close" target="src">00110</a>      EX_LBM_CHK(err);
 </pre><!-- endblock evq_close_ref_1 --></small>
 
 

@@ -56,7 +56,7 @@ Version:        This option was implemented in LBM 4.1.1/UME 3.1.1
           size in Ultra Messaging is 1000 messages. For the purpose of this example, it is defined to 500.</p>
         <a name="default_flight_ref_1" id="default_flight_ref_1"></a>
 <small><pre>
-<a href="check_flight_size_ewouldblock_c.slsrc.html#default_flight" target="src">00018</a>  #define DEFAULT_APP_FLIGHT_SIZE 500     /* Used for checking flight size */
+<a href="check_flight_size_ewouldblock_c.slsrc.html#default_flight" target="src">00046</a>  #define DEFAULT_APP_FLIGHT_SIZE 500     /* Used for checking flight size */
 </pre><!-- endblock default_flight_ref_1 --></small>
 
 
@@ -65,14 +65,13 @@ Version:        This option was implemented in LBM 4.1.1/UME 3.1.1
           and the char flight[4] variable which is being used to set the flight size via the API. </p>
         <a name="variables_ref_1" id="variables_ref_1"></a>
 <small><pre>
-<a href="check_flight_size_ewouldblock_c.slsrc.html#variables" target="src">00022</a>      lbm_context_t *ctx;         /* Context object */
-<a href="check_flight_size_ewouldblock_c.slsrc.html#variables" target="src">00023</a>      lbm_topic_t *topic;         /* Topic object */
-<a href="check_flight_size_ewouldblock_c.slsrc.html#variables" target="src">00024</a>      lbm_src_t *src;             /* Source object */
-<a href="check_flight_size_ewouldblock_c.slsrc.html#variables" target="src">00025</a>      lbm_src_topic_attr_t * tattr;       /* Source topic attribute object */
-<a href="check_flight_size_ewouldblock_c.slsrc.html#variables" target="src">00026</a>      lbm_context_attr_t * cattr;     /* Context attribute object */
-<a href="check_flight_size_ewouldblock_c.slsrc.html#variables" target="src">00027</a>      int inflight;                           /* Object used for checking inflight counters */
-<a href="check_flight_size_ewouldblock_c.slsrc.html#variables" target="src">00028</a>      char flight[4];
-<a href="check_flight_size_ewouldblock_c.slsrc.html#variables" target="src">00029</a>      int err;                /* Used for checking API return codes */
+<a href="check_flight_size_ewouldblock_c.slsrc.html#variables" target="src">00051</a>      lbm_context_t *ctx;    /* Context object */
+<a href="check_flight_size_ewouldblock_c.slsrc.html#variables" target="src">00052</a>      lbm_topic_t *topic;    /* Topic object */
+<a href="check_flight_size_ewouldblock_c.slsrc.html#variables" target="src">00053</a>      lbm_src_t *src;        /* Source object */
+<a href="check_flight_size_ewouldblock_c.slsrc.html#variables" target="src">00054</a>      lbm_src_topic_attr_t * tattr;  /* Source topic attribute object */
+<a href="check_flight_size_ewouldblock_c.slsrc.html#variables" target="src">00055</a>      int inflight;          /* Object used for checking inflight counters */
+<a href="check_flight_size_ewouldblock_c.slsrc.html#variables" target="src">00056</a>      char flight[4];
+<a href="check_flight_size_ewouldblock_c.slsrc.html#variables" target="src">00057</a>      int err;
 </pre><!-- endblock variables_ref_1 --></small>
 
 
@@ -81,18 +80,8 @@ Version:        This option was implemented in LBM 4.1.1/UME 3.1.1
           <a href="../context-create">Creating a Context</a></p>
         <a name="init_create_context_ref_1" id="init_create_context_ref_1"></a>
 <small><pre>
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_context" target="src">00042</a>      if (lbm_context_attr_create(&amp;cattr) != 0)
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_context" target="src">00043</a>      {
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_context" target="src">00044</a>          fprintf(stderr, "lbm_context_attr_create: %s\n", lbm_errmsg());
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_context" target="src">00045</a>          exit(1);
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_context" target="src">00046</a>      }
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_context" target="src">00047</a>  
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_context" target="src">00048</a>      err = lbm_context_create(&amp;ctx, cattr, NULL, NULL);
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_context" target="src">00049</a>      if (err)
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_context" target="src">00050</a>      {
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_context" target="src">00051</a>          printf("line %d: %s\n", __LINE__, lbm_errmsg());
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_context" target="src">00052</a>          exit(1);
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_context" target="src">00053</a>      }
+<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_context" target="src">00070</a>      err = lbm_context_create(&amp;ctx, NULL, NULL, NULL);
+<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_context" target="src">00071</a>      EX_LBM_CHK(err);
 </pre><!-- endblock init_create_context_ref_1 --></small>
 
 
@@ -129,39 +118,22 @@ When to Set:   Can only be set during object initialization
 </p>
         <a name="init_create_source_ref_1" id="init_create_source_ref_1"></a>
 <small><pre>
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00055</a>      if (lbm_src_topic_attr_create(&amp;tattr) != 0)
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00056</a>      {
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00057</a>              fprintf(stderr, "lbm_src_topic_attr_create: %s\n", lbm_errmsg());
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00058</a>              exit(1);
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00059</a>      }
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00060</a>  
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00061</a>      sprintf(flight, "%d", DEFAULT_APP_FLIGHT_SIZE);
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00062</a>      if (lbm_src_topic_attr_str_setopt(tattr, "ume_flight_size", flight) != 0 )
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00063</a>      {
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00064</a>          fprintf(stderr, "lbm_src_topic_attr_str_setopt:transport: %s\n", lbm_errmsg());
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00065</a>          exit(1);
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00066</a>      }
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00067</a>  
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00068</a>      /* Assuming there is a store running on the localhost at port 29999 */
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00069</a>      if (lbm_src_topic_attr_str_setopt(tattr, "ume_store", "127.0.0.1:29999") != 0 )
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00070</a>          {
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00071</a>          fprintf(stderr, "lbm_src_topic_attr_str_setopt:transport: %s\n", lbm_errmsg());
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00072</a>          exit(1);
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00073</a>      }
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00074</a>  
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00075</a>      err = lbm_src_topic_alloc(&amp;topic, ctx, "test.topic", tattr);
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00076</a>      if (err)
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00077</a>      {
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00078</a>          printf("lbm_src_topic_alloc - line %d: %s\n", __LINE__, lbm_errmsg());
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00079</a>          exit(1);
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00080</a>      }
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00081</a>  
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00082</a>      err = lbm_src_create(&amp;src, ctx, topic, NULL, NULL, NULL);
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00083</a>      if (err)
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00084</a>      {
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00085</a>          printf("lbm_src_create - line %d: %s\n", __LINE__, lbm_errmsg());
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00086</a>          exit(1);
-<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00087</a>      }
+<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00073</a>      err = lbm_src_topic_attr_create(&amp;tattr);
+<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00074</a>      EX_LBM_CHK(err);
+<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00075</a>  
+<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00076</a>      sprintf(flight, "%d", DEFAULT_APP_FLIGHT_SIZE);
+<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00077</a>      err = lbm_src_topic_attr_str_setopt(tattr, "ume_flight_size", flight);
+<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00078</a>      EX_LBM_CHK(err);
+<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00079</a>  
+<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00080</a>      /* Assuming there is a store running on the localhost at port 29999 */
+<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00081</a>      err = lbm_src_topic_attr_str_setopt(tattr, "ume_store", "127.0.0.1:29999");
+<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00082</a>      EX_LBM_CHK(err);
+<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00083</a>  
+<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00084</a>      err = lbm_src_topic_alloc(&amp;topic, ctx, "test.topic", tattr);
+<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00085</a>      EX_LBM_CHK(err);
+<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00086</a>  
+<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00087</a>      err = lbm_src_create(&amp;src, ctx, topic, NULL, NULL, NULL);
+<a href="check_flight_size_ewouldblock_c.slsrc.html#init_create_source" target="src">00088</a>      EX_LBM_CHK(err);
 </pre><!-- endblock init_create_source_ref_1 --></small>
 
 
@@ -170,7 +142,7 @@ When to Set:   Can only be set during object initialization
           to stdout whenever the source fails to send a message due to flight size.</p>
         <a name="main_send_loop_ref_1" id="main_send_loop_ref_1"></a>
 <small><pre>
-<a href="check_flight_size_ewouldblock_c.slsrc.html#main_send_loop" target="src">00089</a>      while(1)
+<a href="check_flight_size_ewouldblock_c.slsrc.html#main_send_loop" target="src">00090</a>      while(1)
 </pre><!-- endblock main_send_loop_ref_1 --></small>
 
 
@@ -182,7 +154,8 @@ When to Set:   Can only be set during object initialization
           by the UM library.</p>
         <a name="src_send_ref_1" id="src_send_ref_1"></a>
 <small><pre>
-<a href="check_flight_size_ewouldblock_c.slsrc.html#src_send" target="src">00091</a>          if (lbm_src_send(src, "test", 4, LBM_SRC_NONBLOCK) == LBM_FAILURE)
+<a href="check_flight_size_ewouldblock_c.slsrc.html#src_send" target="src">00092</a>          err = lbm_src_send(src, "test", 4, LBM_SRC_NONBLOCK);
+<a href="check_flight_size_ewouldblock_c.slsrc.html#src_send" target="src">00093</a>          if (err == LBM_FAILURE)
 </pre><!-- endblock src_send_ref_1 --></small>
 
 
@@ -192,7 +165,7 @@ When to Set:   Can only be set during object initialization
           that either lbm_src_send() failed because it hit flight size, or because it hit the rate limiter.</p>
         <a name="check_send_error_ref_1" id="check_send_error_ref_1"></a>
 <small><pre>
-<a href="check_flight_size_ewouldblock_c.slsrc.html#check_send_error" target="src">00093</a>              if (lbm_errnum() == LBM_EWOULDBLOCK)
+<a href="check_flight_size_ewouldblock_c.slsrc.html#check_send_error" target="src">00095</a>              if (lbm_errnum() == LBM_EWOULDBLOCK)
 </pre><!-- endblock check_send_error_ref_1 --></small>
 
 
@@ -202,15 +175,14 @@ When to Set:   Can only be set during object initialization
           and that it cannot send until messages are decalred stable, or not-stable in the event of timeout or store loss.</p>
         <a name="get_flight_ref_1" id="get_flight_ref_1"></a>
 <small><pre>
-<a href="check_flight_size_ewouldblock_c.slsrc.html#get_flight" target="src">00095</a>                  if (lbm_src_get_inflight(src, LBM_FLIGHT_SIZE_TYPE_UME, &amp;inflight, NULL, NULL) == 0) 
-<a href="check_flight_size_ewouldblock_c.slsrc.html#get_flight" target="src">00096</a>                  {
-<a href="check_flight_size_ewouldblock_c.slsrc.html#get_flight" target="src">00097</a>                      /* Check to see if the inflight counter is equal to the configured flight size */
-<a href="check_flight_size_ewouldblock_c.slsrc.html#get_flight" target="src">00098</a>                      if (inflight == DEFAULT_APP_FLIGHT_SIZE)
-<a href="check_flight_size_ewouldblock_c.slsrc.html#get_flight" target="src">00099</a>                      {
-<a href="check_flight_size_ewouldblock_c.slsrc.html#get_flight" target="src">00100</a>                          /* Print alert */
-<a href="check_flight_size_ewouldblock_c.slsrc.html#get_flight" target="src">00101</a>                          printf("ALERT: Source is blocked on flight size: %d\n", inflight);
-<a href="check_flight_size_ewouldblock_c.slsrc.html#get_flight" target="src">00102</a>                      }
-<a href="check_flight_size_ewouldblock_c.slsrc.html#get_flight" target="src">00103</a>                  }
+<a href="check_flight_size_ewouldblock_c.slsrc.html#get_flight" target="src">00097</a>                  err = lbm_src_get_inflight(src, LBM_FLIGHT_SIZE_TYPE_UME, &amp;inflight, NULL, NULL);
+<a href="check_flight_size_ewouldblock_c.slsrc.html#get_flight" target="src">00098</a>                  EX_LBM_CHK(err);
+<a href="check_flight_size_ewouldblock_c.slsrc.html#get_flight" target="src">00099</a>  
+<a href="check_flight_size_ewouldblock_c.slsrc.html#get_flight" target="src">00100</a>                  /* Is inflight counter is equal to the configured flight size? */
+<a href="check_flight_size_ewouldblock_c.slsrc.html#get_flight" target="src">00101</a>                  if (inflight == DEFAULT_APP_FLIGHT_SIZE)
+<a href="check_flight_size_ewouldblock_c.slsrc.html#get_flight" target="src">00102</a>                  {
+<a href="check_flight_size_ewouldblock_c.slsrc.html#get_flight" target="src">00103</a>                      printf("ALERT: Source is blocked on flight size: %d\n", inflight);
+<a href="check_flight_size_ewouldblock_c.slsrc.html#get_flight" target="src">00104</a>                  }
 </pre><!-- endblock get_flight_ref_1 --></small>
 
 
@@ -218,20 +190,20 @@ When to Set:   Can only be set during object initialization
         <p>Include files for this application. Notice the Windows specific include files - these are not necessary for Linux only applications</p>
         <a name="includes_ref_1" id="includes_ref_1"></a>
 <small><pre>
-<a href="check_flight_size_ewouldblock_c.slsrc.html#includes" target="src">00003</a>  #include &lt;stdio.h&gt;
-<a href="check_flight_size_ewouldblock_c.slsrc.html#includes" target="src">00004</a>  
-<a href="check_flight_size_ewouldblock_c.slsrc.html#includes" target="src">00005</a>  #if defined(_MSC_VER)
-<a href="check_flight_size_ewouldblock_c.slsrc.html#includes" target="src">00006</a>  /* Windows-only includes */
-<a href="check_flight_size_ewouldblock_c.slsrc.html#includes" target="src">00007</a>  #include &lt;winsock2.h&gt;
-<a href="check_flight_size_ewouldblock_c.slsrc.html#includes" target="src">00008</a>  #define SLEEP(s) Sleep((s)*1000)
-<a href="check_flight_size_ewouldblock_c.slsrc.html#includes" target="src">00009</a>  #else
-<a href="check_flight_size_ewouldblock_c.slsrc.html#includes" target="src">00010</a>  /* Unix-only includes */
-<a href="check_flight_size_ewouldblock_c.slsrc.html#includes" target="src">00011</a>  #include &lt;stdlib.h&gt;
-<a href="check_flight_size_ewouldblock_c.slsrc.html#includes" target="src">00012</a>  #include &lt;unistd.h&gt;
-<a href="check_flight_size_ewouldblock_c.slsrc.html#includes" target="src">00013</a>  #define SLEEP(s) sleep(s)
-<a href="check_flight_size_ewouldblock_c.slsrc.html#includes" target="src">00014</a>  #endif
-<a href="check_flight_size_ewouldblock_c.slsrc.html#includes" target="src">00015</a>  
-<a href="check_flight_size_ewouldblock_c.slsrc.html#includes" target="src">00016</a>  #include &lt;lbm/lbm.h&gt;
+<a href="check_flight_size_ewouldblock_c.slsrc.html#includes" target="src">00022</a>  #include &lt;stdio.h&gt;
+<a href="check_flight_size_ewouldblock_c.slsrc.html#includes" target="src">00023</a>  
+<a href="check_flight_size_ewouldblock_c.slsrc.html#includes" target="src">00024</a>  #if defined(_MSC_VER)
+<a href="check_flight_size_ewouldblock_c.slsrc.html#includes" target="src">00025</a>  /* Windows-only includes */
+<a href="check_flight_size_ewouldblock_c.slsrc.html#includes" target="src">00026</a>  #include &lt;winsock2.h&gt;
+<a href="check_flight_size_ewouldblock_c.slsrc.html#includes" target="src">00027</a>  #define SLEEP(s) Sleep((s)*1000)
+<a href="check_flight_size_ewouldblock_c.slsrc.html#includes" target="src">00028</a>  #else
+<a href="check_flight_size_ewouldblock_c.slsrc.html#includes" target="src">00029</a>  /* Unix-only includes */
+<a href="check_flight_size_ewouldblock_c.slsrc.html#includes" target="src">00030</a>  #include &lt;stdlib.h&gt;
+<a href="check_flight_size_ewouldblock_c.slsrc.html#includes" target="src">00031</a>  #include &lt;unistd.h&gt;
+<a href="check_flight_size_ewouldblock_c.slsrc.html#includes" target="src">00032</a>  #define SLEEP(s) sleep(s)
+<a href="check_flight_size_ewouldblock_c.slsrc.html#includes" target="src">00033</a>  #endif
+<a href="check_flight_size_ewouldblock_c.slsrc.html#includes" target="src">00034</a>  
+<a href="check_flight_size_ewouldblock_c.slsrc.html#includes" target="src">00035</a>  #include &lt;lbm/lbm.h&gt;
 </pre><!-- endblock includes_ref_1 --></small>
 
 

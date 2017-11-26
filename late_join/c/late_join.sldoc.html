@@ -20,8 +20,8 @@
         <p>Sources by default have late join disabled.  To enable late join the application must do two things.  The first is to enable late-join. This can be done as follows:</p>
         <a name="enable_lj_ref_1" id="enable_lj_ref_1"></a>
 <small><pre>
-<a href="late_join_c.slsrc.html#enable_lj" target="src">00092</a>          err = lbm_src_topic_attr_str_setopt(tattr, "late_join", "1");
-<a href="late_join_c.slsrc.html#enable_lj" target="src">00093</a>          EX_LBM_CHK(err);
+<a href="late_join_c.slsrc.html#enable_lj" target="src">00105</a>      err = lbm_src_topic_attr_str_setopt(tattr, "late_join", "1");
+<a href="late_join_c.slsrc.html#enable_lj" target="src">00106</a>      EX_LBM_CHK(err);
 </pre><!-- endblock enable_lj_ref_1 --></small>
 
 
@@ -30,8 +30,8 @@
 		means that at least 1 message will be in the buffer at all times. This can be done as follows:</p>
         <a name="configure_lj_ref_1" id="configure_lj_ref_1"></a>
 <small><pre>
-<a href="late_join_c.slsrc.html#configure_lj" target="src">00094</a>          err = lbm_src_topic_attr_str_setopt(tattr, "retransmit_retention_size_threshold", "1");
-<a href="late_join_c.slsrc.html#configure_lj" target="src">00095</a>          EX_LBM_CHK(err);
+<a href="late_join_c.slsrc.html#configure_lj" target="src">00107</a>      err = lbm_src_topic_attr_str_setopt(tattr, "retransmit_retention_size_threshold", "1");
+<a href="late_join_c.slsrc.html#configure_lj" target="src">00108</a>      EX_LBM_CHK(err);
 </pre><!-- endblock configure_lj_ref_1 --></small>
 
 
@@ -41,15 +41,15 @@
 	that the receiver can miss the first few messages published.  This is because it takes a non-zero amount of time to resolve the source and join the underlying transport.</p>
 	<a name="source_ref_1" id="source_ref_1"></a>
 <small><pre>
-<a href="late_join_c.slsrc.html#source" target="src">00102</a>          err = lbm_src_create(&amp;early_src, ctx, topic_1, NULL, NULL, NULL);
-<a href="late_join_c.slsrc.html#source" target="src">00103</a>          EX_LBM_CHK(err);
-<a href="late_join_c.slsrc.html#source" target="src">00104</a>  
-<a href="late_join_c.slsrc.html#source" target="src">00105</a>          /* Wait for topic resolution to happen */
-<a href="late_join_c.slsrc.html#source" target="src">00106</a>          SLEEP(1);
-<a href="late_join_c.slsrc.html#source" target="src">00107</a>  
-<a href="late_join_c.slsrc.html#source" target="src">00108</a>          /* Send a message... we should expect no one to get it because we haven't created the receiver
-<a href="late_join_c.slsrc.html#source" target="src">00109</a>             yet. */
-<a href="late_join_c.slsrc.html#source" target="src">00110</a>          err = lbm_src_send(early_src, "Hello!", 6, LBM_MSG_FLUSH | LBM_SRC_BLOCK);
+<a href="late_join_c.slsrc.html#source" target="src">00115</a>      err = lbm_src_create(&amp;early_src, ctx, topic_1, NULL, NULL, NULL);
+<a href="late_join_c.slsrc.html#source" target="src">00116</a>      EX_LBM_CHK(err);
+<a href="late_join_c.slsrc.html#source" target="src">00117</a>  
+<a href="late_join_c.slsrc.html#source" target="src">00118</a>      /* Wait for topic resolution to happen */
+<a href="late_join_c.slsrc.html#source" target="src">00119</a>      SLEEP(1);
+<a href="late_join_c.slsrc.html#source" target="src">00120</a>  
+<a href="late_join_c.slsrc.html#source" target="src">00121</a>      /* Send a message... we should expect no one to get it because we haven't
+<a href="late_join_c.slsrc.html#source" target="src">00122</a>       * created the receiver yet. */
+<a href="late_join_c.slsrc.html#source" target="src">00123</a>      err = lbm_src_send(early_src, "Hello!", 6, LBM_MSG_FLUSH | LBM_SRC_BLOCK);
 </pre><!-- endblock source_ref_1 --></small>
 
 
@@ -58,7 +58,7 @@
 	the default does not have to be changed.  Therefore, the receiver is simply created:</p>
 	<a name="receiver_ref_1" id="receiver_ref_1"></a>
 <small><pre>
-<a href="late_join_c.slsrc.html#receiver" target="src">00114</a>          err = lbm_rcv_create(&amp;late_rcv, ctx, rtopic, rcv_handle_msg, NULL, NULL);
+<a href="late_join_c.slsrc.html#receiver" target="src">00128</a>      err = lbm_rcv_create(&amp;late_rcv, ctx, rtopic, rcv_handle_msg, NULL, NULL);
 </pre><!-- endblock receiver_ref_1 --></small>
 
 
@@ -69,16 +69,16 @@
 	be retransmitted via OTR, which is a separate type of retransmission that will not be covered in this example.</p>
 	<a name="callback_ref_1" id="callback_ref_1"></a>
 <small><pre>
-<a href="late_join_c.slsrc.html#callback" target="src">00031</a>          switch (msg-&gt;type) {
-<a href="late_join_c.slsrc.html#callback" target="src">00032</a>          case LBM_MSG_DATA:
-<a href="late_join_c.slsrc.html#callback" target="src">00033</a>                  if (msg-&gt;flags &amp; LBM_MSG_FLAG_RETRANSMIT)
-<a href="late_join_c.slsrc.html#callback" target="src">00034</a>                          printf("Processing Late Join Message. SQN: %d\n", msg-&gt;sequence_number);
-<a href="late_join_c.slsrc.html#callback" target="src">00035</a>                  else if (msg-&gt;flags &amp; LBM_MSG_FLAG_OTR)
-<a href="late_join_c.slsrc.html#callback" target="src">00036</a>                          printf("Processing OTR Message. SQN: %d\n", msg-&gt;sequence_number);
-<a href="late_join_c.slsrc.html#callback" target="src">00037</a>                  else
-<a href="late_join_c.slsrc.html#callback" target="src">00038</a>                          printf("Normal Message. SQN: %d\n", msg-&gt;sequence_number);
-<a href="late_join_c.slsrc.html#callback" target="src">00039</a>  
-<a href="late_join_c.slsrc.html#callback" target="src">00040</a>                  /* some processing */
+<a href="late_join_c.slsrc.html#callback" target="src">00050</a>      switch (msg-&gt;type) {
+<a href="late_join_c.slsrc.html#callback" target="src">00051</a>      case LBM_MSG_DATA:
+<a href="late_join_c.slsrc.html#callback" target="src">00052</a>          if (msg-&gt;flags &amp; LBM_MSG_FLAG_RETRANSMIT)
+<a href="late_join_c.slsrc.html#callback" target="src">00053</a>              printf("Processing Late Join Message. SQN: %d\n", msg-&gt;sequence_number);
+<a href="late_join_c.slsrc.html#callback" target="src">00054</a>          else if (msg-&gt;flags &amp; LBM_MSG_FLAG_OTR)
+<a href="late_join_c.slsrc.html#callback" target="src">00055</a>              printf("Processing OTR Message. SQN: %d\n", msg-&gt;sequence_number);
+<a href="late_join_c.slsrc.html#callback" target="src">00056</a>          else
+<a href="late_join_c.slsrc.html#callback" target="src">00057</a>              printf("Normal Message. SQN: %d\n", msg-&gt;sequence_number);
+<a href="late_join_c.slsrc.html#callback" target="src">00058</a>  
+<a href="late_join_c.slsrc.html#callback" target="src">00059</a>          /* some processing */
 </pre><!-- endblock callback_ref_1 --></small>
 
 
@@ -86,12 +86,12 @@
 	<p>Cleanup in this case is simple.  Simple close or delete all source & receiver objects, and then close or delete the context.</p>
 	<a name="cleanup_ref_1" id="cleanup_ref_1"></a>
 <small><pre>
-<a href="late_join_c.slsrc.html#cleanup" target="src">00125</a>          err = lbm_src_delete(early_src);
-<a href="late_join_c.slsrc.html#cleanup" target="src">00126</a>          EX_LBM_CHK(err);
-<a href="late_join_c.slsrc.html#cleanup" target="src">00127</a>          err = lbm_rcv_delete(late_rcv);
-<a href="late_join_c.slsrc.html#cleanup" target="src">00128</a>          EX_LBM_CHK(err);
-<a href="late_join_c.slsrc.html#cleanup" target="src">00129</a>          err = lbm_context_delete(ctx);
-<a href="late_join_c.slsrc.html#cleanup" target="src">00130</a>          EX_LBM_CHK(err);
+<a href="late_join_c.slsrc.html#cleanup" target="src">00139</a>      err = lbm_src_delete(early_src);
+<a href="late_join_c.slsrc.html#cleanup" target="src">00140</a>      EX_LBM_CHK(err);
+<a href="late_join_c.slsrc.html#cleanup" target="src">00141</a>      err = lbm_rcv_delete(late_rcv);
+<a href="late_join_c.slsrc.html#cleanup" target="src">00142</a>      EX_LBM_CHK(err);
+<a href="late_join_c.slsrc.html#cleanup" target="src">00143</a>      err = lbm_context_delete(ctx);
+<a href="late_join_c.slsrc.html#cleanup" target="src">00144</a>      EX_LBM_CHK(err);
 </pre><!-- endblock cleanup_ref_1 --></small>
 
 

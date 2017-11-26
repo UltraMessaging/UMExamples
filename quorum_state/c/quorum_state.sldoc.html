@@ -35,7 +35,7 @@
 	  initialize as 0, because the source upon creation will not be in a state where it can send.</p>
         <a name="src_ready_int_ref_1" id="src_ready_int_ref_1"></a>
 <small><pre>
-<a href="quorum_state_c.slsrc.html#src_ready_int" target="src">00025</a>  int src_ready = 0;
+<a href="quorum_state_c.slsrc.html#src_ready_int" target="src">00053</a>  int src_ready = 0;
 </pre><!-- endblock src_ready_int_ref_1 --></small>
 
 
@@ -44,18 +44,8 @@
           <a href="../context-create">Creating a Context</a></p>
         <a name="init_create_context_ref_1" id="init_create_context_ref_1"></a>
 <small><pre>
-<a href="quorum_state_c.slsrc.html#init_create_context" target="src">00067</a>          if (lbm_context_attr_create(&amp;cattr) != 0)
-<a href="quorum_state_c.slsrc.html#init_create_context" target="src">00068</a>          {
-<a href="quorum_state_c.slsrc.html#init_create_context" target="src">00069</a>                  fprintf(stderr, "lbm_context_attr_create: %s\n", lbm_errmsg());
-<a href="quorum_state_c.slsrc.html#init_create_context" target="src">00070</a>                  exit(1);
-<a href="quorum_state_c.slsrc.html#init_create_context" target="src">00071</a>          }
-<a href="quorum_state_c.slsrc.html#init_create_context" target="src">00072</a>  
-<a href="quorum_state_c.slsrc.html#init_create_context" target="src">00073</a>          err = lbm_context_create(&amp;ctx, cattr, NULL, NULL);
-<a href="quorum_state_c.slsrc.html#init_create_context" target="src">00074</a>          if (err)
-<a href="quorum_state_c.slsrc.html#init_create_context" target="src">00075</a>          {
-<a href="quorum_state_c.slsrc.html#init_create_context" target="src">00076</a>                  printf("line %d: %s\n", __LINE__, lbm_errmsg());
-<a href="quorum_state_c.slsrc.html#init_create_context" target="src">00077</a>                  exit(1);
-<a href="quorum_state_c.slsrc.html#init_create_context" target="src">00078</a>          }
+<a href="quorum_state_c.slsrc.html#init_create_context" target="src">00096</a>      err = lbm_context_create(&amp;ctx, NULL, NULL, NULL);
+<a href="quorum_state_c.slsrc.html#init_create_context" target="src">00097</a>      EX_LBM_CHK(err);
 </pre><!-- endblock init_create_context_ref_1 --></small>
 
 
@@ -82,39 +72,22 @@ When to Set:   Can only be set during object initialization
 </p>
         <a name="init_create_source_ref_1" id="init_create_source_ref_1"></a>
 <small><pre>
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00080</a>          if (lbm_src_topic_attr_create(&amp;tattr) != 0)
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00081</a>          {
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00082</a>                  fprintf(stderr, "lbm_src_topic_attr_create: %s\n", lbm_errmsg());
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00083</a>                  exit(1);
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00084</a>          }
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00085</a>  
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00086</a>          /* Assuming there is a store running on the localhost at port 29999 */
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00087</a>          if (lbm_src_topic_attr_str_setopt(tattr, "ume_store", "127.0.0.1:29999") != 0 )
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00088</a>          {
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00089</a>                  fprintf(stderr, "lbm_src_topic_attr_str_setopt:ume_store: %s\n", lbm_errmsg());
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00090</a>                  exit(1);
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00091</a>          }
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00092</a>  
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00093</a>      /* Need to set store behavior to Quorum-Consensus  */
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00094</a>      if (lbm_src_topic_attr_str_setopt(tattr, "ume_store_behavior", "qc") != 0 )
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00095</a>      {
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00096</a>          fprintf(stderr, "lbm_src_topic_attr_str_setopt:ume_store_behavior: %s\n", lbm_errmsg());
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00097</a>          exit(1);
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00098</a>      }
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00099</a>  
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00100</a>          err = lbm_src_topic_alloc(&amp;topic, ctx, "test.topic", tattr);
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00101</a>          if (err)
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00102</a>          {
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00103</a>                  printf("lbm_src_topic_alloc - line %d: %s\n", __LINE__, lbm_errmsg());
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00104</a>                  exit(1);
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00105</a>          }
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00106</a>  
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00107</a>          err = lbm_src_create(&amp;src, ctx, topic, handle_src_event, NULL, NULL);
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00108</a>          if (err)
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00109</a>          {
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00110</a>                  printf("lbm_src_create - line %d: %s\n", __LINE__, lbm_errmsg());
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00111</a>                  exit(1);
-<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00112</a>          }
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00099</a>      err = lbm_src_topic_attr_create(&amp;tattr);
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00100</a>      EX_LBM_CHK(err);
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00101</a>  
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00102</a>      /* Assuming there is a store running on the localhost at port 29999 */
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00103</a>      err = lbm_src_topic_attr_str_setopt(tattr, "ume_store", "127.0.0.1:29999");
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00104</a>      EX_LBM_CHK(err);
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00105</a>  
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00106</a>      /* Need to set store behavior to Quorum-Consensus  */
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00107</a>      err = lbm_src_topic_attr_str_setopt(tattr, "ume_store_behavior", "qc");
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00108</a>      EX_LBM_CHK(err);
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00109</a>  
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00110</a>      err = lbm_src_topic_alloc(&amp;topic, ctx, "test.topic", tattr);
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00111</a>      EX_LBM_CHK(err);
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00112</a>  
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00113</a>      err = lbm_src_create(&amp;src, ctx, topic, handle_src_event, NULL, NULL);
+<a href="quorum_state_c.slsrc.html#init_create_source" target="src">00114</a>      EX_LBM_CHK(err);
 </pre><!-- endblock init_create_source_ref_1 --></small>
 
 
@@ -156,11 +129,11 @@ numbers seen from any store
           store. Setting the state in the registration complete event can look like this:</p>
         <a name="reg_complete_ref_1" id="reg_complete_ref_1"></a>
 <small><pre>
-<a href="quorum_state_c.slsrc.html#reg_complete" target="src">00031</a>          case LBM_SRC_EVENT_UME_REGISTRATION_COMPLETE_EX:
-<a href="quorum_state_c.slsrc.html#reg_complete" target="src">00032</a>          {
-<a href="quorum_state_c.slsrc.html#reg_complete" target="src">00033</a>              src_ready = 1;
-<a href="quorum_state_c.slsrc.html#reg_complete" target="src">00034</a>              break;
-<a href="quorum_state_c.slsrc.html#reg_complete" target="src">00035</a>          }
+<a href="quorum_state_c.slsrc.html#reg_complete" target="src">00060</a>          case LBM_SRC_EVENT_UME_REGISTRATION_COMPLETE_EX:
+<a href="quorum_state_c.slsrc.html#reg_complete" target="src">00061</a>          {
+<a href="quorum_state_c.slsrc.html#reg_complete" target="src">00062</a>              src_ready = 1;
+<a href="quorum_state_c.slsrc.html#reg_complete" target="src">00063</a>              break;
+<a href="quorum_state_c.slsrc.html#reg_complete" target="src">00064</a>          }
 </pre><!-- endblock reg_complete_ref_1 --></small>
 
 
@@ -170,13 +143,13 @@ numbers seen from any store
           determine if quorum has actually been lost, like so:</p>
         <a name="unresponsive_ref_1" id="unresponsive_ref_1"></a>
 <small><pre>
-<a href="quorum_state_c.slsrc.html#unresponsive" target="src">00036</a>          case LBM_SRC_EVENT_UME_STORE_UNRESPONSIVE:
-<a href="quorum_state_c.slsrc.html#unresponsive" target="src">00037</a>          {
-<a href="quorum_state_c.slsrc.html#unresponsive" target="src">00038</a>              const char *infostr = (const char *)ed;
-<a href="quorum_state_c.slsrc.html#unresponsive" target="src">00039</a>              if (strstr(infostr, "quorum lost") != NULL)
-<a href="quorum_state_c.slsrc.html#unresponsive" target="src">00040</a>                  src_ready = 0;
-<a href="quorum_state_c.slsrc.html#unresponsive" target="src">00041</a>              break;
-<a href="quorum_state_c.slsrc.html#unresponsive" target="src">00042</a>          }
+<a href="quorum_state_c.slsrc.html#unresponsive" target="src">00065</a>          case LBM_SRC_EVENT_UME_STORE_UNRESPONSIVE:
+<a href="quorum_state_c.slsrc.html#unresponsive" target="src">00066</a>          {
+<a href="quorum_state_c.slsrc.html#unresponsive" target="src">00067</a>              const char *infostr = (const char *)ed;
+<a href="quorum_state_c.slsrc.html#unresponsive" target="src">00068</a>              if (strstr(infostr, "quorum lost") != NULL)
+<a href="quorum_state_c.slsrc.html#unresponsive" target="src">00069</a>                  src_ready = 0;
+<a href="quorum_state_c.slsrc.html#unresponsive" target="src">00070</a>              break;
+<a href="quorum_state_c.slsrc.html#unresponsive" target="src">00071</a>          }
 </pre><!-- endblock unresponsive_ref_1 --></small>
 
 
@@ -187,7 +160,7 @@ numbers seen from any store
           to stdout when the source is not in the ready state</p>
         <a name="main_send_loop_ref_1" id="main_send_loop_ref_1"></a>
 <small><pre>
-<a href="quorum_state_c.slsrc.html#main_send_loop" target="src">00114</a>      while(1)
+<a href="quorum_state_c.slsrc.html#main_send_loop" target="src">00116</a>      while(1)
 </pre><!-- endblock main_send_loop_ref_1 --></small>
 
 
@@ -197,20 +170,21 @@ numbers seen from any store
 	  notified via the unresponsive source event; in either case the source cannot send.</p>
         <a name="src_send_ref_1" id="src_send_ref_1"></a>
 <small><pre>
-<a href="quorum_state_c.slsrc.html#src_send" target="src">00116</a>          if (src_ready)
-<a href="quorum_state_c.slsrc.html#src_send" target="src">00117</a>          {
-<a href="quorum_state_c.slsrc.html#src_send" target="src">00118</a>              if (lbm_src_send(src, "test", 4, LBM_SRC_NONBLOCK) == LBM_FAILURE)
-<a href="quorum_state_c.slsrc.html#src_send" target="src">00119</a>              {
-<a href="quorum_state_c.slsrc.html#src_send" target="src">00120</a>                  /* Assume EWOULDBLOCK and wait */
-<a href="quorum_state_c.slsrc.html#src_send" target="src">00121</a>                  SLEEP_SEC(1);
-<a href="quorum_state_c.slsrc.html#src_send" target="src">00122</a>              }
-<a href="quorum_state_c.slsrc.html#src_send" target="src">00123</a>          }
-<a href="quorum_state_c.slsrc.html#src_send" target="src">00124</a>          else
-<a href="quorum_state_c.slsrc.html#src_send" target="src">00125</a>          {
-<a href="quorum_state_c.slsrc.html#src_send" target="src">00126</a>              /* Print a warning that the source is not ready and sleep */
-<a href="quorum_state_c.slsrc.html#src_send" target="src">00127</a>              printf("Source is not ready to send (no quorum)\n");
-<a href="quorum_state_c.slsrc.html#src_send" target="src">00128</a>              SLEEP_SEC(1);
-<a href="quorum_state_c.slsrc.html#src_send" target="src">00129</a>          }
+<a href="quorum_state_c.slsrc.html#src_send" target="src">00118</a>          if (src_ready)
+<a href="quorum_state_c.slsrc.html#src_send" target="src">00119</a>          {
+<a href="quorum_state_c.slsrc.html#src_send" target="src">00120</a>              err = lbm_src_send(src, "test", 4, LBM_SRC_NONBLOCK);
+<a href="quorum_state_c.slsrc.html#src_send" target="src">00121</a>              if (err  == LBM_FAILURE)
+<a href="quorum_state_c.slsrc.html#src_send" target="src">00122</a>              {
+<a href="quorum_state_c.slsrc.html#src_send" target="src">00123</a>                  /* Assume EWOULDBLOCK, wait, and retry. */
+<a href="quorum_state_c.slsrc.html#src_send" target="src">00124</a>                  SLEEP_SEC(1);
+<a href="quorum_state_c.slsrc.html#src_send" target="src">00125</a>              }
+<a href="quorum_state_c.slsrc.html#src_send" target="src">00126</a>          }
+<a href="quorum_state_c.slsrc.html#src_send" target="src">00127</a>          else
+<a href="quorum_state_c.slsrc.html#src_send" target="src">00128</a>          {
+<a href="quorum_state_c.slsrc.html#src_send" target="src">00129</a>              /* Print a warning that the source is not ready and sleep */
+<a href="quorum_state_c.slsrc.html#src_send" target="src">00130</a>              printf("Source is not ready to send (no quorum)\n");
+<a href="quorum_state_c.slsrc.html#src_send" target="src">00131</a>              SLEEP_SEC(1);
+<a href="quorum_state_c.slsrc.html#src_send" target="src">00132</a>          }
 </pre><!-- endblock src_send_ref_1 --></small>
 
 
@@ -218,21 +192,21 @@ numbers seen from any store
         <p>Include files for this application. Notice the Windows specific include files - these are not necessary for Linux only applications</p>
         <a name="includes_ref_1" id="includes_ref_1"></a>
 <small><pre>
-<a href="quorum_state_c.slsrc.html#includes" target="src">00003</a>  #include &lt;stdio.h&gt;
-<a href="quorum_state_c.slsrc.html#includes" target="src">00004</a>  #include &lt;string.h&gt;
-<a href="quorum_state_c.slsrc.html#includes" target="src">00005</a>  
-<a href="quorum_state_c.slsrc.html#includes" target="src">00006</a>  #if defined(_MSC_VER)
-<a href="quorum_state_c.slsrc.html#includes" target="src">00007</a>  /* Windows-only includes */
-<a href="quorum_state_c.slsrc.html#includes" target="src">00008</a>  #include &lt;winsock2.h&gt;
-<a href="quorum_state_c.slsrc.html#includes" target="src">00009</a>  #define SLEEP(s) Sleep((s)*1000)
-<a href="quorum_state_c.slsrc.html#includes" target="src">00010</a>  #else
-<a href="quorum_state_c.slsrc.html#includes" target="src">00011</a>  /* Unix-only includes */
-<a href="quorum_state_c.slsrc.html#includes" target="src">00012</a>  #include &lt;stdlib.h&gt;
-<a href="quorum_state_c.slsrc.html#includes" target="src">00013</a>  #include &lt;unistd.h&gt;
-<a href="quorum_state_c.slsrc.html#includes" target="src">00014</a>  #define SLEEP(s) sleep(s)
-<a href="quorum_state_c.slsrc.html#includes" target="src">00015</a>  #endif
-<a href="quorum_state_c.slsrc.html#includes" target="src">00016</a>  
-<a href="quorum_state_c.slsrc.html#includes" target="src">00017</a>  #include &lt;lbm/lbm.h&gt;
+<a href="quorum_state_c.slsrc.html#includes" target="src">00022</a>  #include &lt;stdio.h&gt;
+<a href="quorum_state_c.slsrc.html#includes" target="src">00023</a>  #include &lt;string.h&gt;
+<a href="quorum_state_c.slsrc.html#includes" target="src">00024</a>  
+<a href="quorum_state_c.slsrc.html#includes" target="src">00025</a>  #if defined(_MSC_VER)
+<a href="quorum_state_c.slsrc.html#includes" target="src">00026</a>  /* Windows-only includes */
+<a href="quorum_state_c.slsrc.html#includes" target="src">00027</a>  #include &lt;winsock2.h&gt;
+<a href="quorum_state_c.slsrc.html#includes" target="src">00028</a>  #define SLEEP(s) Sleep((s)*1000)
+<a href="quorum_state_c.slsrc.html#includes" target="src">00029</a>  #else
+<a href="quorum_state_c.slsrc.html#includes" target="src">00030</a>  /* Unix-only includes */
+<a href="quorum_state_c.slsrc.html#includes" target="src">00031</a>  #include &lt;stdlib.h&gt;
+<a href="quorum_state_c.slsrc.html#includes" target="src">00032</a>  #include &lt;unistd.h&gt;
+<a href="quorum_state_c.slsrc.html#includes" target="src">00033</a>  #define SLEEP(s) sleep(s)
+<a href="quorum_state_c.slsrc.html#includes" target="src">00034</a>  #endif
+<a href="quorum_state_c.slsrc.html#includes" target="src">00035</a>  
+<a href="quorum_state_c.slsrc.html#includes" target="src">00036</a>  #include &lt;lbm/lbm.h&gt;
 </pre><!-- endblock includes_ref_1 --></small>
 
 
@@ -241,11 +215,11 @@ numbers seen from any store
 	  sleep() for any number of seconds.</p>
 	<a name="sleep_macro_ref_1" id="sleep_macro_ref_1"></a>
 <small><pre>
-<a href="quorum_state_c.slsrc.html#sleep_macro" target="src">00019</a>  #if defined(_WIN32)
-<a href="quorum_state_c.slsrc.html#sleep_macro" target="src">00020</a>  #   define SLEEP_SEC(x) Sleep((x)*1000)
-<a href="quorum_state_c.slsrc.html#sleep_macro" target="src">00021</a>  #else
-<a href="quorum_state_c.slsrc.html#sleep_macro" target="src">00022</a>  #   define SLEEP_SEC(x) sleep(x)
-<a href="quorum_state_c.slsrc.html#sleep_macro" target="src">00023</a>  #endif
+<a href="quorum_state_c.slsrc.html#sleep_macro" target="src">00038</a>  #if defined(_WIN32)
+<a href="quorum_state_c.slsrc.html#sleep_macro" target="src">00039</a>  #   define SLEEP_SEC(x) Sleep((x)*1000)
+<a href="quorum_state_c.slsrc.html#sleep_macro" target="src">00040</a>  #else
+<a href="quorum_state_c.slsrc.html#sleep_macro" target="src">00041</a>  #   define SLEEP_SEC(x) sleep(x)
+<a href="quorum_state_c.slsrc.html#sleep_macro" target="src">00042</a>  #endif
 </pre><!-- endblock sleep_macro_ref_1 --></small>
 
 

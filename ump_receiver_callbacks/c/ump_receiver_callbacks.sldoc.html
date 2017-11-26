@@ -23,16 +23,16 @@
 	is the callback function that will handle all the receiver callback events.</p>
 	<a name="ctx_rcv_create_ref_1" id="ctx_rcv_create_ref_1"></a>
 <small><pre>
-<a href="ump_receiver_callbacks_c.slsrc.html#ctx_rcv_create" target="src">00140</a>      /* Initialize context atrributes and create context */
-<a href="ump_receiver_callbacks_c.slsrc.html#ctx_rcv_create" target="src">00141</a>      err = lbm_context_create(&amp;ctx, NULL, NULL, NULL);
-<a href="ump_receiver_callbacks_c.slsrc.html#ctx_rcv_create" target="src">00142</a>      EX_LBM_CHK(err);
-<a href="ump_receiver_callbacks_c.slsrc.html#ctx_rcv_create" target="src">00143</a>  
-<a href="ump_receiver_callbacks_c.slsrc.html#ctx_rcv_create" target="src">00144</a>      /* Create receiver for receiving request and sending response */
-<a href="ump_receiver_callbacks_c.slsrc.html#ctx_rcv_create" target="src">00145</a>      err = lbm_rcv_topic_lookup(&amp;rtopic, ctx, "test.topic", NULL);
-<a href="ump_receiver_callbacks_c.slsrc.html#ctx_rcv_create" target="src">00146</a>          EX_LBM_CHK(err);
-<a href="ump_receiver_callbacks_c.slsrc.html#ctx_rcv_create" target="src">00147</a>  
-<a href="ump_receiver_callbacks_c.slsrc.html#ctx_rcv_create" target="src">00148</a>      err = lbm_rcv_create(&amp;rcv, ctx, rtopic, rcv_handle_msg, NULL, NULL);
-<a href="ump_receiver_callbacks_c.slsrc.html#ctx_rcv_create" target="src">00149</a>      EX_LBM_CHK(err);
+<a href="ump_receiver_callbacks_c.slsrc.html#ctx_rcv_create" target="src">00160</a>      /* Initialize context atrributes and create context */
+<a href="ump_receiver_callbacks_c.slsrc.html#ctx_rcv_create" target="src">00161</a>      err = lbm_context_create(&amp;ctx, NULL, NULL, NULL);
+<a href="ump_receiver_callbacks_c.slsrc.html#ctx_rcv_create" target="src">00162</a>      EX_LBM_CHK(err);
+<a href="ump_receiver_callbacks_c.slsrc.html#ctx_rcv_create" target="src">00163</a>  
+<a href="ump_receiver_callbacks_c.slsrc.html#ctx_rcv_create" target="src">00164</a>      /* Create receiver for receiving request and sending response */
+<a href="ump_receiver_callbacks_c.slsrc.html#ctx_rcv_create" target="src">00165</a>      err = lbm_rcv_topic_lookup(&amp;rtopic, ctx, "test.topic", NULL);
+<a href="ump_receiver_callbacks_c.slsrc.html#ctx_rcv_create" target="src">00166</a>      EX_LBM_CHK(err);
+<a href="ump_receiver_callbacks_c.slsrc.html#ctx_rcv_create" target="src">00167</a>  
+<a href="ump_receiver_callbacks_c.slsrc.html#ctx_rcv_create" target="src">00168</a>      err = lbm_rcv_create(&amp;rcv, ctx, rtopic, rcv_handle_msg, NULL, NULL);
+<a href="ump_receiver_callbacks_c.slsrc.html#ctx_rcv_create" target="src">00169</a>      EX_LBM_CHK(err);
 </pre><!-- endblock ctx_rcv_create_ref_1 --></small>
 
 
@@ -51,11 +51,11 @@
 	can be skipped. However, it would be useful to have the ability to enable logging as part of some kind of application debug mode.</p> 
 	<a name="data_ref_1" id="data_ref_1"></a>
 <small><pre>
-<a href="ump_receiver_callbacks_c.slsrc.html#data" target="src">00033</a>          case LBM_MSG_DATA:
-<a href="ump_receiver_callbacks_c.slsrc.html#data" target="src">00034</a>              printf("DATA [%s][%s][%d]%s%s, %u bytes\n", msg-&gt;topic_name, msg-&gt;source, msg-&gt;sequence_number,
-<a href="ump_receiver_callbacks_c.slsrc.html#data" target="src">00035</a>                  ((msg-&gt;flags &amp; LBM_MSG_FLAG_UME_RETRANSMIT) ? "-RX-" : ""),
-<a href="ump_receiver_callbacks_c.slsrc.html#data" target="src">00036</a>                  ((msg-&gt;flags &amp; LBM_MSG_FLAG_OTR) ? "-OTR-" : ""), (unsigned int)msg-&gt;len);
-<a href="ump_receiver_callbacks_c.slsrc.html#data" target="src">00037</a>              break;
+<a href="ump_receiver_callbacks_c.slsrc.html#data" target="src">00051</a>          case LBM_MSG_DATA:
+<a href="ump_receiver_callbacks_c.slsrc.html#data" target="src">00052</a>              printf("DATA [%s][%s][%d]%s%s, %u bytes\n", msg-&gt;topic_name, msg-&gt;source, msg-&gt;sequence_number,
+<a href="ump_receiver_callbacks_c.slsrc.html#data" target="src">00053</a>                  ((msg-&gt;flags &amp; LBM_MSG_FLAG_UME_RETRANSMIT) ? "-RX-" : ""),
+<a href="ump_receiver_callbacks_c.slsrc.html#data" target="src">00054</a>                  ((msg-&gt;flags &amp; LBM_MSG_FLAG_OTR) ? "-OTR-" : ""), (unsigned int)msg-&gt;len);
+<a href="ump_receiver_callbacks_c.slsrc.html#data" target="src">00055</a>              break;
 </pre><!-- endblock data_ref_1 --></small>
 
 
@@ -63,11 +63,13 @@
 	<p>Similar to data messages above, the only real difference being that these messages can be responded to via the API.</p>
 	<a name="request_ref_1" id="request_ref_1"></a>
 <small><pre>
-<a href="ump_receiver_callbacks_c.slsrc.html#request" target="src">00038</a>          case LBM_MSG_REQUEST:
-<a href="ump_receiver_callbacks_c.slsrc.html#request" target="src">00039</a>              printf("REQUEST [%s][%s][%d]%s%s, %u bytes\n", msg-&gt;topic_name, msg-&gt;source, msg-&gt;sequence_number,
-<a href="ump_receiver_callbacks_c.slsrc.html#request" target="src">00040</a>                                  ((msg-&gt;flags &amp; LBM_MSG_FLAG_UME_RETRANSMIT) ? "-RX-" : ""),
-<a href="ump_receiver_callbacks_c.slsrc.html#request" target="src">00041</a>                                  ((msg-&gt;flags &amp; LBM_MSG_FLAG_OTR) ? "-OTR-" : ""), (unsigned int)msg-&gt;len);
-<a href="ump_receiver_callbacks_c.slsrc.html#request" target="src">00042</a>              break;
+<a href="ump_receiver_callbacks_c.slsrc.html#request" target="src">00056</a>          case LBM_MSG_REQUEST:
+<a href="ump_receiver_callbacks_c.slsrc.html#request" target="src">00057</a>              printf("REQUEST [%s][%s][%d]%s%s, %u bytes\n", msg-&gt;topic_name,
+<a href="ump_receiver_callbacks_c.slsrc.html#request" target="src">00058</a>                  msg-&gt;source, msg-&gt;sequence_number,
+<a href="ump_receiver_callbacks_c.slsrc.html#request" target="src">00059</a>                  ((msg-&gt;flags &amp; LBM_MSG_FLAG_UME_RETRANSMIT) ? "-RX-" : ""),
+<a href="ump_receiver_callbacks_c.slsrc.html#request" target="src">00060</a>                  ((msg-&gt;flags &amp; LBM_MSG_FLAG_OTR) ? "-OTR-" : ""),
+<a href="ump_receiver_callbacks_c.slsrc.html#request" target="src">00061</a>                  (unsigned int)msg-&gt;len);
+<a href="ump_receiver_callbacks_c.slsrc.html#request" target="src">00062</a>              break;
 </pre><!-- endblock request_ref_1 --></small>
 
 
@@ -78,9 +80,9 @@
 	The source information will identify the source publishing the messages that have been lost.</p>
 	<a name="loss_ref_1" id="loss_ref_1"></a>
 <small><pre>
-<a href="ump_receiver_callbacks_c.slsrc.html#loss" target="src">00043</a>          case LBM_MSG_UNRECOVERABLE_LOSS:
-<a href="ump_receiver_callbacks_c.slsrc.html#loss" target="src">00044</a>              printf("[%s][%s][%x], LOST\n", msg-&gt;topic_name, msg-&gt;source, msg-&gt;sequence_number);
-<a href="ump_receiver_callbacks_c.slsrc.html#loss" target="src">00045</a>              break;
+<a href="ump_receiver_callbacks_c.slsrc.html#loss" target="src">00063</a>          case LBM_MSG_UNRECOVERABLE_LOSS:
+<a href="ump_receiver_callbacks_c.slsrc.html#loss" target="src">00064</a>              printf("[%s][%s][%x], LOST\n", msg-&gt;topic_name, msg-&gt;source, msg-&gt;sequence_number);
+<a href="ump_receiver_callbacks_c.slsrc.html#loss" target="src">00065</a>              break;
 </pre><!-- endblock loss_ref_1 --></small>
 
 
@@ -91,9 +93,9 @@
 	See sample <a href="../../handle_burst/c/" target="_parent">handle_burst</a> for more information on handling burst loss</p>
 	<a name="burst_ref_1" id="burst_ref_1"></a>
 <small><pre>
-<a href="ump_receiver_callbacks_c.slsrc.html#burst" target="src">00046</a>          case LBM_MSG_UNRECOVERABLE_LOSS_BURST:
-<a href="ump_receiver_callbacks_c.slsrc.html#burst" target="src">00047</a>              printf("[%s][%s][%x], LOST BURST\n", msg-&gt;topic_name, msg-&gt;source, msg-&gt;sequence_number);
-<a href="ump_receiver_callbacks_c.slsrc.html#burst" target="src">00048</a>              break;
+<a href="ump_receiver_callbacks_c.slsrc.html#burst" target="src">00066</a>          case LBM_MSG_UNRECOVERABLE_LOSS_BURST:
+<a href="ump_receiver_callbacks_c.slsrc.html#burst" target="src">00067</a>              printf("[%s][%s][%x], LOST BURST\n", msg-&gt;topic_name, msg-&gt;source, msg-&gt;sequence_number);
+<a href="ump_receiver_callbacks_c.slsrc.html#burst" target="src">00068</a>              break;
 </pre><!-- endblock burst_ref_1 --></small>
 
 
@@ -103,9 +105,9 @@
 	source information.</p>
 	<a name="bos_ref_1" id="bos_ref_1"></a>
 <small><pre>
-<a href="ump_receiver_callbacks_c.slsrc.html#bos" target="src">00049</a>          case LBM_MSG_BOS:
-<a href="ump_receiver_callbacks_c.slsrc.html#bos" target="src">00050</a>              printf("[%s][%s], Beginning of Transport Session\n", msg-&gt;topic_name, msg-&gt;source);
-<a href="ump_receiver_callbacks_c.slsrc.html#bos" target="src">00051</a>              break;
+<a href="ump_receiver_callbacks_c.slsrc.html#bos" target="src">00069</a>          case LBM_MSG_BOS:
+<a href="ump_receiver_callbacks_c.slsrc.html#bos" target="src">00070</a>              printf("[%s][%s], Beginning of Transport Session\n", msg-&gt;topic_name, msg-&gt;source);
+<a href="ump_receiver_callbacks_c.slsrc.html#bos" target="src">00071</a>              break;
 </pre><!-- endblock bos_ref_1 --></small>
 
 
@@ -114,9 +116,9 @@
 	be logged with the same information as BOS.</p>
 	<a name="eos_ref_1" id="eos_ref_1"></a>
 <small><pre>
-<a href="ump_receiver_callbacks_c.slsrc.html#eos" target="src">00052</a>          case LBM_MSG_EOS:
-<a href="ump_receiver_callbacks_c.slsrc.html#eos" target="src">00053</a>              printf("[%s][%s], End of Transport Session\n", msg-&gt;topic_name, msg-&gt;source);
-<a href="ump_receiver_callbacks_c.slsrc.html#eos" target="src">00054</a>              break;
+<a href="ump_receiver_callbacks_c.slsrc.html#eos" target="src">00072</a>          case LBM_MSG_EOS:
+<a href="ump_receiver_callbacks_c.slsrc.html#eos" target="src">00073</a>              printf("[%s][%s], End of Transport Session\n", msg-&gt;topic_name, msg-&gt;source);
+<a href="ump_receiver_callbacks_c.slsrc.html#eos" target="src">00074</a>              break;
 </pre><!-- endblock eos_ref_1 --></small>
 
 
@@ -135,9 +137,9 @@ When to Set:	May be set during operation.
 	Logging this callback is entirely up to the developer, however it could also be useful when trying to debug connectivity issues.</p>
 	<a name="no_source_ref_1" id="no_source_ref_1"></a>
 <small><pre>
-<a href="ump_receiver_callbacks_c.slsrc.html#no_source" target="src">00055</a>          case LBM_MSG_NO_SOURCE_NOTIFICATION:
-<a href="ump_receiver_callbacks_c.slsrc.html#no_source" target="src">00056</a>              printf("[%s], no sources found for topic\n", msg-&gt;topic_name);
-<a href="ump_receiver_callbacks_c.slsrc.html#no_source" target="src">00057</a>              break;
+<a href="ump_receiver_callbacks_c.slsrc.html#no_source" target="src">00075</a>          case LBM_MSG_NO_SOURCE_NOTIFICATION:
+<a href="ump_receiver_callbacks_c.slsrc.html#no_source" target="src">00076</a>              printf("[%s], no sources found for topic\n", msg-&gt;topic_name);
+<a href="ump_receiver_callbacks_c.slsrc.html#no_source" target="src">00077</a>              break;
 </pre><!-- endblock no_source_ref_1 --></small>
 
 
@@ -146,9 +148,9 @@ When to Set:	May be set during operation.
 	name and error string provided in the callback.</p>
 	<a name="reg_error_ref_1" id="reg_error_ref_1"></a>
 <small><pre>
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_error" target="src">00058</a>          case LBM_MSG_UME_REGISTRATION_ERROR:
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_error" target="src">00059</a>              printf("[%s][%s] UME registration error: %s\n", msg-&gt;topic_name, msg-&gt;source, msg-&gt;data);
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_error" target="src">00060</a>              break;
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_error" target="src">00078</a>          case LBM_MSG_UME_REGISTRATION_ERROR:
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_error" target="src">00079</a>              printf("[%s][%s] UME registration error: %s\n", msg-&gt;topic_name, msg-&gt;source, msg-&gt;data);
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_error" target="src">00080</a>              break;
 </pre><!-- endblock reg_error_ref_1 --></small>
 
 
@@ -159,23 +161,23 @@ When to Set:	May be set during operation.
 	source and receiver RegID are useful for tracking those components in the store log and store web-monitor.</p>
 	<a name="reg_success_ref_1" id="reg_success_ref_1"></a>
 <small><pre>
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00061</a>          case LBM_MSG_UME_REGISTRATION_SUCCESS_EX:
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00062</a>          {
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00063</a>              lbm_msg_ume_registration_ex_t *reg = (lbm_msg_ume_registration_ex_t *)(msg-&gt;data);
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00064</a>              printf("[%s][%s] store %u: %s UME registration successful. SrcRegID %u RcvRegID %u. Flags %x ",
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00065</a>                  msg-&gt;topic_name, msg-&gt;source, reg-&gt;store_index, reg-&gt;store,
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00066</a>                  reg-&gt;src_registration_id, reg-&gt;rcv_registration_id, reg-&gt;flags);
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00067</a>              if (reg-&gt;flags &amp; LBM_MSG_UME_REGISTRATION_SUCCESS_EX_FLAG_OLD)
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00068</a>                  printf("OLD[SQN %x] ", reg-&gt;sequence_number);
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00069</a>              if (reg-&gt;flags &amp; LBM_MSG_UME_REGISTRATION_SUCCESS_EX_FLAG_NOCACHE)
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00070</a>                  printf("NOCACHE ");
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00071</a>              if (reg-&gt;flags &amp; LBM_MSG_UME_REGISTRATION_SUCCESS_EX_FLAG_RPP)
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00072</a>                  printf("RPP ");
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00073</a>              if (reg-&gt;flags &amp; LBM_MSG_UME_REGISTRATION_SUCCESS_EX_FLAG_SRC_SID)
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00074</a>                  printf("Src Session ID 0x%" PRIx64 " ", reg-&gt;src_session_id);
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00075</a>              printf("\n");
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00076</a>              break;
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00077</a>          }
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00081</a>          case LBM_MSG_UME_REGISTRATION_SUCCESS_EX:
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00082</a>          {
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00083</a>              lbm_msg_ume_registration_ex_t *reg = (lbm_msg_ume_registration_ex_t *)(msg-&gt;data);
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00084</a>              printf("[%s][%s] store %u: %s UME registration successful. SrcRegID %u RcvRegID %u. Flags %x ",
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00085</a>                  msg-&gt;topic_name, msg-&gt;source, reg-&gt;store_index, reg-&gt;store,
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00086</a>                  reg-&gt;src_registration_id, reg-&gt;rcv_registration_id, reg-&gt;flags);
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00087</a>              if (reg-&gt;flags &amp; LBM_MSG_UME_REGISTRATION_SUCCESS_EX_FLAG_OLD)
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00088</a>                  printf("OLD[SQN %x] ", reg-&gt;sequence_number);
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00089</a>              if (reg-&gt;flags &amp; LBM_MSG_UME_REGISTRATION_SUCCESS_EX_FLAG_NOCACHE)
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00090</a>                  printf("NOCACHE ");
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00091</a>              if (reg-&gt;flags &amp; LBM_MSG_UME_REGISTRATION_SUCCESS_EX_FLAG_RPP)
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00092</a>                  printf("RPP ");
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00093</a>              if (reg-&gt;flags &amp; LBM_MSG_UME_REGISTRATION_SUCCESS_EX_FLAG_SRC_SID)
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00094</a>                  printf("Src Session ID 0x%" PRIx64 " ", reg-&gt;src_session_id);
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00095</a>              printf("\n");
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00096</a>              break;
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_success" target="src">00097</a>          }
 </pre><!-- endblock reg_success_ref_1 --></small>
 
 
@@ -185,20 +187,20 @@ When to Set:	May be set during operation.
 	and the consensus sequence number . as this is the first sequence number the receiver should consume going forward.</p>
 	<a name="reg_complete_ref_1" id="reg_complete_ref_1"></a>
 <small><pre>
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_complete" target="src">00078</a>          case LBM_MSG_UME_REGISTRATION_COMPLETE_EX:
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_complete" target="src">00079</a>                  {
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_complete" target="src">00080</a>              lbm_msg_ume_registration_complete_ex_t *reg = (lbm_msg_ume_registration_complete_ex_t *)(msg-&gt;data);
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_complete" target="src">00081</a>              printf("[%s][%s] UME registration complete. SQN %x. Flags %x ",
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_complete" target="src">00082</a>                  msg-&gt;topic_name, msg-&gt;source, reg-&gt;sequence_number, reg-&gt;flags);
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_complete" target="src">00083</a>              if (reg-&gt;flags &amp; LBM_MSG_UME_REGISTRATION_COMPLETE_EX_FLAG_QUORUM)
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_complete" target="src">00084</a>                  printf("QUORUM ");
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_complete" target="src">00085</a>              if (reg-&gt;flags &amp; LBM_MSG_UME_REGISTRATION_COMPLETE_EX_FLAG_RXREQMAX)
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_complete" target="src">00086</a>                  printf("RXREQMAX ");
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_complete" target="src">00087</a>              if (reg-&gt;flags &amp; LBM_MSG_UME_REGISTRATION_COMPLETE_EX_FLAG_SRC_SID)
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_complete" target="src">00088</a>                  printf("Src Session ID 0x%" PRIx64 " ", reg-&gt;src_session_id);
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_complete" target="src">00089</a>              printf("\n");
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_complete" target="src">00090</a>              break;
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_complete" target="src">00091</a>          }
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_complete" target="src">00098</a>          case LBM_MSG_UME_REGISTRATION_COMPLETE_EX:
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_complete" target="src">00099</a>          {
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_complete" target="src">00100</a>              lbm_msg_ume_registration_complete_ex_t *reg = (lbm_msg_ume_registration_complete_ex_t *)(msg-&gt;data);
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_complete" target="src">00101</a>              printf("[%s][%s] UME registration complete. SQN %x. Flags %x ",
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_complete" target="src">00102</a>                  msg-&gt;topic_name, msg-&gt;source, reg-&gt;sequence_number, reg-&gt;flags);
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_complete" target="src">00103</a>              if (reg-&gt;flags &amp; LBM_MSG_UME_REGISTRATION_COMPLETE_EX_FLAG_QUORUM)
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_complete" target="src">00104</a>                  printf("QUORUM ");
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_complete" target="src">00105</a>              if (reg-&gt;flags &amp; LBM_MSG_UME_REGISTRATION_COMPLETE_EX_FLAG_RXREQMAX)
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_complete" target="src">00106</a>                  printf("RXREQMAX ");
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_complete" target="src">00107</a>              if (reg-&gt;flags &amp; LBM_MSG_UME_REGISTRATION_COMPLETE_EX_FLAG_SRC_SID)
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_complete" target="src">00108</a>                  printf("Src Session ID 0x%" PRIx64 " ", reg-&gt;src_session_id);
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_complete" target="src">00109</a>              printf("\n");
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_complete" target="src">00110</a>              break;
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_complete" target="src">00111</a>          }
 </pre><!-- endblock reg_complete_ref_1 --></small>
 
 
@@ -208,21 +210,21 @@ When to Set:	May be set during operation.
 	logged here.</p>
 	<a name="dereg_success_ref_1" id="dereg_success_ref_1"></a>
 <small><pre>
-<a href="ump_receiver_callbacks_c.slsrc.html#dereg_success" target="src">00092</a>          case LBM_MSG_UME_DEREGISTRATION_SUCCESS_EX:
-<a href="ump_receiver_callbacks_c.slsrc.html#dereg_success" target="src">00093</a>          {
-<a href="ump_receiver_callbacks_c.slsrc.html#dereg_success" target="src">00094</a>              lbm_msg_ume_deregistration_ex_t *dereg = (lbm_msg_ume_deregistration_ex_t *)(msg-&gt;data);
-<a href="ump_receiver_callbacks_c.slsrc.html#dereg_success" target="src">00095</a>              printf("[%s][%s] store %u: %s UME deregistration successful. SrcRegID %u RcvRegID %u. Flags %x ",
-<a href="ump_receiver_callbacks_c.slsrc.html#dereg_success" target="src">00096</a>                  msg-&gt;topic_name, msg-&gt;source, dereg-&gt;store_index, dereg-&gt;store,
-<a href="ump_receiver_callbacks_c.slsrc.html#dereg_success" target="src">00097</a>                  dereg-&gt;src_registration_id, dereg-&gt;rcv_registration_id, dereg-&gt;flags);
-<a href="ump_receiver_callbacks_c.slsrc.html#dereg_success" target="src">00098</a>              if (dereg-&gt;flags &amp; LBM_MSG_UME_REGISTRATION_SUCCESS_EX_FLAG_OLD)
-<a href="ump_receiver_callbacks_c.slsrc.html#dereg_success" target="src">00099</a>                  printf("OLD[SQN %x] ", dereg-&gt;sequence_number);
-<a href="ump_receiver_callbacks_c.slsrc.html#dereg_success" target="src">00100</a>              if (dereg-&gt;flags &amp; LBM_MSG_UME_REGISTRATION_SUCCESS_EX_FLAG_NOCACHE)
-<a href="ump_receiver_callbacks_c.slsrc.html#dereg_success" target="src">00101</a>                  printf("NOCACHE ");
-<a href="ump_receiver_callbacks_c.slsrc.html#dereg_success" target="src">00102</a>              if (dereg-&gt;flags &amp; LBM_MSG_UME_REGISTRATION_SUCCESS_EX_FLAG_RPP)
-<a href="ump_receiver_callbacks_c.slsrc.html#dereg_success" target="src">00103</a>                  printf("RPP ");
-<a href="ump_receiver_callbacks_c.slsrc.html#dereg_success" target="src">00104</a>              printf("\n");
-<a href="ump_receiver_callbacks_c.slsrc.html#dereg_success" target="src">00105</a>              break;
-<a href="ump_receiver_callbacks_c.slsrc.html#dereg_success" target="src">00106</a>          }
+<a href="ump_receiver_callbacks_c.slsrc.html#dereg_success" target="src">00112</a>          case LBM_MSG_UME_DEREGISTRATION_SUCCESS_EX:
+<a href="ump_receiver_callbacks_c.slsrc.html#dereg_success" target="src">00113</a>          {
+<a href="ump_receiver_callbacks_c.slsrc.html#dereg_success" target="src">00114</a>              lbm_msg_ume_deregistration_ex_t *dereg = (lbm_msg_ume_deregistration_ex_t *)(msg-&gt;data);
+<a href="ump_receiver_callbacks_c.slsrc.html#dereg_success" target="src">00115</a>              printf("[%s][%s] store %u: %s UME deregistration successful. SrcRegID %u RcvRegID %u. Flags %x ",
+<a href="ump_receiver_callbacks_c.slsrc.html#dereg_success" target="src">00116</a>                  msg-&gt;topic_name, msg-&gt;source, dereg-&gt;store_index, dereg-&gt;store,
+<a href="ump_receiver_callbacks_c.slsrc.html#dereg_success" target="src">00117</a>                  dereg-&gt;src_registration_id, dereg-&gt;rcv_registration_id, dereg-&gt;flags);
+<a href="ump_receiver_callbacks_c.slsrc.html#dereg_success" target="src">00118</a>              if (dereg-&gt;flags &amp; LBM_MSG_UME_REGISTRATION_SUCCESS_EX_FLAG_OLD)
+<a href="ump_receiver_callbacks_c.slsrc.html#dereg_success" target="src">00119</a>                  printf("OLD[SQN %x] ", dereg-&gt;sequence_number);
+<a href="ump_receiver_callbacks_c.slsrc.html#dereg_success" target="src">00120</a>              if (dereg-&gt;flags &amp; LBM_MSG_UME_REGISTRATION_SUCCESS_EX_FLAG_NOCACHE)
+<a href="ump_receiver_callbacks_c.slsrc.html#dereg_success" target="src">00121</a>                  printf("NOCACHE ");
+<a href="ump_receiver_callbacks_c.slsrc.html#dereg_success" target="src">00122</a>              if (dereg-&gt;flags &amp; LBM_MSG_UME_REGISTRATION_SUCCESS_EX_FLAG_RPP)
+<a href="ump_receiver_callbacks_c.slsrc.html#dereg_success" target="src">00123</a>                  printf("RPP ");
+<a href="ump_receiver_callbacks_c.slsrc.html#dereg_success" target="src">00124</a>              printf("\n");
+<a href="ump_receiver_callbacks_c.slsrc.html#dereg_success" target="src">00125</a>              break;
+<a href="ump_receiver_callbacks_c.slsrc.html#dereg_success" target="src">00126</a>          }
 </pre><!-- endblock dereg_success_ref_1 --></small>
 
 
@@ -231,9 +233,9 @@ When to Set:	May be set during operation.
 	should be logged. Topic name and source information are sufficient for this callback.</p>
 	<a name="dereg_complete_ref_1" id="dereg_complete_ref_1"></a>
 <small><pre>
-<a href="ump_receiver_callbacks_c.slsrc.html#dereg_complete" target="src">00107</a>          case LBM_MSG_UME_DEREGISTRATION_COMPLETE_EX:
-<a href="ump_receiver_callbacks_c.slsrc.html#dereg_complete" target="src">00108</a>              printf("[%s][%s] UME deregistration complete.\n", msg-&gt;topic_name, msg-&gt;source);
-<a href="ump_receiver_callbacks_c.slsrc.html#dereg_complete" target="src">00109</a>              break;
+<a href="ump_receiver_callbacks_c.slsrc.html#dereg_complete" target="src">00127</a>          case LBM_MSG_UME_DEREGISTRATION_COMPLETE_EX:
+<a href="ump_receiver_callbacks_c.slsrc.html#dereg_complete" target="src">00128</a>              printf("[%s][%s] UME deregistration complete.\n", msg-&gt;topic_name, msg-&gt;source);
+<a href="ump_receiver_callbacks_c.slsrc.html#dereg_complete" target="src">00129</a>              break;
 </pre><!-- endblock dereg_complete_ref_1 --></small>
 
 
@@ -242,9 +244,9 @@ When to Set:	May be set during operation.
 	the message data should be printed here. The message data will have the change that has been made to registration.</p>
 	<a name="reg_change_ref_1" id="reg_change_ref_1"></a>
 <small><pre>
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_change" target="src">00110</a>          case LBM_MSG_UME_REGISTRATION_CHANGE:
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_change" target="src">00111</a>              printf("[%s][%s] UME registration change: %s\n", msg-&gt;topic_name, msg-&gt;source, msg-&gt;data);
-<a href="ump_receiver_callbacks_c.slsrc.html#reg_change" target="src">00112</a>              break;
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_change" target="src">00130</a>          case LBM_MSG_UME_REGISTRATION_CHANGE:
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_change" target="src">00131</a>              printf("[%s][%s] UME registration change: %s\n", msg-&gt;topic_name, msg-&gt;source, msg-&gt;data);
+<a href="ump_receiver_callbacks_c.slsrc.html#reg_change" target="src">00132</a>              break;
 </pre><!-- endblock reg_change_ref_1 --></small>
 
 
@@ -253,9 +255,9 @@ When to Set:	May be set during operation.
 	other callbacks that could be handled for UMP. However, new callbacks are added, so it's good in the event of a library upgrade.</p>
 	<a name="other_ref_1" id="other_ref_1"></a>
 <small><pre>
-<a href="ump_receiver_callbacks_c.slsrc.html#other" target="src">00113</a>          default:
-<a href="ump_receiver_callbacks_c.slsrc.html#other" target="src">00114</a>              printf("Other event, type=%x\n", msg-&gt;type);
-<a href="ump_receiver_callbacks_c.slsrc.html#other" target="src">00115</a>              break;
+<a href="ump_receiver_callbacks_c.slsrc.html#other" target="src">00133</a>          default:
+<a href="ump_receiver_callbacks_c.slsrc.html#other" target="src">00134</a>              printf("Other event, type=%x\n", msg-&gt;type);
+<a href="ump_receiver_callbacks_c.slsrc.html#other" target="src">00135</a>              break;
 </pre><!-- endblock other_ref_1 --></small>
 
 
@@ -264,20 +266,20 @@ When to Set:	May be set during operation.
           are not necessary for Linux only applications</p>
         <a name="includes_ref_1" id="includes_ref_1"></a>
 <small><pre>
-<a href="ump_receiver_callbacks_c.slsrc.html#includes" target="src">00003</a>  #include &lt;stdio.h&gt;
-<a href="ump_receiver_callbacks_c.slsrc.html#includes" target="src">00004</a>  
-<a href="ump_receiver_callbacks_c.slsrc.html#includes" target="src">00005</a>  #if defined(_MSC_VER)
-<a href="ump_receiver_callbacks_c.slsrc.html#includes" target="src">00006</a>  /* Windows-only includes */
-<a href="ump_receiver_callbacks_c.slsrc.html#includes" target="src">00007</a>  #include &lt;winsock2.h&gt;
-<a href="ump_receiver_callbacks_c.slsrc.html#includes" target="src">00008</a>  #define SLEEP(s) Sleep((s)*1000)
-<a href="ump_receiver_callbacks_c.slsrc.html#includes" target="src">00009</a>  #else
-<a href="ump_receiver_callbacks_c.slsrc.html#includes" target="src">00010</a>  /* Unix-only includes */
-<a href="ump_receiver_callbacks_c.slsrc.html#includes" target="src">00011</a>  #include &lt;stdlib.h&gt;
-<a href="ump_receiver_callbacks_c.slsrc.html#includes" target="src">00012</a>  #include &lt;unistd.h&gt;
-<a href="ump_receiver_callbacks_c.slsrc.html#includes" target="src">00013</a>  #define SLEEP(s) sleep(s)
-<a href="ump_receiver_callbacks_c.slsrc.html#includes" target="src">00014</a>  #endif
-<a href="ump_receiver_callbacks_c.slsrc.html#includes" target="src">00015</a>  
-<a href="ump_receiver_callbacks_c.slsrc.html#includes" target="src">00016</a>  #include &lt;lbm/lbm.h&gt;
+<a href="ump_receiver_callbacks_c.slsrc.html#includes" target="src">00022</a>  #include &lt;stdio.h&gt;
+<a href="ump_receiver_callbacks_c.slsrc.html#includes" target="src">00023</a>  
+<a href="ump_receiver_callbacks_c.slsrc.html#includes" target="src">00024</a>  #if defined(_MSC_VER)
+<a href="ump_receiver_callbacks_c.slsrc.html#includes" target="src">00025</a>  /* Windows-only includes */
+<a href="ump_receiver_callbacks_c.slsrc.html#includes" target="src">00026</a>  #include &lt;winsock2.h&gt;
+<a href="ump_receiver_callbacks_c.slsrc.html#includes" target="src">00027</a>  #define SLEEP(s) Sleep((s)*1000)
+<a href="ump_receiver_callbacks_c.slsrc.html#includes" target="src">00028</a>  #else
+<a href="ump_receiver_callbacks_c.slsrc.html#includes" target="src">00029</a>  /* Unix-only includes */
+<a href="ump_receiver_callbacks_c.slsrc.html#includes" target="src">00030</a>  #include &lt;stdlib.h&gt;
+<a href="ump_receiver_callbacks_c.slsrc.html#includes" target="src">00031</a>  #include &lt;unistd.h&gt;
+<a href="ump_receiver_callbacks_c.slsrc.html#includes" target="src">00032</a>  #define SLEEP(s) sleep(s)
+<a href="ump_receiver_callbacks_c.slsrc.html#includes" target="src">00033</a>  #endif
+<a href="ump_receiver_callbacks_c.slsrc.html#includes" target="src">00034</a>  
+<a href="ump_receiver_callbacks_c.slsrc.html#includes" target="src">00035</a>  #include &lt;lbm/lbm.h&gt;
 </pre><!-- endblock includes_ref_1 --></small>
 
 
@@ -285,16 +287,16 @@ When to Set:	May be set during operation.
         <p>Windows applications must initialize the Winsock library to utilize sockets.</p>
         <a name="windows_ref_1" id="windows_ref_1"></a>
 <small><pre>
-<a href="ump_receiver_callbacks_c.slsrc.html#windows" target="src">00129</a>  #if defined(_WIN32)
-<a href="ump_receiver_callbacks_c.slsrc.html#windows" target="src">00130</a>      /* windows-specific code */
-<a href="ump_receiver_callbacks_c.slsrc.html#windows" target="src">00131</a>      WSADATA wsadata;
-<a href="ump_receiver_callbacks_c.slsrc.html#windows" target="src">00132</a>      int wsStat = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
-<a href="ump_receiver_callbacks_c.slsrc.html#windows" target="src">00133</a>      if (wsStat != 0)
-<a href="ump_receiver_callbacks_c.slsrc.html#windows" target="src">00134</a>      {
-<a href="ump_receiver_callbacks_c.slsrc.html#windows" target="src">00135</a>          printf("line %d: wsStat=%d\n",__LINE__,wsStat);
-<a href="ump_receiver_callbacks_c.slsrc.html#windows" target="src">00136</a>          exit(1);
-<a href="ump_receiver_callbacks_c.slsrc.html#windows" target="src">00137</a>      }
-<a href="ump_receiver_callbacks_c.slsrc.html#windows" target="src">00138</a>  #endif
+<a href="ump_receiver_callbacks_c.slsrc.html#windows" target="src">00149</a>  #if defined(_WIN32)
+<a href="ump_receiver_callbacks_c.slsrc.html#windows" target="src">00150</a>      /* windows-specific code */
+<a href="ump_receiver_callbacks_c.slsrc.html#windows" target="src">00151</a>      WSADATA wsadata;
+<a href="ump_receiver_callbacks_c.slsrc.html#windows" target="src">00152</a>      int wsStat = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
+<a href="ump_receiver_callbacks_c.slsrc.html#windows" target="src">00153</a>      if (wsStat != 0)
+<a href="ump_receiver_callbacks_c.slsrc.html#windows" target="src">00154</a>      {
+<a href="ump_receiver_callbacks_c.slsrc.html#windows" target="src">00155</a>          printf("line %d: wsStat=%d\n",__LINE__,wsStat);
+<a href="ump_receiver_callbacks_c.slsrc.html#windows" target="src">00156</a>          exit(1);
+<a href="ump_receiver_callbacks_c.slsrc.html#windows" target="src">00157</a>      }
+<a href="ump_receiver_callbacks_c.slsrc.html#windows" target="src">00158</a>  #endif
 </pre><!-- endblock windows_ref_1 --></small>
 
 

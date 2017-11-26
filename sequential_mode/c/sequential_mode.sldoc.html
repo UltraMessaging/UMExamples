@@ -53,25 +53,15 @@ sequential	LBM_CTX_ATTR_OP_SEQUENTIAL	The application is responsible for calling
 	Setting the operational_mode is required to take advantage of the sequential mode of operation.</p>
 	<a name="create_ref_1" id="create_ref_1"></a>
 <small><pre>
-<a href="sequential_mode_c.slsrc.html#create" target="src">00060</a>      if (lbm_context_attr_create(&amp;cattr) != 0)
-<a href="sequential_mode_c.slsrc.html#create" target="src">00061</a>      {
-<a href="sequential_mode_c.slsrc.html#create" target="src">00062</a>          fprintf(stderr, "lbm_context_attr_create: %s\n", lbm_errmsg());
-<a href="sequential_mode_c.slsrc.html#create" target="src">00063</a>          exit(1);
-<a href="sequential_mode_c.slsrc.html#create" target="src">00064</a>      }
-<a href="sequential_mode_c.slsrc.html#create" target="src">00065</a>  
-<a href="sequential_mode_c.slsrc.html#create" target="src">00066</a>      /* Setting the resolver address using the string method */
-<a href="sequential_mode_c.slsrc.html#create" target="src">00067</a>      if (lbm_context_attr_str_setopt(cattr, "operational_mode", "sequential") != 0) 
-<a href="sequential_mode_c.slsrc.html#create" target="src">00068</a>      {
-<a href="sequential_mode_c.slsrc.html#create" target="src">00069</a>          fprintf(stderr, "lbm_context_attr_str_setopt:operational_mode: %s\n", lbm_errmsg());
-<a href="sequential_mode_c.slsrc.html#create" target="src">00070</a>          exit(1);
-<a href="sequential_mode_c.slsrc.html#create" target="src">00071</a>      }
-<a href="sequential_mode_c.slsrc.html#create" target="src">00072</a>  
-<a href="sequential_mode_c.slsrc.html#create" target="src">00073</a>          err = lbm_context_create(&amp;ctx, cattr, NULL, NULL);
-<a href="sequential_mode_c.slsrc.html#create" target="src">00074</a>          if (err)
-<a href="sequential_mode_c.slsrc.html#create" target="src">00075</a>          {
-<a href="sequential_mode_c.slsrc.html#create" target="src">00076</a>                  printf("line %d: %s\n", __LINE__, lbm_errmsg());
-<a href="sequential_mode_c.slsrc.html#create" target="src">00077</a>                  exit(1);
-<a href="sequential_mode_c.slsrc.html#create" target="src">00078</a>          }
+<a href="sequential_mode_c.slsrc.html#create" target="src">00087</a>      err = lbm_context_attr_create(&amp;cattr);
+<a href="sequential_mode_c.slsrc.html#create" target="src">00088</a>      EX_LBM_CHK(err);
+<a href="sequential_mode_c.slsrc.html#create" target="src">00089</a>  
+<a href="sequential_mode_c.slsrc.html#create" target="src">00090</a>      /* Setting the resolver address using the string method */
+<a href="sequential_mode_c.slsrc.html#create" target="src">00091</a>      err = lbm_context_attr_str_setopt(cattr, "operational_mode", "sequential");
+<a href="sequential_mode_c.slsrc.html#create" target="src">00092</a>      EX_LBM_CHK(err);
+<a href="sequential_mode_c.slsrc.html#create" target="src">00093</a>  
+<a href="sequential_mode_c.slsrc.html#create" target="src">00094</a>      err = lbm_context_create(&amp;ctx, cattr, NULL, NULL);
+<a href="sequential_mode_c.slsrc.html#create" target="src">00095</a>      EX_LBM_CHK(err);
 </pre><!-- endblock create_ref_1 --></small>
 
 
@@ -81,17 +71,17 @@ sequential	LBM_CTX_ATTR_OP_SEQUENTIAL	The application is responsible for calling
 	for message delivery. Notice the thread function is "seq_thread", which will be explained in the next block.</p>
 	<a name="spawn_thread_ref_1" id="spawn_thread_ref_1"></a>
 <small><pre>
-<a href="sequential_mode_c.slsrc.html#spawn_thread" target="src">00080</a>  #if defined(_WIN32)
-<a href="sequential_mode_c.slsrc.html#spawn_thread" target="src">00081</a>      if ((wthrdh = CreateThread(NULL, 0, seq_thread, ctx, 0, NULL)) == NULL) {
-<a href="sequential_mode_c.slsrc.html#spawn_thread" target="src">00082</a>          fprintf(stderr, "could not create thread\n");
-<a href="sequential_mode_c.slsrc.html#spawn_thread" target="src">00083</a>          exit(1);
-<a href="sequential_mode_c.slsrc.html#spawn_thread" target="src">00084</a>      }
-<a href="sequential_mode_c.slsrc.html#spawn_thread" target="src">00085</a>  #else
-<a href="sequential_mode_c.slsrc.html#spawn_thread" target="src">00086</a>      if (pthread_create(&amp;pthids, NULL, seq_thread, ctx) != 0) {
-<a href="sequential_mode_c.slsrc.html#spawn_thread" target="src">00087</a>          fprintf(stderr, "could not spawn thread\n");
-<a href="sequential_mode_c.slsrc.html#spawn_thread" target="src">00088</a>          exit(1);
-<a href="sequential_mode_c.slsrc.html#spawn_thread" target="src">00089</a>      }
-<a href="sequential_mode_c.slsrc.html#spawn_thread" target="src">00090</a>  #endif /* _WIN32 */
+<a href="sequential_mode_c.slsrc.html#spawn_thread" target="src">00097</a>  #if defined(_WIN32)
+<a href="sequential_mode_c.slsrc.html#spawn_thread" target="src">00098</a>      if ((wthrdh = CreateThread(NULL, 0, seq_thread, ctx, 0, NULL)) == NULL) {
+<a href="sequential_mode_c.slsrc.html#spawn_thread" target="src">00099</a>          fprintf(stderr, "could not create thread\n");
+<a href="sequential_mode_c.slsrc.html#spawn_thread" target="src">00100</a>          exit(1);
+<a href="sequential_mode_c.slsrc.html#spawn_thread" target="src">00101</a>      }
+<a href="sequential_mode_c.slsrc.html#spawn_thread" target="src">00102</a>  #else
+<a href="sequential_mode_c.slsrc.html#spawn_thread" target="src">00103</a>      if (pthread_create(&amp;pthids, NULL, seq_thread, ctx) != 0) {
+<a href="sequential_mode_c.slsrc.html#spawn_thread" target="src">00104</a>          fprintf(stderr, "could not spawn thread\n");
+<a href="sequential_mode_c.slsrc.html#spawn_thread" target="src">00105</a>          exit(1);
+<a href="sequential_mode_c.slsrc.html#spawn_thread" target="src">00106</a>      }
+<a href="sequential_mode_c.slsrc.html#spawn_thread" target="src">00107</a>  #endif /* _WIN32 */
 </pre><!-- endblock spawn_thread_ref_1 --></small>
 
 
@@ -100,23 +90,21 @@ sequential	LBM_CTX_ATTR_OP_SEQUENTIAL	The application is responsible for calling
 	calls the process events API, ensures there are no errors, and repeats. 
 	<a name="context_thread_ref_1" id="context_thread_ref_1"></a>
 <small><pre>
-<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00019</a>  #if defined(_WIN32)
-<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00020</a>  DWORD WINAPI seq_thread(void *arg)
-<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00021</a>  #else
-<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00022</a>  void *seq_thread(void *arg)
-<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00023</a>  #endif /* _WIN32 */
-<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00024</a>  {
-<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00025</a>      lbm_context_t *ctx = (lbm_context_t *) arg;
-<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00026</a>  
-<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00027</a>      while (1)
-<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00028</a>      {
-<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00029</a>          if (lbm_context_process_events(ctx, 500) == -1)
-<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00030</a>          {
-<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00031</a>              printf("ERROR processing context events: %s\n", lbm_errmsg());
-<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00032</a>              exit(1);
-<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00033</a>          }
-<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00034</a>      }
-<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00035</a>  }
+<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00048</a>  #if defined(_WIN32)
+<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00049</a>  DWORD WINAPI seq_thread(void *arg)
+<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00050</a>  #else
+<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00051</a>  void *seq_thread(void *arg)
+<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00052</a>  #endif /* _WIN32 */
+<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00053</a>  {
+<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00054</a>      lbm_context_t *ctx = (lbm_context_t *) arg;
+<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00055</a>      int err;
+<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00056</a>  
+<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00057</a>      while (1)
+<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00058</a>      {
+<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00059</a>          err = lbm_context_process_events(ctx, 500);
+<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00060</a>          EX_LBM_CHK(err);
+<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00061</a>      }
+<a href="sequential_mode_c.slsrc.html#context_thread" target="src">00062</a>  }  /* seq_thread */
 </pre><!-- endblock context_thread_ref_1 --></small>
 
 
@@ -125,20 +113,21 @@ sequential	LBM_CTX_ATTR_OP_SEQUENTIAL	The application is responsible for calling
 	  are not necessary for Linux only applications</p>
         <a name="includes_ref_1" id="includes_ref_1"></a>
 <small><pre>
-<a href="sequential_mode_c.slsrc.html#includes" target="src">00003</a>  #include &lt;stdio.h&gt;
-<a href="sequential_mode_c.slsrc.html#includes" target="src">00004</a>  
-<a href="sequential_mode_c.slsrc.html#includes" target="src">00005</a>  #if defined(_MSC_VER)
-<a href="sequential_mode_c.slsrc.html#includes" target="src">00006</a>  /* Windows-only includes */
-<a href="sequential_mode_c.slsrc.html#includes" target="src">00007</a>  #include &lt;winsock2.h&gt;
-<a href="sequential_mode_c.slsrc.html#includes" target="src">00008</a>  #define SLEEP(s) Sleep((s)*1000)
-<a href="sequential_mode_c.slsrc.html#includes" target="src">00009</a>  #else
-<a href="sequential_mode_c.slsrc.html#includes" target="src">00010</a>  /* Unix-only includes */
-<a href="sequential_mode_c.slsrc.html#includes" target="src">00011</a>  #include &lt;stdlib.h&gt;
-<a href="sequential_mode_c.slsrc.html#includes" target="src">00012</a>  #include &lt;unistd.h&gt;
-<a href="sequential_mode_c.slsrc.html#includes" target="src">00013</a>  #define SLEEP(s) sleep(s)
-<a href="sequential_mode_c.slsrc.html#includes" target="src">00014</a>  #endif
-<a href="sequential_mode_c.slsrc.html#includes" target="src">00015</a>  
-<a href="sequential_mode_c.slsrc.html#includes" target="src">00016</a>  #include &lt;lbm/lbm.h&gt;
+<a href="sequential_mode_c.slsrc.html#includes" target="src">00022</a>  #include &lt;stdio.h&gt;
+<a href="sequential_mode_c.slsrc.html#includes" target="src">00023</a>  #include &lt;pthread.h&gt;
+<a href="sequential_mode_c.slsrc.html#includes" target="src">00024</a>  
+<a href="sequential_mode_c.slsrc.html#includes" target="src">00025</a>  #if defined(_MSC_VER)
+<a href="sequential_mode_c.slsrc.html#includes" target="src">00026</a>  /* Windows-only includes */
+<a href="sequential_mode_c.slsrc.html#includes" target="src">00027</a>  #include &lt;winsock2.h&gt;
+<a href="sequential_mode_c.slsrc.html#includes" target="src">00028</a>  #define SLEEP(s) Sleep((s)*1000)
+<a href="sequential_mode_c.slsrc.html#includes" target="src">00029</a>  #else
+<a href="sequential_mode_c.slsrc.html#includes" target="src">00030</a>  /* Unix-only includes */
+<a href="sequential_mode_c.slsrc.html#includes" target="src">00031</a>  #include &lt;stdlib.h&gt;
+<a href="sequential_mode_c.slsrc.html#includes" target="src">00032</a>  #include &lt;unistd.h&gt;
+<a href="sequential_mode_c.slsrc.html#includes" target="src">00033</a>  #define SLEEP(s) sleep(s)
+<a href="sequential_mode_c.slsrc.html#includes" target="src">00034</a>  #endif
+<a href="sequential_mode_c.slsrc.html#includes" target="src">00035</a>  
+<a href="sequential_mode_c.slsrc.html#includes" target="src">00036</a>  #include &lt;lbm/lbm.h&gt;
 </pre><!-- endblock includes_ref_1 --></small>
 
 
@@ -146,16 +135,16 @@ sequential	LBM_CTX_ATTR_OP_SEQUENTIAL	The application is responsible for calling
         <p>Windows applications must initialize the Winsock library to utilize sockets.</p>
         <a name="windows_ref_1" id="windows_ref_1"></a>
 <small><pre>
-<a href="sequential_mode_c.slsrc.html#windows" target="src">00049</a>  #if defined(_MSC_VER)
-<a href="sequential_mode_c.slsrc.html#windows" target="src">00050</a>          /* windows-specific code */
-<a href="sequential_mode_c.slsrc.html#windows" target="src">00051</a>          WSADATA wsadata;
-<a href="sequential_mode_c.slsrc.html#windows" target="src">00052</a>          int wsStat = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
-<a href="sequential_mode_c.slsrc.html#windows" target="src">00053</a>          if (wsStat != 0)
-<a href="sequential_mode_c.slsrc.html#windows" target="src">00054</a>          {
-<a href="sequential_mode_c.slsrc.html#windows" target="src">00055</a>                  printf("line %d: wsStat=%d\n",__LINE__,wsStat);
-<a href="sequential_mode_c.slsrc.html#windows" target="src">00056</a>                  exit(1);
-<a href="sequential_mode_c.slsrc.html#windows" target="src">00057</a>          }
-<a href="sequential_mode_c.slsrc.html#windows" target="src">00058</a>  #endif
+<a href="sequential_mode_c.slsrc.html#windows" target="src">00076</a>  #if defined(_MSC_VER)
+<a href="sequential_mode_c.slsrc.html#windows" target="src">00077</a>      /* windows-specific code */
+<a href="sequential_mode_c.slsrc.html#windows" target="src">00078</a>      WSADATA wsadata;
+<a href="sequential_mode_c.slsrc.html#windows" target="src">00079</a>      int wsStat = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
+<a href="sequential_mode_c.slsrc.html#windows" target="src">00080</a>      if (wsStat != 0)
+<a href="sequential_mode_c.slsrc.html#windows" target="src">00081</a>      {
+<a href="sequential_mode_c.slsrc.html#windows" target="src">00082</a>          printf("line %d: wsStat=%d\n",__LINE__,wsStat);
+<a href="sequential_mode_c.slsrc.html#windows" target="src">00083</a>          exit(1);
+<a href="sequential_mode_c.slsrc.html#windows" target="src">00084</a>      }
+<a href="sequential_mode_c.slsrc.html#windows" target="src">00085</a>  #endif
 </pre><!-- endblock windows_ref_1 --></small>
 
 
