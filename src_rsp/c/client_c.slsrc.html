@@ -1,0 +1,538 @@
+<!DOCTYPE html><html><head><title>client.c</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>client.c</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+00008
+00009
+00010
+00011
+00012
+00013
+00014
+00015
+00016
+00017
+00018
+00019
+00020
+00021
+00022
+00023
+00024
+00025
+00026
+00027
+00028
+00029
+00030
+00031
+00032
+00033
+00034
+00035
+00036
+00037
+00038
+00039
+00040
+00041
+00042
+00043
+00044
+00045
+00046
+00047
+00048
+00049
+00050
+00051
+00052
+00053
+00054
+00055
+00056
+00057
+00058
+00059
+00060
+00061
+00062
+00063
+00064
+00065
+00066
+00067
+00068
+00069
+00070
+00071
+00072
+00073
+00074
+00075
+00076
+00077
+00078
+00079
+00080
+<a href="src_rsp.sldoc.html#register_done_ref_1" target="doc">00081</a>
+<a href="src_rsp.sldoc.html#register_done_ref_1" target="doc">00082</a>
+<a href="src_rsp.sldoc.html#register_done_ref_1" target="doc">00083</a>
+<a href="src_rsp.sldoc.html#register_done_ref_1" target="doc">00084</a>
+<a href="src_rsp.sldoc.html#register_done_ref_1" target="doc">00085</a>
+<a href="src_rsp.sldoc.html#register_done_ref_1" target="doc">00086</a>
+<a href="src_rsp.sldoc.html#register_done_ref_1" target="doc">00087</a>
+<a href="src_rsp.sldoc.html#register_done_ref_1" target="doc">00088</a>
+00089
+00090
+00091
+00092
+00093
+00094
+00095
+00096
+00097
+00098
+00099
+00100
+00101
+00102
+00103
+00104
+00105
+00106
+00107
+00108
+00109
+00110
+00111
+00112
+00113
+00114
+00115
+00116
+00117
+00118
+00119
+<a href="src_rsp.sldoc.html#client_name_ref_1" target="doc">00120</a>
+<a href="src_rsp.sldoc.html#client_name_ref_1" target="doc">00121</a>
+00122
+00123
+00124
+00125
+00126
+00127
+00128
+00129
+00130
+00131
+00132
+00133
+<a href="src_rsp.sldoc.html#server_name_ref_1" target="doc">00134</a>
+00135
+00136
+00137
+00138
+00139
+00140
+00141
+00142
+00143
+<a href="src_rsp.sldoc.html#req_src_create_ref_1" target="doc">00144</a>
+<a href="src_rsp.sldoc.html#req_src_create_ref_1" target="doc">00145</a>
+<a href="src_rsp.sldoc.html#req_src_create_ref_1" target="doc">00146</a>
+<a href="src_rsp.sldoc.html#req_src_create_ref_1" target="doc">00147</a>
+<a href="src_rsp.sldoc.html#req_src_create_ref_1" target="doc">00148</a>
+<a href="src_rsp.sldoc.html#req_src_create_ref_1" target="doc">00149</a>
+00150
+<a href="src_rsp.sldoc.html#rsp_rcv_create_ref_1" target="doc">00151</a>
+<a href="src_rsp.sldoc.html#rsp_rcv_create_ref_1" target="doc">00152</a>
+<a href="src_rsp.sldoc.html#rsp_rcv_create_ref_1" target="doc">00153</a>
+<a href="src_rsp.sldoc.html#rsp_rcv_create_ref_1" target="doc">00154</a>
+<a href="src_rsp.sldoc.html#rsp_rcv_create_ref_1" target="doc">00155</a>
+<a href="src_rsp.sldoc.html#rsp_rcv_create_ref_1" target="doc">00156</a>
+00157
+00158
+00159
+00160
+00161
+00162
+00163
+<a href="src_rsp.sldoc.html#register_msg_ref_1" target="doc">00164</a>
+<a href="src_rsp.sldoc.html#register_msg_ref_1" target="doc">00165</a>
+00166
+<a href="src_rsp.sldoc.html#register_loop_ref_1" target="doc">00167</a>
+<a href="src_rsp.sldoc.html#register_loop_ref_1" target="doc">00168</a>
+<a href="src_rsp.sldoc.html#register_loop_ref_1" target="doc">00169</a>
+<a href="src_rsp.sldoc.html#register_loop_ref_1" target="doc">00170</a>
+<a href="src_rsp.sldoc.html#register_loop_ref_1" target="doc">00171</a>
+<a href="src_rsp.sldoc.html#register_loop_ref_1" target="doc">00172</a>
+<a href="src_rsp.sldoc.html#register_loop_ref_1" target="doc">00173</a>
+<a href="src_rsp.sldoc.html#register_loop_ref_1" target="doc">00174</a>
+<a href="src_rsp.sldoc.html#register_loop_ref_1" target="doc">00175</a>
+<a href="src_rsp.sldoc.html#register_loop_ref_1" target="doc">00176</a>
+<a href="src_rsp.sldoc.html#register_loop_ref_1" target="doc">00177</a>
+<a href="src_rsp.sldoc.html#register_loop_ref_1" target="doc">00178</a>
+<a href="src_rsp.sldoc.html#register_loop_ref_1" target="doc">00179</a>
+<a href="src_rsp.sldoc.html#register_loop_ref_1" target="doc">00180</a>
+<a href="src_rsp.sldoc.html#register_loop_ref_1" target="doc">00181</a>
+00182
+00183
+00184
+00185
+00186
+<a href="src_rsp.sldoc.html#req_buf_ref_1" target="doc">00187</a>
+<a href="src_rsp.sldoc.html#req_buf_ref_1" target="doc">00188</a>
+<a href="src_rsp.sldoc.html#req_buf_ref_1" target="doc">00189</a>
+<a href="src_rsp.sldoc.html#req_buf_ref_1" target="doc">00190</a>
+<a href="src_rsp.sldoc.html#req_buf_ref_1" target="doc">00191</a>
+00192
+<a href="src_rsp.sldoc.html#req_sends_ref_1" target="doc">00193</a>
+<a href="src_rsp.sldoc.html#req_sends_ref_1" target="doc">00194</a>
+<a href="src_rsp.sldoc.html#req_sends_ref_1" target="doc">00195</a>
+<a href="src_rsp.sldoc.html#req_sends_ref_1" target="doc">00196</a>
+<a href="src_rsp.sldoc.html#req_sends_ref_1" target="doc">00197</a>
+<a href="src_rsp.sldoc.html#req_sends_ref_1" target="doc">00198</a>
+<a href="src_rsp.sldoc.html#req_sends_ref_1" target="doc">00199</a>
+<a href="src_rsp.sldoc.html#req_sends_ref_1" target="doc">00200</a>
+<a href="src_rsp.sldoc.html#req_sends_ref_1" target="doc">00201</a>
+<a href="src_rsp.sldoc.html#req_sends_ref_1" target="doc">00202</a>
+<a href="src_rsp.sldoc.html#req_sends_ref_1" target="doc">00203</a>
+00204
+00205
+00206
+00207
+00208
+00209
+00210
+00211
+00212
+00213
+00214
+00215
+00216
+00217
+</td><td>  /* client.c
+   *
+   * Copyright (c) 2005-2017 Informatica Corporation. All Rights Reserved.
+   * Permission is granted to licensees to use
+   * or alter this software for any purpose, including commercial applications,
+   * according to the terms laid out in the Software License Agreement.
+   *
+   * This source code example is provided by Informatica for educational
+   * and evaluation purposes only.
+   *
+   * THE SOFTWARE IS PROVIDED "AS IS" AND INFORMATICA DISCLAIMS ALL WARRANTIES
+   * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION, ANY IMPLIED WARRANTIES OF
+   * NON-INFRINGEMENT, MERCHANTABILITY OR FITNESS FOR A PARTICULAR
+   * PURPOSE.  INFORMATICA DOES NOT WARRANT THAT USE OF THE SOFTWARE WILL BE
+   * UNINTERRUPTED OR ERROR-FREE.  INFORMATICA SHALL NOT, UNDER ANY CIRCUMSTANCES, BE
+   * LIABLE TO LICENSEE FOR LOST PROFITS, CONSEQUENTIAL, INCIDENTAL, SPECIAL OR
+   * INDIRECT DAMAGES ARISING OUT OF OR RELATED TO THIS AGREEMENT OR THE
+   * TRANSACTIONS CONTEMPLATED HEREUNDER, EVEN IF INFORMATICA HAS BEEN APPRISED OF
+   * THE LIKELIHOOD OF SUCH DAMAGES.
+   */
+  
+  #include &lt;stdio.h&gt;
+  #include &lt;string.h&gt;
+  
+  #if defined(_MSC_VER)
+  /* Windows-only includes */
+  #include &lt;winsock2.h&gt;
+  #define MSLEEP(s) Sleep(s)
+  #else
+  /* Unix-only includes */
+  #include &lt;stdlib.h&gt;
+  #include &lt;unistd.h&gt;
+  #define MSLEEP(s) usleep((s) * 1000)
+  #endif
+  
+  #include &lt;lbm/lbm.h&gt;
+  
+  typedef struct server_s {
+      lbm_context_t *ctx;
+      char *topic_name; /* Topic the server is subscribed to. */
+      lbm_src_t *src;   /* Source to send requests to server. */
+      lbm_rcv_t *rcv;   /* Receiver for responses from server. */
+      int state;        /* 0=Waiting for registration, 1=registered. */
+  } server_t;
+  
+  /* Header for request messages. */
+  typedef struct req_hdr_s {
+      char data[8];
+  } req_hdr_t;
+  
+  
+  #define E(E_err) do { \
+      if ((E_err) &lt; 0) { \
+          fprintf(stderr, "Error, %s:%d: %s: %s\n", \
+              __FILE__, __LINE__, #E_err, lbm_errmsg()); \
+          fflush(stderr); \
+          abort(); \
+      } \
+  } while (0)
+  
+  
+  /* Null check. */
+  #define N(N_ptr) do { \
+      if ((N_ptr) == NULL) { \
+          fprintf(stderr, "Error, %s:%d: '%s' is NULL\n", \
+              __FILE__, __LINE__, #N_ptr); \
+          fflush(stderr); \
+          abort(); /* core dump */ \
+      } \
+  } while (0)
+  
+  
+  int response_rcv_cb(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
+  {
+      server_t *server = (server_t *)clientd;
+      req_hdr_t *req_hdr;
+      const char *req_data;
+  
+      switch (msg-&gt;type)
+      {
+<span name="register_done" id="register_done"></span>      case LBM_MSG_DATA:    /* Received a message from the client. */
+          printf("Received %ld bytes on topic %s: '%.*s'\n",
+              (long)msg-&gt;len, msg-&gt;topic_name, (int)msg-&gt;len, msg-&gt;data);
+  
+          if (msg-&gt;len &gt; 1 &amp;&amp; msg-&gt;data[0] == 'r') {
+              /* Should check for success. */
+              server-&gt;state = 1;  /* Registered. */
+          }
+          else if (msg-&gt;len &gt; sizeof(req_hdr_t) &amp;&amp; msg-&gt;data[0] == 'R') {
+              req_hdr = (req_hdr_t *)msg-&gt;data;
+              req_data = &amp;msg-&gt;data[sizeof(req_hdr_t)];
+              /* Process response message. */
+          }
+          break;
+  
+      case LBM_MSG_BOS:
+          printf("[%s][%s], BOS\n", msg-&gt;topic_name, msg-&gt;source);
+          break;
+  
+      case LBM_MSG_EOS:
+          printf("[%s][%s], EOS\n", msg-&gt;topic_name, msg-&gt;source);
+          break;
+  
+      default:    /* unexpected receiver event */
+          printf("Receive event type %d topic='%s', source='%s'\n",
+              msg-&gt;type, msg-&gt;topic_name, msg-&gt;source);
+          break;
+      }  /* switch msg-&gt;type */
+  
+      return 0;
+  }  /* response_rcv_cb */
+  
+  
+  int main(int argc, char **argv)
+  {
+      lbm_context_t *ctx;
+      server_t server;  /* State information for the server. */
+      char response_topic_name[256];
+  
+<span name="client_name" id="client_name"></span>      /* Get (pretty much) unique client name. */
+      sprintf(response_topic_name, "Client.%lx.Response", (long)getpid());
+  
+  #if defined(_MSC_VER)
+      /* windows-specific code */
+      WSADATA wsadata;
+      int wsStat = WSAStartup(MAKEWORD(2,2), &amp;wsadata);
+      if (wsStat != 0) {
+          printf("line %d: wsStat=%d\n",__LINE__,wsStat); exit(1);
+      }
+  #endif
+  
+      server.ctx = NULL;
+  
+<span name="server_name" id="server_name"></span>      server.topic_name = "Server1.Request";
+      server.src = NULL;   /* Source to send requests to server. */
+      server.rcv = NULL;   /* Receiver for responses from server. */
+      server.state = 0;    /* Waiting for registration. */
+  
+      E(lbm_config("client.cfg"));
+  
+      E(lbm_context_create(&amp;ctx, NULL, NULL, NULL));
+      server.ctx = ctx;
+  
+<span name="req_src_create" id="req_src_create"></span>      /* Create source to send requests to server. */
+      {
+          lbm_topic_t *topic;
+          E(lbm_src_topic_alloc(&amp;topic, ctx, server.topic_name, NULL));
+          E(lbm_src_create(&amp;server.src, ctx, topic, NULL, NULL, NULL));
+      }
+  
+<span name="rsp_rcv_create" id="rsp_rcv_create"></span>      /* Create receiver for responses from server. */
+      {
+          lbm_topic_t *topic;
+          E(lbm_rcv_topic_lookup(&amp;topic, ctx, response_topic_name, NULL));
+          E(lbm_rcv_create(&amp;server.rcv, ctx, topic, response_rcv_cb, &amp;server, NULL));
+      }
+  
+      MSLEEP(1);  /* Try to reduce the number of tries to register. */
+  
+      /* Register with the server.  May need multiple tries. */
+      {
+          int try_cnt = 0;
+          int backoff_delay = 2;
+<span name="register_msg" id="register_msg"></span>          char register_msg[257];
+          sprintf(register_msg, "r%s", response_topic_name);
+  
+<span name="register_loop" id="register_loop"></span>          while (server.state == 0) {
+              try_cnt ++;
+              E(lbm_src_send(server.src, register_msg,
+                  strlen(register_msg) + 1, LBM_MSG_FLUSH | LBM_SRC_BLOCK));
+              printf("Sent '%s' to %s; sleep for %d ms\n", register_msg,
+                  server.topic_name, backoff_delay);
+  
+              /* Exponential backoff, to max of 1 sec. */
+              MSLEEP(backoff_delay);
+              backoff_delay *= 2;  /* Exponential backoff to max of 1 sec. */
+              if (backoff_delay &gt; 1000) {
+                  backoff_delay = 1000;
+              }
+          }
+          printf("Took %d tries to register with server.\n", try_cnt);
+      }
+  
+      /* Main work of the program, which includes sending 5 requests. */
+      {
+          int i;
+<span name="req_buf" id="req_buf"></span>          char send_buf[500];
+          req_hdr_t *req_hdr = (req_hdr_t *)send_buf;
+  
+          memset((char *)req_hdr, '0', sizeof(req_hdr_t));
+          req_hdr-&gt;data[0] = 'R';
+  
+<span name="req_sends" id="req_sends"></span>          for (i = 0; i &lt; 5; i++) {
+              /* The application builds a request into &lt;tt&gt;request_msg&lt;/tt&gt;. */
+              char request_msg[257];
+              sprintf(request_msg, "%s.%d", response_topic_name, i);
+  
+              /* The application message is copied in after the header. */
+              strcpy(&amp;send_buf[sizeof(req_hdr_t)], request_msg);
+              E(lbm_src_send(server.src, send_buf, strlen(send_buf) + 1,
+                  LBM_MSG_FLUSH | LBM_SRC_NONBLOCK));
+              MSLEEP(1000);
+          }
+      }
+  
+      printf("Client exiting.\n");
+      E(lbm_rcv_delete(server.rcv));
+      E(lbm_src_delete(server.src));
+  
+      E(lbm_context_delete(ctx));
+  
+  #if defined(_MSC_VER)
+      WSACleanup();
+  #endif
+  
+      return 0;
+  }  /* main */
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>

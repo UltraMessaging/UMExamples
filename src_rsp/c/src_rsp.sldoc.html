@@ -1,0 +1,453 @@
+<html>
+  <head>
+	<link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+	<title>Source-based Request/Response</title>
+  </head>
+  <body>
+	<a href="../../index.html" class="button" target="_top">Example index</a>
+
+	<h1>How to use sources to send requests and responses.</h1>
+
+	<p>There are two source files associated with this example:</p>
+	<ul>
+		<li><b><tt><a href="client.c">client.c</a></tt></b>
+		- (right-click and save as "client.c").</li>
+		<li><b><tt><a href="server.c">server.c</a></tt></b>
+		- (right-click and save as "server.c").</li>
+	</ul>
+
+	<p>The UM "request/response" feature provides a convenient, easy-to-code
+	method for a classic server program to respond to a request sent by a client.
+	The feature takes care of routing the server's response message back to
+	the client that sent the request.
+	It also associates response messages with the corresponding request
+	messages, even if multiple messages are outstanding.
+	See <a href="../../request_response/c/">Request-Response Sample</a>.</p>
+
+	<p>However, there are advantages for the server to use a normal UM
+	source to send response messages:</p>
+	<ul>
+		<li>Choice of transport types.
+		UM responses are always sent with TCP.
+
+		<li>Reliability settings for non-TCP transports are under user control.
+		Can be configured to recover messages after long network outages.
+
+		<li>Extra layer of reliability.
+		The "OTR" feature can recover messages unrecoverably lost by the transport.
+
+		<li>Better application visibility.
+		Unicast transport types give connect and disconnect events for the
+		source, and receivers get BOS and EOS events.
+
+		<li>UDP-based transport types can give lower latency.
+	</ul>
+
+	<p>This sample program uses an LBT-RU source to return response messages
+	to the requesting client program.</p>
+
+    <h2>Overall Approach</h2>
+
+	<p>Clients use a UM source to send a request to a server, and the server
+	uses a UM receiver to receive it.
+	The server then uses a UM source to send a response back to only the
+	client that sent the request, and that client uses a UM receiver to
+	receive it.
+	This sample allows and arbitrary number of client programs to come and
+	go, without the server being pre-configured to know about them.</p>
+
+	<p>When a client program initializes, it creates a source to send
+	requests and a receiver to receive responses.
+	The client then exchanges one or more handshakes to register with the
+	server, and to verify round-trip connectivity.
+	This avoids initial message loss due to topic resolution.</p>
+
+    <h2>Registration</h2>
+
+	<p>The client uses the server's well-known request topic to create
+	the source.</p>
+
+	<a name="server_name_ref_1" id="server_name_ref_1"></a>
+<small><pre>
+<a href="client_c.slsrc.html#server_name" target="src">00134</a>      server.topic_name = "Server1.Request";
+</pre><!-- endblock server_name_ref_1 --></small>
+
+
+	<p><tt>. . .</tt></p>
+	<a name="req_src_create_ref_1" id="req_src_create_ref_1"></a>
+<small><pre>
+<a href="client_c.slsrc.html#req_src_create" target="src">00144</a>      /* Create source to send requests to server. */
+<a href="client_c.slsrc.html#req_src_create" target="src">00145</a>      {
+<a href="client_c.slsrc.html#req_src_create" target="src">00146</a>          lbm_topic_t *topic;
+<a href="client_c.slsrc.html#req_src_create" target="src">00147</a>          E(lbm_src_topic_alloc(&amp;topic, ctx, server.topic_name, NULL));
+<a href="client_c.slsrc.html#req_src_create" target="src">00148</a>          E(lbm_src_create(&amp;server.src, ctx, topic, NULL, NULL, NULL));
+<a href="client_c.slsrc.html#req_src_create" target="src">00149</a>      }
+</pre><!-- endblock req_src_create_ref_1 --></small>
+
+
+
+	<p>The client needs a unique topic to receive is responses.
+	Using the process PID is an easy, but not robust method..</p>
+
+	<a name="client_name_ref_1" id="client_name_ref_1"></a>
+<small><pre>
+<a href="client_c.slsrc.html#client_name" target="src">00120</a>      /* Get (pretty much) unique client name. */
+<a href="client_c.slsrc.html#client_name" target="src">00121</a>      sprintf(response_topic_name, "Client.%lx.Response", (long)getpid());
+</pre><!-- endblock client_name_ref_1 --></small>
+
+
+	<p><tt>. . .</tt></p>
+	<a name="rsp_rcv_create_ref_1" id="rsp_rcv_create_ref_1"></a>
+<small><pre>
+<a href="client_c.slsrc.html#rsp_rcv_create" target="src">00151</a>      /* Create receiver for responses from server. */
+<a href="client_c.slsrc.html#rsp_rcv_create" target="src">00152</a>      {
+<a href="client_c.slsrc.html#rsp_rcv_create" target="src">00153</a>          lbm_topic_t *topic;
+<a href="client_c.slsrc.html#rsp_rcv_create" target="src">00154</a>          E(lbm_rcv_topic_lookup(&amp;topic, ctx, response_topic_name, NULL));
+<a href="client_c.slsrc.html#rsp_rcv_create" target="src">00155</a>          E(lbm_rcv_create(&amp;server.rcv, ctx, topic, response_rcv_cb, &amp;server, NULL));
+<a href="client_c.slsrc.html#rsp_rcv_create" target="src">00156</a>      }
+</pre><!-- endblock rsp_rcv_create_ref_1 --></small>
+
+
+
+	<h4>Registration; Client Side</h4>
+
+	<p>The registration message that the client sends to the server is
+	all-ascii, consisting of lower-case 'r' followed by a null-terminated 
+	topic name on which the client receives responses.</p>
+
+	<a name="register_msg_ref_1" id="register_msg_ref_1"></a>
+<small><pre>
+<a href="client_c.slsrc.html#register_msg" target="src">00164</a>          char register_msg[257];
+<a href="client_c.slsrc.html#register_msg" target="src">00165</a>          sprintf(register_msg, "r%s", response_topic_name);
+</pre><!-- endblock register_msg_ref_1 --></small>
+
+
+
+	<p>The client sends registration messages repeatedly in a loop, with
+	exponential backoff delays.
+	For example, if the server is not running, the client sends registration
+	attempts at 1, 2, 4, 8, ... milliseconds, to a maximum of 1 second.</p>
+
+	<a name="register_loop_ref_1" id="register_loop_ref_1"></a>
+<small><pre>
+<a href="client_c.slsrc.html#register_loop" target="src">00167</a>          while (server.state == 0) {
+<a href="client_c.slsrc.html#register_loop" target="src">00168</a>              try_cnt ++;
+<a href="client_c.slsrc.html#register_loop" target="src">00169</a>              E(lbm_src_send(server.src, register_msg,
+<a href="client_c.slsrc.html#register_loop" target="src">00170</a>                  strlen(register_msg) + 1, LBM_MSG_FLUSH | LBM_SRC_BLOCK));
+<a href="client_c.slsrc.html#register_loop" target="src">00171</a>              printf("Sent '%s' to %s; sleep for %d ms\n", register_msg,
+<a href="client_c.slsrc.html#register_loop" target="src">00172</a>                  server.topic_name, backoff_delay);
+<a href="client_c.slsrc.html#register_loop" target="src">00173</a>  
+<a href="client_c.slsrc.html#register_loop" target="src">00174</a>              /* Exponential backoff, to max of 1 sec. */
+<a href="client_c.slsrc.html#register_loop" target="src">00175</a>              MSLEEP(backoff_delay);
+<a href="client_c.slsrc.html#register_loop" target="src">00176</a>              backoff_delay *= 2;  /* Exponential backoff to max of 1 sec. */
+<a href="client_c.slsrc.html#register_loop" target="src">00177</a>              if (backoff_delay &gt; 1000) {
+<a href="client_c.slsrc.html#register_loop" target="src">00178</a>                  backoff_delay = 1000;
+<a href="client_c.slsrc.html#register_loop" target="src">00179</a>              }
+<a href="client_c.slsrc.html#register_loop" target="src">00180</a>          }
+<a href="client_c.slsrc.html#register_loop" target="src">00181</a>          printf("Took %d tries to register with server.\n", try_cnt);
+</pre><!-- endblock register_loop_ref_1 --></small>
+
+
+
+	<p>The loop exits when the client receives a registration response.</p>
+
+	<a name="register_done_ref_1" id="register_done_ref_1"></a>
+<small><pre>
+<a href="client_c.slsrc.html#register_done" target="src">00081</a>      case LBM_MSG_DATA:    /* Received a message from the client. */
+<a href="client_c.slsrc.html#register_done" target="src">00082</a>          printf("Received %ld bytes on topic %s: '%.*s'\n",
+<a href="client_c.slsrc.html#register_done" target="src">00083</a>              (long)msg-&gt;len, msg-&gt;topic_name, (int)msg-&gt;len, msg-&gt;data);
+<a href="client_c.slsrc.html#register_done" target="src">00084</a>  
+<a href="client_c.slsrc.html#register_done" target="src">00085</a>          if (msg-&gt;len &gt; 1 &amp;&amp; msg-&gt;data[0] == 'r') {
+<a href="client_c.slsrc.html#register_done" target="src">00086</a>              /* Should check for success. */
+<a href="client_c.slsrc.html#register_done" target="src">00087</a>              server-&gt;state = 1;  /* Registered. */
+<a href="client_c.slsrc.html#register_done" target="src">00088</a>          }
+</pre><!-- endblock register_done_ref_1 --></small>
+
+
+
+	<h4>Registration; Server Side</h4>
+
+	<p>The server makes use of source notification create/delete callbacks
+	to manage client state.
+	The callbacks are configured as part of creation of the server's
+	main receiver.</p>
+
+	<a name="src_notif_setopt_ref_1" id="src_notif_setopt_ref_1"></a>
+<small><pre>
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00242</a>          lbm_rcv_src_notification_func_t source_notification_function;
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00243</a>          lbm_rcv_topic_attr_t *rcv_attr;
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00244</a>          lbm_topic_t *topic;
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00245</a>  
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00246</a>          E(lbm_rcv_topic_attr_create(&amp;rcv_attr));
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00247</a>  
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00248</a>          /* Set up per-source state management. */
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00249</a>          source_notification_function.create_func = start_client_source;
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00250</a>          source_notification_function.delete_func = end_client_source;
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00251</a>          source_notification_function.clientd = ctx;  /* Pass this to start_client_source(). */
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00252</a>          E(lbm_rcv_topic_attr_setopt(rcv_attr, "source_notification_function",
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00253</a>              &amp;source_notification_function, sizeof(source_notification_function)));
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00254</a>  
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00255</a>          E(lbm_rcv_topic_lookup(&amp;topic, ctx, "Server1.Request", rcv_attr));
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00256</a>          /* Pass context object as clientd. */
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00257</a>          E(lbm_rcv_create(&amp;rcv, ctx, topic, request_rcv_cb, ctx, NULL));
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00258</a>  
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00259</a>          E(lbm_rcv_topic_attr_delete(rcv_attr));
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00260</a>      }
+</pre><!-- endblock src_notif_setopt_ref_1 --></small>
+
+
+
+	<p>Then, when the receiver discovers a new client's source,
+	start_client_source() is called.
+	That function only creates the state structure associated with the
+	new client.</p>
+
+	<a name="start_client_ref_1" id="start_client_ref_1"></a>
+<small><pre>
+<a href="server_c.slsrc.html#start_client" target="src">00186</a>  void *start_client_source(const char *source_name, void *clientd)
+<a href="server_c.slsrc.html#start_client" target="src">00187</a>  {
+<a href="server_c.slsrc.html#start_client" target="src">00188</a>      lbm_context_t *ctx = (lbm_context_t *)clientd;;
+<a href="server_c.slsrc.html#start_client" target="src">00189</a>      client_t *new_client = (client_t *)malloc(sizeof(client_t));  N(new_client);
+<a href="server_c.slsrc.html#start_client" target="src">00190</a>  
+<a href="server_c.slsrc.html#start_client" target="src">00191</a>      new_client-&gt;state = 0;  /* Waiting for register. */
+<a href="server_c.slsrc.html#start_client" target="src">00192</a>      new_client-&gt;topic_name = NULL;
+<a href="server_c.slsrc.html#start_client" target="src">00193</a>      new_client-&gt;source_name = strdup(source_name);  N(new_client-&gt;source_name);
+<a href="server_c.slsrc.html#start_client" target="src">00194</a>      new_client-&gt;ctx = ctx;
+<a href="server_c.slsrc.html#start_client" target="src">00195</a>      new_client-&gt;resp_src = NULL;
+<a href="server_c.slsrc.html#start_client" target="src">00196</a>  
+<a href="server_c.slsrc.html#start_client" target="src">00197</a>      return new_client;
+<a href="server_c.slsrc.html#start_client" target="src">00198</a>  }  /* start_client_source */
+</pre><!-- endblock start_client_ref_1 --></small>
+
+
+
+	<p>When the client sends its registration message, it is received by
+	the server, which uses it to create the source used for sending
+	responses.
+	The state structure created above is passed to the receiver
+	callback in <tt>msg->source_clientd</tt>.</p>
+
+	<a name="do_reg0_ref_1" id="do_reg0_ref_1"></a>
+<small><pre>
+<a href="server_c.slsrc.html#do_reg0" target="src">00140</a>  int request_rcv_cb(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd) 
+<a href="server_c.slsrc.html#do_reg0" target="src">00141</a>  {
+<a href="server_c.slsrc.html#do_reg0" target="src">00142</a>      client_t *client = (client_t *)msg-&gt;source_clientd;
+</pre><!-- endblock do_reg0_ref_1 --></small>
+
+
+
+	<p>Registration requests start with the character 'r'.</p>
+
+	<a name="do_reg1_ref_1" id="do_reg1_ref_1"></a>
+<small><pre>
+<a href="server_c.slsrc.html#do_reg1" target="src">00146</a>      case LBM_MSG_DATA:  /* Received a message from the client. */
+<a href="server_c.slsrc.html#do_reg1" target="src">00147</a>          printf("Received %ld bytes on topic %s: '%.*s'\n",
+<a href="server_c.slsrc.html#do_reg1" target="src">00148</a>               (long)msg-&gt;len, msg-&gt;topic_name, (int)msg-&gt;len, msg-&gt;data);
+<a href="server_c.slsrc.html#do_reg1" target="src">00149</a>  
+<a href="server_c.slsrc.html#do_reg1" target="src">00150</a>          /* Register message. */
+<a href="server_c.slsrc.html#do_reg1" target="src">00151</a>          if (msg-&gt;len &gt; 1 &amp;&amp; msg-&gt;data[0] == 'r') {
+<a href="server_c.slsrc.html#do_reg1" target="src">00152</a>              handle_register(client, &amp;msg-&gt;data[1]);
+<a href="server_c.slsrc.html#do_reg1" target="src">00153</a>          }
+</pre><!-- endblock do_reg1_ref_1 --></small>
+
+
+	<p><tt>. . .</tt></p>
+	<a name="do_reg2_ref_1" id="do_reg2_ref_1"></a>
+<small><pre>
+<a href="server_c.slsrc.html#do_reg2" target="src">00078</a>  void handle_register(client_t *client, const char *client_resp_name)
+<a href="server_c.slsrc.html#do_reg2" target="src">00079</a>  {
+<a href="server_c.slsrc.html#do_reg2" target="src">00080</a>      int err;
+<a href="server_c.slsrc.html#do_reg2" target="src">00081</a>      /* This work should probably be passed to a separate worker thread, but
+<a href="server_c.slsrc.html#do_reg2" target="src">00082</a>       * I'll do it here to simplify the code. */
+<a href="server_c.slsrc.html#do_reg2" target="src">00083</a>  
+<a href="server_c.slsrc.html#do_reg2" target="src">00084</a>      if (client-&gt;state == 1) {
+<a href="server_c.slsrc.html#do_reg2" target="src">00085</a>          printf("Source '%s' re-confirmed\n", client-&gt;topic_name);
+<a href="server_c.slsrc.html#do_reg2" target="src">00086</a>          /* Reply to client. */
+<a href="server_c.slsrc.html#do_reg2" target="src">00087</a>          E(lbm_src_send(client-&gt;resp_src, "rOK", 4, LBM_MSG_FLUSH | LBM_SRC_NONBLOCK));
+<a href="server_c.slsrc.html#do_reg2" target="src">00088</a>      }
+<a href="server_c.slsrc.html#do_reg2" target="src">00089</a>      else if (client-&gt;state == 0) {
+<a href="server_c.slsrc.html#do_reg2" target="src">00090</a>          lbm_src_topic_attr_t * src_attr;
+<a href="server_c.slsrc.html#do_reg2" target="src">00091</a>          lbm_topic_t *lbm_topic;
+<a href="server_c.slsrc.html#do_reg2" target="src">00092</a>  
+<a href="server_c.slsrc.html#do_reg2" target="src">00093</a>          /* Create source to send responses to client. */
+<a href="server_c.slsrc.html#do_reg2" target="src">00094</a>          E(lbm_src_topic_attr_create(&amp;src_attr));
+<a href="server_c.slsrc.html#do_reg2" target="src">00095</a>          E(lbm_src_topic_attr_str_setopt(src_attr, "transport", "lbt-ru"));
+<a href="server_c.slsrc.html#do_reg2" target="src">00096</a>          E(lbm_src_topic_attr_str_setopt(src_attr, "transport_lbtru_port", "12070"));
+<a href="server_c.slsrc.html#do_reg2" target="src">00097</a>          E(lbm_src_topic_attr_str_setopt(src_attr,
+<a href="server_c.slsrc.html#do_reg2" target="src">00098</a>              "transport_source_side_filtering_behavior", "inclusion"));
+<a href="server_c.slsrc.html#do_reg2" target="src">00099</a>          E(lbm_src_topic_alloc(&amp;lbm_topic, client-&gt;ctx, client_resp_name, src_attr));
+<a href="server_c.slsrc.html#do_reg2" target="src">00100</a>          /* The following create can fail if a new client joins with the same
+<a href="server_c.slsrc.html#do_reg2" target="src">00101</a>           * response topic name as an existing client.  Should handle this cleanly. */
+<a href="server_c.slsrc.html#do_reg2" target="src">00102</a>          err = lbm_src_create(&amp;client-&gt;resp_src, client-&gt;ctx, lbm_topic,
+<a href="server_c.slsrc.html#do_reg2" target="src">00103</a>              NULL, NULL, NULL);
+<a href="server_c.slsrc.html#do_reg2" target="src">00104</a>          if (err) {
+<a href="server_c.slsrc.html#do_reg2" target="src">00105</a>              printf("Source '%s' failed; %s\n", client_resp_name, lbm_errmsg());
+<a href="server_c.slsrc.html#do_reg2" target="src">00106</a>          }
+<a href="server_c.slsrc.html#do_reg2" target="src">00107</a>          else {
+<a href="server_c.slsrc.html#do_reg2" target="src">00108</a>              client-&gt;state = 1;
+<a href="server_c.slsrc.html#do_reg2" target="src">00109</a>              client-&gt;topic_name = strdup(client_resp_name);  N(client-&gt;topic_name);
+<a href="server_c.slsrc.html#do_reg2" target="src">00110</a>              printf("Source '%s' created\n", client-&gt;topic_name);
+<a href="server_c.slsrc.html#do_reg2" target="src">00111</a>          }
+<a href="server_c.slsrc.html#do_reg2" target="src">00112</a>  
+<a href="server_c.slsrc.html#do_reg2" target="src">00113</a>          E(lbm_src_topic_attr_delete(src_attr));
+<a href="server_c.slsrc.html#do_reg2" target="src">00114</a>      }
+<a href="server_c.slsrc.html#do_reg2" target="src">00115</a>  }  /* handle_register */
+</pre><!-- endblock do_reg2_ref_1 --></small>
+
+
+
+	<p>The response source is created in a special way.
+	It is an LBT-RU transport type, with a fixed port number (the choice
+	of 12070 was arbitrary).
+	This means that all clients' sources are mapped to the same LBT-RU
+	transport session.</p>
+
+	<a name="rsp_src_config_ref_1" id="rsp_src_config_ref_1"></a>
+<small><pre>
+<a href="server_c.slsrc.html#rsp_src_config" target="src">00095</a>          E(lbm_src_topic_attr_str_setopt(src_attr, "transport", "lbt-ru"));
+<a href="server_c.slsrc.html#rsp_src_config" target="src">00096</a>          E(lbm_src_topic_attr_str_setopt(src_attr, "transport_lbtru_port", "12070"));
+</pre><!-- endblock rsp_src_config_ref_1 --></small>
+
+
+
+	<p>To prevent each client's responses from being sent to all clients,
+	source-side filtering is enabled.</p>
+
+	<a name="rsp_src_config2_ref_1" id="rsp_src_config2_ref_1"></a>
+<small><pre>
+<a href="server_c.slsrc.html#rsp_src_config2" target="src">00097</a>          E(lbm_src_topic_attr_str_setopt(src_attr,
+<a href="server_c.slsrc.html#rsp_src_config2" target="src">00098</a>              "transport_source_side_filtering_behavior", "inclusion"));
+</pre><!-- endblock rsp_src_config2_ref_1 --></small>
+
+
+
+	<p>On successful source creation, the client state is filled in.
+	But no reply is sent to the client.
+	This is because the client has not yet had a chance to discover and
+	join the new source, so any message sent at this point would not
+	be delivered.</p>
+
+	<a name="rsp_src_created_ref_1" id="rsp_src_created_ref_1"></a>
+<small><pre>
+<a href="server_c.slsrc.html#rsp_src_created" target="src">00108</a>              client-&gt;state = 1;
+<a href="server_c.slsrc.html#rsp_src_created" target="src">00109</a>              client-&gt;topic_name = strdup(client_resp_name);  N(client-&gt;topic_name);
+<a href="server_c.slsrc.html#rsp_src_created" target="src">00110</a>              printf("Source '%s' created\n", client-&gt;topic_name);
+</pre><!-- endblock rsp_src_created_ref_1 --></small>
+
+
+
+	<p>The server could set some kind of timer to send its reply, but
+	to simplify this code, we just wait for the client to retry.
+	When the next registration request comes in, we send the OK
+	message.
+	Thus, it will always take at least 2 tries to register.</p>
+
+	<a name="rsp_src_ok_ref_1" id="rsp_src_ok_ref_1"></a>
+<small><pre>
+<a href="server_c.slsrc.html#rsp_src_ok" target="src">00084</a>      if (client-&gt;state == 1) {
+<a href="server_c.slsrc.html#rsp_src_ok" target="src">00085</a>          printf("Source '%s' re-confirmed\n", client-&gt;topic_name);
+<a href="server_c.slsrc.html#rsp_src_ok" target="src">00086</a>          /* Reply to client. */
+<a href="server_c.slsrc.html#rsp_src_ok" target="src">00087</a>          E(lbm_src_send(client-&gt;resp_src, "rOK", 4, LBM_MSG_FLUSH | LBM_SRC_NONBLOCK));
+<a href="server_c.slsrc.html#rsp_src_ok" target="src">00088</a>      }
+</pre><!-- endblock rsp_src_ok_ref_1 --></small>
+
+
+
+    <h2>Request/Response</h2>
+
+	<p>This example does not contain the code necessary to associate responses
+	with their requests.
+	However, the simple protocol was designed to allow this to be added.
+	A request message consists of an 8-ascii-byte header followed by the
+	application message content.
+./run.sh client
+	The first byte of the header is the character 'R' to indicate a request
+	message.
+	The other 7 bytes are currently just set to ascii '0' characters, but
+	could be used as a request ID.
+	When the server responds to requests, it uses the same header it
+	received, so the client can maintain a table of outstanding requests.
+	This logic is not included in this example.</p>
+
+	<h4>Request; Client Side</h4>
+
+	<p>In this example, the send buffer for requests is declared as an
+	arbitrary large buffer.
+	The header is initialized once.</p>
+
+	<a name="req_buf_ref_1" id="req_buf_ref_1"></a>
+<small><pre>
+<a href="client_c.slsrc.html#req_buf" target="src">00187</a>          char send_buf[500];
+<a href="client_c.slsrc.html#req_buf" target="src">00188</a>          req_hdr_t *req_hdr = (req_hdr_t *)send_buf;
+<a href="client_c.slsrc.html#req_buf" target="src">00189</a>  
+<a href="client_c.slsrc.html#req_buf" target="src">00190</a>          memset((char *)req_hdr, '0', sizeof(req_hdr_t));
+<a href="client_c.slsrc.html#req_buf" target="src">00191</a>          req_hdr-&gt;data[0] = 'R';
+</pre><!-- endblock req_buf_ref_1 --></small>
+
+
+
+	<p>For this simple example, 5 requests are sent.</p>
+
+	<a name="req_sends_ref_1" id="req_sends_ref_1"></a>
+<small><pre>
+<a href="client_c.slsrc.html#req_sends" target="src">00193</a>          for (i = 0; i &lt; 5; i++) {
+<a href="client_c.slsrc.html#req_sends" target="src">00194</a>              /* The application builds a request into &lt;tt&gt;request_msg&lt;/tt&gt;. */
+<a href="client_c.slsrc.html#req_sends" target="src">00195</a>              char request_msg[257];
+<a href="client_c.slsrc.html#req_sends" target="src">00196</a>              sprintf(request_msg, "%s.%d", response_topic_name, i);
+<a href="client_c.slsrc.html#req_sends" target="src">00197</a>  
+<a href="client_c.slsrc.html#req_sends" target="src">00198</a>              /* The application message is copied in after the header. */
+<a href="client_c.slsrc.html#req_sends" target="src">00199</a>              strcpy(&amp;send_buf[sizeof(req_hdr_t)], request_msg);
+<a href="client_c.slsrc.html#req_sends" target="src">00200</a>              E(lbm_src_send(server.src, send_buf, strlen(send_buf) + 1,
+<a href="client_c.slsrc.html#req_sends" target="src">00201</a>                  LBM_MSG_FLUSH | LBM_SRC_NONBLOCK));
+<a href="client_c.slsrc.html#req_sends" target="src">00202</a>              MSLEEP(1000);
+<a href="client_c.slsrc.html#req_sends" target="src">00203</a>          }
+</pre><!-- endblock req_sends_ref_1 --></small>
+
+
+
+	<h4>Response; Server Side</h4>
+
+	<p>When the server receives the request, it sends a response.<p>
+
+	<a name="do_req1_ref_1" id="do_req1_ref_1"></a>
+<small><pre>
+<a href="server_c.slsrc.html#do_req1" target="src">00155</a>          /* Request message. */
+<a href="server_c.slsrc.html#do_req1" target="src">00156</a>          else if (msg-&gt;len &gt;= sizeof(req_hdr_t) &amp;&amp; msg-&gt;data[0] == 'R') {
+<a href="server_c.slsrc.html#do_req1" target="src">00157</a>              req_hdr_t req_hdr;
+<a href="server_c.slsrc.html#do_req1" target="src">00158</a>              memcpy((char *)&amp;req_hdr, msg-&gt;data, sizeof(req_hdr_t));
+<a href="server_c.slsrc.html#do_req1" target="src">00159</a>  
+<a href="server_c.slsrc.html#do_req1" target="src">00160</a>              handle_req(client, &amp;req_hdr, &amp;msg-&gt;data[sizeof(req_hdr_t)],
+<a href="server_c.slsrc.html#do_req1" target="src">00161</a>                  msg-&gt;len - sizeof(req_hdr_t));
+<a href="server_c.slsrc.html#do_req1" target="src">00162</a>          }
+</pre><!-- endblock do_req1_ref_1 --></small>
+
+
+	<p><tt>. . .</tt></p>
+	<a name="do_req2_ref_1" id="do_req2_ref_1"></a>
+<small><pre>
+<a href="server_c.slsrc.html#do_req2" target="src">00118</a>  void handle_req(client_t *client, req_hdr_t *req_hdr, const char *data, size_t len)
+<a href="server_c.slsrc.html#do_req2" target="src">00119</a>  {
+<a href="server_c.slsrc.html#do_req2" target="src">00120</a>      /* Response message is put after the header. */
+<a href="server_c.slsrc.html#do_req2" target="src">00121</a>      char *response_msg = &amp;client-&gt;send_buf[sizeof(req_hdr_t)];
+<a href="server_c.slsrc.html#do_req2" target="src">00122</a>  
+<a href="server_c.slsrc.html#do_req2" target="src">00123</a>      /* This work should probably be passed to a separate worker thread, but
+<a href="server_c.slsrc.html#do_req2" target="src">00124</a>       * I'll do it here to simplify the code. */
+<a href="server_c.slsrc.html#do_req2" target="src">00125</a>  
+<a href="server_c.slsrc.html#do_req2" target="src">00126</a>      /* Responses copy the header from the request. */
+<a href="server_c.slsrc.html#do_req2" target="src">00127</a>      memcpy(&amp;client-&gt;send_buf[0], (char *)req_hdr, sizeof(req_hdr_t));
+<a href="server_c.slsrc.html#do_req2" target="src">00128</a>  
+<a href="server_c.slsrc.html#do_req2" target="src">00129</a>      /* Do the work of the request and put the response in response_msg.
+<a href="server_c.slsrc.html#do_req2" target="src">00130</a>       * (For this sample, just echo back the request.) */
+<a href="server_c.slsrc.html#do_req2" target="src">00131</a>      strcpy(response_msg, data);
+<a href="server_c.slsrc.html#do_req2" target="src">00132</a>      
+<a href="server_c.slsrc.html#do_req2" target="src">00133</a>      /* Reply to client. */
+<a href="server_c.slsrc.html#do_req2" target="src">00134</a>      E(lbm_src_send(client-&gt;resp_src, client-&gt;send_buf,
+<a href="server_c.slsrc.html#do_req2" target="src">00135</a>          strlen(client-&gt;send_buf) + 1, LBM_MSG_FLUSH | LBM_SRC_NONBLOCK));
+<a href="server_c.slsrc.html#do_req2" target="src">00136</a>      printf("sent response to '%s'.\n", client-&gt;topic_name);
+<a href="server_c.slsrc.html#do_req2" target="src">00137</a>  }  /* handle_req */
+</pre><!-- endblock do_req2_ref_1 --></small>
+
+
+  </body>
+</html>
+
