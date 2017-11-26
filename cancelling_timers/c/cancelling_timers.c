@@ -1,4 +1,23 @@
-/* Code Disclaimer? */
+/* cancelling_timers.c - see http://ultramessaging.github.io/UMExamples/cancelling_timers/c/index.html
+ *
+ * Copyright (c) 2005-2017 Informatica Corporation. All Rights Reserved.
+ * Permission is granted to licensees to use
+ * or alter this software for any purpose, including commercial applications,
+ * according to the terms laid out in the Software License Agreement.
+ *
+ * This source code example is provided by Informatica for educational
+ * and evaluation purposes only.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND INFORMATICA DISCLAIMS ALL WARRANTIES
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION, ANY IMPLIED WARRANTIES OF
+ * NON-INFRINGEMENT, MERCHANTABILITY OR FITNESS FOR A PARTICULAR
+ * PURPOSE.  INFORMATICA DOES NOT WARRANT THAT USE OF THE SOFTWARE WILL BE
+ * UNINTERRUPTED OR ERROR-FREE.  INFORMATICA SHALL NOT, UNDER ANY CIRCUMSTANCES, BE
+ * LIABLE TO LICENSEE FOR LOST PROFITS, CONSEQUENTIAL, INCIDENTAL, SPECIAL OR
+ * INDIRECT DAMAGES ARISING OUT OF OR RELATED TO THIS AGREEMENT OR THE
+ * TRANSACTIONS CONTEMPLATED HEREUNDER, EVEN IF INFORMATICA HAS BEEN APPRISED OF
+ * THE LIKELIHOOD OF SUCH DAMAGES.
+ */
 
 #include <stdio.h>
 
@@ -26,18 +45,19 @@
 
 typedef enum {PENDING, FIRED, CANCELED} state_type_e;
 typedef struct app_timer_s {
-  int id;
-  state_type_e state;
-  int sync;
+	int id;
+	state_type_e state;
+	int sync;
 } app_timer_s;
 
 int wait = 1;
+
 
 /* Timer callback function */
 int sample_timer_handler(lbm_context_t *ctx, const void *clientd)
 {
 	struct app_timer_s *my_timer = (struct app_timer_s *)clientd;
-  	if (my_timer->state != PENDING) {  
+	if (my_timer->state != PENDING) {  
 		fprintf(stderr, "ERROR: Timer executed and should have been cancelled\n");
 		exit(1);
 	}
@@ -45,7 +65,8 @@ int sample_timer_handler(lbm_context_t *ctx, const void *clientd)
 	fprintf(stderr, "ERROR: This timer should have been cancelled by now\n");
 
 	return 0;
-}
+}  /* sample_timer_handler */
+
 
 int cancel_timer_cb(lbm_context_t *ctx, const void *clientd)
 {
@@ -57,22 +78,19 @@ int cancel_timer_cb(lbm_context_t *ctx, const void *clientd)
 	my_timer->sync = 0;
 	
 	return 0;
-}
+}  /* cancel_timer_cb */
 
-int main(int argc, void **argv)
+
+int main(int argc, char **argv)
 {
 	lbm_context_t *ctx;                     /* Context object */
-	lbm_context_attr_t * cattr;             /* Context attribute object */
-	int err;                                /* Used for checking API return codes */
 	app_timer_s my_timer;
+	int err;
 
 	my_timer.sync = 0;
 
 	/* Initialize context atrributes and create context */
-	err = lbm_context_attr_create(&cattr);
-	EX_LBM_CHK(err);
-
-	err = lbm_context_create(&ctx, cattr, NULL, NULL);
+	err = lbm_context_create(&ctx, NULL, NULL, NULL);
 	EX_LBM_CHK(err);
 	
 	my_timer.state = PENDING;
@@ -96,11 +114,11 @@ int main(int argc, void **argv)
 	/* Clean up */
 	err = lbm_context_delete(ctx);
 	EX_LBM_CHK(err);
-  
+
 #if defined(_MSC_VER)
 	/* Windows-specific cleanup overhead */
 	WSACleanup();
 #endif
-        return 0;
-}
 
+	return 0;
+}  /* main */

@@ -53,9 +53,9 @@ it would look like this:</p>
   	of this sample application, they are simply defined as macros</p>
 	<a name="define_configs_ref_1" id="define_configs_ref_1"></a>
 <small><pre>
-<a href="load_config_c.slsrc.html#define_configs" target="src">00025</a>  #define LBM_CONFIG_FLAT_FILE "../flat_config.cfg"
-<a href="load_config_c.slsrc.html#define_configs" target="src">00026</a>  #define LBM_CONFIG_XML_FILE  "../xml_config.xml"
-<a href="load_config_c.slsrc.html#define_configs" target="src">00027</a>  #define LBM_APPLICATION_NAME "processA"
+<a href="load_config_c.slsrc.html#define_configs" target="src">00044</a>  #define LBM_CONFIG_FLAT_FILE "../flat_config.cfg"
+<a href="load_config_c.slsrc.html#define_configs" target="src">00045</a>  #define LBM_CONFIG_XML_FILE  "../xml_config.xml"
+<a href="load_config_c.slsrc.html#define_configs" target="src">00046</a>  #define LBM_APPLICATION_NAME "processA"
 </pre><!-- endblock define_configs_ref_1 --></small>
 
 
@@ -64,8 +64,8 @@ it would look like this:</p>
 	<p>Here the application is using lbm_config() to load the flat file "flat_config.cfg":</p>
 	<a name="flat_file_ref_1" id="flat_file_ref_1"></a>
 <small><pre>
-<a href="load_config_c.slsrc.html#flat_file" target="src">00033</a>      err = lbm_config((const char *)LBM_CONFIG_FLAT_FILE);
-<a href="load_config_c.slsrc.html#flat_file" target="src">00034</a>      EX_LBM_CHK(err);
+<a href="load_config_c.slsrc.html#flat_file" target="src">00053</a>      err = lbm_config((const char *)LBM_CONFIG_FLAT_FILE);
+<a href="load_config_c.slsrc.html#flat_file" target="src">00054</a>      EX_LBM_CHK(err);
 </pre><!-- endblock flat_file_ref_1 --></small>
 
 
@@ -79,8 +79,8 @@ it would look like this:</p>
 	to specific attributes this application should be setting:</p>
 	<a name="xml_file_ref_1" id="xml_file_ref_1"></a>
 <small><pre>
-<a href="load_config_c.slsrc.html#xml_file" target="src">00036</a>      err = lbm_config_xml_file((const char *)LBM_CONFIG_XML_FILE, (const char *)LBM_APPLICATION_NAME);
-<a href="load_config_c.slsrc.html#xml_file" target="src">00037</a>      EX_LBM_CHK(err);
+<a href="load_config_c.slsrc.html#xml_file" target="src">00056</a>      err = lbm_config_xml_file((const char *)LBM_CONFIG_XML_FILE, (const char *)LBM_APPLICATION_NAME);
+<a href="load_config_c.slsrc.html#xml_file" target="src">00057</a>      EX_LBM_CHK(err);
 </pre><!-- endblock xml_file_ref_1 --></small>
 
 
@@ -90,14 +90,14 @@ it would look like this:</p>
         print a message and exit the program:</p>
         <a name="error_check_ref_1" id="error_check_ref_1"></a>
 <small><pre>
-<a href="load_config_c.slsrc.html#error_check" target="src">00016</a>  /* Example error checking macro.  Include after each UM call. */
-<a href="load_config_c.slsrc.html#error_check" target="src">00017</a>  #define EX_LBM_CHK(err) do { \
-<a href="load_config_c.slsrc.html#error_check" target="src">00018</a>          if ((err) &lt; 0) { \
-<a href="load_config_c.slsrc.html#error_check" target="src">00019</a>                  fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
-<a href="load_config_c.slsrc.html#error_check" target="src">00020</a>                  __FILE__, __LINE__, lbm_errmsg()); \
-<a href="load_config_c.slsrc.html#error_check" target="src">00021</a>                  exit(1); \
-<a href="load_config_c.slsrc.html#error_check" target="src">00022</a>          }  \
-<a href="load_config_c.slsrc.html#error_check" target="src">00023</a>  } while (0)
+<a href="load_config_c.slsrc.html#error_check" target="src">00035</a>  /* Example error checking macro.  Include after each UM call. */
+<a href="load_config_c.slsrc.html#error_check" target="src">00036</a>  #define EX_LBM_CHK(err) do { \
+<a href="load_config_c.slsrc.html#error_check" target="src">00037</a>          if ((err) &lt; 0) { \
+<a href="load_config_c.slsrc.html#error_check" target="src">00038</a>                  fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
+<a href="load_config_c.slsrc.html#error_check" target="src">00039</a>                  __FILE__, __LINE__, lbm_errmsg()); \
+<a href="load_config_c.slsrc.html#error_check" target="src">00040</a>                  exit(1); \
+<a href="load_config_c.slsrc.html#error_check" target="src">00041</a>          }  \
+<a href="load_config_c.slsrc.html#error_check" target="src">00042</a>  } while (0)
 </pre><!-- endblock error_check_ref_1 --></small>
 
 
@@ -113,18 +113,18 @@ it would look like this:</p>
         <p>A small effort was made to provide a some portability between Unix and Windows. For example:</p>
         <a name="includes_ref_1" id="includes_ref_1"></a>
 <small><pre>
-<a href="load_config_c.slsrc.html#includes" target="src">00003</a>  #include &lt;stdio.h&gt;
-<a href="load_config_c.slsrc.html#includes" target="src">00004</a>  
-<a href="load_config_c.slsrc.html#includes" target="src">00005</a>  #if defined(_MSC_VER)
-<a href="load_config_c.slsrc.html#includes" target="src">00006</a>  /* Windows-only includes */
-<a href="load_config_c.slsrc.html#includes" target="src">00007</a>  #include &lt;winsock2.h&gt;
-<a href="load_config_c.slsrc.html#includes" target="src">00008</a>  #else
-<a href="load_config_c.slsrc.html#includes" target="src">00009</a>  /* Unix-only includes */
-<a href="load_config_c.slsrc.html#includes" target="src">00010</a>  #include &lt;stdlib.h&gt;
-<a href="load_config_c.slsrc.html#includes" target="src">00011</a>  #include &lt;unistd.h&gt;
-<a href="load_config_c.slsrc.html#includes" target="src">00012</a>  #endif
-<a href="load_config_c.slsrc.html#includes" target="src">00013</a>  
-<a href="load_config_c.slsrc.html#includes" target="src">00014</a>  #include &lt;lbm/lbm.h&gt;
+<a href="load_config_c.slsrc.html#includes" target="src">00022</a>  #include &lt;stdio.h&gt;
+<a href="load_config_c.slsrc.html#includes" target="src">00023</a>  
+<a href="load_config_c.slsrc.html#includes" target="src">00024</a>  #if defined(_MSC_VER)
+<a href="load_config_c.slsrc.html#includes" target="src">00025</a>  /* Windows-only includes */
+<a href="load_config_c.slsrc.html#includes" target="src">00026</a>  #include &lt;winsock2.h&gt;
+<a href="load_config_c.slsrc.html#includes" target="src">00027</a>  #else
+<a href="load_config_c.slsrc.html#includes" target="src">00028</a>  /* Unix-only includes */
+<a href="load_config_c.slsrc.html#includes" target="src">00029</a>  #include &lt;stdlib.h&gt;
+<a href="load_config_c.slsrc.html#includes" target="src">00030</a>  #include &lt;unistd.h&gt;
+<a href="load_config_c.slsrc.html#includes" target="src">00031</a>  #endif
+<a href="load_config_c.slsrc.html#includes" target="src">00032</a>  
+<a href="load_config_c.slsrc.html#includes" target="src">00033</a>  #include &lt;lbm/lbm.h&gt;
 </pre><!-- endblock includes_ref_1 --></small>
 
 

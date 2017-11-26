@@ -46,10 +46,10 @@
 	configuration files.</p>
 	<a name="store_configs_ref_1" id="store_configs_ref_1"></a>
 <small><pre>
-<a href="ump_src_failover_c.slsrc.html#store_configs" target="src">00035</a>  #define UMP_PRIMARY_STORE "127.0.0.1:29999"
-<a href="ump_src_failover_c.slsrc.html#store_configs" target="src">00036</a>  #define UMP_PRIMARY_SESSION_ID "100"
-<a href="ump_src_failover_c.slsrc.html#store_configs" target="src">00037</a>  #define UMP_SECONDARY_STORE "127.0.0.1:30000"
-<a href="ump_src_failover_c.slsrc.html#store_configs" target="src">00038</a>  #define UMP_SECONDARY_SESSION_ID "200"
+<a href="ump_src_failover_c.slsrc.html#store_configs" target="src">00054</a>  #define UMP_PRIMARY_STORE "127.0.0.1:29999"
+<a href="ump_src_failover_c.slsrc.html#store_configs" target="src">00055</a>  #define UMP_PRIMARY_SESSION_ID "100"
+<a href="ump_src_failover_c.slsrc.html#store_configs" target="src">00056</a>  #define UMP_SECONDARY_STORE "127.0.0.1:30000"
+<a href="ump_src_failover_c.slsrc.html#store_configs" target="src">00057</a>  #define UMP_SECONDARY_SESSION_ID "200"
 </pre><!-- endblock store_configs_ref_1 --></small>
 
 
@@ -105,7 +105,7 @@ value of "0.0.0.0:0" to completly clear the list of entries and start over.
 	defined as a global attribute:</p>
 	<a name="clear_store_configs_ref_1" id="clear_store_configs_ref_1"></a>
 <small><pre>
-<a href="ump_src_failover_c.slsrc.html#clear_store_configs" target="src">00039</a>  #define UMP_CLEAR_STORE_CONFIG "0.0.0.0:0"
+<a href="ump_src_failover_c.slsrc.html#clear_store_configs" target="src">00058</a>  #define UMP_CLEAR_STORE_CONFIG "0.0.0.0:0"
 </pre><!-- endblock clear_store_configs_ref_1 --></small>
 
 
@@ -122,14 +122,14 @@ value of "0.0.0.0:0" to completly clear the list of entries and start over.
 	as store the pointer object to the source itself and the sources context</p>
 	<a name="app_src_struct_ref_1" id="app_src_struct_ref_1"></a>
 <small><pre>
-<a href="ump_src_failover_c.slsrc.html#app_src_struct" target="src">00041</a>  typedef enum {NOT_INIT, INIT, READY, UNRESP} state_type_e;
-<a href="ump_src_failover_c.slsrc.html#app_src_struct" target="src">00042</a>  typedef enum {PRIMARY, BACKUP} mode_type_e;
-<a href="ump_src_failover_c.slsrc.html#app_src_struct" target="src">00043</a>  typedef struct app_src_s {
-<a href="ump_src_failover_c.slsrc.html#app_src_struct" target="src">00044</a>          lbm_context_t *ctx;
-<a href="ump_src_failover_c.slsrc.html#app_src_struct" target="src">00045</a>          lbm_src_t *src;
-<a href="ump_src_failover_c.slsrc.html#app_src_struct" target="src">00046</a>          state_type_e state;
-<a href="ump_src_failover_c.slsrc.html#app_src_struct" target="src">00047</a>          mode_type_e mode;
-<a href="ump_src_failover_c.slsrc.html#app_src_struct" target="src">00048</a>  } app_src_s;
+<a href="ump_src_failover_c.slsrc.html#app_src_struct" target="src">00060</a>  typedef enum {NOT_INIT, INIT, READY, UNRESP} state_type_e;
+<a href="ump_src_failover_c.slsrc.html#app_src_struct" target="src">00061</a>  typedef enum {PRIMARY, BACKUP} mode_type_e;
+<a href="ump_src_failover_c.slsrc.html#app_src_struct" target="src">00062</a>  typedef struct app_src_s {
+<a href="ump_src_failover_c.slsrc.html#app_src_struct" target="src">00063</a>      lbm_context_t *ctx;
+<a href="ump_src_failover_c.slsrc.html#app_src_struct" target="src">00064</a>      lbm_src_t *src;
+<a href="ump_src_failover_c.slsrc.html#app_src_struct" target="src">00065</a>      state_type_e state;
+<a href="ump_src_failover_c.slsrc.html#app_src_struct" target="src">00066</a>      mode_type_e mode;
+<a href="ump_src_failover_c.slsrc.html#app_src_struct" target="src">00067</a>  } app_src_s;
 </pre><!-- endblock app_src_struct_ref_1 --></small>
 
 
@@ -137,11 +137,8 @@ value of "0.0.0.0:0" to completly clear the list of entries and start over.
 	<p>Standard UM code to initialize and create an LBM context:</p>
 	<a name="init_create_context_ref_1" id="init_create_context_ref_1"></a>
 <small><pre>
-<a href="ump_src_failover_c.slsrc.html#init_create_context" target="src">00166</a>          err = lbm_context_attr_create(&amp;cattr);
-<a href="ump_src_failover_c.slsrc.html#init_create_context" target="src">00167</a>          EX_LBM_CHK(err);
-<a href="ump_src_failover_c.slsrc.html#init_create_context" target="src">00168</a>  
-<a href="ump_src_failover_c.slsrc.html#init_create_context" target="src">00169</a>          err = lbm_context_create(&amp;ctx, cattr, NULL, NULL);
-<a href="ump_src_failover_c.slsrc.html#init_create_context" target="src">00170</a>          EX_LBM_CHK(err);
+<a href="ump_src_failover_c.slsrc.html#init_create_context" target="src">00198</a>      err = lbm_context_create(&amp;ctx, NULL, NULL, NULL);
+<a href="ump_src_failover_c.slsrc.html#init_create_context" target="src">00199</a>      EX_LBM_CHK(err);
 </pre><!-- endblock init_create_context_ref_1 --></small>
 
 
@@ -151,9 +148,9 @@ value of "0.0.0.0:0" to completly clear the list of entries and start over.
 	created within it:</p>
 	<a name="init_app_src_ref_1" id="init_app_src_ref_1"></a>
 <small><pre>
-<a href="ump_src_failover_c.slsrc.html#init_app_src" target="src">00172</a>          app_src.state = NOT_INIT;
-<a href="ump_src_failover_c.slsrc.html#init_app_src" target="src">00173</a>          app_src.mode = PRIMARY;
-<a href="ump_src_failover_c.slsrc.html#init_app_src" target="src">00174</a>          app_src.ctx = ctx;
+<a href="ump_src_failover_c.slsrc.html#init_app_src" target="src">00201</a>      app_src.state = NOT_INIT;
+<a href="ump_src_failover_c.slsrc.html#init_app_src" target="src">00202</a>      app_src.mode = PRIMARY;
+<a href="ump_src_failover_c.slsrc.html#init_app_src" target="src">00203</a>      app_src.ctx = ctx;
 </pre><!-- endblock init_app_src_ref_1 --></small>
 
 
@@ -162,8 +159,8 @@ value of "0.0.0.0:0" to completly clear the list of entries and start over.
 	the loop, the application intializes/creates a source:</p>
 	<a name="start_init_ref_1" id="start_init_ref_1"></a>
 <small><pre>
-<a href="ump_src_failover_c.slsrc.html#start_init" target="src">00179</a>                  if (app_src.state == NOT_INIT)
-<a href="ump_src_failover_c.slsrc.html#start_init" target="src">00180</a>                          init_src(&amp;app_src);
+<a href="ump_src_failover_c.slsrc.html#start_init" target="src">00208</a>          if (app_src.state == NOT_INIT)
+<a href="ump_src_failover_c.slsrc.html#start_init" target="src">00209</a>              init_src(&amp;app_src);
 </pre><!-- endblock start_init_ref_1 --></small>
 
 
@@ -189,11 +186,11 @@ When to Set:   Can only be set during object initialization
 to "0.0.0.0:0":</p>
 	<a name="init_source_attr_ref_1" id="init_source_attr_ref_1"></a>
 <small><pre>
-<a href="ump_src_failover_c.slsrc.html#init_source_attr" target="src">00091</a>          err = lbm_src_topic_attr_create(&amp;tattr);
-<a href="ump_src_failover_c.slsrc.html#init_source_attr" target="src">00092</a>          EX_LBM_CHK(err);
-<a href="ump_src_failover_c.slsrc.html#init_source_attr" target="src">00093</a>  
-<a href="ump_src_failover_c.slsrc.html#init_source_attr" target="src">00094</a>          err = lbm_src_topic_attr_str_setopt(tattr, "ume_store", UMP_CLEAR_STORE_CONFIG);
-<a href="ump_src_failover_c.slsrc.html#init_source_attr" target="src">00095</a>          EX_LBM_CHK(err);
+<a href="ump_src_failover_c.slsrc.html#init_source_attr" target="src">00112</a>      err = lbm_src_topic_attr_create(&amp;tattr);
+<a href="ump_src_failover_c.slsrc.html#init_source_attr" target="src">00113</a>      EX_LBM_CHK(err);
+<a href="ump_src_failover_c.slsrc.html#init_source_attr" target="src">00114</a>  
+<a href="ump_src_failover_c.slsrc.html#init_source_attr" target="src">00115</a>      err = lbm_src_topic_attr_str_setopt(tattr, "ume_store", UMP_CLEAR_STORE_CONFIG);
+<a href="ump_src_failover_c.slsrc.html#init_source_attr" target="src">00116</a>      EX_LBM_CHK(err);
 </pre><!-- endblock init_source_attr_ref_1 --></small>
 
 
@@ -201,31 +198,37 @@ to "0.0.0.0:0":</p>
 	initialized to PRIMARY, so it'll use the primary stores and associated SessionID:</p>
 	<a name="set_store_ref_1" id="set_store_ref_1"></a>
 <small><pre>
-<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00098</a>          if (app_src-&gt;mode == PRIMARY) 
-<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00099</a>                  err = lbm_src_topic_attr_str_setopt(tattr, "ume_store", UMP_PRIMARY_STORE);
-<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00100</a>          else
-<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00101</a>                  err = lbm_src_topic_attr_str_setopt(tattr, "ume_store", UMP_SECONDARY_STORE);
-<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00102</a>          EX_LBM_CHK(err);
-<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00103</a>  
-<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00104</a>          if (app_src-&gt;mode == PRIMARY)
-<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00105</a>                  err = lbm_src_topic_attr_str_setopt(tattr, "ume_session_id", UMP_PRIMARY_SESSION_ID);
-<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00106</a>          else
-<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00107</a>                  err = lbm_src_topic_attr_str_setopt(tattr, "ume_session_id", UMP_SECONDARY_SESSION_ID);
-<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00108</a>          EX_LBM_CHK(err);
+<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00119</a>      if (app_src-&gt;mode == PRIMARY) {
+<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00120</a>          err = lbm_src_topic_attr_str_setopt(tattr, "ume_store", UMP_PRIMARY_STORE);
+<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00121</a>          EX_LBM_CHK(err);
+<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00122</a>      }
+<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00123</a>      else {
+<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00124</a>          err = lbm_src_topic_attr_str_setopt(tattr, "ume_store", UMP_SECONDARY_STORE);
+<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00125</a>          EX_LBM_CHK(err);
+<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00126</a>      }
+<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00127</a>  
+<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00128</a>      if (app_src-&gt;mode == PRIMARY) {
+<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00129</a>          err = lbm_src_topic_attr_str_setopt(tattr, "ume_session_id", UMP_PRIMARY_SESSION_ID);
+<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00130</a>          EX_LBM_CHK(err);
+<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00131</a>      }
+<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00132</a>      else {
+<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00133</a>          err = lbm_src_topic_attr_str_setopt(tattr, "ume_session_id", UMP_SECONDARY_SESSION_ID);
+<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00134</a>          EX_LBM_CHK(err);
+<a href="ump_src_failover_c.slsrc.html#set_store" target="src">00135</a>      }
 </pre><!-- endblock set_store_ref_1 --></small>
 
 
 	<p>Finally the sample sets the store behavior to use quorum/consensus and creates the source object:</p>
 	<a name="complete_init_ref_1" id="complete_init_ref_1"></a>
 <small><pre>
-<a href="ump_src_failover_c.slsrc.html#complete_init" target="src">00111</a>          err = lbm_src_topic_attr_str_setopt(tattr, "ume_store_behavior", "qc");
-<a href="ump_src_failover_c.slsrc.html#complete_init" target="src">00112</a>          EX_LBM_CHK(err);
-<a href="ump_src_failover_c.slsrc.html#complete_init" target="src">00113</a>  
-<a href="ump_src_failover_c.slsrc.html#complete_init" target="src">00114</a>          err = lbm_src_topic_alloc(&amp;topic, app_src-&gt;ctx, "test.topic", tattr);
-<a href="ump_src_failover_c.slsrc.html#complete_init" target="src">00115</a>          EX_LBM_CHK(err);
-<a href="ump_src_failover_c.slsrc.html#complete_init" target="src">00116</a>  
-<a href="ump_src_failover_c.slsrc.html#complete_init" target="src">00117</a>          err = lbm_src_create(&amp;(app_src-&gt;src), app_src-&gt;ctx, topic, handle_src_event, app_src, NULL);
-<a href="ump_src_failover_c.slsrc.html#complete_init" target="src">00118</a>          EX_LBM_CHK(err);
+<a href="ump_src_failover_c.slsrc.html#complete_init" target="src">00138</a>      err = lbm_src_topic_attr_str_setopt(tattr, "ume_store_behavior", "qc");
+<a href="ump_src_failover_c.slsrc.html#complete_init" target="src">00139</a>      EX_LBM_CHK(err);
+<a href="ump_src_failover_c.slsrc.html#complete_init" target="src">00140</a>  
+<a href="ump_src_failover_c.slsrc.html#complete_init" target="src">00141</a>      err = lbm_src_topic_alloc(&amp;topic, app_src-&gt;ctx, "test.topic", tattr);
+<a href="ump_src_failover_c.slsrc.html#complete_init" target="src">00142</a>      EX_LBM_CHK(err);
+<a href="ump_src_failover_c.slsrc.html#complete_init" target="src">00143</a>  
+<a href="ump_src_failover_c.slsrc.html#complete_init" target="src">00144</a>      err = lbm_src_create(&amp;(app_src-&gt;src), app_src-&gt;ctx, topic, handle_src_event, app_src, NULL);
+<a href="ump_src_failover_c.slsrc.html#complete_init" target="src">00145</a>      EX_LBM_CHK(err);
 </pre><!-- endblock complete_init_ref_1 --></small>
 
 
@@ -236,15 +239,15 @@ to "0.0.0.0:0":</p>
 	registration complete event is coded into the source event handler function, and the complete event should like this:</p>
 	<a name="reg_complete_ref_1" id="reg_complete_ref_1"></a>
 <small><pre>
-<a href="ump_src_failover_c.slsrc.html#reg_complete" target="src">00062</a>          case LBM_SRC_EVENT_UME_REGISTRATION_COMPLETE_EX:
-<a href="ump_src_failover_c.slsrc.html#reg_complete" target="src">00063</a>          {
-<a href="ump_src_failover_c.slsrc.html#reg_complete" target="src">00064</a>                  lbm_src_event_ume_registration_complete_ex_t *reg = (lbm_src_event_ume_registration_complete_ex_t *)ed;
-<a href="ump_src_failover_c.slsrc.html#reg_complete" target="src">00065</a>  
-<a href="ump_src_failover_c.slsrc.html#reg_complete" target="src">00066</a>                  printf("UME registration complete. SQN %x.\n", reg-&gt;sequence_number);
-<a href="ump_src_failover_c.slsrc.html#reg_complete" target="src">00067</a>  
-<a href="ump_src_failover_c.slsrc.html#reg_complete" target="src">00068</a>                  app_src-&gt;state = READY;
-<a href="ump_src_failover_c.slsrc.html#reg_complete" target="src">00069</a>                  break;
-<a href="ump_src_failover_c.slsrc.html#reg_complete" target="src">00070</a>          }
+<a href="ump_src_failover_c.slsrc.html#reg_complete" target="src">00082</a>      case LBM_SRC_EVENT_UME_REGISTRATION_COMPLETE_EX:
+<a href="ump_src_failover_c.slsrc.html#reg_complete" target="src">00083</a>      {
+<a href="ump_src_failover_c.slsrc.html#reg_complete" target="src">00084</a>          lbm_src_event_ume_registration_complete_ex_t *reg = (lbm_src_event_ume_registration_complete_ex_t *)ed;
+<a href="ump_src_failover_c.slsrc.html#reg_complete" target="src">00085</a>  
+<a href="ump_src_failover_c.slsrc.html#reg_complete" target="src">00086</a>          printf("UME registration complete. SQN %x.\n", reg-&gt;sequence_number);
+<a href="ump_src_failover_c.slsrc.html#reg_complete" target="src">00087</a>  
+<a href="ump_src_failover_c.slsrc.html#reg_complete" target="src">00088</a>          app_src-&gt;state = READY;
+<a href="ump_src_failover_c.slsrc.html#reg_complete" target="src">00089</a>          break;
+<a href="ump_src_failover_c.slsrc.html#reg_complete" target="src">00090</a>      }
 </pre><!-- endblock reg_complete_ref_1 --></small>
 
 
@@ -253,15 +256,15 @@ to "0.0.0.0:0":</p>
 	is lost, the source state must be updated to note this change because it can no longer send messages:</p>
 	<a name="unresponsive_ref_1" id="unresponsive_ref_1"></a>
 <small><pre>
-<a href="ump_src_failover_c.slsrc.html#unresponsive" target="src">00071</a>          case LBM_SRC_EVENT_UME_STORE_UNRESPONSIVE:
-<a href="ump_src_failover_c.slsrc.html#unresponsive" target="src">00072</a>          {
-<a href="ump_src_failover_c.slsrc.html#unresponsive" target="src">00073</a>                  const char *infostr = (const char *)ed;
-<a href="ump_src_failover_c.slsrc.html#unresponsive" target="src">00074</a>                  
-<a href="ump_src_failover_c.slsrc.html#unresponsive" target="src">00075</a>                  printf("UME store: %s\n", infostr);
-<a href="ump_src_failover_c.slsrc.html#unresponsive" target="src">00076</a>                  if (strstr(infostr, "quorum lost") != NULL)
-<a href="ump_src_failover_c.slsrc.html#unresponsive" target="src">00077</a>                          app_src-&gt;state = UNRESP;
-<a href="ump_src_failover_c.slsrc.html#unresponsive" target="src">00078</a>                  break;
-<a href="ump_src_failover_c.slsrc.html#unresponsive" target="src">00079</a>          }
+<a href="ump_src_failover_c.slsrc.html#unresponsive" target="src">00091</a>      case LBM_SRC_EVENT_UME_STORE_UNRESPONSIVE:
+<a href="ump_src_failover_c.slsrc.html#unresponsive" target="src">00092</a>      {
+<a href="ump_src_failover_c.slsrc.html#unresponsive" target="src">00093</a>          const char *infostr = (const char *)ed;
+<a href="ump_src_failover_c.slsrc.html#unresponsive" target="src">00094</a>          
+<a href="ump_src_failover_c.slsrc.html#unresponsive" target="src">00095</a>          printf("UME store: %s\n", infostr);
+<a href="ump_src_failover_c.slsrc.html#unresponsive" target="src">00096</a>          if (strstr(infostr, "quorum lost") != NULL)
+<a href="ump_src_failover_c.slsrc.html#unresponsive" target="src">00097</a>              app_src-&gt;state = UNRESP;
+<a href="ump_src_failover_c.slsrc.html#unresponsive" target="src">00098</a>          break;
+<a href="ump_src_failover_c.slsrc.html#unresponsive" target="src">00099</a>      }
 </pre><!-- endblock unresponsive_ref_1 --></small>
 
 
@@ -283,11 +286,11 @@ to "0.0.0.0:0":</p>
 	<p>So here is the <i><b>sample</b></i> application failing over once the main loop has detected the state as UNRESP:</p>
 	<a name="primary_unresp_ref_1" id="primary_unresp_ref_1"></a>
 <small><pre>
-<a href="ump_src_failover_c.slsrc.html#primary_unresp" target="src">00194</a>                          if (app_src.state == UNRESP &amp;&amp; app_src.mode == PRIMARY)
-<a href="ump_src_failover_c.slsrc.html#primary_unresp" target="src">00195</a>                          {
-<a href="ump_src_failover_c.slsrc.html#primary_unresp" target="src">00196</a>                                  printf("Primary store unresponsive, failing over to backup\n");
-<a href="ump_src_failover_c.slsrc.html#primary_unresp" target="src">00197</a>                                  failover_app_src(&amp;app_src);
-<a href="ump_src_failover_c.slsrc.html#primary_unresp" target="src">00198</a>                          }
+<a href="ump_src_failover_c.slsrc.html#primary_unresp" target="src">00223</a>              if (app_src.state == UNRESP &amp;&amp; app_src.mode == PRIMARY)
+<a href="ump_src_failover_c.slsrc.html#primary_unresp" target="src">00224</a>              {
+<a href="ump_src_failover_c.slsrc.html#primary_unresp" target="src">00225</a>                  printf("Primary store unresponsive, failing over to backup\n");
+<a href="ump_src_failover_c.slsrc.html#primary_unresp" target="src">00226</a>                  failover_app_src(&amp;app_src);
+<a href="ump_src_failover_c.slsrc.html#primary_unresp" target="src">00227</a>              }
 </pre><!-- endblock primary_unresp_ref_1 --></small>
 
 
@@ -300,28 +303,28 @@ to "0.0.0.0:0":</p>
 	<p>First, the source gets deleted:</p>
 	<a name="delete_src_ref_1" id="delete_src_ref_1"></a>
 <small><pre>
-<a href="ump_src_failover_c.slsrc.html#delete_src" target="src">00128</a>          err = lbm_src_delete(app_src-&gt;src);
-<a href="ump_src_failover_c.slsrc.html#delete_src" target="src">00129</a>          EX_LBM_CHK(err);
+<a href="ump_src_failover_c.slsrc.html#delete_src" target="src">00158</a>      err = lbm_src_delete(app_src-&gt;src);
+<a href="ump_src_failover_c.slsrc.html#delete_src" target="src">00159</a>      EX_LBM_CHK(err);
 </pre><!-- endblock delete_src_ref_1 --></small>
 
 
 	<p>Then the state gets updated to NOT_INIT, and the mode set to backup so the backup stores can be configured upon initialization:</p>
 	<a name="update_state_not_init_ref_1" id="update_state_not_init_ref_1"></a>
 <small><pre>
-<a href="ump_src_failover_c.slsrc.html#update_state_not_init" target="src">00131</a>          app_src-&gt;src = NULL;
-<a href="ump_src_failover_c.slsrc.html#update_state_not_init" target="src">00132</a>          app_src-&gt;state = NOT_INIT;
-<a href="ump_src_failover_c.slsrc.html#update_state_not_init" target="src">00133</a>          app_src-&gt;mode = BACKUP;
+<a href="ump_src_failover_c.slsrc.html#update_state_not_init" target="src">00161</a>      app_src-&gt;src = NULL;
+<a href="ump_src_failover_c.slsrc.html#update_state_not_init" target="src">00162</a>      app_src-&gt;state = NOT_INIT;
+<a href="ump_src_failover_c.slsrc.html#update_state_not_init" target="src">00163</a>      app_src-&gt;mode = BACKUP;
 </pre><!-- endblock update_state_not_init_ref_1 --></small>
 
 
 	<p>In the event that the backup store goes unresponsive, the sample application is simply coded to exit at this point:</p>
 	<a name="backup_unresp_ref_1" id="backup_unresp_ref_1"></a>
 <small><pre>
-<a href="ump_src_failover_c.slsrc.html#backup_unresp" target="src">00199</a>                          else if (app_src.state == UNRESP &amp;&amp; app_src.mode == BACKUP)
-<a href="ump_src_failover_c.slsrc.html#backup_unresp" target="src">00200</a>                          {
-<a href="ump_src_failover_c.slsrc.html#backup_unresp" target="src">00201</a>                                  printf("Backup store unresponsive. Exiting\n");
-<a href="ump_src_failover_c.slsrc.html#backup_unresp" target="src">00202</a>                                  exit(1);
-<a href="ump_src_failover_c.slsrc.html#backup_unresp" target="src">00203</a>                          }
+<a href="ump_src_failover_c.slsrc.html#backup_unresp" target="src">00228</a>              else if (app_src.state == UNRESP &amp;&amp; app_src.mode == BACKUP)
+<a href="ump_src_failover_c.slsrc.html#backup_unresp" target="src">00229</a>              {
+<a href="ump_src_failover_c.slsrc.html#backup_unresp" target="src">00230</a>                  printf("Backup store unresponsive. Exiting\n");
+<a href="ump_src_failover_c.slsrc.html#backup_unresp" target="src">00231</a>                  exit(1);
+<a href="ump_src_failover_c.slsrc.html#backup_unresp" target="src">00232</a>              }
 </pre><!-- endblock backup_unresp_ref_1 --></small>
 
 
@@ -342,21 +345,21 @@ to "0.0.0.0:0":</p>
         <p>Include files for this application. Notice the Windows specific include files - these are not necessary for Linux only applications</p>
         <a name="includes_ref_1" id="includes_ref_1"></a>
 <small><pre>
-<a href="ump_src_failover_c.slsrc.html#includes" target="src">00003</a>  #include &lt;stdio.h&gt;
-<a href="ump_src_failover_c.slsrc.html#includes" target="src">00004</a>  #include &lt;string.h&gt;
-<a href="ump_src_failover_c.slsrc.html#includes" target="src">00005</a>  
-<a href="ump_src_failover_c.slsrc.html#includes" target="src">00006</a>  #if defined(_MSC_VER)
-<a href="ump_src_failover_c.slsrc.html#includes" target="src">00007</a>  /* Windows-only includes */
-<a href="ump_src_failover_c.slsrc.html#includes" target="src">00008</a>  #include &lt;winsock2.h&gt;
-<a href="ump_src_failover_c.slsrc.html#includes" target="src">00009</a>  #define SLEEP(s) Sleep((s)*1000)
-<a href="ump_src_failover_c.slsrc.html#includes" target="src">00010</a>  #else
-<a href="ump_src_failover_c.slsrc.html#includes" target="src">00011</a>  /* Unix-only includes */
-<a href="ump_src_failover_c.slsrc.html#includes" target="src">00012</a>  #include &lt;stdlib.h&gt;
-<a href="ump_src_failover_c.slsrc.html#includes" target="src">00013</a>  #include &lt;unistd.h&gt;
-<a href="ump_src_failover_c.slsrc.html#includes" target="src">00014</a>  #define SLEEP(s) sleep(s)
-<a href="ump_src_failover_c.slsrc.html#includes" target="src">00015</a>  #endif
-<a href="ump_src_failover_c.slsrc.html#includes" target="src">00016</a>  
-<a href="ump_src_failover_c.slsrc.html#includes" target="src">00017</a>  #include &lt;lbm/lbm.h&gt;
+<a href="ump_src_failover_c.slsrc.html#includes" target="src">00022</a>  #include &lt;stdio.h&gt;
+<a href="ump_src_failover_c.slsrc.html#includes" target="src">00023</a>  #include &lt;string.h&gt;
+<a href="ump_src_failover_c.slsrc.html#includes" target="src">00024</a>  
+<a href="ump_src_failover_c.slsrc.html#includes" target="src">00025</a>  #if defined(_MSC_VER)
+<a href="ump_src_failover_c.slsrc.html#includes" target="src">00026</a>  /* Windows-only includes */
+<a href="ump_src_failover_c.slsrc.html#includes" target="src">00027</a>  #include &lt;winsock2.h&gt;
+<a href="ump_src_failover_c.slsrc.html#includes" target="src">00028</a>  #define SLEEP(s) Sleep((s)*1000)
+<a href="ump_src_failover_c.slsrc.html#includes" target="src">00029</a>  #else
+<a href="ump_src_failover_c.slsrc.html#includes" target="src">00030</a>  /* Unix-only includes */
+<a href="ump_src_failover_c.slsrc.html#includes" target="src">00031</a>  #include &lt;stdlib.h&gt;
+<a href="ump_src_failover_c.slsrc.html#includes" target="src">00032</a>  #include &lt;unistd.h&gt;
+<a href="ump_src_failover_c.slsrc.html#includes" target="src">00033</a>  #define SLEEP(s) sleep(s)
+<a href="ump_src_failover_c.slsrc.html#includes" target="src">00034</a>  #endif
+<a href="ump_src_failover_c.slsrc.html#includes" target="src">00035</a>  
+<a href="ump_src_failover_c.slsrc.html#includes" target="src">00036</a>  #include &lt;lbm/lbm.h&gt;
 </pre><!-- endblock includes_ref_1 --></small>
 
 
@@ -365,11 +368,11 @@ to "0.0.0.0:0":</p>
 	  sleep() for any number of seconds.</p>
 	<a name="sleep_macro_ref_1" id="sleep_macro_ref_1"></a>
 <small><pre>
-<a href="ump_src_failover_c.slsrc.html#sleep_macro" target="src">00019</a>  #if defined(_WIN32)
-<a href="ump_src_failover_c.slsrc.html#sleep_macro" target="src">00020</a>  #   define SLEEP_SEC(x) Sleep((x)*1000)
-<a href="ump_src_failover_c.slsrc.html#sleep_macro" target="src">00021</a>  #else
-<a href="ump_src_failover_c.slsrc.html#sleep_macro" target="src">00022</a>  #   define SLEEP_SEC(x) sleep(x)
-<a href="ump_src_failover_c.slsrc.html#sleep_macro" target="src">00023</a>  #endif
+<a href="ump_src_failover_c.slsrc.html#sleep_macro" target="src">00038</a>  #if defined(_WIN32)
+<a href="ump_src_failover_c.slsrc.html#sleep_macro" target="src">00039</a>  #   define SLEEP_SEC(x) Sleep((x)*1000)
+<a href="ump_src_failover_c.slsrc.html#sleep_macro" target="src">00040</a>  #else
+<a href="ump_src_failover_c.slsrc.html#sleep_macro" target="src">00041</a>  #   define SLEEP_SEC(x) sleep(x)
+<a href="ump_src_failover_c.slsrc.html#sleep_macro" target="src">00042</a>  #endif
 </pre><!-- endblock sleep_macro_ref_1 --></small>
 
 

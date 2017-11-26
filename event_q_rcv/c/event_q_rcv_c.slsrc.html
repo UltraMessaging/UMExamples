@@ -88,7 +88,7 @@
 00070
 00071
 00072
-<a href="event_q_rcv.sldoc.html#evq_create_ref_1" target="doc">00073</a>
+00073
 00074
 00075
 00076
@@ -101,30 +101,57 @@
 00083
 00084
 00085
-<a href="event_q_rcv.sldoc.html#rcv_create_ref_1" target="doc">00086</a>
-00087
+00086
+<a href="event_q_rcv.sldoc.html#evq_create_ref_1" target="doc">00087</a>
 00088
 00089
 00090
 00091
 00092
-00093
+<a href="event_q_rcv.sldoc.html#rcv_create_ref_1" target="doc">00093</a>
 00094
-<a href="event_q_rcv.sldoc.html#evq_run_ref_1" target="doc">00095</a>
+00095
 00096
 00097
 00098
-00099
-<a href="event_q_rcv.sldoc.html#evq_close_ref_1" target="doc">00100</a>
-<a href="event_q_rcv.sldoc.html#evq_close_ref_1" target="doc">00101</a>
-<a href="event_q_rcv.sldoc.html#evq_close_ref_1" target="doc">00102</a>
+<a href="event_q_rcv.sldoc.html#evq_run_ref_1" target="doc">00099</a>
+<a href="event_q_rcv.sldoc.html#evq_run_ref_1" target="doc">00100</a>
+00101
+00102
 00103
 00104
-00105
-00106
-00107
-00108
-</td><td>  /* Example on setting Ultra Messaging attributes */
+<a href="event_q_rcv.sldoc.html#evq_close_ref_1" target="doc">00105</a>
+<a href="event_q_rcv.sldoc.html#evq_close_ref_1" target="doc">00106</a>
+<a href="event_q_rcv.sldoc.html#evq_close_ref_1" target="doc">00107</a>
+<a href="event_q_rcv.sldoc.html#evq_close_ref_1" target="doc">00108</a>
+<a href="event_q_rcv.sldoc.html#evq_close_ref_1" target="doc">00109</a>
+<a href="event_q_rcv.sldoc.html#evq_close_ref_1" target="doc">00110</a>
+00111
+00112
+00113
+00114
+00115
+00116
+</td><td>  /* event_q_rcv.c - see http://ultramessaging.github.io/UMExamples/event_q_rcv/c/index.html
+   *
+   * Copyright (c) 2005-2017 Informatica Corporation. All Rights Reserved.
+   * Permission is granted to licensees to use
+   * or alter this software for any purpose, including commercial applications,
+   * according to the terms laid out in the Software License Agreement.
+   *
+   * This source code example is provided by Informatica for educational
+   * and evaluation purposes only.
+   *
+   * THE SOFTWARE IS PROVIDED "AS IS" AND INFORMATICA DISCLAIMS ALL WARRANTIES
+   * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION, ANY IMPLIED WARRANTIES OF
+   * NON-INFRINGEMENT, MERCHANTABILITY OR FITNESS FOR A PARTICULAR
+   * PURPOSE.  INFORMATICA DOES NOT WARRANT THAT USE OF THE SOFTWARE WILL BE
+   * UNINTERRUPTED OR ERROR-FREE.  INFORMATICA SHALL NOT, UNDER ANY CIRCUMSTANCES, BE
+   * LIABLE TO LICENSEE FOR LOST PROFITS, CONSEQUENTIAL, INCIDENTAL, SPECIAL OR
+   * INDIRECT DAMAGES ARISING OUT OF OR RELATED TO THIS AGREEMENT OR THE
+   * TRANSACTIONS CONTEMPLATED HEREUNDER, EVEN IF INFORMATICA HAS BEEN APPRISED OF
+   * THE LIKELIHOOD OF SUCH DAMAGES.
+   */
   
   #include &lt;stdio.h&gt;
   
@@ -141,6 +168,16 @@
   
   #include &lt;lbm/lbm.h&gt;
   
+  /* Example error checking macro.  Include after each UM call. */
+  #define EX_LBM_CHK(err) do { \
+      if ((err) &lt; 0) { \
+          fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
+          __FILE__, __LINE__, lbm_errmsg()); \
+          exit(1); \
+      }  \
+  } while (0)
+  
+  
   /* Received message handler (passed into lbm_rcv_create()) */
   int rcv_handle_msg(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
   {
@@ -154,17 +191,16 @@
           break;
       }
       return 0;
-  }
+  }  /* rcv_handle_msg */
+  
   
   int main(int argc, char **argv)
   {
-      lbm_context_t *ctx;                         /* pointer to context object */
-      lbm_topic_t *topic_1;                       /* pointer to topic object */
-      lbm_rcv_t *rcv;                             /* pointer to source object */
-      lbm_topic_t *rtopic;                        /* pointer to receiver topic object */
-      lbm_context_attr_t * cattr;                 /* pointer to context attribute object */
-      int err;                                    /* return status of lbm functions (true=error) */
-      lbm_event_queue_t *evq = NULL;              /* pointer to eventQ handle */
+      lbm_context_t *ctx;             /* pointer to context object */
+      lbm_rcv_t *rcv;                 /* pointer to source object */
+      lbm_topic_t *rtopic;            /* pointer to receiver topic object */
+      lbm_event_queue_t *evq = NULL;  /* pointer to eventQ handle */
+      int err;
   
   #if defined(_MSC_VER)
       /* windows-specific code */
@@ -177,61 +213,41 @@
       }
   #endif
   
-      /* Initialize the defaults for the context attribute object */
-      if (lbm_context_attr_create(&amp;cattr) != 0)
-      {
-          fprintf(stderr, "lbm_context_attr_create: %s\n", lbm_errmsg());
-          exit(1);
-      }
-  
       /* Creating the context */
-      err = lbm_context_create(&amp;ctx, cattr, NULL, NULL);
-      if (err)
-      {
-          printf("line %d: %s\n", __LINE__, lbm_errmsg());
-          exit(1);
-      }
-  
-      /* Delete the context attribute object */
-      lbm_context_attr_delete(cattr);
+      err = lbm_context_create(&amp;ctx, NULL, NULL, NULL);
+      EX_LBM_CHK(err);
   
       /* Create an event queue and associate it with a callback */
 <span name="evq_create" id="evq_create"></span>      err = lbm_event_queue_create(&amp;evq, NULL, NULL, NULL);
-      if (err == LBM_FAILURE) {
-          fprintf(stderr, "lbm_event_queue_create: %s\n", lbm_errmsg());
-          exit(1);
-      }
+      EX_LBM_CHK(err);
   
       err = lbm_rcv_topic_lookup(&amp;rtopic, ctx, "test.topic", NULL);
-      if (err)
-      {
-          printf("line %d: %s\n", __LINE__, lbm_errmsg());
-          exit(1);
-      }
-      
-<span name="rcv_create" id="rcv_create"></span>      err = lbm_rcv_create(&amp;rcv, ctx, rtopic, rcv_handle_msg, NULL, evq);
-      if (err)
-      {
-          printf("line %d: %s\n", __LINE__, lbm_errmsg());
-          exit(1);
-      }
+      EX_LBM_CHK(err);
   
-      /* This runs the eventQ for 10 seconds.  This means for the next 10 seconds */
-      /* all of the sources events will be processed on this thread.              */
-<span name="evq_run" id="evq_run"></span>      if (lbm_event_dispatch(evq, 10000) == LBM_FAILURE) {
+<span name="rcv_create" id="rcv_create"></span>      err = lbm_rcv_create(&amp;rcv, ctx, rtopic, rcv_handle_msg, NULL, evq);
+      EX_LBM_CHK(err);
+  
+      /* This runs the eventQ for 10 seconds.  This means for the next 10 seconds
+       * all of the sources events will be processed on this thread.  Normally,
+       * this is done on a separate, application-created thread. */
+<span name="evq_run" id="evq_run"></span>      err = lbm_event_dispatch(evq, 10000);
+      if (err == LBM_FAILURE) {
           fprintf(stderr, "lbm_event_dispatch returned error: %s\n", lbm_errmsg());
       }
   
       /* Finished with all LBM functions, delete the source and context object. */
-<span name="evq_close" id="evq_close"></span>      lbm_rcv_delete(rcv);
-      lbm_context_delete(ctx);
-      lbm_event_queue_delete(evq);
+<span name="evq_close" id="evq_close"></span>      err = lbm_rcv_delete(rcv);
+      EX_LBM_CHK(err);
+      err = lbm_context_delete(ctx);
+      EX_LBM_CHK(err);
+      err = lbm_event_queue_delete(evq);
+      EX_LBM_CHK(err);
   #if defined(_MSC_VER)
       WSACleanup();
   #endif
-          return 0;
-  }
   
+      return 0;
+  }  /* main */
 </td></tr></table></code>
 
 

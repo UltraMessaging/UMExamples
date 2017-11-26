@@ -1,4 +1,4 @@
-/* server.c
+/* server.c - see http://ultramessaging.github.io/UMExamples/server/c/index.html
  *
  * Copyright (c) 2005-2017 Informatica Corporation. All Rights Reserved.
  * Permission is granted to licensees to use
@@ -52,20 +52,17 @@ typedef struct client_s {
 	char send_buf[MAX_RESP_SIZE + sizeof(req_hdr_t)];
 } client_t;
 
-
-/* Very simplistic LBM error handling. */
-#define E(E_err) do { \
-	if ((E_err) < 0) { \
-		fprintf(stderr, "Error, %s:%d: '%s': %s\n", \
-			__FILE__, __LINE__, #E_err, lbm_errmsg()); \
-		fflush(stderr); \
-		abort(); /* core dump */ \
-	} \
+/* Example error checking macro.  Include after each UM call. */
+#define EX_LBM_CHK(err) do { \
+	if ((err) < 0) { \
+		fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
+		__FILE__, __LINE__, lbm_errmsg()); \
+		exit(1); \
+	}  \
 } while (0)
 
-
-/* Null check. */
-#define N(N_ptr) do { \
+/* Error if null. */
+#define NULL_CHK(N_ptr) do { \
 	if ((N_ptr) == NULL) { \
 		fprintf(stderr, "Error, %s:%d: '%s' is NULL\n", \
 			__FILE__, __LINE__, #N_ptr); \
@@ -84,19 +81,25 @@ void handle_register(client_t *client, const char *client_resp_name)
 	if (client->state == 1) {
 		printf("Source '%s' re-confirmed\n", client->topic_name);
 		/* Reply to client. */
-		E(lbm_src_send(client->resp_src, "rOK", 4, LBM_MSG_FLUSH | LBM_SRC_NONBLOCK));
+		err = lbm_src_send(client->resp_src, "rOK", 4, LBM_MSG_FLUSH | LBM_SRC_NONBLOCK);
+		EX_LBM_CHK(err);
 	}
 	else if (client->state == 0) {
 		lbm_src_topic_attr_t * src_attr;
 		lbm_topic_t *lbm_topic;
 
 		/* Create source to send responses to client. */
-		E(lbm_src_topic_attr_create(&src_attr));
-		E(lbm_src_topic_attr_str_setopt(src_attr, "transport", "lbt-ru"));
-		E(lbm_src_topic_attr_str_setopt(src_attr, "transport_lbtru_port", "12070"));
-		E(lbm_src_topic_attr_str_setopt(src_attr,
-			"transport_source_side_filtering_behavior", "inclusion"));
-		E(lbm_src_topic_alloc(&lbm_topic, client->ctx, client_resp_name, src_attr));
+		err = lbm_src_topic_attr_create(&src_attr);
+		EX_LBM_CHK(err);
+		err = lbm_src_topic_attr_str_setopt(src_attr, "transport", "lbt-ru");
+		EX_LBM_CHK(err);
+		err = lbm_src_topic_attr_str_setopt(src_attr, "transport_lbtru_port", "12070");
+		EX_LBM_CHK(err);
+		err = lbm_src_topic_attr_str_setopt(src_attr,
+			"transport_source_side_filtering_behavior", "inclusion");
+		EX_LBM_CHK(err);
+		err = lbm_src_topic_alloc(&lbm_topic, client->ctx, client_resp_name, src_attr);
+		EX_LBM_CHK(err);
 		/* The following create can fail if a new client joins with the same
 		 * response topic name as an existing client.  Should handle this cleanly. */
 		err = lbm_src_create(&client->resp_src, client->ctx, lbm_topic,
@@ -106,17 +109,21 @@ void handle_register(client_t *client, const char *client_resp_name)
 		}
 		else {
 			client->state = 1;
-			client->topic_name = strdup(client_resp_name);  N(client->topic_name);
+			client->topic_name = strdup(client_resp_name);
+			NULL_CHK(client->topic_name);
 			printf("Source '%s' created\n", client->topic_name);
 		}
 
-		E(lbm_src_topic_attr_delete(src_attr));
+		err = lbm_src_topic_attr_delete(src_attr);
+		EX_LBM_CHK(err);
 	}
 }  /* handle_register */
 
 
 void handle_req(client_t *client, req_hdr_t *req_hdr, const char *data, size_t len)
 {
+	int err;
+
 	/* Response message is put after the header. */
 	char *response_msg = &client->send_buf[sizeof(req_hdr_t)];
 
@@ -131,8 +138,9 @@ void handle_req(client_t *client, req_hdr_t *req_hdr, const char *data, size_t l
 	strcpy(response_msg, data);
 	
 	/* Reply to client. */
-	E(lbm_src_send(client->resp_src, client->send_buf,
-		strlen(client->send_buf) + 1, LBM_MSG_FLUSH | LBM_SRC_NONBLOCK));
+	err = lbm_src_send(client->resp_src, client->send_buf,
+		strlen(client->send_buf) + 1, LBM_MSG_FLUSH | LBM_SRC_NONBLOCK);
+	EX_LBM_CHK(err);
 	printf("sent response to '%s'.\n", client->topic_name);
 }  /* handle_req */
 
@@ -186,11 +194,13 @@ int request_rcv_cb(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
 void *start_client_source(const char *source_name, void *clientd)
 {
 	lbm_context_t *ctx = (lbm_context_t *)clientd;;
-	client_t *new_client = (client_t *)malloc(sizeof(client_t));  N(new_client);
+	client_t *new_client = (client_t *)malloc(sizeof(client_t));
+	NULL_CHK(new_client);
 
 	new_client->state = 0;  /* Waiting for register. */
 	new_client->topic_name = NULL;
-	new_client->source_name = strdup(source_name);  N(new_client->source_name);
+	new_client->source_name = strdup(source_name);
+	NULL_CHK(new_client->source_name);
 	new_client->ctx = ctx;
 	new_client->resp_src = NULL;
 
@@ -200,6 +210,8 @@ void *start_client_source(const char *source_name, void *clientd)
 
 int end_client_source(const char *source_name, void *clientd, void *source_clientd)
 {
+	int err;
+
 	if (source_clientd) {
 		client_t *client = (client_t *)source_clientd;
 
@@ -210,7 +222,8 @@ int end_client_source(const char *source_name, void *clientd, void *source_clien
 			free(client->source_name);
 		}
 
-		E(lbm_src_delete(client->resp_src));
+		err = lbm_src_delete(client->resp_src);
+		EX_LBM_CHK(err);
 
 		free(source_clientd);
 	}
@@ -223,6 +236,7 @@ int main(int argc, char **argv)
 {
 	lbm_context_t *ctx;
 	lbm_rcv_t *rcv;  /* Receiver for requests from clients. */
+	int err;
 
 #if defined(_MSC_VER)
 	/* windows-specific code */
@@ -233,9 +247,11 @@ int main(int argc, char **argv)
 	}
 #endif
 
-	E(lbm_config("serv.cfg"));
+	err = lbm_config("serv.cfg");
+	EX_LBM_CHK(err);
 
-	E(lbm_context_create(&ctx, NULL, NULL, NULL));
+	err = lbm_context_create(&ctx, NULL, NULL, NULL);
+	EX_LBM_CHK(err);
 
 	/* Create receiver for requests from clients. */
 	{
@@ -243,20 +259,25 @@ int main(int argc, char **argv)
 		lbm_rcv_topic_attr_t *rcv_attr;
 		lbm_topic_t *topic;
 
-		E(lbm_rcv_topic_attr_create(&rcv_attr));
+		err = lbm_rcv_topic_attr_create(&rcv_attr);
+		EX_LBM_CHK(err);
 
 		/* Set up per-source state management. */
 		source_notification_function.create_func = start_client_source;
 		source_notification_function.delete_func = end_client_source;
 		source_notification_function.clientd = ctx;  /* Pass this to start_client_source(). */
-		E(lbm_rcv_topic_attr_setopt(rcv_attr, "source_notification_function",
-			&source_notification_function, sizeof(source_notification_function)));
+		err = lbm_rcv_topic_attr_setopt(rcv_attr, "source_notification_function",
+			&source_notification_function, sizeof(source_notification_function));
+		EX_LBM_CHK(err);
 
-		E(lbm_rcv_topic_lookup(&topic, ctx, "Server1.Request", rcv_attr));
+		err = lbm_rcv_topic_lookup(&topic, ctx, "Server1.Request", rcv_attr);
+		EX_LBM_CHK(err);
 		/* Pass context object as clientd. */
-		E(lbm_rcv_create(&rcv, ctx, topic, request_rcv_cb, ctx, NULL));
+		err = lbm_rcv_create(&rcv, ctx, topic, request_rcv_cb, ctx, NULL);
+		EX_LBM_CHK(err);
 
-		E(lbm_rcv_topic_attr_delete(rcv_attr));
+		err = lbm_rcv_topic_attr_delete(rcv_attr);
+		EX_LBM_CHK(err);
 	}
 
 	while (1) {
@@ -264,13 +285,15 @@ int main(int argc, char **argv)
 	}
 
 	/* Finished all receiving from this topic, delete the receiver object. */
-	E(lbm_rcv_delete(rcv));
+	err = lbm_rcv_delete(rcv);
+	EX_LBM_CHK(err);
 
 	/* Do not need to delete the topic object - LBM keeps track of topic
 	 * objects and deletes them as-needed.  */
 
 	/* Finished with all LBM functions, delete the context object. */
-	E(lbm_context_delete(ctx));
+	err = lbm_context_delete(ctx);
+	EX_LBM_CHK(err);
 
 #if defined(_MSC_VER)
 	WSACleanup();

@@ -34,11 +34,13 @@
 		Can be configured to recover messages after long network outages.
 
 		<li>Extra layer of reliability.
-		The "OTR" feature can recover messages unrecoverably lost by the transport.
+		The "OTR" feature can recover messages unrecoverably lost by the
+		transport.
+		Also, the source can be made persistent for even greater reliability.
 
 		<li>Better application visibility.
-		Unicast transport types give connect and disconnect events for the
-		source, and receivers get BOS and EOS events.
+		Receivers get BOS, EOS, and unrecoverable loss events, and for
+		unicast transport types, sources get connect and disconnect events.
 
 		<li>UDP-based transport types can give lower latency.
 	</ul>
@@ -58,9 +60,9 @@
 
 	<p>When a client program initializes, it creates a source to send
 	requests and a receiver to receive responses.
-	The client then exchanges one or more handshakes to register with the
-	server, and to verify round-trip connectivity.
-	This avoids initial message loss due to topic resolution.</p>
+	The client then exchanges handshakes with the server to register with it,
+	and to verify round-trip connectivity.
+	This verification avoids initial message loss during topic resolution.</p>
 
     <h2>Registration</h2>
 
@@ -72,13 +74,14 @@
 	=semlit,insert,req_src_create=
 
 	<p>The client needs a unique topic to receive is responses.
-	Using the process PID is an easy, but not robust method..</p>
+	Using the process PID is an easy, but non-robust method (two
+	clients on different machines can have the same PID).</p>
 
 	=semlit,insert,client_name=
 	<p><tt>. . .</tt></p>
 	=semlit,insert,rsp_rcv_create=
 
-	<h4>Registration; Client Side</h4>
+	<h4>Registration: Client Side</h4>
 
 	<p>The registration message that the client sends to the server is
 	all-ascii, consisting of lower-case 'r' followed by a null-terminated 
@@ -97,7 +100,7 @@
 
 	=semlit,insert,register_done=
 
-	<h4>Registration; Server Side</h4>
+	<h4>Registration: Server Side</h4>
 
 	<p>The server makes use of source notification create/delete callbacks
 	to manage client state.
@@ -172,7 +175,7 @@
 	received, so the client can maintain a table of outstanding requests.
 	This logic is not included in this example.</p>
 
-	<h4>Request; Client Side</h4>
+	<h4>Request: Client Side</h4>
 
 	<p>In this example, the send buffer for requests is declared as an
 	arbitrary large buffer.
@@ -184,7 +187,7 @@
 
 	=semlit,insert,req_sends=
 
-	<h4>Response; Server Side</h4>
+	<h4>Response: Server Side</h4>
 
 	<p>When the server receives the request, it sends a response.</p>
 

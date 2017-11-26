@@ -37,8 +37,8 @@
   	of this sample application, they are simply defined as macros</p>
 	<a name="define_configs_ref_1" id="define_configs_ref_1"></a>
 <small><pre>
-<a href="multi_context_c.slsrc.html#define_configs" target="src">00027</a>  #define LBM_CONFIG_XML_FILE  "multi_context_config.xml"
-<a href="multi_context_c.slsrc.html#define_configs" target="src">00028</a>  #define LBM_APPLICATION_NAME "main"
+<a href="multi_context_c.slsrc.html#define_configs" target="src">00046</a>  #define LBM_CONFIG_XML_FILE  "multi_context_config.xml"
+<a href="multi_context_c.slsrc.html#define_configs" target="src">00047</a>  #define LBM_APPLICATION_NAME "main"
 </pre><!-- endblock define_configs_ref_1 --></small>
 
 
@@ -48,8 +48,8 @@
 	provided here in order to ensure that this application loads the correct configurations.</p>
 	<a name="xml_file_ref_1" id="xml_file_ref_1"></a>
 <small><pre>
-<a href="multi_context_c.slsrc.html#xml_file" target="src">00049</a>      err = lbm_config_xml_file((const char *)LBM_CONFIG_XML_FILE, (const char *)LBM_APPLICATION_NAME);
-<a href="multi_context_c.slsrc.html#xml_file" target="src">00050</a>      EX_LBM_CHK(err);
+<a href="multi_context_c.slsrc.html#xml_file" target="src">00069</a>      err = lbm_config_xml_file((const char *)LBM_CONFIG_XML_FILE, (const char *)LBM_APPLICATION_NAME);
+<a href="multi_context_c.slsrc.html#xml_file" target="src">00070</a>      EX_LBM_CHK(err);
 </pre><!-- endblock xml_file_ref_1 --></small>
 
 
@@ -58,11 +58,11 @@
 	to a specific context name (TRD1) define in the XML using the appropriate API like so:</p>
 	<a name="ctx_1_ref_1" id="ctx_1_ref_1"></a>
 <small><pre>
-<a href="multi_context_c.slsrc.html#ctx_1" target="src">00052</a>      err = lbm_context_attr_create_from_xml(&amp;cattr_1, "TRD1");
-<a href="multi_context_c.slsrc.html#ctx_1" target="src">00053</a>      EX_LBM_CHK(err);
-<a href="multi_context_c.slsrc.html#ctx_1" target="src">00054</a>  
-<a href="multi_context_c.slsrc.html#ctx_1" target="src">00055</a>      err = lbm_context_create(&amp;ctx_1, cattr_1, NULL, NULL);
-<a href="multi_context_c.slsrc.html#ctx_1" target="src">00056</a>      EX_LBM_CHK(err);
+<a href="multi_context_c.slsrc.html#ctx_1" target="src">00072</a>      err = lbm_context_attr_create_from_xml(&amp;cattr_1, "TRD1");
+<a href="multi_context_c.slsrc.html#ctx_1" target="src">00073</a>      EX_LBM_CHK(err);
+<a href="multi_context_c.slsrc.html#ctx_1" target="src">00074</a>  
+<a href="multi_context_c.slsrc.html#ctx_1" target="src">00075</a>      err = lbm_context_create(&amp;ctx_1, cattr_1, NULL, NULL);
+<a href="multi_context_c.slsrc.html#ctx_1" target="src">00076</a>      EX_LBM_CHK(err);
 </pre><!-- endblock ctx_1_ref_1 --></small>
 
 
@@ -70,11 +70,11 @@
 	context attribute object:</p>
 	<a name="ctx_2_ref_1" id="ctx_2_ref_1"></a>
 <small><pre>
-<a href="multi_context_c.slsrc.html#ctx_2" target="src">00058</a>      err = lbm_context_attr_create_from_xml(&amp;cattr_2, "TRD2");
-<a href="multi_context_c.slsrc.html#ctx_2" target="src">00059</a>      EX_LBM_CHK(err);
-<a href="multi_context_c.slsrc.html#ctx_2" target="src">00060</a>  
-<a href="multi_context_c.slsrc.html#ctx_2" target="src">00061</a>      err = lbm_context_create(&amp;ctx_2, cattr_2, NULL, NULL);
-<a href="multi_context_c.slsrc.html#ctx_2" target="src">00062</a>      EX_LBM_CHK(err);
+<a href="multi_context_c.slsrc.html#ctx_2" target="src">00078</a>      err = lbm_context_attr_create_from_xml(&amp;cattr_2, "TRD2");
+<a href="multi_context_c.slsrc.html#ctx_2" target="src">00079</a>      EX_LBM_CHK(err);
+<a href="multi_context_c.slsrc.html#ctx_2" target="src">00080</a>  
+<a href="multi_context_c.slsrc.html#ctx_2" target="src">00081</a>      err = lbm_context_create(&amp;ctx_2, cattr_2, NULL, NULL);
+<a href="multi_context_c.slsrc.html#ctx_2" target="src">00082</a>      EX_LBM_CHK(err);
 </pre><!-- endblock ctx_2_ref_1 --></small>
 
 
@@ -84,14 +84,14 @@
         print a message and exit the program:</p>
         <a name="error_check_ref_1" id="error_check_ref_1"></a>
 <small><pre>
-<a href="multi_context_c.slsrc.html#error_check" target="src">00018</a>  /* Example error checking macro.  Include after each UM call. */
-<a href="multi_context_c.slsrc.html#error_check" target="src">00019</a>  #define EX_LBM_CHK(err) do { \
-<a href="multi_context_c.slsrc.html#error_check" target="src">00020</a>          if ((err) &lt; 0) { \
-<a href="multi_context_c.slsrc.html#error_check" target="src">00021</a>                  fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
-<a href="multi_context_c.slsrc.html#error_check" target="src">00022</a>                  __FILE__, __LINE__, lbm_errmsg()); \
-<a href="multi_context_c.slsrc.html#error_check" target="src">00023</a>                  exit(1); \
-<a href="multi_context_c.slsrc.html#error_check" target="src">00024</a>          }  \
-<a href="multi_context_c.slsrc.html#error_check" target="src">00025</a>  } while (0)
+<a href="multi_context_c.slsrc.html#error_check" target="src">00037</a>  /* Example error checking macro.  Include after each UM call. */
+<a href="multi_context_c.slsrc.html#error_check" target="src">00038</a>  #define EX_LBM_CHK(err) do { \
+<a href="multi_context_c.slsrc.html#error_check" target="src">00039</a>      if ((err) &lt; 0) { \
+<a href="multi_context_c.slsrc.html#error_check" target="src">00040</a>          fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
+<a href="multi_context_c.slsrc.html#error_check" target="src">00041</a>          __FILE__, __LINE__, lbm_errmsg()); \
+<a href="multi_context_c.slsrc.html#error_check" target="src">00042</a>          exit(1); \
+<a href="multi_context_c.slsrc.html#error_check" target="src">00043</a>      }  \
+<a href="multi_context_c.slsrc.html#error_check" target="src">00044</a>  } while (0)
 </pre><!-- endblock error_check_ref_1 --></small>
 
 
@@ -107,20 +107,20 @@
         <p>A small effort was made to provide a some portability between Unix and Windows. For example:</p>
         <a name="includes_ref_1" id="includes_ref_1"></a>
 <small><pre>
-<a href="multi_context_c.slsrc.html#includes" target="src">00003</a>  #include &lt;stdio.h&gt;
-<a href="multi_context_c.slsrc.html#includes" target="src">00004</a>  
-<a href="multi_context_c.slsrc.html#includes" target="src">00005</a>  #if defined(_MSC_VER)
-<a href="multi_context_c.slsrc.html#includes" target="src">00006</a>  /* Windows-only includes */
-<a href="multi_context_c.slsrc.html#includes" target="src">00007</a>  #include &lt;winsock2.h&gt;
-<a href="multi_context_c.slsrc.html#includes" target="src">00008</a>  #define SLEEP(s) Sleep((s)*1000)
-<a href="multi_context_c.slsrc.html#includes" target="src">00009</a>  #else
-<a href="multi_context_c.slsrc.html#includes" target="src">00010</a>  /* Unix-only includes */
-<a href="multi_context_c.slsrc.html#includes" target="src">00011</a>  #include &lt;stdlib.h&gt;
-<a href="multi_context_c.slsrc.html#includes" target="src">00012</a>  #include &lt;unistd.h&gt;
-<a href="multi_context_c.slsrc.html#includes" target="src">00013</a>  #define SLEEP(s) sleep(s)
-<a href="multi_context_c.slsrc.html#includes" target="src">00014</a>  #endif
-<a href="multi_context_c.slsrc.html#includes" target="src">00015</a>  
-<a href="multi_context_c.slsrc.html#includes" target="src">00016</a>  #include &lt;lbm/lbm.h&gt;
+<a href="multi_context_c.slsrc.html#includes" target="src">00022</a>  #include &lt;stdio.h&gt;
+<a href="multi_context_c.slsrc.html#includes" target="src">00023</a>  
+<a href="multi_context_c.slsrc.html#includes" target="src">00024</a>  #if defined(_MSC_VER)
+<a href="multi_context_c.slsrc.html#includes" target="src">00025</a>  /* Windows-only includes */
+<a href="multi_context_c.slsrc.html#includes" target="src">00026</a>  #include &lt;winsock2.h&gt;
+<a href="multi_context_c.slsrc.html#includes" target="src">00027</a>  #define SLEEP(s) Sleep((s)*1000)
+<a href="multi_context_c.slsrc.html#includes" target="src">00028</a>  #else
+<a href="multi_context_c.slsrc.html#includes" target="src">00029</a>  /* Unix-only includes */
+<a href="multi_context_c.slsrc.html#includes" target="src">00030</a>  #include &lt;stdlib.h&gt;
+<a href="multi_context_c.slsrc.html#includes" target="src">00031</a>  #include &lt;unistd.h&gt;
+<a href="multi_context_c.slsrc.html#includes" target="src">00032</a>  #define SLEEP(s) sleep(s)
+<a href="multi_context_c.slsrc.html#includes" target="src">00033</a>  #endif
+<a href="multi_context_c.slsrc.html#includes" target="src">00034</a>  
+<a href="multi_context_c.slsrc.html#includes" target="src">00035</a>  #include &lt;lbm/lbm.h&gt;
 </pre><!-- endblock includes_ref_1 --></small>
 
 

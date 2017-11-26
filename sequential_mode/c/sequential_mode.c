@@ -1,6 +1,26 @@
-/* Code Disclaimer? */
+/* sequential_mode.c - see http://ultramessaging.github.io/UMExamples/sequential_mode/c/index.html
+ *
+ * Copyright (c) 2005-2017 Informatica Corporation. All Rights Reserved.
+ * Permission is granted to licensees to use
+ * or alter this software for any purpose, including commercial applications,
+ * according to the terms laid out in the Software License Agreement.
+ *
+ * This source code example is provided by Informatica for educational
+ * and evaluation purposes only.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND INFORMATICA DISCLAIMS ALL WARRANTIES
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION, ANY IMPLIED WARRANTIES OF
+ * NON-INFRINGEMENT, MERCHANTABILITY OR FITNESS FOR A PARTICULAR
+ * PURPOSE.  INFORMATICA DOES NOT WARRANT THAT USE OF THE SOFTWARE WILL BE
+ * UNINTERRUPTED OR ERROR-FREE.  INFORMATICA SHALL NOT, UNDER ANY CIRCUMSTANCES, BE
+ * LIABLE TO LICENSEE FOR LOST PROFITS, CONSEQUENTIAL, INCIDENTAL, SPECIAL OR
+ * INDIRECT DAMAGES ARISING OUT OF OR RELATED TO THIS AGREEMENT OR THE
+ * TRANSACTIONS CONTEMPLATED HEREUNDER, EVEN IF INFORMATICA HAS BEEN APPRISED OF
+ * THE LIKELIHOOD OF SUCH DAMAGES.
+ */
 
 #include <stdio.h>
+#include <pthread.h>
 
 #if defined(_MSC_VER)
 /* Windows-only includes */
@@ -15,6 +35,15 @@
 
 #include <lbm/lbm.h>
 
+/* Example error checking macro.  Include after each UM call. */
+#define EX_LBM_CHK(err) do { \
+	if ((err) < 0) { \
+		fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
+		__FILE__, __LINE__, lbm_errmsg()); \
+		exit(1); \
+	}  \
+} while (0)
+
 
 #if defined(_WIN32)
 DWORD WINAPI seq_thread(void *arg)
@@ -23,59 +52,47 @@ void *seq_thread(void *arg)
 #endif /* _WIN32 */
 {
 	lbm_context_t *ctx = (lbm_context_t *) arg;
+	int err;
 
 	while (1)
 	{
-		if (lbm_context_process_events(ctx, 500) == -1)
-		{
-			printf("ERROR processing context events: %s\n", lbm_errmsg());
-			exit(1);
-		}
+		err = lbm_context_process_events(ctx, 500);
+		EX_LBM_CHK(err);
 	}
-}
+}  /* seq_thread */
+
 
 int main(int argc, char **argv)
 {
 	lbm_context_t *ctx;             /* pointer to context object */
 	lbm_context_attr_t * cattr;     /* pointer to context attribute object */
-	int err;                        /* return status of lbm functions (true=error) */
+	int err;
 #if defined(_WIN32)
-        HANDLE wthrdh;
+	HANDLE wthrdh;
 #else
-        pthread_t pthids;
+	pthread_t pthids;
 #endif /* _WIN32 */
 
-
 #if defined(_MSC_VER)
-        /* windows-specific code */
-        WSADATA wsadata;
-        int wsStat = WSAStartup(MAKEWORD(2,2), &wsadata);
-        if (wsStat != 0)
-        {
-                printf("line %d: wsStat=%d\n",__LINE__,wsStat);
-                exit(1);
-        }
+	/* windows-specific code */
+	WSADATA wsadata;
+	int wsStat = WSAStartup(MAKEWORD(2,2), &wsadata);
+	if (wsStat != 0)
+	{
+		printf("line %d: wsStat=%d\n",__LINE__,wsStat);
+		exit(1);
+	}
 #endif
 
-	if (lbm_context_attr_create(&cattr) != 0)
-	{
-		fprintf(stderr, "lbm_context_attr_create: %s\n", lbm_errmsg());
-		exit(1);
-	}
+	err = lbm_context_attr_create(&cattr);
+	EX_LBM_CHK(err);
 
 	/* Setting the resolver address using the string method */
-	if (lbm_context_attr_str_setopt(cattr, "operational_mode", "sequential") != 0) 
-	{
-		fprintf(stderr, "lbm_context_attr_str_setopt:operational_mode: %s\n", lbm_errmsg());
-		exit(1);
-	}
+	err = lbm_context_attr_str_setopt(cattr, "operational_mode", "sequential");
+	EX_LBM_CHK(err);
 
-        err = lbm_context_create(&ctx, cattr, NULL, NULL);
-        if (err)
-        {
-                printf("line %d: %s\n", __LINE__, lbm_errmsg());
-                exit(1);
-        }
+	err = lbm_context_create(&ctx, cattr, NULL, NULL);
+	EX_LBM_CHK(err);
 
 #if defined(_WIN32)
 	if ((wthrdh = CreateThread(NULL, 0, seq_thread, ctx, 0, NULL)) == NULL) {
@@ -89,8 +106,8 @@ int main(int argc, char **argv)
 	}
 #endif /* _WIN32 */
 
-	/* Wait forever */
+	/* Wait forever (or until control-c). */
 	while (1) { }
-        return 0;
-}
 
+	return 0;
+}  /* main */

@@ -1,4 +1,23 @@
-/* Example on setting Ultra Messaging attributes */
+/* event_q_src.c
+ *
+ * Copyright (c) 2005-2017 Informatica Corporation. All Rights Reserved.
+ * Permission is granted to licensees to use
+ * or alter this software for any purpose, including commercial applications,
+ * according to the terms laid out in the Software License Agreement.
+ *
+ * This source code example is provided by Informatica for educational
+ * and evaluation purposes only.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND INFORMATICA DISCLAIMS ALL WARRANTIES
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION, ANY IMPLIED WARRANTIES OF
+ * NON-INFRINGEMENT, MERCHANTABILITY OR FITNESS FOR A PARTICULAR
+ * PURPOSE.  INFORMATICA DOES NOT WARRANT THAT USE OF THE SOFTWARE WILL BE
+ * UNINTERRUPTED OR ERROR-FREE.  INFORMATICA SHALL NOT, UNDER ANY CIRCUMSTANCES, BE
+ * LIABLE TO LICENSEE FOR LOST PROFITS, CONSEQUENTIAL, INCIDENTAL, SPECIAL OR
+ * INDIRECT DAMAGES ARISING OUT OF OR RELATED TO THIS AGREEMENT OR THE
+ * TRANSACTIONS CONTEMPLATED HEREUNDER, EVEN IF INFORMATICA HAS BEEN APPRISED OF
+ * THE LIKELIHOOD OF SUCH DAMAGES.
+ */
 
 #include <stdio.h>
 
@@ -14,6 +33,16 @@
 #endif
 
 #include <lbm/lbm.h>
+
+/* Example error checking macro.  Include after each UM call. */
+#define EX_LBM_CHK(err) do { \
+	if ((err) < 0) { \
+		fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
+		__FILE__, __LINE__, lbm_errmsg()); \
+		exit(1); \
+	}  \
+} while (0)
+
 
 /* Source event handler.  the UM library passes all per-source events		*/
 /* back to the application.  This will by default execute on the context	*/
@@ -39,7 +68,8 @@ int handle_src_event(lbm_src_t *src, int event, void *ed, void *cd)
 		break;
 	}
 	return 0;
-}
+}  /* handle_src_event */
+
 
 int main(int argc, char **argv)
 {
@@ -47,9 +77,8 @@ int main(int argc, char **argv)
 	lbm_topic_t *topic_1;						/* pointer to topic object */
 	lbm_src_t *src;								/* pointer to source object */
 	lbm_src_topic_attr_t *tattr;				/* pointer to source attribute object */
-	lbm_context_attr_t * cattr;					/* pointer to context attribute object */
-	int err;									/* return status of lbm functions (true=error) */
 	lbm_event_queue_t *evq = NULL;				/* pointer to eventQ handle */
+	int err;
 
 #if defined(_MSC_VER)
 	/* windows-specific code */
@@ -62,69 +91,48 @@ int main(int argc, char **argv)
 	}
 #endif
 
-	/* Initialize the defaults for the context attribute object */
-	if (lbm_context_attr_create(&cattr) != 0)
-	{
-		fprintf(stderr, "lbm_context_attr_create: %s\n", lbm_errmsg());
-		exit(1);
-	}
-
 	/* Creating the context */
-	err = lbm_context_create(&ctx, cattr, NULL, NULL);
-	if (err)
-	{
-		printf("line %d: %s\n", __LINE__, lbm_errmsg());
-		exit(1);
-	}
-
-	/* Delete the context attribute object */
-	lbm_context_attr_delete(cattr);
+	err = lbm_context_create(&ctx, NULL, NULL, NULL);
+	EX_LBM_CHK(err);
 
 	/* Initializing the source attribute object */
-	if (lbm_src_topic_attr_create(&tattr) != 0)
-	{
-		fprintf(stderr, "lbm_src_topic_attr_create: %s\n", lbm_errmsg());
-		exit(1);
-	}
+	err = lbm_src_topic_attr_create(&tattr);
+	EX_LBM_CHK(err);
 
 	/* Allocating the topic */
 	err = lbm_src_topic_alloc(&topic_1, ctx, "test.topic", tattr);
-	if (err)
-	{
-		printf("line %d: %s\n", __LINE__, lbm_errmsg());
-		exit(1);
-	}
+	EX_LBM_CHK(err);
 
 	/* Create an event queue and associate it with a callback */
-	if (lbm_event_queue_create(&evq, NULL, NULL, NULL) == LBM_FAILURE) {
-		fprintf(stderr, "lbm_event_queue_create: %s\n", lbm_errmsg());
-		exit(1);
-	}
+	err = lbm_event_queue_create(&evq, NULL, NULL, NULL);
+	EX_LBM_CHK(err);
 	
 	/* Creating the source */
 	err = lbm_src_create(&src, ctx, topic_1, handle_src_event, NULL, evq);
-	if (err)
-	{
-		printf("line %d: %s\n", __LINE__, lbm_errmsg());
-		exit(1);
-	}
+	EX_LBM_CHK(err);
 
 	/* This runs the eventQ for 10 seconds.  This means for the next 10 seconds */
 	/* all of the sources events will be processed on this thread.				*/
-	if(lbm_event_dispatch(evq, 10000) == LBM_FAILURE) {
+	err = lbm_event_dispatch(evq, 10000);
+	if (err == LBM_FAILURE) {
 		fprintf(stderr, "lbm_event_dispatch returned error: %s\n", lbm_errmsg());
 	}
 
 	/* Delete the first and second source topic attribute objects */
-	lbm_src_topic_attr_delete(tattr);
+	err = lbm_src_topic_attr_delete(tattr);
+	EX_LBM_CHK(err);
 
 	/* Finished with all LBM functions, delete the source and context object. */
-	lbm_src_delete(src);
-	lbm_context_delete(ctx);
-	lbm_event_queue_delete(evq);
+	err = lbm_src_delete(src);
+	EX_LBM_CHK(err);
+	err = lbm_context_delete(ctx);
+	EX_LBM_CHK(err);
+	err = lbm_event_queue_delete(evq);
+	EX_LBM_CHK(err);
+
 #if defined(_MSC_VER)
 	WSACleanup();
 #endif
-        return 0;
-}
 
+	return 0;
+}  /* main */

@@ -1,4 +1,24 @@
-/* source_notify_callback.c - http://ultramessaging.github.io/UMExamples */
+/* source_notify_callbacks.c - see http://ultramessaging.github.io/UMExamples/source_notify_callbacks/c/index.html
+ *
+ * Copyright (c) 2005-2017 Informatica Corporation. All Rights Reserved.
+ * Permission is granted to licensees to use
+ * or alter this software for any purpose, including commercial applications,
+ * according to the terms laid out in the Software License Agreement.
+ *
+ * This source code example is provided by Informatica for educational
+ * and evaluation purposes only.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND INFORMATICA DISCLAIMS ALL WARRANTIES
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION, ANY IMPLIED WARRANTIES OF
+ * NON-INFRINGEMENT, MERCHANTABILITY OR FITNESS FOR A PARTICULAR
+ * PURPOSE.  INFORMATICA DOES NOT WARRANT THAT USE OF THE SOFTWARE WILL BE
+ * UNINTERRUPTED OR ERROR-FREE.  INFORMATICA SHALL NOT, UNDER ANY CIRCUMSTANCES, BE
+ * LIABLE TO LICENSEE FOR LOST PROFITS, CONSEQUENTIAL, INCIDENTAL, SPECIAL OR
+ * INDIRECT DAMAGES ARISING OUT OF OR RELATED TO THIS AGREEMENT OR THE
+ * TRANSACTIONS CONTEMPLATED HEREUNDER, EVEN IF INFORMATICA HAS BEEN APPRISED OF
+ * THE LIKELIHOOD OF SUCH DAMAGES.
+ */
+
 #include <stdio.h>
 
 #if defined(_MSC_VER)
@@ -13,113 +33,117 @@
 #endif
 #include <lbm/lbm.h>
 
+/* State structure associated with each source the receiver is joined to. */
 typedef struct source_state_s {
-  int msgs_rcvd;  /* We want to track message count from each source sending to the topic. */
+	int msgs_rcvd;  /* Track message count from each source. */
 } source_state_t;
 
 /* Example error checking macro.  Include after each UM call. */
 #define EX_LBM_CHK(err) do { \
-        if ((err) < 0) { \
-                fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
-                __FILE__, __LINE__, lbm_errmsg()); \
-                exit(1); \
-        }  \
+	if ((err) < 0) { \
+		fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
+		__FILE__, __LINE__, lbm_errmsg()); \
+		exit(1); \
+	}  \
 } while (0)
+
 
 void *new_src_notification_callback(const char *source_name, void *clientd)
 {
-        source_state_t *source_state = (source_state_t *)malloc(sizeof(source_state_t));
-        source_state->msgs_rcvd = 0;
+	source_state_t *source_state = (source_state_t *)malloc(sizeof(source_state_t));
+	source_state->msgs_rcvd = 0;
 
-        printf("Delivery Controller Created: %s\n", source_name);
-        return source_state;  /* This will be available in the receive callback as msg->source_clientd. */
-}
+	printf("Delivery Controller Created: %s\n", source_name);
+	return source_state;  /* This will be available in the receive callback as msg->source_clientd. */
+}  /* new_src_notification_callback */
+
 
 int src_delete_notification_callback(const char *source_name, void *clientd, void* src_clientd )
 {
-        free(src_clientd);  /* This was created by new_src_notification_callback() */
+	free(src_clientd);  /* This was created by new_src_notification_callback() */
 
-        printf("Delivery Controller Deleted: %s\n", source_name);
-        return 0;
-}
+	printf("Delivery Controller Deleted: %s\n", source_name);
+	return 0;
+}  /* src_delete_notification_callback */
+
 
 /* Callback used to handle request message for receiver */
 int rcv_handle_msg(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
 {
-        int err;
-        source_state_t *source_state = (source_state_t *)msg->source_clientd;
+	source_state_t *source_state = (source_state_t *)msg->source_clientd;
 
-        switch (msg->type) {
-        case LBM_MSG_DATA:
-                source_state->msgs_rcvd ++;
-                printf("[%s][%s], Received message %d\n", msg->topic_name, msg->source, source_state->msgs_rcvd);
-                break;
-        case LBM_MSG_BOS:
-                printf("[%s][%s], Beginning of Transport Session\n", msg->topic_name, msg->source);
-                break;
-        case LBM_MSG_EOS:
-                printf("[%s][%s], End of Transport Session\n", msg->topic_name, msg->source);
-                break;
-        default:
-                printf("Other event, type=%x\n", msg->type);
-                break;
-        }
+	switch (msg->type) {
+	case LBM_MSG_DATA:
+		source_state->msgs_rcvd ++;
+		printf("[%s][%s], Received message %d\n", msg->topic_name, msg->source, source_state->msgs_rcvd);
+		break;
+	case LBM_MSG_BOS:
+		printf("[%s][%s], Beginning of Transport Session\n", msg->topic_name, msg->source);
+		break;
+	case LBM_MSG_EOS:
+		printf("[%s][%s], End of Transport Session\n", msg->topic_name, msg->source);
+		break;
+	default:
+		printf("Other event, type=%x\n", msg->type);
+		break;
+	}
 
-        return 0;
-}
+	return 0;
+}  /* rcv_handle_msg */
+
 
 int main(int argc, char **argv)
 {
-        lbm_context_t *ctx;                     /* Context object */
-        lbm_context_attr_t * cattr;             /* Context attribute object */
-        lbm_rcv_t *rcv;                         /* Receive object: for subscribing to messages. */
-        lbm_topic_t *rtopic;                    /* Receiver Topic object */
-        lbm_rcv_topic_attr_t * rattr;           /* Receiver attribute object */
-        lbm_rcv_src_notification_func_t srccb;  /* Source notify callback structure */
-        int err;                                /* Used for checking API return codes */
+	lbm_context_t *ctx;                     /* Context object */
+	lbm_rcv_t *rcv;                         /* Receive object: for subscribing to messages. */
+	lbm_topic_t *rtopic;                    /* Receiver Topic object */
+	lbm_rcv_topic_attr_t * rattr;           /* Receiver attribute object */
+	lbm_rcv_src_notification_func_t srccb;  /* Source notify callback structure */
+	int err;
 
 #if defined(_WIN32)
-        /* windows-specific code */
-        WSADATA wsadata;
-        int wsStat = WSAStartup(MAKEWORD(2,2), &wsadata);
-        if (wsStat != 0)
-        {
-                printf("line %d: wsStat=%d\n",__LINE__,wsStat);
-                exit(1);
-        }
+	/* windows-specific code */
+	WSADATA wsadata;
+	int wsStat = WSAStartup(MAKEWORD(2,2), &wsadata);
+	if (wsStat != 0)
+	{
+		printf("line %d: wsStat=%d\n",__LINE__,wsStat);
+		exit(1);
+	}
 #endif
 
-        /* Initialize context atrributes and create context */
-        err = lbm_context_create(&ctx, NULL, NULL, NULL);
-        EX_LBM_CHK(err);
-
-        /* Create receiver for receiving request and sending response */
-        err = lbm_rcv_topic_attr_create(&rattr);
-        EX_LBM_CHK(err);
-
-        srccb.create_func = new_src_notification_callback;
-        srccb.delete_func = src_delete_notification_callback;
-
-        err = lbm_rcv_topic_attr_setopt(rattr, "source_notification_function", &srccb, sizeof(srccb));
-        EX_LBM_CHK(err);
-
-        err = lbm_rcv_topic_lookup(&rtopic, ctx, "test.topic", rattr);
+	/* Initialize context atrributes and create context */
+	err = lbm_context_create(&ctx, NULL, NULL, NULL);
 	EX_LBM_CHK(err);
 
-        err = lbm_rcv_create(&rcv, ctx, rtopic, rcv_handle_msg, NULL, NULL);
-        EX_LBM_CHK(err);
+	/* Create receiver for receiving request and sending response */
+	err = lbm_rcv_topic_attr_create(&rattr);
+	EX_LBM_CHK(err);
 
-        while (1) { }
+	srccb.create_func = new_src_notification_callback;
+	srccb.delete_func = src_delete_notification_callback;
 
-        err = lbm_rcv_delete(rcv);
-        EX_LBM_CHK(err);
+	err = lbm_rcv_topic_attr_setopt(rattr, "source_notification_function", &srccb, sizeof(srccb));
+	EX_LBM_CHK(err);
 
-        err = lbm_context_delete(ctx);
-        EX_LBM_CHK(err);
+	err = lbm_rcv_topic_lookup(&rtopic, ctx, "test.topic", rattr);
+	EX_LBM_CHK(err);
+
+	err = lbm_rcv_create(&rcv, ctx, rtopic, rcv_handle_msg, NULL, NULL);
+	EX_LBM_CHK(err);
+
+	/* Wait forever (or until control-c). */
+	while (1) { }
+
+	err = lbm_rcv_delete(rcv);
+	EX_LBM_CHK(err);
+
+	err = lbm_context_delete(ctx);
+	EX_LBM_CHK(err);
 
 #if defined(_MSC_VER)
-        /* Windows-specific cleanup overhead */
-        WSACleanup();
+	/* Windows-specific cleanup overhead */
+	WSACleanup();
 #endif
-        return 0;
+	return 0;
 } /* main */

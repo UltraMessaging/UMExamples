@@ -1,4 +1,4 @@
-/* client.c
+/* client.c - see http://ultramessaging.github.io/UMExamples/client/c/index.html
  *
  * Copyright (c) 2005-2017 Informatica Corporation. All Rights Reserved.
  * Permission is granted to licensees to use
@@ -25,12 +25,12 @@
 #if defined(_MSC_VER)
 /* Windows-only includes */
 #include <winsock2.h>
-#define MSLEEP(s) Sleep(s)
+#define MSLEEP(s) Sleep(s)  /* Portable millisecond sleep. */
 #else
 /* Unix-only includes */
 #include <stdlib.h>
 #include <unistd.h>
-#define MSLEEP(s) usleep((s) * 1000)
+#define MSLEEP(s) usleep((s) * 1000)  /* Portable millisecond sleep. */
 #endif
 
 #include <lbm/lbm.h>
@@ -49,24 +49,13 @@ typedef struct req_hdr_s {
 } req_hdr_t;
 
 
-#define E(E_err) do { \
-	if ((E_err) < 0) { \
-		fprintf(stderr, "Error, %s:%d: %s: %s\n", \
-			__FILE__, __LINE__, #E_err, lbm_errmsg()); \
-		fflush(stderr); \
-		abort(); \
-	} \
-} while (0)
-
-
-/* Null check. */
-#define N(N_ptr) do { \
-	if ((N_ptr) == NULL) { \
-		fprintf(stderr, "Error, %s:%d: '%s' is NULL\n", \
-			__FILE__, __LINE__, #N_ptr); \
-		fflush(stderr); \
-		abort(); /* core dump */ \
-	} \
+/* Example error checking macro.  Include after each UM call. */
+#define EX_LBM_CHK(err) do { \
+	if ((err) < 0) { \
+		fprintf(stderr, "%s:%d, lbm error: '%s'\n", \
+		__FILE__, __LINE__, lbm_errmsg()); \
+		exit(1); \
+	}  \
 } while (0)
 
 
@@ -116,6 +105,7 @@ int main(int argc, char **argv)
 	lbm_context_t *ctx;
 	server_t server;  /* State information for the server. */
 	char response_topic_name[256];
+	int err;
 
 	/* Get (pretty much) unique client name. */
 	sprintf(response_topic_name, "Client.%lx.Response", (long)getpid());
@@ -136,47 +126,53 @@ int main(int argc, char **argv)
 	server.rcv = NULL;   /* Receiver for responses from server. */
 	server.state = 0;    /* Waiting for registration. */
 
-	E(lbm_config("client.cfg"));
+	err = lbm_config("client.cfg");
+	EX_LBM_CHK(err);
 
-	E(lbm_context_create(&ctx, NULL, NULL, NULL));
+	err = lbm_context_create(&ctx, NULL, NULL, NULL);
+	EX_LBM_CHK(err);
 	server.ctx = ctx;
 
 	/* Create source to send requests to server. */
 	{
 		lbm_topic_t *topic;
-		E(lbm_src_topic_alloc(&topic, ctx, server.topic_name, NULL));
-		E(lbm_src_create(&server.src, ctx, topic, NULL, NULL, NULL));
+		err = lbm_src_topic_alloc(&topic, ctx, server.topic_name, NULL);
+		EX_LBM_CHK(err);
+		err = lbm_src_create(&server.src, ctx, topic, NULL, NULL, NULL);
+		EX_LBM_CHK(err);
 	}
 
 	/* Create receiver for responses from server. */
 	{
 		lbm_topic_t *topic;
-		E(lbm_rcv_topic_lookup(&topic, ctx, response_topic_name, NULL));
-		E(lbm_rcv_create(&server.rcv, ctx, topic, response_rcv_cb, &server, NULL));
+		err = lbm_rcv_topic_lookup(&topic, ctx, response_topic_name, NULL);
+		EX_LBM_CHK(err);
+		err = lbm_rcv_create(&server.rcv, ctx, topic, response_rcv_cb, &server, NULL);
+		EX_LBM_CHK(err);
 	}
-
-	MSLEEP(1);  /* Try to reduce the number of tries to register. */
 
 	/* Register with the server.  May need multiple tries. */
 	{
 		int try_cnt = 0;
-		int backoff_delay = 2;
+		int backoff_delay;
 		char register_msg[257];
 		sprintf(register_msg, "r%s", response_topic_name);
 
+		backoff_delay = 1;  /* In milliseconds. */
+		MSLEEP(backoff_delay);  /* Let TR complete. */
 		while (server.state == 0) {
 			try_cnt ++;
-			E(lbm_src_send(server.src, register_msg,
-				strlen(register_msg) + 1, LBM_MSG_FLUSH | LBM_SRC_BLOCK));
-			printf("Sent '%s' to %s; sleep for %d ms\n", register_msg,
-				server.topic_name, backoff_delay);
+			err = lbm_src_send(server.src, register_msg,
+				strlen(register_msg) + 1, LBM_MSG_FLUSH | LBM_SRC_BLOCK);
+			EX_LBM_CHK(err);
+			printf("Sent '%s' to %s\n", register_msg, server.topic_name);
 
 			/* Exponential backoff, to max of 1 sec. */
-			MSLEEP(backoff_delay);
 			backoff_delay *= 2;  /* Exponential backoff to max of 1 sec. */
 			if (backoff_delay > 1000) {
 				backoff_delay = 1000;
 			}
+			MSLEEP(backoff_delay);  /* Wait for server response. */
 		}
 		printf("Took %d tries to register with server.\n", try_cnt);
 	}
@@ -197,17 +193,21 @@ int main(int argc, char **argv)
 
 			/* The application message is copied in after the header. */
 			strcpy(&send_buf[sizeof(req_hdr_t)], request_msg);
-			E(lbm_src_send(server.src, send_buf, strlen(send_buf) + 1,
-				LBM_MSG_FLUSH | LBM_SRC_NONBLOCK));
+			err = lbm_src_send(server.src, send_buf, strlen(send_buf) + 1,
+				LBM_MSG_FLUSH | LBM_SRC_NONBLOCK);
+			EX_LBM_CHK(err);
 			MSLEEP(1000);
 		}
 	}
 
 	printf("Client exiting.\n");
-	E(lbm_rcv_delete(server.rcv));
-	E(lbm_src_delete(server.src));
+	err = lbm_rcv_delete(server.rcv);
+	EX_LBM_CHK(err);
+	err = lbm_src_delete(server.src);
+	EX_LBM_CHK(err);
 
-	E(lbm_context_delete(ctx));
+	err = lbm_context_delete(ctx);
+	EX_LBM_CHK(err);
 
 #if defined(_MSC_VER)
 	WSACleanup();
