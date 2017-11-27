@@ -166,7 +166,6 @@
 	However, the simple protocol was designed to allow this to be added.
 	A request message consists of an 8-ascii-byte header followed by the
 	application message content.
-./run.sh client
 	The first byte of the header is the character 'R' to indicate a request
 	message.
 	The other 7 bytes are currently just set to ascii '0' characters, but
