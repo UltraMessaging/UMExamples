@@ -120,22 +120,21 @@ void handle_register(client_t *client, const char *client_resp_name)
 }  /* handle_register */
 
 
-void handle_req(client_t *client, req_hdr_t *req_hdr, const char *data, size_t len)
+void handle_req(client_t *client, req_hdr_t *req_hdr, const char *req_msg, size_t len)
 {
 	int err;
-
-	/* Response message is put after the header. */
-	char *response_msg = &client->send_buf[sizeof(req_hdr_t)];
 
 	/* This work should probably be passed to a separate worker thread, but
 	 * I'll do it here to simplify the code. */
 
 	/* Responses copy the header from the request. */
 	memcpy(&client->send_buf[0], (char *)req_hdr, sizeof(req_hdr_t));
+	/* Response message is put after the header. */
+	char *response_msg = &client->send_buf[sizeof(req_hdr_t)];
 
 	/* Do the work of the request and put the response in response_msg.
 	 * (For this sample, just echo back the request.) */
-	strcpy(response_msg, data);
+	strcpy(response_msg, req_msg);
 	
 	/* Reply to client. */
 	err = lbm_src_send(client->resp_src, client->send_buf,

@@ -160,15 +160,15 @@
 <a href="src_rsp.sldoc.html#do_req2_ref_1" target="doc">00142</a>
 <a href="src_rsp.sldoc.html#do_req2_ref_1" target="doc">00143</a>
 <a href="src_rsp.sldoc.html#do_req2_ref_1" target="doc">00144</a>
-<a href="src_rsp.sldoc.html#do_req2_ref_1" target="doc">00145</a>
+00145
 00146
-00147
+<a href="src_rsp.sldoc.html#do_reg0_ref_1" target="doc">00147</a>
 <a href="src_rsp.sldoc.html#do_reg0_ref_1" target="doc">00148</a>
 <a href="src_rsp.sldoc.html#do_reg0_ref_1" target="doc">00149</a>
-<a href="src_rsp.sldoc.html#do_reg0_ref_1" target="doc">00150</a>
+00150
 00151
 00152
-00153
+<a href="src_rsp.sldoc.html#do_reg1_ref_1" target="doc">00153</a>
 <a href="src_rsp.sldoc.html#do_reg1_ref_1" target="doc">00154</a>
 <a href="src_rsp.sldoc.html#do_reg1_ref_1" target="doc">00155</a>
 <a href="src_rsp.sldoc.html#do_reg1_ref_1" target="doc">00156</a>
@@ -176,8 +176,8 @@
 <a href="src_rsp.sldoc.html#do_reg1_ref_1" target="doc">00158</a>
 <a href="src_rsp.sldoc.html#do_reg1_ref_1" target="doc">00159</a>
 <a href="src_rsp.sldoc.html#do_reg1_ref_1" target="doc">00160</a>
-<a href="src_rsp.sldoc.html#do_reg1_ref_1" target="doc">00161</a>
-00162
+00161
+<a href="src_rsp.sldoc.html#do_req1_ref_1" target="doc">00162</a>
 <a href="src_rsp.sldoc.html#do_req1_ref_1" target="doc">00163</a>
 <a href="src_rsp.sldoc.html#do_req1_ref_1" target="doc">00164</a>
 <a href="src_rsp.sldoc.html#do_req1_ref_1" target="doc">00165</a>
@@ -185,7 +185,7 @@
 <a href="src_rsp.sldoc.html#do_req1_ref_1" target="doc">00167</a>
 <a href="src_rsp.sldoc.html#do_req1_ref_1" target="doc">00168</a>
 <a href="src_rsp.sldoc.html#do_req1_ref_1" target="doc">00169</a>
-<a href="src_rsp.sldoc.html#do_req1_ref_1" target="doc">00170</a>
+00170
 00171
 00172
 00173
@@ -208,7 +208,7 @@
 00190
 00191
 00192
-00193
+<a href="src_rsp.sldoc.html#start_client_ref_1" target="doc">00193</a>
 <a href="src_rsp.sldoc.html#start_client_ref_1" target="doc">00194</a>
 <a href="src_rsp.sldoc.html#start_client_ref_1" target="doc">00195</a>
 <a href="src_rsp.sldoc.html#start_client_ref_1" target="doc">00196</a>
@@ -223,7 +223,7 @@
 <a href="src_rsp.sldoc.html#start_client_ref_1" target="doc">00205</a>
 <a href="src_rsp.sldoc.html#start_client_ref_1" target="doc">00206</a>
 <a href="src_rsp.sldoc.html#start_client_ref_1" target="doc">00207</a>
-<a href="src_rsp.sldoc.html#start_client_ref_1" target="doc">00208</a>
+00208
 00209
 00210
 00211
@@ -272,7 +272,7 @@
 00254
 00255
 00256
-00257
+<a href="src_rsp.sldoc.html#src_notif_setopt_ref_1" target="doc">00257</a>
 <a href="src_rsp.sldoc.html#src_notif_setopt_ref_1" target="doc">00258</a>
 <a href="src_rsp.sldoc.html#src_notif_setopt_ref_1" target="doc">00259</a>
 <a href="src_rsp.sldoc.html#src_notif_setopt_ref_1" target="doc">00260</a>
@@ -296,7 +296,7 @@
 <a href="src_rsp.sldoc.html#src_notif_setopt_ref_1" target="doc">00278</a>
 <a href="src_rsp.sldoc.html#src_notif_setopt_ref_1" target="doc">00279</a>
 <a href="src_rsp.sldoc.html#src_notif_setopt_ref_1" target="doc">00280</a>
-<a href="src_rsp.sldoc.html#src_notif_setopt_ref_1" target="doc">00281</a>
+00281
 00282
 00283
 00284
@@ -318,7 +318,6 @@
 00300
 00301
 00302
-00303
 </td><td>  /* server.c - see http://ultramessaging.github.io/UMExamples/server/c/index.html
    *
    * Copyright (c) 2005-2017 Informatica Corporation. All Rights Reserved.
@@ -441,22 +440,21 @@
   }  /* handle_register */
   
   
-<span name="do_req2" id="do_req2"></span>  void handle_req(client_t *client, req_hdr_t *req_hdr, const char *data, size_t len)
+<span name="do_req2" id="do_req2"></span>  void handle_req(client_t *client, req_hdr_t *req_hdr, const char *req_msg, size_t len)
   {
       int err;
-  
-      /* Response message is put after the header. */
-      char *response_msg = &amp;client-&gt;send_buf[sizeof(req_hdr_t)];
   
       /* This work should probably be passed to a separate worker thread, but
        * I'll do it here to simplify the code. */
   
       /* Responses copy the header from the request. */
       memcpy(&amp;client-&gt;send_buf[0], (char *)req_hdr, sizeof(req_hdr_t));
+      /* Response message is put after the header. */
+      char *response_msg = &amp;client-&gt;send_buf[sizeof(req_hdr_t)];
   
       /* Do the work of the request and put the response in response_msg.
        * (For this sample, just echo back the request.) */
-      strcpy(response_msg, data);
+      strcpy(response_msg, req_msg);
       
       /* Reply to client. */
       err = lbm_src_send(client-&gt;resp_src, client-&gt;send_buf,

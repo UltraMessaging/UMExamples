@@ -183,30 +183,30 @@
 
 	<a name="src_notif_setopt_ref_1" id="src_notif_setopt_ref_1"></a>
 <small><pre>
-<a href="server_c.slsrc.html#src_notif_setopt" target="src">00258</a>          lbm_rcv_src_notification_func_t source_notification_function;
-<a href="server_c.slsrc.html#src_notif_setopt" target="src">00259</a>          lbm_rcv_topic_attr_t *rcv_attr;
-<a href="server_c.slsrc.html#src_notif_setopt" target="src">00260</a>          lbm_topic_t *topic;
-<a href="server_c.slsrc.html#src_notif_setopt" target="src">00261</a>  
-<a href="server_c.slsrc.html#src_notif_setopt" target="src">00262</a>          err = lbm_rcv_topic_attr_create(&amp;rcv_attr);
-<a href="server_c.slsrc.html#src_notif_setopt" target="src">00263</a>          EX_LBM_CHK(err);
-<a href="server_c.slsrc.html#src_notif_setopt" target="src">00264</a>  
-<a href="server_c.slsrc.html#src_notif_setopt" target="src">00265</a>          /* Set up per-source state management. */
-<a href="server_c.slsrc.html#src_notif_setopt" target="src">00266</a>          source_notification_function.create_func = start_client_source;
-<a href="server_c.slsrc.html#src_notif_setopt" target="src">00267</a>          source_notification_function.delete_func = end_client_source;
-<a href="server_c.slsrc.html#src_notif_setopt" target="src">00268</a>          source_notification_function.clientd = ctx;  /* Pass this to start_client_source(). */
-<a href="server_c.slsrc.html#src_notif_setopt" target="src">00269</a>          err = lbm_rcv_topic_attr_setopt(rcv_attr, "source_notification_function",
-<a href="server_c.slsrc.html#src_notif_setopt" target="src">00270</a>              &amp;source_notification_function, sizeof(source_notification_function));
-<a href="server_c.slsrc.html#src_notif_setopt" target="src">00271</a>          EX_LBM_CHK(err);
-<a href="server_c.slsrc.html#src_notif_setopt" target="src">00272</a>  
-<a href="server_c.slsrc.html#src_notif_setopt" target="src">00273</a>          err = lbm_rcv_topic_lookup(&amp;topic, ctx, "Server1.Request", rcv_attr);
-<a href="server_c.slsrc.html#src_notif_setopt" target="src">00274</a>          EX_LBM_CHK(err);
-<a href="server_c.slsrc.html#src_notif_setopt" target="src">00275</a>          /* Pass context object as clientd. */
-<a href="server_c.slsrc.html#src_notif_setopt" target="src">00276</a>          err = lbm_rcv_create(&amp;rcv, ctx, topic, request_rcv_cb, ctx, NULL);
-<a href="server_c.slsrc.html#src_notif_setopt" target="src">00277</a>          EX_LBM_CHK(err);
-<a href="server_c.slsrc.html#src_notif_setopt" target="src">00278</a>  
-<a href="server_c.slsrc.html#src_notif_setopt" target="src">00279</a>          err = lbm_rcv_topic_attr_delete(rcv_attr);
-<a href="server_c.slsrc.html#src_notif_setopt" target="src">00280</a>          EX_LBM_CHK(err);
-<a href="server_c.slsrc.html#src_notif_setopt" target="src">00281</a>      }
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00257</a>          lbm_rcv_src_notification_func_t source_notification_function;
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00258</a>          lbm_rcv_topic_attr_t *rcv_attr;
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00259</a>          lbm_topic_t *topic;
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00260</a>  
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00261</a>          err = lbm_rcv_topic_attr_create(&amp;rcv_attr);
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00262</a>          EX_LBM_CHK(err);
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00263</a>  
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00264</a>          /* Set up per-source state management. */
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00265</a>          source_notification_function.create_func = start_client_source;
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00266</a>          source_notification_function.delete_func = end_client_source;
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00267</a>          source_notification_function.clientd = ctx;  /* Pass this to start_client_source(). */
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00268</a>          err = lbm_rcv_topic_attr_setopt(rcv_attr, "source_notification_function",
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00269</a>              &amp;source_notification_function, sizeof(source_notification_function));
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00270</a>          EX_LBM_CHK(err);
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00271</a>  
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00272</a>          err = lbm_rcv_topic_lookup(&amp;topic, ctx, "Server1.Request", rcv_attr);
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00273</a>          EX_LBM_CHK(err);
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00274</a>          /* Pass context object as clientd. */
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00275</a>          err = lbm_rcv_create(&amp;rcv, ctx, topic, request_rcv_cb, ctx, NULL);
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00276</a>          EX_LBM_CHK(err);
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00277</a>  
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00278</a>          err = lbm_rcv_topic_attr_delete(rcv_attr);
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00279</a>          EX_LBM_CHK(err);
+<a href="server_c.slsrc.html#src_notif_setopt" target="src">00280</a>      }
 </pre><!-- endblock src_notif_setopt_ref_1 --></small>
 
 
@@ -218,21 +218,21 @@
 
 	<a name="start_client_ref_1" id="start_client_ref_1"></a>
 <small><pre>
-<a href="server_c.slsrc.html#start_client" target="src">00194</a>  void *start_client_source(const char *source_name, void *clientd)
-<a href="server_c.slsrc.html#start_client" target="src">00195</a>  {
-<a href="server_c.slsrc.html#start_client" target="src">00196</a>      lbm_context_t *ctx = (lbm_context_t *)clientd;;
-<a href="server_c.slsrc.html#start_client" target="src">00197</a>      client_t *new_client = (client_t *)malloc(sizeof(client_t));
-<a href="server_c.slsrc.html#start_client" target="src">00198</a>      NULL_CHK(new_client);
-<a href="server_c.slsrc.html#start_client" target="src">00199</a>  
-<a href="server_c.slsrc.html#start_client" target="src">00200</a>      new_client-&gt;state = 0;  /* Waiting for register. */
-<a href="server_c.slsrc.html#start_client" target="src">00201</a>      new_client-&gt;topic_name = NULL;
-<a href="server_c.slsrc.html#start_client" target="src">00202</a>      new_client-&gt;source_name = strdup(source_name);
-<a href="server_c.slsrc.html#start_client" target="src">00203</a>      NULL_CHK(new_client-&gt;source_name);
-<a href="server_c.slsrc.html#start_client" target="src">00204</a>      new_client-&gt;ctx = ctx;
-<a href="server_c.slsrc.html#start_client" target="src">00205</a>      new_client-&gt;resp_src = NULL;
-<a href="server_c.slsrc.html#start_client" target="src">00206</a>  
-<a href="server_c.slsrc.html#start_client" target="src">00207</a>      return new_client;
-<a href="server_c.slsrc.html#start_client" target="src">00208</a>  }  /* start_client_source */
+<a href="server_c.slsrc.html#start_client" target="src">00193</a>  void *start_client_source(const char *source_name, void *clientd)
+<a href="server_c.slsrc.html#start_client" target="src">00194</a>  {
+<a href="server_c.slsrc.html#start_client" target="src">00195</a>      lbm_context_t *ctx = (lbm_context_t *)clientd;;
+<a href="server_c.slsrc.html#start_client" target="src">00196</a>      client_t *new_client = (client_t *)malloc(sizeof(client_t));
+<a href="server_c.slsrc.html#start_client" target="src">00197</a>      NULL_CHK(new_client);
+<a href="server_c.slsrc.html#start_client" target="src">00198</a>  
+<a href="server_c.slsrc.html#start_client" target="src">00199</a>      new_client-&gt;state = 0;  /* Waiting for register. */
+<a href="server_c.slsrc.html#start_client" target="src">00200</a>      new_client-&gt;topic_name = NULL;
+<a href="server_c.slsrc.html#start_client" target="src">00201</a>      new_client-&gt;source_name = strdup(source_name);
+<a href="server_c.slsrc.html#start_client" target="src">00202</a>      NULL_CHK(new_client-&gt;source_name);
+<a href="server_c.slsrc.html#start_client" target="src">00203</a>      new_client-&gt;ctx = ctx;
+<a href="server_c.slsrc.html#start_client" target="src">00204</a>      new_client-&gt;resp_src = NULL;
+<a href="server_c.slsrc.html#start_client" target="src">00205</a>  
+<a href="server_c.slsrc.html#start_client" target="src">00206</a>      return new_client;
+<a href="server_c.slsrc.html#start_client" target="src">00207</a>  }  /* start_client_source */
 </pre><!-- endblock start_client_ref_1 --></small>
 
 
@@ -245,9 +245,9 @@
 
 	<a name="do_reg0_ref_1" id="do_reg0_ref_1"></a>
 <small><pre>
-<a href="server_c.slsrc.html#do_reg0" target="src">00148</a>  int request_rcv_cb(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd) 
-<a href="server_c.slsrc.html#do_reg0" target="src">00149</a>  {
-<a href="server_c.slsrc.html#do_reg0" target="src">00150</a>      client_t *client = (client_t *)msg-&gt;source_clientd;
+<a href="server_c.slsrc.html#do_reg0" target="src">00147</a>  int request_rcv_cb(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd) 
+<a href="server_c.slsrc.html#do_reg0" target="src">00148</a>  {
+<a href="server_c.slsrc.html#do_reg0" target="src">00149</a>      client_t *client = (client_t *)msg-&gt;source_clientd;
 </pre><!-- endblock do_reg0_ref_1 --></small>
 
 
@@ -256,14 +256,14 @@
 
 	<a name="do_reg1_ref_1" id="do_reg1_ref_1"></a>
 <small><pre>
-<a href="server_c.slsrc.html#do_reg1" target="src">00154</a>      case LBM_MSG_DATA:  /* Received a message from the client. */
-<a href="server_c.slsrc.html#do_reg1" target="src">00155</a>          printf("Received %ld bytes on topic %s: '%.*s'\n",
-<a href="server_c.slsrc.html#do_reg1" target="src">00156</a>               (long)msg-&gt;len, msg-&gt;topic_name, (int)msg-&gt;len, msg-&gt;data);
-<a href="server_c.slsrc.html#do_reg1" target="src">00157</a>  
-<a href="server_c.slsrc.html#do_reg1" target="src">00158</a>          /* Register message. */
-<a href="server_c.slsrc.html#do_reg1" target="src">00159</a>          if (msg-&gt;len &gt; 1 &amp;&amp; msg-&gt;data[0] == 'r') {
-<a href="server_c.slsrc.html#do_reg1" target="src">00160</a>              handle_register(client, &amp;msg-&gt;data[1]);
-<a href="server_c.slsrc.html#do_reg1" target="src">00161</a>          }
+<a href="server_c.slsrc.html#do_reg1" target="src">00153</a>      case LBM_MSG_DATA:  /* Received a message from the client. */
+<a href="server_c.slsrc.html#do_reg1" target="src">00154</a>          printf("Received %ld bytes on topic %s: '%.*s'\n",
+<a href="server_c.slsrc.html#do_reg1" target="src">00155</a>               (long)msg-&gt;len, msg-&gt;topic_name, (int)msg-&gt;len, msg-&gt;data);
+<a href="server_c.slsrc.html#do_reg1" target="src">00156</a>  
+<a href="server_c.slsrc.html#do_reg1" target="src">00157</a>          /* Register message. */
+<a href="server_c.slsrc.html#do_reg1" target="src">00158</a>          if (msg-&gt;len &gt; 1 &amp;&amp; msg-&gt;data[0] == 'r') {
+<a href="server_c.slsrc.html#do_reg1" target="src">00159</a>              handle_register(client, &amp;msg-&gt;data[1]);
+<a href="server_c.slsrc.html#do_reg1" target="src">00160</a>          }
 </pre><!-- endblock do_reg1_ref_1 --></small>
 
 
@@ -389,7 +389,6 @@
 	However, the simple protocol was designed to allow this to be added.
 	A request message consists of an 8-ascii-byte header followed by the
 	application message content.
-./run.sh client
 	The first byte of the header is the character 'R' to indicate a request
 	message.
 	The other 7 bytes are currently just set to ascii '0' characters, but
@@ -441,43 +440,42 @@
 
 	<a name="do_req1_ref_1" id="do_req1_ref_1"></a>
 <small><pre>
-<a href="server_c.slsrc.html#do_req1" target="src">00163</a>          /* Request message. */
-<a href="server_c.slsrc.html#do_req1" target="src">00164</a>          else if (msg-&gt;len &gt;= sizeof(req_hdr_t) &amp;&amp; msg-&gt;data[0] == 'R') {
-<a href="server_c.slsrc.html#do_req1" target="src">00165</a>              req_hdr_t req_hdr;
-<a href="server_c.slsrc.html#do_req1" target="src">00166</a>              memcpy((char *)&amp;req_hdr, msg-&gt;data, sizeof(req_hdr_t));
-<a href="server_c.slsrc.html#do_req1" target="src">00167</a>  
-<a href="server_c.slsrc.html#do_req1" target="src">00168</a>              handle_req(client, &amp;req_hdr, &amp;msg-&gt;data[sizeof(req_hdr_t)],
-<a href="server_c.slsrc.html#do_req1" target="src">00169</a>                  msg-&gt;len - sizeof(req_hdr_t));
-<a href="server_c.slsrc.html#do_req1" target="src">00170</a>          }
+<a href="server_c.slsrc.html#do_req1" target="src">00162</a>          /* Request message. */
+<a href="server_c.slsrc.html#do_req1" target="src">00163</a>          else if (msg-&gt;len &gt;= sizeof(req_hdr_t) &amp;&amp; msg-&gt;data[0] == 'R') {
+<a href="server_c.slsrc.html#do_req1" target="src">00164</a>              req_hdr_t req_hdr;
+<a href="server_c.slsrc.html#do_req1" target="src">00165</a>              memcpy((char *)&amp;req_hdr, msg-&gt;data, sizeof(req_hdr_t));
+<a href="server_c.slsrc.html#do_req1" target="src">00166</a>  
+<a href="server_c.slsrc.html#do_req1" target="src">00167</a>              handle_req(client, &amp;req_hdr, &amp;msg-&gt;data[sizeof(req_hdr_t)],
+<a href="server_c.slsrc.html#do_req1" target="src">00168</a>                  msg-&gt;len - sizeof(req_hdr_t));
+<a href="server_c.slsrc.html#do_req1" target="src">00169</a>          }
 </pre><!-- endblock do_req1_ref_1 --></small>
 
 
 	<p><tt>. . .</tt></p>
 	<a name="do_req2_ref_1" id="do_req2_ref_1"></a>
 <small><pre>
-<a href="server_c.slsrc.html#do_req2" target="src">00123</a>  void handle_req(client_t *client, req_hdr_t *req_hdr, const char *data, size_t len)
+<a href="server_c.slsrc.html#do_req2" target="src">00123</a>  void handle_req(client_t *client, req_hdr_t *req_hdr, const char *req_msg, size_t len)
 <a href="server_c.slsrc.html#do_req2" target="src">00124</a>  {
 <a href="server_c.slsrc.html#do_req2" target="src">00125</a>      int err;
 <a href="server_c.slsrc.html#do_req2" target="src">00126</a>  
-<a href="server_c.slsrc.html#do_req2" target="src">00127</a>      /* Response message is put after the header. */
-<a href="server_c.slsrc.html#do_req2" target="src">00128</a>      char *response_msg = &amp;client-&gt;send_buf[sizeof(req_hdr_t)];
+<a href="server_c.slsrc.html#do_req2" target="src">00127</a>      /* This work should probably be passed to a separate worker thread, but
+<a href="server_c.slsrc.html#do_req2" target="src">00128</a>       * I'll do it here to simplify the code. */
 <a href="server_c.slsrc.html#do_req2" target="src">00129</a>  
-<a href="server_c.slsrc.html#do_req2" target="src">00130</a>      /* This work should probably be passed to a separate worker thread, but
-<a href="server_c.slsrc.html#do_req2" target="src">00131</a>       * I'll do it here to simplify the code. */
-<a href="server_c.slsrc.html#do_req2" target="src">00132</a>  
-<a href="server_c.slsrc.html#do_req2" target="src">00133</a>      /* Responses copy the header from the request. */
-<a href="server_c.slsrc.html#do_req2" target="src">00134</a>      memcpy(&amp;client-&gt;send_buf[0], (char *)req_hdr, sizeof(req_hdr_t));
-<a href="server_c.slsrc.html#do_req2" target="src">00135</a>  
-<a href="server_c.slsrc.html#do_req2" target="src">00136</a>      /* Do the work of the request and put the response in response_msg.
-<a href="server_c.slsrc.html#do_req2" target="src">00137</a>       * (For this sample, just echo back the request.) */
-<a href="server_c.slsrc.html#do_req2" target="src">00138</a>      strcpy(response_msg, data);
-<a href="server_c.slsrc.html#do_req2" target="src">00139</a>      
-<a href="server_c.slsrc.html#do_req2" target="src">00140</a>      /* Reply to client. */
-<a href="server_c.slsrc.html#do_req2" target="src">00141</a>      err = lbm_src_send(client-&gt;resp_src, client-&gt;send_buf,
-<a href="server_c.slsrc.html#do_req2" target="src">00142</a>          strlen(client-&gt;send_buf) + 1, LBM_MSG_FLUSH | LBM_SRC_NONBLOCK);
-<a href="server_c.slsrc.html#do_req2" target="src">00143</a>      EX_LBM_CHK(err);
-<a href="server_c.slsrc.html#do_req2" target="src">00144</a>      printf("sent response to '%s'.\n", client-&gt;topic_name);
-<a href="server_c.slsrc.html#do_req2" target="src">00145</a>  }  /* handle_req */
+<a href="server_c.slsrc.html#do_req2" target="src">00130</a>      /* Responses copy the header from the request. */
+<a href="server_c.slsrc.html#do_req2" target="src">00131</a>      memcpy(&amp;client-&gt;send_buf[0], (char *)req_hdr, sizeof(req_hdr_t));
+<a href="server_c.slsrc.html#do_req2" target="src">00132</a>      /* Response message is put after the header. */
+<a href="server_c.slsrc.html#do_req2" target="src">00133</a>      char *response_msg = &amp;client-&gt;send_buf[sizeof(req_hdr_t)];
+<a href="server_c.slsrc.html#do_req2" target="src">00134</a>  
+<a href="server_c.slsrc.html#do_req2" target="src">00135</a>      /* Do the work of the request and put the response in response_msg.
+<a href="server_c.slsrc.html#do_req2" target="src">00136</a>       * (For this sample, just echo back the request.) */
+<a href="server_c.slsrc.html#do_req2" target="src">00137</a>      strcpy(response_msg, req_msg);
+<a href="server_c.slsrc.html#do_req2" target="src">00138</a>      
+<a href="server_c.slsrc.html#do_req2" target="src">00139</a>      /* Reply to client. */
+<a href="server_c.slsrc.html#do_req2" target="src">00140</a>      err = lbm_src_send(client-&gt;resp_src, client-&gt;send_buf,
+<a href="server_c.slsrc.html#do_req2" target="src">00141</a>          strlen(client-&gt;send_buf) + 1, LBM_MSG_FLUSH | LBM_SRC_NONBLOCK);
+<a href="server_c.slsrc.html#do_req2" target="src">00142</a>      EX_LBM_CHK(err);
+<a href="server_c.slsrc.html#do_req2" target="src">00143</a>      printf("sent response to '%s'.\n", client-&gt;topic_name);
+<a href="server_c.slsrc.html#do_req2" target="src">00144</a>  }  /* handle_req */
 </pre><!-- endblock do_req2_ref_1 --></small>
 
 
