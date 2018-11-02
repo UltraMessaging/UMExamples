@@ -1,0 +1,56 @@
+<a href="../../index.html" class="button" target="_top">Example index</a>
+  <h1>Smart Source Message Fragmentation</h1>
+  <p>Ultra Messaging has a feature called
+     <a href="https://ultramessaging.github.io/currdoc/doc/Design/umfeatures.html#smartsources" target="_top">Smart Sources</a>
+     which provides lower average latency and <i>much</i> lower latency
+     variation (jitter) than traditional UM sources.
+     Smart Sources are able to deliver these benefits by trading off reduced
+     flexibility for simplicity, especially simplicity in memory usage.</p>
+  <p>One area of reduced flexibility is related to message sizes.
+     To avoid dynamic memory allocation/deallocation, Smart Sources require
+     the user to configure the maximum expected message size.
+     Also, Smart Sources do not support fragmentation and reassembly of
+     messages larger than the maximum datagram size.
+     An application message must fit in a single datagram.
+     Finally, users of kernel bypass TCP/IP stacks (like Solarflare's Onload)
+     pay a heavy penalty if IP fragmentation is performed by the kernel.
+     These users typically want to keep each datagram at or below the
+     NIC's MTU size (typically 1500 bytes).</p>
+  <p>However, many applications have a fairly small average message size,
+     but occasionally need to send messages that are much larger.
+     If that worst-case large message size is larger than an MTU,
+     it cannot be efficiently sent using Onload or other kernel bypass stacks.</p>
+  <p>Also, even if IP fragmentation is not a problem,
+     a Smart Sources pre-allocates its retransmission buffers based on the
+     worst-case message size.
+     For applications that normally send small messages but occasionally
+     need to send very large ones,
+     this can lead to a significant memory footprint.</p>
+  <p>One solution to these problems is for an application to configure Smart
+     Source for small messages, and perform message fragmentation and
+     reassembly at the application level.
+     This example program does just that.</p>
+  <h2>High-Level Design</h2>
+  <p>An integer message property with key name "Remain" is used to manage
+     message fragmentation and reassembly.
+     Small messages may be sent without a property.
+     Messages which exceed a configured threshold will be sent in "chunks",
+     with a message property providing the information needed by the
+     receiver to reassemble the chunks.</p>
+  <p>When the application wants to send a message larger than
+     [smart_src_max_message_length (source)](https://ultramessaging.github.io/currdoc/doc/Config/grpsmartsource.html#smartsrcmaxmessagelengthsource),
+     the first fragment is sent with the "Remain" property is a negative
+     number representing the number of bytes that still need to be sent
+     (not counting the content of that first message).
+     Each subsequent message fragment sent has the "Remain" property as
+     a positive number of the number of bytes remaining
+     after that message.</p>
+  <p>For example, if smart_src_max_message_length is set to 1400 and a
+     5000 byte message is sent, 4 UM messages will be sent.
+     Here are the message lengths and values for the "Remain" property:</p>
+  <ol>
+  <li>length=1400, Remain=-3600</li>
+  <li>length=1400, Remain=2200</li>
+  <li>length=1400, Remain=800</li>
+  <li>length=800, Remain=0</li>
+  <p>When the receiver sees Remain=0, it can deliver the reassembled message.</p>

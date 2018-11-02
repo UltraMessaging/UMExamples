@@ -1,0 +1,218 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Smart Source Message Fragmentation</title>
+  </head>
+  <body>
+    <a href="../../index.html" class="button" target="_top">Example index</a>
+  <h1>Smart Source Message Fragmentation</h1>
+  <p>Ultra Messaging has a feature called
+     <a href="https://ultramessaging.github.io/currdoc/doc/Design/umfeatures.html#smartsources" target="_top">Smart Sources</a>
+     which provides lower average latency and <i>much</i> lower latency
+     variation (jitter) than traditional UM sources.
+     Smart Sources are able to deliver these benefits by trading off reduced
+     flexibility for simplicity, especially simplicity in memory usage.</p>
+  <p>One area of reduced flexibility is related to message sizes.
+     To avoid dynamic memory allocation/deallocation, Smart Sources require
+     the user to configure the maximum expected message size.
+     Also, Smart Sources do not support fragmentation and reassembly of
+     messages larger than the maximum datagram size.
+     An application message must fit in a single datagram.
+     Finally, users of kernel bypass TCP/IP stacks (like Solarflare's Onload)
+     pay a heavy penalty if IP fragmentation is performed by the kernel.
+     These users typically want to keep each datagram at or below the
+     NIC's MTU size (typically 1500 bytes).</p>
+  <p>However, many applications have a fairly small average message size,
+     but occasionally need to send messages that are much larger.
+     If that worst-case large message size is larger than an MTU,
+     it cannot be efficiently sent using Onload or other kernel bypass stacks.</p>
+  <p>Also, even if IP fragmentation is not a problem,
+     a Smart Sources pre-allocates its retransmission buffers based on the
+     worst-case message size.
+     For applications that normally send small messages but occasionally
+     need to send very large ones,
+     this can lead to a significant memory footprint.</p>
+  <p>One solution to these problems is for an application to configure Smart
+     Source for small messages, and perform message fragmentation and
+     reassembly at the application level.
+     This example program does just that.</p>
+  <h2>High-Level Design</h2>
+  <p>An integer message property with key name "Remain" is used to manage
+     message fragmentation and reassembly.
+     Small messages may be sent without a property.
+     Messages which exceed a configured threshold will be sent in "chunks",
+     with a message property providing the information needed by the
+     receiver to reassemble the chunks.</p>
+  <p>When the application wants to send a message larger than
+     [smart_src_max_message_length (source)](https://ultramessaging.github.io/currdoc/doc/Config/grpsmartsource.html#smartsrcmaxmessagelengthsource),
+     the first fragment is sent with the "Remain" property is a negative
+     number representing the number of bytes that still need to be sent
+     (not counting the content of that first message).
+     Each subsequent message fragment sent has the "Remain" property as
+     a positive number of the number of bytes remaining
+     after that message.</p>
+  <p>For example, if smart_src_max_message_length is set to 1400 and a
+     5000 byte message is sent, 4 UM messages will be sent.
+     Here are the message lengths and values for the "Remain" property:</p>
+  <ol>
+  <li>length=1400, Remain=-3600</li>
+  <li>length=1400, Remain=2200</li>
+  <li>length=1400, Remain=800</li>
+  <li>length=800, Remain=0</li>
+  <p>When the receiver sees Remain=0, it can deliver the reassembled message.</p>
+
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt><a href="ss_frag.c">ss_frag.c</a></tt></b>
+        - (right-click and save as "ss_frag.c") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>ss_frag.c</tt></h2>
+
+    <p>The <tt>ss_frag.c</tt> file contains:</p>
+    <ul>
+    <li>Source-side code (fragments messages),</li>
+    <li>Receive-side code (reassembles messages),</li>
+    <li>Simple demonstration code.</li>
+    </ul>
+    <h3>Source-Side Code</h3>
+	<p>At the heart of the source-side code is the function
+       <tt>smart_source_send()</tt>:</pp>
+	<a name="send_funct_ref_1" id="send_funct_ref_1"></a>
+<small><pre>
+<a href="ss_frag_c.slsrc.html#send_funct" target="src">00312</a>  /* Send a message, fragmenting it if necessary.
+<a href="ss_frag_c.slsrc.html#send_funct" target="src">00313</a>   */
+<a href="ss_frag_c.slsrc.html#send_funct" target="src">00314</a>  void smart_source_send(smart_source_t *smart_source, char *buf, size_t len,
+<a href="ss_frag_c.slsrc.html#send_funct" target="src">00315</a>    int flags)
+<a href="ss_frag_c.slsrc.html#send_funct" target="src">00316</a>  {
+</pre><!-- endblock send_funct_ref_1 --></small>
+
+
+    <p><b>CLICK ON A LINE NUBMER TO SEE THE CODE ON THE RIGHT IN CONTEXT!</b></p>
+    <p>This function first checks to see if the application message is
+       small enough to fit in a single message.  If so, it sends the
+       message without any message properties.</p>
+	<a name="send_check_ref_1" id="send_check_ref_1"></a>
+<small><pre>
+<a href="ss_frag_c.slsrc.html#send_check" target="src">00319</a>    if (len &lt;= smart_source-&gt;max_msg_len) {
+<a href="ss_frag_c.slsrc.html#send_check" target="src">00320</a>      /* Message fits in one buffer, send it. */
+<a href="ss_frag_c.slsrc.html#send_check" target="src">00321</a>      memcpy(smart_source-&gt;msgbuf_plain, buf, len);
+<a href="ss_frag_c.slsrc.html#send_check" target="src">00322</a>      err = lbm_ssrc_send_ex(smart_source-&gt;ssrc, smart_source-&gt;msgbuf_plain,
+<a href="ss_frag_c.slsrc.html#send_check" target="src">00323</a>        len, 0, NULL);
+<a href="ss_frag_c.slsrc.html#send_check" target="src">00324</a>      LBM_ERR(err);
+<a href="ss_frag_c.slsrc.html#send_check" target="src">00325</a>    }
+</pre><!-- endblock send_check_ref_1 --></small>
+
+
+    <p>For application messages that are too big, they need to be
+       fragmented.  The "Remain" message property is set to negative
+       of the remaining size after this fragment is sent.</p>
+	<a name="send_first_ref_1" id="send_first_ref_1"></a>
+<small><pre>
+<a href="ss_frag_c.slsrc.html#send_first" target="src">00336</a>      this_len = smart_source-&gt;max_msg_len;
+<a href="ss_frag_c.slsrc.html#send_first" target="src">00337</a>      remaining -= this_len;
+<a href="ss_frag_c.slsrc.html#send_first" target="src">00338</a>      /* Indicate first fragment with negative remainer. */
+<a href="ss_frag_c.slsrc.html#send_first" target="src">00339</a>      smart_source-&gt;int_value_array[0] = - remaining;
+<a href="ss_frag_c.slsrc.html#send_first" target="src">00340</a>      memcpy(smart_source-&gt;msgbuf_props, &amp;buf[offset], this_len);
+<a href="ss_frag_c.slsrc.html#send_first" target="src">00341</a>      err = lbm_ssrc_send_ex(smart_source-&gt;ssrc, smart_source-&gt;msgbuf_props,
+<a href="ss_frag_c.slsrc.html#send_first" target="src">00342</a>        this_len, 0, &amp;(smart_source-&gt;info_prop));
+<a href="ss_frag_c.slsrc.html#send_first" target="src">00343</a>      LBM_ERR(err);
+<a href="ss_frag_c.slsrc.html#send_first" target="src">00344</a>      offset += this_len;
+</pre><!-- endblock send_first_ref_1 --></small>
+
+
+    <p>Subsequent fragments are sent, chunk at a time, with
+       a positive "Remain" property.</p>
+	<a name="send_rest_ref_1" id="send_rest_ref_1"></a>
+<small><pre>
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00349</a>      /* Send rest of fragments. */
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00350</a>      while (remaining &gt; 0) {
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00351</a>        if (remaining &gt; smart_source-&gt;max_msg_len) {
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00352</a>          this_len = smart_source-&gt;max_msg_len;
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00353</a>        }
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00354</a>        else {
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00355</a>          this_len = remaining;
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00356</a>        }
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00357</a>        remaining -= this_len;
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00358</a>        smart_source-&gt;int_value_array[0] = remaining;
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00359</a>        memcpy(smart_source-&gt;msgbuf_props, &amp;buf[offset], this_len);
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00360</a>        err = lbm_ssrc_send_ex(smart_source-&gt;ssrc, smart_source-&gt;msgbuf_props,
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00361</a>          this_len, 0, &amp;(smart_source-&gt;info_prop));
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00362</a>  
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00363</a>        offset += this_len;
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00364</a>      }  /* while */
+</pre><!-- endblock send_rest_ref_1 --></small>
+
+
+    <h4>Send Buffers</h4>
+    <p>For efficiency and simplicity, two Smart Source send buffers
+       are used to send messages: <tt>msgbuf_plain</tt> for small messages
+       with no properties, and <tt>msgbuf_props</tt> for large fragmented
+       messages that have properties.  They are initialized in
+       <tt>smart_source_init()</tt>.</p>
+	<a name="send_buffs_ref_1" id="send_buffs_ref_1"></a>
+<small><pre>
+<a href="ss_frag_c.slsrc.html#send_buffs" target="src">00297</a>    err = lbm_ssrc_buff_get(smart_source-&gt;ssrc, &amp;smart_source-&gt;msgbuf_plain, 0);
+<a href="ss_frag_c.slsrc.html#send_buffs" target="src">00298</a>    LBM_ERR(err);
+<a href="ss_frag_c.slsrc.html#send_buffs" target="src">00299</a>    err = lbm_ssrc_buff_get(smart_source-&gt;ssrc, &amp;smart_source-&gt;msgbuf_props, 0);
+<a href="ss_frag_c.slsrc.html#send_buffs" target="src">00300</a>    LBM_ERR(err);
+</pre><!-- endblock send_buffs_ref_1 --></small>
+
+
+    <p>The message property is also initialized.</p>
+	<a name="send_props_ref_1" id="send_props_ref_1"></a>
+<small><pre>
+<a href="ss_frag_c.slsrc.html#send_props" target="src">00302</a>    /* Set up message property. */
+<a href="ss_frag_c.slsrc.html#send_props" target="src">00303</a>    smart_source-&gt;info_prop.flags = LBM_SSRC_SEND_EX_FLAG_PROPERTIES;
+<a href="ss_frag_c.slsrc.html#send_props" target="src">00304</a>    smart_source-&gt;info_prop.mprop_int_cnt = 1;
+<a href="ss_frag_c.slsrc.html#send_props" target="src">00305</a>    smart_source-&gt;info_prop.mprop_int_vals = smart_source-&gt;int_value_array;
+<a href="ss_frag_c.slsrc.html#send_props" target="src">00306</a>    smart_source-&gt;info_prop.mprop_int_keys = &amp;smart_source-&gt;key_ptr_array[0];
+<a href="ss_frag_c.slsrc.html#send_props" target="src">00307</a>    smart_source-&gt;key_ptr_array[0] = smart_source-&gt;remain_key;
+<a href="ss_frag_c.slsrc.html#send_props" target="src">00308</a>    strncpy(smart_source-&gt;remain_key, "Remain", sizeof(smart_source-&gt;remain_key));
+</pre><!-- endblock send_props_ref_1 --></small>
+
+
+    <p>The source-side code needs to know what the size threshold is for
+       fragmented messages.  It determines this by creating a source
+       attribute object, which inherets the user's configuration.</p>
+	<a name="send_attr_ref_1" id="send_attr_ref_1"></a>
+<small><pre>
+<a href="ss_frag_c.slsrc.html#send_attr" target="src">00265</a>    err = lbm_src_topic_attr_create(&amp;src_tattr);
+<a href="ss_frag_c.slsrc.html#send_attr" target="src">00266</a>    LBM_ERR(err);
+</pre><!-- endblock send_attr_ref_1 --></small>
+
+
+    <p>Then, the configured value for the option
+       <a href="https://ultramessaging.github.io/currdoc/doc/Config/grpsmartsource.html#smartsrcmaxmessagelengthsource" target="_top">smart_src_max_message_length (source)</a>
+       is read.</p>
+	<a name="send_size_ref_1" id="send_size_ref_1"></a>
+<small><pre>
+<a href="ss_frag_c.slsrc.html#send_size" target="src">00281</a>    /* Find out the user's config for max message length. */
+<a href="ss_frag_c.slsrc.html#send_size" target="src">00282</a>    opt_len = sizeof(smart_source-&gt;max_msg_len);
+<a href="ss_frag_c.slsrc.html#send_size" target="src">00283</a>    err = lbm_src_topic_attr_getopt(src_tattr,
+<a href="ss_frag_c.slsrc.html#send_size" target="src">00284</a>      "smart_src_max_message_length", &amp;(smart_source-&gt;max_msg_len), &amp;opt_len);
+<a href="ss_frag_c.slsrc.html#send_size" target="src">00285</a>    LBM_ERR(err);
+</pre><!-- endblock send_size_ref_1 --></small>
+
+
+    <p>There is also a sanity check to make sure the user configured a
+       message property.</p>
+	<a name="send_conf_prop_ref_1" id="send_conf_prop_ref_1"></a>
+<small><pre>
+<a href="ss_frag_c.slsrc.html#send_conf_prop" target="src">00268</a>    /* Make sure user's config allows at least 1 msg property. */
+<a href="ss_frag_c.slsrc.html#send_conf_prop" target="src">00269</a>    opt_len = sizeof(prop_count);
+<a href="ss_frag_c.slsrc.html#send_conf_prop" target="src">00270</a>    err = lbm_src_topic_attr_getopt(src_tattr,
+<a href="ss_frag_c.slsrc.html#send_conf_prop" target="src">00271</a>      "smart_src_message_property_int_count", &amp;prop_count, &amp;opt_len);
+<a href="ss_frag_c.slsrc.html#send_conf_prop" target="src">00272</a>    LBM_ERR(err);
+<a href="ss_frag_c.slsrc.html#send_conf_prop" target="src">00273</a>    if (prop_count == 0) {
+<a href="ss_frag_c.slsrc.html#send_conf_prop" target="src">00274</a>      /* No props configured, add one. */
+<a href="ss_frag_c.slsrc.html#send_conf_prop" target="src">00275</a>      prop_count = 1;
+<a href="ss_frag_c.slsrc.html#send_conf_prop" target="src">00276</a>      err = lbm_src_topic_attr_setopt(src_tattr,
+<a href="ss_frag_c.slsrc.html#send_conf_prop" target="src">00277</a>        "smart_src_message_property_int_count", &amp;prop_count, &amp;opt_len);
+<a href="ss_frag_c.slsrc.html#send_conf_prop" target="src">00278</a>      LBM_ERR(err);
+<a href="ss_frag_c.slsrc.html#send_conf_prop" target="src">00279</a>    }
+</pre><!-- endblock send_conf_prop_ref_1 --></small>
+
+
+  </body>
+</html>
+

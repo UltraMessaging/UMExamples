@@ -1,0 +1,1020 @@
+<!DOCTYPE html><html><head><title>ss_frag.c</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip();
+  });
+</script>
+<style>
+#code {background-color:#ffffff;};
+</style>
+</head>
+<body><h1>ss_frag.c</h1>
+<script>hljs.initHighlightingOnLoad();</script>
+<small><pre><code id="code"><table border=0 cellpadding=0 cellspacing=0><tr>
+<td>00001
+00002
+00003
+00004
+00005
+00006
+00007
+00008
+00009
+00010
+00011
+00012
+00013
+00014
+00015
+00016
+00017
+00018
+00019
+00020
+00021
+<a href="ss_frag.sldoc.html#includes_ref_1" target="doc">00022</a>
+<a href="ss_frag.sldoc.html#includes_ref_1" target="doc">00023</a>
+<a href="ss_frag.sldoc.html#includes_ref_1" target="doc">00024</a>
+<a href="ss_frag.sldoc.html#includes_ref_1" target="doc">00025</a>
+<a href="ss_frag.sldoc.html#includes_ref_1" target="doc">00026</a>
+<a href="ss_frag.sldoc.html#includes_ref_1" target="doc">00027</a>
+<a href="ss_frag.sldoc.html#includes_ref_1" target="doc">00028</a>
+<a href="ss_frag.sldoc.html#includes_ref_1" target="doc">00029</a>
+<a href="ss_frag.sldoc.html#includes_ref_1" target="doc">00030</a>
+<a href="ss_frag.sldoc.html#includes_ref_1" target="doc">00031</a>
+<a href="ss_frag.sldoc.html#includes_ref_1" target="doc">00032</a>
+<a href="ss_frag.sldoc.html#includes_ref_1" target="doc">00033</a>
+<a href="ss_frag.sldoc.html#includes_ref_1" target="doc">00034</a>
+<a href="ss_frag.sldoc.html#includes_ref_1" target="doc">00035</a>
+<a href="ss_frag.sldoc.html#includes_ref_1" target="doc">00036</a>
+00037
+00038
+00039
+00040
+00041
+00042
+00043
+00044
+00045
+00046
+00047
+00048
+00049
+00050
+00051
+00052
+00053
+00054
+00055
+00056
+00057
+00058
+00059
+00060
+00061
+00062
+00063
+00064
+00065
+00066
+00067
+00068
+00069
+00070
+00071
+00072
+00073
+00074
+00075
+00076
+00077
+00078
+00079
+00080
+00081
+00082
+00083
+00084
+00085
+00086
+00087
+00088
+00089
+00090
+00091
+00092
+00093
+00094
+00095
+00096
+00097
+00098
+00099
+00100
+00101
+00102
+00103
+00104
+00105
+00106
+00107
+00108
+00109
+00110
+00111
+00112
+00113
+00114
+00115
+00116
+00117
+00118
+00119
+00120
+00121
+00122
+00123
+00124
+00125
+00126
+00127
+00128
+00129
+00130
+00131
+00132
+00133
+00134
+00135
+00136
+00137
+00138
+00139
+00140
+00141
+00142
+00143
+00144
+00145
+00146
+00147
+00148
+00149
+00150
+00151
+00152
+00153
+00154
+00155
+00156
+00157
+00158
+00159
+00160
+00161
+00162
+00163
+00164
+00165
+00166
+00167
+00168
+00169
+00170
+00171
+00172
+00173
+00174
+00175
+00176
+00177
+00178
+00179
+00180
+00181
+00182
+00183
+00184
+00185
+00186
+00187
+00188
+00189
+00190
+00191
+00192
+00193
+00194
+00195
+00196
+00197
+00198
+00199
+00200
+00201
+00202
+00203
+00204
+00205
+00206
+00207
+00208
+00209
+00210
+00211
+00212
+00213
+00214
+00215
+00216
+00217
+00218
+00219
+00220
+00221
+00222
+00223
+00224
+00225
+00226
+00227
+00228
+00229
+00230
+00231
+00232
+00233
+00234
+00235
+00236
+00237
+00238
+00239
+00240
+00241
+00242
+00243
+00244
+00245
+00246
+00247
+00248
+00249
+00250
+00251
+00252
+00253
+00254
+00255
+00256
+00257
+00258
+00259
+00260
+00261
+00262
+00263
+00264
+<a href="ss_frag.sldoc.html#send_attr_ref_1" target="doc">00265</a>
+<a href="ss_frag.sldoc.html#send_attr_ref_1" target="doc">00266</a>
+00267
+<a href="ss_frag.sldoc.html#send_conf_prop_ref_1" target="doc">00268</a>
+<a href="ss_frag.sldoc.html#send_conf_prop_ref_1" target="doc">00269</a>
+<a href="ss_frag.sldoc.html#send_conf_prop_ref_1" target="doc">00270</a>
+<a href="ss_frag.sldoc.html#send_conf_prop_ref_1" target="doc">00271</a>
+<a href="ss_frag.sldoc.html#send_conf_prop_ref_1" target="doc">00272</a>
+<a href="ss_frag.sldoc.html#send_conf_prop_ref_1" target="doc">00273</a>
+<a href="ss_frag.sldoc.html#send_conf_prop_ref_1" target="doc">00274</a>
+<a href="ss_frag.sldoc.html#send_conf_prop_ref_1" target="doc">00275</a>
+<a href="ss_frag.sldoc.html#send_conf_prop_ref_1" target="doc">00276</a>
+<a href="ss_frag.sldoc.html#send_conf_prop_ref_1" target="doc">00277</a>
+<a href="ss_frag.sldoc.html#send_conf_prop_ref_1" target="doc">00278</a>
+<a href="ss_frag.sldoc.html#send_conf_prop_ref_1" target="doc">00279</a>
+00280
+<a href="ss_frag.sldoc.html#send_size_ref_1" target="doc">00281</a>
+<a href="ss_frag.sldoc.html#send_size_ref_1" target="doc">00282</a>
+<a href="ss_frag.sldoc.html#send_size_ref_1" target="doc">00283</a>
+<a href="ss_frag.sldoc.html#send_size_ref_1" target="doc">00284</a>
+<a href="ss_frag.sldoc.html#send_size_ref_1" target="doc">00285</a>
+00286
+00287
+00288
+00289
+00290
+00291
+00292
+00293
+00294
+00295
+00296
+<a href="ss_frag.sldoc.html#send_buffs_ref_1" target="doc">00297</a>
+<a href="ss_frag.sldoc.html#send_buffs_ref_1" target="doc">00298</a>
+<a href="ss_frag.sldoc.html#send_buffs_ref_1" target="doc">00299</a>
+<a href="ss_frag.sldoc.html#send_buffs_ref_1" target="doc">00300</a>
+00301
+<a href="ss_frag.sldoc.html#send_props_ref_1" target="doc">00302</a>
+<a href="ss_frag.sldoc.html#send_props_ref_1" target="doc">00303</a>
+<a href="ss_frag.sldoc.html#send_props_ref_1" target="doc">00304</a>
+<a href="ss_frag.sldoc.html#send_props_ref_1" target="doc">00305</a>
+<a href="ss_frag.sldoc.html#send_props_ref_1" target="doc">00306</a>
+<a href="ss_frag.sldoc.html#send_props_ref_1" target="doc">00307</a>
+<a href="ss_frag.sldoc.html#send_props_ref_1" target="doc">00308</a>
+00309
+00310
+00311
+<a href="ss_frag.sldoc.html#send_funct_ref_1" target="doc">00312</a>
+<a href="ss_frag.sldoc.html#send_funct_ref_1" target="doc">00313</a>
+<a href="ss_frag.sldoc.html#send_funct_ref_1" target="doc">00314</a>
+<a href="ss_frag.sldoc.html#send_funct_ref_1" target="doc">00315</a>
+<a href="ss_frag.sldoc.html#send_funct_ref_1" target="doc">00316</a>
+00317
+00318
+<a href="ss_frag.sldoc.html#send_check_ref_1" target="doc">00319</a>
+<a href="ss_frag.sldoc.html#send_check_ref_1" target="doc">00320</a>
+<a href="ss_frag.sldoc.html#send_check_ref_1" target="doc">00321</a>
+<a href="ss_frag.sldoc.html#send_check_ref_1" target="doc">00322</a>
+<a href="ss_frag.sldoc.html#send_check_ref_1" target="doc">00323</a>
+<a href="ss_frag.sldoc.html#send_check_ref_1" target="doc">00324</a>
+<a href="ss_frag.sldoc.html#send_check_ref_1" target="doc">00325</a>
+00326
+00327
+00328
+00329
+00330
+00331
+00332
+00333
+00334
+00335
+<a href="ss_frag.sldoc.html#send_first_ref_1" target="doc">00336</a>
+<a href="ss_frag.sldoc.html#send_first_ref_1" target="doc">00337</a>
+<a href="ss_frag.sldoc.html#send_first_ref_1" target="doc">00338</a>
+<a href="ss_frag.sldoc.html#send_first_ref_1" target="doc">00339</a>
+<a href="ss_frag.sldoc.html#send_first_ref_1" target="doc">00340</a>
+<a href="ss_frag.sldoc.html#send_first_ref_1" target="doc">00341</a>
+<a href="ss_frag.sldoc.html#send_first_ref_1" target="doc">00342</a>
+<a href="ss_frag.sldoc.html#send_first_ref_1" target="doc">00343</a>
+<a href="ss_frag.sldoc.html#send_first_ref_1" target="doc">00344</a>
+00345
+00346
+00347
+00348
+<a href="ss_frag.sldoc.html#send_rest_ref_1" target="doc">00349</a>
+<a href="ss_frag.sldoc.html#send_rest_ref_1" target="doc">00350</a>
+<a href="ss_frag.sldoc.html#send_rest_ref_1" target="doc">00351</a>
+<a href="ss_frag.sldoc.html#send_rest_ref_1" target="doc">00352</a>
+<a href="ss_frag.sldoc.html#send_rest_ref_1" target="doc">00353</a>
+<a href="ss_frag.sldoc.html#send_rest_ref_1" target="doc">00354</a>
+<a href="ss_frag.sldoc.html#send_rest_ref_1" target="doc">00355</a>
+<a href="ss_frag.sldoc.html#send_rest_ref_1" target="doc">00356</a>
+<a href="ss_frag.sldoc.html#send_rest_ref_1" target="doc">00357</a>
+<a href="ss_frag.sldoc.html#send_rest_ref_1" target="doc">00358</a>
+<a href="ss_frag.sldoc.html#send_rest_ref_1" target="doc">00359</a>
+<a href="ss_frag.sldoc.html#send_rest_ref_1" target="doc">00360</a>
+<a href="ss_frag.sldoc.html#send_rest_ref_1" target="doc">00361</a>
+<a href="ss_frag.sldoc.html#send_rest_ref_1" target="doc">00362</a>
+<a href="ss_frag.sldoc.html#send_rest_ref_1" target="doc">00363</a>
+<a href="ss_frag.sldoc.html#send_rest_ref_1" target="doc">00364</a>
+00365
+00366
+00367
+00368
+00369
+00370
+00371
+00372
+00373
+00374
+00375
+00376
+00377
+00378
+00379
+00380
+00381
+00382
+00383
+00384
+00385
+00386
+00387
+00388
+00389
+00390
+00391
+00392
+00393
+00394
+00395
+00396
+00397
+00398
+00399
+00400
+00401
+00402
+00403
+00404
+00405
+00406
+00407
+00408
+00409
+00410
+00411
+00412
+00413
+00414
+00415
+00416
+00417
+00418
+00419
+00420
+00421
+00422
+00423
+00424
+00425
+00426
+00427
+00428
+00429
+00430
+00431
+00432
+00433
+00434
+00435
+00436
+00437
+00438
+00439
+00440
+00441
+00442
+00443
+00444
+00445
+00446
+00447
+00448
+00449
+00450
+00451
+00452
+00453
+00454
+00455
+00456
+00457
+00458
+</td><td>  /* ss_frag.c - see http://ultramessaging.github.io/UMExamples/ss_frag/c/index.html
+   *
+   * Copyright (c) 2005-2018 Informatica Corporation. All Rights Reserved.
+   * Permission is granted to licensees to use
+   * or alter this software for any purpose, including commercial applications,
+   * according to the terms laid out in the Software License Agreement.
+   *
+   * This source code example is provided by Informatica for educational
+   * and evaluation purposes only.
+   *
+   * THE SOFTWARE IS PROVIDED "AS IS" AND INFORMATICA DISCLAIMS ALL WARRANTIES
+   * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION, ANY IMPLIED WARRANTIES OF
+   * NON-INFRINGEMENT, MERCHANTABILITY OR FITNESS FOR A PARTICULAR
+   * PURPOSE.  INFORMATICA DOES NOT WARRANT THAT USE OF THE SOFTWARE WILL BE
+   * UNINTERRUPTED OR ERROR-FREE.  INFORMATICA SHALL NOT, UNDER ANY CIRCUMSTANCES, BE
+   * LIABLE TO LICENSEE FOR LOST PROFITS, CONSEQUENTIAL, INCIDENTAL, SPECIAL OR
+   * INDIRECT DAMAGES ARISING OUT OF OR RELATED TO THIS AGREEMENT OR THE
+   * TRANSACTIONS CONTEMPLATED HEREUNDER, EVEN IF INFORMATICA HAS BEEN APPRISED OF
+   * THE LIKELIHOOD OF SUCH DAMAGES.
+   */
+  
+<span name="includes" id="includes"></span>  #include &lt;stdio.h&gt;
+  #include &lt;string.h&gt;
+  
+  #if defined(_MSC_VER)
+  /* Windows-only includes */
+  #include &lt;winsock2.h&gt;
+  #define SLEEP(s) Sleep((s)*1000)
+  #else
+  /* Unix-only includes */
+  #include &lt;stdlib.h&gt;
+  #include &lt;unistd.h&gt;
+  #define SLEEP(s) sleep(s)
+  #endif
+  
+  #include &lt;lbm/lbm.h&gt;
+  
+  
+  /* Application structure associated with a smart source.
+   */
+  typedef struct {
+    lbm_context_t *ctx;
+    lbm_ssrc_t *ssrc;
+    char *msgbuf_plain;
+    char *msgbuf_props;
+    int max_msg_len;
+    lbm_ssrc_send_ex_info_t info_prop;
+    lbm_uint32_t int_value_array[2];
+    char *key_ptr_array[2];
+    char remain_key[8];
+  } smart_source_t;
+  
+  
+  /* Receiver state used to reassemble fragmented messages.  Used as per-source
+   * clientd.
+   */
+  typedef struct {
+    int collecting;  /* 1=true, 0=false. */
+    char *reassem_buf;
+    size_t reassem_buf_size;
+    size_t message_len;  /* Size of message being reassembled. */
+    size_t offset;  /* Current offset within reassem_buf[]. */
+    long num_bad_frags;  /* Statistic: bad fragemnts. */
+  } rcv_state_t;
+  
+  
+  /*
+   * Simple lbm error handling.
+   */
+  
+  /* Macro to approximate the basename() function. */
+  #define BASENAME(_p) ((strrchr(_p, '/') == NULL) ? (_p) : (strrchr(_p, '/')+1))
+  
+  /* Pass in an LBM return status.  If not success, print error and abort. */
+  #define LBM_ERR(_e) do {\
+    if ((_e) != LBM_OK) {\
+      printf("LBM_ERR: at %s:%d (%s)\n",\
+        BASENAME(__FILE__), __LINE__, lbm_errmsg());\
+      fflush(stdout);\
+      abort();\
+    }\
+  } while (0)
+  
+  /* Print error and abort. */
+  #define ERR(_s) do {\
+    printf("ERR: at %s:%d (%s)\n",\
+      BASENAME(__FILE__), __LINE__, _s);\
+    fflush(stdout);\
+    abort();\
+  } while (0)
+  
+  
+  /* Called by receiver callback when a received messager has the "Remain"
+   * message property, indicating a fragmented message.
+   */
+  void handle_msg_frag(lbm_msg_t *msg, rcv_state_t *rcv_state,
+    lbm_int32_t remaining)
+  {
+    size_t tot_len;
+  
+    if (rcv_state-&gt;collecting) {
+      /* Make sure the fragment is OK. */
+      if (remaining &gt;= 0 &amp;&amp;
+        (rcv_state-&gt;message_len == (rcv_state-&gt;offset + msg-&gt;len + remaining)))
+      {
+        /* Non-NULL reassem buffer, continue collecting. */
+        memcpy(&amp;rcv_state-&gt;reassem_buf[rcv_state-&gt;offset], msg-&gt;data,
+          msg-&gt;len);
+        rcv_state-&gt;offset += msg-&gt;len;
+  
+        if (remaining == 0) {  /* No more, deliver the data. */
+          printf("PROCESS message, buf[0]=%d, buf[%ld]=%d\n",
+            rcv_state-&gt;reassem_buf[0],
+            rcv_state-&gt;message_len - 1,
+            rcv_state-&gt;reassem_buf[rcv_state-&gt;message_len - 1]);
+  
+          /* No longer collecting. */
+          rcv_state-&gt;collecting = 0;
+        }
+      }  /* if fragment OK */
+      else {  /* fragment is not ok. */
+        /* Bad fragment (should never happen). */
+        printf("Collect error: bad fragment, remaining=%d, offset=%ld, len=%lu, message_len=%ld\n", remaining, rcv_state-&gt;offset, msg-&gt;len, rcv_state-&gt;message_len);
+        rcv_state-&gt;num_bad_frags ++;
+  
+        /* Error, stop collecting. */
+        rcv_state-&gt;collecting = 0;
+      }
+    }
+  
+    else {  /* not collecting */
+      /* Not collecting a fragmented message, is this message first frag? */
+      if (remaining &lt; 0) {
+        /* First fragment. */
+        rcv_state-&gt;collecting = 1;
+        rcv_state-&gt;offset = 0;
+        rcv_state-&gt;message_len = msg-&gt;len + (- remaining);
+        /* Expand buffer if necessary. */
+        if (rcv_state-&gt;message_len &gt; rcv_state-&gt;reassem_buf_size) {
+          rcv_state-&gt;reassem_buf_size = rcv_state-&gt;message_len;
+          rcv_state-&gt;reassem_buf = (char *)realloc(rcv_state-&gt;reassem_buf,
+            rcv_state-&gt;reassem_buf_size);
+        }
+  
+        /* Collect data. */
+        memcpy(&amp;rcv_state-&gt;reassem_buf[rcv_state-&gt;offset], msg-&gt;data, msg-&gt;len);
+        rcv_state-&gt;offset += msg-&gt;len;
+      }  /* remaining &lt; 0 */
+      else {  /* Found middle frag without a first frag; discard. */
+        /* Probably joined stream in middle of message. */
+        printf("info: found middle frag but not collecting, remaining=%d, offset=%ld, len=%lu, message_len=%ld\n", remaining, rcv_state-&gt;offset, msg-&gt;len, rcv_state-&gt;message_len);
+        rcv_state-&gt;num_bad_frags ++;
+      }
+    }  /* not collecting */
+  }  /* handle_msg_frag */
+  
+  
+  /* UM receiver callback.
+   */
+  int msg_rcv_cb(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
+  {
+    rcv_state_t *rcv_state = (rcv_state_t *)msg-&gt;source_clientd;
+    int err;
+  
+    switch (msg-&gt;type) {
+      case LBM_MSG_DATA:
+        if (msg-&gt;properties != NULL) {
+          lbm_int32_t remaining;
+          size_t prop_size = sizeof(remaining);
+          int prop_type = LBM_MSG_PROPERTY_INT;
+  
+          /* Found property, is it for fragmentation? */
+          err = lbm_msg_properties_get(msg-&gt;properties, "Remain",
+            &amp;remaining, &amp;prop_type, &amp;prop_size);
+          if (err == LBM_OK) {
+            handle_msg_frag(msg, rcv_state, remaining);
+          }
+          else {
+            printf("handle messages with other properties.\n");
+          }
+        }  /* msg properties not null */
+        else {  /* msg properties == NULL */
+          if (rcv_state-&gt;collecting) {
+            /* Error, non-frag, but state is collecting (should never happen). */
+            printf("Collect error non-frag, offset=%ld, len=%lu, message_len=%ld\n", rcv_state-&gt;offset, msg-&gt;len, rcv_state-&gt;message_len);
+            /* Stop collecting after error. */
+            rcv_state-&gt;collecting = 0;
+            rcv_state-&gt;num_bad_frags ++;
+          }
+  
+          /* Deliver data message. */
+          printf("PROCESS message, buf[0]=%d, buf[%ld]=%d\n",
+            msg-&gt;data[0],
+            msg-&gt;len - 1,
+            msg-&gt;data[msg-&gt;len - 1]);
+        }
+        break;
+  
+      case LBM_MSG_UNRECOVERABLE_LOSS:
+      case LBM_MSG_UNRECOVERABLE_LOSS_BURST:
+          if (rcv_state-&gt;collecting) {
+            /* Stop collecting after error. */
+            rcv_state-&gt;collecting = 0;
+            rcv_state-&gt;num_bad_frags ++;
+          }
+  
+      default:
+        printf("Non data receiver event, type=%d\n", msg-&gt;type);
+    }  /* switch msg type */
+  
+    return 0;
+  }  /* msg_rcv_cb */
+  
+  
+  /* Callback when a receiver delivery controller is created for a new source. */
+  void *per_src_clientd_create(const char *source_name, void *clientd)
+  {
+    rcv_state_t *rcv_state;
+  
+    rcv_state = (rcv_state_t *)malloc(sizeof(rcv_state_t));
+  
+    rcv_state-&gt;reassem_buf_size = 8192;
+    rcv_state-&gt;reassem_buf = (char *)malloc(rcv_state-&gt;reassem_buf_size);
+    rcv_state-&gt;collecting = 0;
+    rcv_state-&gt;num_bad_frags = 0;
+  
+    return rcv_state;
+  }  /* per_src_clientd_create */
+  
+  
+  /* Callback when a receiver delivery controller for an ex-source is deleted. */
+  int per_src_clientd_delete(const char *source_name, void *clientd,
+    void *src_clientd)
+  {
+    rcv_state_t *rcv_state = (rcv_state_t *)src_clientd;
+  
+    if (rcv_state-&gt;collecting) {
+      /* Error, state is collecting. */
+      printf("Collect error, incomplete fragmented message, offset=%ld, message_len=%ld\n", rcv_state-&gt;offset, rcv_state-&gt;message_len);
+    }
+    if (rcv_state-&gt;num_bad_frags &gt; 0) {
+      printf("Number of bad fragments=%ld\n", rcv_state-&gt;num_bad_frags);
+    }
+  
+    free(rcv_state-&gt;reassem_buf);
+    free(rcv_state);
+  
+    return 0;
+  }  /* per_src_clientd_delete */
+  
+  
+  /* Create a SmartSource, and init associated state.
+   */
+  void smart_source_init(smart_source_t *smart_source, lbm_context_t *ctx,
+    char *topic)
+  {
+    lbm_topic_t *lbm_topic = NULL;
+    lbm_src_topic_attr_t *src_tattr = NULL;
+    int prop_count;
+    size_t opt_len;
+    int err;
+  
+    smart_source-&gt;ctx = ctx;
+  
+<span name="send_attr" id="send_attr"></span>    err = lbm_src_topic_attr_create(&amp;src_tattr);
+    LBM_ERR(err);
+  
+<span name="send_conf_prop" id="send_conf_prop"></span>    /* Make sure user's config allows at least 1 msg property. */
+    opt_len = sizeof(prop_count);
+    err = lbm_src_topic_attr_getopt(src_tattr,
+      "smart_src_message_property_int_count", &amp;prop_count, &amp;opt_len);
+    LBM_ERR(err);
+    if (prop_count == 0) {
+      /* No props configured, add one. */
+      prop_count = 1;
+      err = lbm_src_topic_attr_setopt(src_tattr,
+        "smart_src_message_property_int_count", &amp;prop_count, &amp;opt_len);
+      LBM_ERR(err);
+    }
+  
+<span name="send_size" id="send_size"></span>    /* Find out the user's config for max message length. */
+    opt_len = sizeof(smart_source-&gt;max_msg_len);
+    err = lbm_src_topic_attr_getopt(src_tattr,
+      "smart_src_max_message_length", &amp;(smart_source-&gt;max_msg_len), &amp;opt_len);
+    LBM_ERR(err);
+  
+    err = lbm_src_topic_alloc(&amp;lbm_topic, ctx, topic, src_tattr);
+    LBM_ERR(err);
+  
+    err = lbm_ssrc_create(&amp;(smart_source-&gt;ssrc), ctx, lbm_topic, NULL, NULL,
+      NULL);
+    LBM_ERR(err);
+  
+    err = lbm_src_topic_attr_delete(src_tattr);
+    LBM_ERR(err);
+  
+<span name="send_buffs" id="send_buffs"></span>    err = lbm_ssrc_buff_get(smart_source-&gt;ssrc, &amp;smart_source-&gt;msgbuf_plain, 0);
+    LBM_ERR(err);
+    err = lbm_ssrc_buff_get(smart_source-&gt;ssrc, &amp;smart_source-&gt;msgbuf_props, 0);
+    LBM_ERR(err);
+  
+<span name="send_props" id="send_props"></span>    /* Set up message property. */
+    smart_source-&gt;info_prop.flags = LBM_SSRC_SEND_EX_FLAG_PROPERTIES;
+    smart_source-&gt;info_prop.mprop_int_cnt = 1;
+    smart_source-&gt;info_prop.mprop_int_vals = smart_source-&gt;int_value_array;
+    smart_source-&gt;info_prop.mprop_int_keys = &amp;smart_source-&gt;key_ptr_array[0];
+    smart_source-&gt;key_ptr_array[0] = smart_source-&gt;remain_key;
+    strncpy(smart_source-&gt;remain_key, "Remain", sizeof(smart_source-&gt;remain_key));
+  }  /* smart_source_init */
+  
+  
+<span name="send_funct" id="send_funct"></span>  /* Send a message, fragmenting it if necessary.
+   */
+  void smart_source_send(smart_source_t *smart_source, char *buf, size_t len,
+    int flags)
+  {
+    int err;
+  
+<span name="send_check" id="send_check"></span>    if (len &lt;= smart_source-&gt;max_msg_len) {
+      /* Message fits in one buffer, send it. */
+      memcpy(smart_source-&gt;msgbuf_plain, buf, len);
+      err = lbm_ssrc_send_ex(smart_source-&gt;ssrc, smart_source-&gt;msgbuf_plain,
+        len, 0, NULL);
+      LBM_ERR(err);
+    }
+  
+    else {  /* Message does not fit in one buffer */
+      int offset;
+      int remaining;
+      int this_len;
+  
+      /* Fragment message. */
+      remaining = len;
+      offset = 0;
+  
+<span name="send_first" id="send_first"></span>      this_len = smart_source-&gt;max_msg_len;
+      remaining -= this_len;
+      /* Indicate first fragment with negative remainer. */
+      smart_source-&gt;int_value_array[0] = - remaining;
+      memcpy(smart_source-&gt;msgbuf_props, &amp;buf[offset], this_len);
+      err = lbm_ssrc_send_ex(smart_source-&gt;ssrc, smart_source-&gt;msgbuf_props,
+        this_len, 0, &amp;(smart_source-&gt;info_prop));
+      LBM_ERR(err);
+      offset += this_len;
+  
+      /* From now on, need to update the properties. */
+      smart_source-&gt;info_prop.flags |= LBM_SSRC_SEND_EX_FLAG_UPDATE_PROPERTY_VALUES;
+  
+<span name="send_rest" id="send_rest"></span>      /* Send rest of fragments. */
+      while (remaining &gt; 0) {
+        if (remaining &gt; smart_source-&gt;max_msg_len) {
+          this_len = smart_source-&gt;max_msg_len;
+        }
+        else {
+          this_len = remaining;
+        }
+        remaining -= this_len;
+        smart_source-&gt;int_value_array[0] = remaining;
+        memcpy(smart_source-&gt;msgbuf_props, &amp;buf[offset], this_len);
+        err = lbm_ssrc_send_ex(smart_source-&gt;ssrc, smart_source-&gt;msgbuf_props,
+          this_len, 0, &amp;(smart_source-&gt;info_prop));
+  
+        offset += this_len;
+      }  /* while */
+    }
+  }  /* smart_source_send */
+  
+  
+  int main(int argc, char **argv) {
+    lbm_context_t *rctx = NULL;
+    lbm_context_t *sctx = NULL;
+    lbm_rcv_topic_attr_t *rcv_attr = NULL;
+    lbm_rcv_src_notification_func_t src_notif_func;  /* config option */
+    lbm_topic_t *lbm_topic = NULL;
+    lbm_rcv_t *rcv;
+    smart_source_t smart_source;
+    char *send_buff;
+    int err;
+  
+    err = lbm_config("test.cfg");
+    LBM_ERR(err);
+  
+    /* Create a pair of contexts, one for publisher, the other for subscriber.
+     */
+  
+    err = lbm_context_create(&amp;rctx, NULL, NULL, NULL);
+    LBM_ERR(err);
+  
+    err = lbm_context_create(&amp;sctx, NULL, NULL, NULL);
+    LBM_ERR(err);
+  
+  
+    /* Create receiver.
+     */
+  
+    err = lbm_rcv_topic_attr_create(&amp;rcv_attr);
+    LBM_ERR(err);
+  
+    src_notif_func.create_func = per_src_clientd_create;
+    src_notif_func.delete_func = per_src_clientd_delete;
+    src_notif_func.clientd = NULL;  /* Or your own state structure. */
+    err = lbm_rcv_topic_attr_setopt(rcv_attr, "source_notification_function",
+      &amp;src_notif_func, sizeof(src_notif_func));
+    LBM_ERR(err);
+  
+    err = lbm_rcv_topic_lookup(&amp;lbm_topic, rctx, "topic_1", rcv_attr);
+    LBM_ERR(err);
+  
+    err = lbm_rcv_create(&amp;rcv, rctx, lbm_topic, msg_rcv_cb, NULL, NULL);
+    LBM_ERR(err);
+  
+  
+    /* Create source.
+     */
+    smart_source_init(&amp;smart_source, sctx, "topic_1");
+  
+    send_buff = (char *)malloc(70000); /* Bigger than 64k, for fun. */
+  
+    SLEEP(1);  /* For topic res. */
+  
+  
+    /* Send messages.
+     */
+  
+    send_buff[0] = 1;  send_buff[999] = 1;
+    smart_source_send(&amp;smart_source, send_buff, 1000, LBM_MSG_FLUSH);
+    SLEEP(1);
+  
+    send_buff[0] = 2;  send_buff[4999] = 2;
+    smart_source_send(&amp;smart_source, send_buff, 5000, LBM_MSG_FLUSH);
+    SLEEP(1);
+  
+    send_buff[0] = 3;  send_buff[19999] = 3;
+    smart_source_send(&amp;smart_source, send_buff, 20000, LBM_MSG_FLUSH);
+    SLEEP(1);
+  
+    send_buff[0] = 4;  send_buff[99] = 4;
+    smart_source_send(&amp;smart_source, send_buff, 100, LBM_MSG_FLUSH);
+    SLEEP(1);
+  
+    send_buff[0] = 5;  send_buff[69999] = 5;
+    smart_source_send(&amp;smart_source, send_buff, 70000, LBM_MSG_FLUSH);
+    SLEEP(1);
+  
+  
+    /* Shut down.
+     */
+  
+    free(send_buff);
+  
+    (void)lbm_ssrc_delete(smart_source.ssrc);
+    (void)lbm_rcv_delete(rcv);
+  
+    (void)lbm_context_delete(rctx);
+    (void)lbm_context_delete(sctx);
+  
+    return 0;
+  }  /* main */
+</td></tr></table></code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></small></body></html>
