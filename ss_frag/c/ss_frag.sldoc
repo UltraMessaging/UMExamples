@@ -1,0 +1,58 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../../style/main.css" type="text/css" media="screen" />
+    <title>Smart Source Message Fragmentation</title>
+  </head>
+  <body>
+    =semlit,include,../intro.sldoc=
+    <p>There is one program source file:</p>
+    <ul>
+      <li><b><tt>=semlit,srcfile,ss_frag_c.slsrc,ss_frag.c=</tt></b>
+        - (right-click and save as "ss_frag.c") main program.</li>
+    </ul>
+    <h2>Program explanation: <tt>ss_frag.c</tt></h2>
+
+    <p>The <tt>ss_frag.c</tt> file contains:</p>
+    <ul>
+    <li>Source-side code (fragments messages),</li>
+    <li>Receive-side code (reassembles messages),</li>
+    <li>Simple demonstration code.</li>
+    </ul>
+    <h3>Source-Side Code</h3>
+	<p>At the heart of the source-side code is the function
+       <tt>smart_source_send()</tt>:</pp>
+	=semlit,insert,send_funct=
+    <p><b>CLICK ON A LINE NUBMER TO SEE THE CODE ON THE RIGHT IN CONTEXT!</b></p>
+    <p>This function first checks to see if the application message is
+       small enough to fit in a single message.  If so, it sends the
+       message without any message properties.</p>
+	=semlit,insert,send_check=
+    <p>For application messages that are too big, they need to be
+       fragmented.  The "Remain" message property is set to negative
+       of the remaining size after this fragment is sent.</p>
+	=semlit,insert,send_first=
+    <p>Subsequent fragments are sent, chunk at a time, with
+       a positive "Remain" property.</p>
+	=semlit,insert,send_rest=
+    <h4>Send Buffers</h4>
+    <p>For efficiency and simplicity, two Smart Source send buffers
+       are used to send messages: <tt>msgbuf_plain</tt> for small messages
+       with no properties, and <tt>msgbuf_props</tt> for large fragmented
+       messages that have properties.  They are initialized in
+       <tt>smart_source_init()</tt>.</p>
+	=semlit,insert,send_buffs=
+    <p>The message property is also initialized.</p>
+	=semlit,insert,send_props=
+    <p>The source-side code needs to know what the size threshold is for
+       fragmented messages.  It determines this by creating a source
+       attribute object, which inherets the user's configuration.</p>
+	=semlit,insert,send_attr=
+    <p>Then, the configured value for the option
+       <a href="https://ultramessaging.github.io/currdoc/doc/Config/grpsmartsource.html#smartsrcmaxmessagelengthsource" target="_top">smart_src_max_message_length (source)</a>
+       is read.</p>
+	=semlit,insert,send_size=
+    <p>There is also a sanity check to make sure the user configured a
+       message property.</p>
+	=semlit,insert,send_conf_prop=
+  </body>
+</html>
