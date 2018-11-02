@@ -100,12 +100,15 @@ void handle_msg_frag(lbm_msg_t *msg, rcv_state_t *rcv_state,
 {
   size_t tot_len;
 
+/* =semlit,block,rcv_chk_frag=*/
   if (rcv_state->collecting) {
     /* Make sure the fragment is OK. */
     if (remaining >= 0 &&
       (rcv_state->message_len == (rcv_state->offset + msg->len + remaining)))
     {
-      /* Non-NULL reassem buffer, continue collecting. */
+/* =semlit,endblock,rcv_chk_frag=*/
+/* =semlit,block,rcv_collect=*/
+      /* Collect the fragment. */
       memcpy(&rcv_state->reassem_buf[rcv_state->offset], msg->data,
         msg->len);
       rcv_state->offset += msg->len;
@@ -119,6 +122,7 @@ void handle_msg_frag(lbm_msg_t *msg, rcv_state_t *rcv_state,
         /* No longer collecting. */
         rcv_state->collecting = 0;
       }
+/* =semlit,endblock,rcv_collect=*/
     }  /* if fragment OK */
     else {  /* fragment is not ok. */
       /* Bad fragment (should never happen). */
@@ -130,23 +134,31 @@ void handle_msg_frag(lbm_msg_t *msg, rcv_state_t *rcv_state,
     }
   }
 
+/* =semlit,block,rcv_first_frag=*/
   else {  /* not collecting */
     /* Not collecting a fragmented message, is this message first frag? */
     if (remaining < 0) {
       /* First fragment. */
+/* =semlit,endblock,rcv_first_frag=*/
+/* =semlit,block,rcv_start_collect=*/
       rcv_state->collecting = 1;
       rcv_state->offset = 0;
       rcv_state->message_len = msg->len + (- remaining);
+/* =semlit,endblock,rcv_start_collect=*/
+/* =semlit,block,rcv_expand=*/
       /* Expand buffer if necessary. */
       if (rcv_state->message_len > rcv_state->reassem_buf_size) {
         rcv_state->reassem_buf_size = rcv_state->message_len;
         rcv_state->reassem_buf = (char *)realloc(rcv_state->reassem_buf,
           rcv_state->reassem_buf_size);
       }
+/* =semlit,endblock,rcv_expand=*/
 
+/* =semlit,block,rcv_collect_first=*/
       /* Collect data. */
       memcpy(&rcv_state->reassem_buf[rcv_state->offset], msg->data, msg->len);
       rcv_state->offset += msg->len;
+/* =semlit,endblock,rcv_collect_first=*/
     }  /* remaining < 0 */
     else {  /* Found middle frag without a first frag; discard. */
       /* Probably joined stream in middle of message. */
@@ -157,35 +169,23 @@ void handle_msg_frag(lbm_msg_t *msg, rcv_state_t *rcv_state,
 }  /* handle_msg_frag */
 
 
+/* =semlit,block,rcv_cb=*/
 /* UM receiver callback.
  */
 int msg_rcv_cb(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
 {
+/* =semlit,endblock,rcv_cb=*/
   rcv_state_t *rcv_state = (rcv_state_t *)msg->source_clientd;
   int err;
 
   switch (msg->type) {
     case LBM_MSG_DATA:
-      if (msg->properties != NULL) {
-        lbm_int32_t remaining;
-        size_t prop_size = sizeof(remaining);
-        int prop_type = LBM_MSG_PROPERTY_INT;
-
-        /* Found property, is it for fragmentation? */
-        err = lbm_msg_properties_get(msg->properties, "Remain",
-          &remaining, &prop_type, &prop_size);
-        if (err == LBM_OK) {
-          handle_msg_frag(msg, rcv_state, remaining);
-        }
-        else {
-          printf("handle messages with other properties.\n");
-        }
-      }  /* msg properties not null */
-      else {  /* msg properties == NULL */
+/* =semlit,block,rcv_no_prop=*/
+      if (msg->properties == NULL) {
+        /* Fast path (not part of a fragmented messqge). */
         if (rcv_state->collecting) {
           /* Error, non-frag, but state is collecting (should never happen). */
           printf("Collect error non-frag, offset=%ld, len=%lu, message_len=%ld\n", rcv_state->offset, msg->len, rcv_state->message_len);
-          /* Stop collecting after error. */
           rcv_state->collecting = 0;
           rcv_state->num_bad_frags ++;
         }
@@ -196,6 +196,24 @@ int msg_rcv_cb(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
           msg->len - 1,
           msg->data[msg->len - 1]);
       }
+/* =semlit,endblock,rcv_no_prop=*/
+      else {  /* msg properties */
+        lbm_int32_t remaining;
+        size_t prop_size = sizeof(remaining);
+        int prop_type = LBM_MSG_PROPERTY_INT;
+
+/* =semlit,block,rcv_tst_prop=*/
+        /* Found property, is it for fragmentation? */
+        err = lbm_msg_properties_get(msg->properties, "Remain",
+          &remaining, &prop_type, &prop_size);
+        if (err == LBM_OK) {
+          handle_msg_frag(msg, rcv_state, remaining);
+        }
+/* =semlit,endblock,rcv_tst_prop=*/
+        else {
+          printf("handle messages with other properties.\n");
+        }
+      }  /* msg properties not null */
       break;
 
     case LBM_MSG_UNRECOVERABLE_LOSS:
