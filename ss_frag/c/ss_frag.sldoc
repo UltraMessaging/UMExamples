@@ -10,7 +10,6 @@
       <li><b><tt>=semlit,srcfile,ss_frag_c.slsrc,ss_frag.c=</tt></b>
         - (right-click and save as "ss_frag.c") main program.</li>
     </ul>
-    <h2>Program explanation: <tt>ss_frag.c</tt></h2>
 
     <p>The <tt>ss_frag.c</tt> file contains:</p>
     <ul>
@@ -18,9 +17,9 @@
     <li>Receive-side code (reassembles messages),</li>
     <li>Simple demonstration code.</li>
     </ul>
-    <h3>Source-Side Code</h3>
+    <h2>Source-Side Code</h2>
 	<p>At the heart of the source-side code is the function
-       <tt>smart_source_send()</tt>:</pp>
+       <tt>smart_source_send()</tt>:</p>
 	=semlit,insert,send_funct=
     <p><b>CLICK ON A LINE NUBMER TO SEE THE CODE ON THE RIGHT IN CONTEXT!</b></p>
     <p>This function first checks to see if the application message is
@@ -34,7 +33,7 @@
     <p>Subsequent fragments are sent, chunk at a time, with
        a positive "Remain" property.</p>
 	=semlit,insert,send_rest=
-    <h4>Send Buffers</h4>
+    <h3>Send Buffers</h3>
     <p>For efficiency and simplicity, two Smart Source send buffers
        are used to send messages: <tt>msgbuf_plain</tt> for small messages
        with no properties, and <tt>msgbuf_props</tt> for large fragmented
@@ -54,5 +53,40 @@
     <p>There is also a sanity check to make sure the user configured a
        message property.</p>
 	=semlit,insert,send_conf_prop=
+    <h2>Receiver-Side Code</h2>
+	<p>At the heart of the receiver-side code is the receiver application
+       callback function <tt>smart_source_send()</tt>:</p>
+	=semlit,insert,rcv_cb=
+    <p>If there is no message property with the message, it is a small
+       (non-fragmented) message, and can be delivered.
+       It does a sanity check first to make sure there isn't a fragmented
+       message in-progress.</p>
+	=semlit,insert,rcv_no_prop=
+    <p>Otherwise, there is a property, which we make sure is "Remain".
+	=semlit,insert,rcv_tst_prop=
+    <p>Once the message is known to be a fragment, it is passed to the
+       function <tt>handle_msg_frag()</tt> for reassembly.
+       This function has two states it can be in: collecting (in the middle
+       of a fragmented message), or not collecting (waiting for a negative
+       "Remain" property to indicate the start of a fragmented message).</p>
+    <p>If it is collecting, the newly-received message is validated to make
+       sure it is the expected next fragment.</p>
+	=semlit,insert,rcv_chk_frag=
+    <p>Once validated, the message content is collected.
+       If this is the last fragment in the message ("Remain"==0) then the
+       reassembled message is delivered.</p>
+	=semlit,insert,rcv_collect=
+    <h3>First Fragment Processing</h3>
+    <p>If <tt>handle_msg_frag()</tt> is called and the receiver state is
+       <em>not</em> collecting, then the fragment should be the first
+       fragment of a large message ("Remain" negative).</p>
+	=semlit,insert,rcv_first_frag=
+    <p>Start the collection state.</p>
+	=semlit,insert,rcv_start_collect=
+    <p>To keep the algorithm general, if the fragmented message is larger
+       than the currently-allocated reassembly buffer, expand it.</p>
+	=semlit,insert,rcv_expand=
+    <p>Finally, collect the first fragment's data.</p>
+	=semlit,insert,rcv_collect_first=
   </body>
 </html>

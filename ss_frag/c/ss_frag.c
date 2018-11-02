@@ -103,7 +103,7 @@ void handle_msg_frag(lbm_msg_t *msg, rcv_state_t *rcv_state,
     if (remaining >= 0 &&
       (rcv_state->message_len == (rcv_state->offset + msg->len + remaining)))
     {
-      /* Non-NULL reassem buffer, continue collecting. */
+      /* Collect the fragment. */
       memcpy(&rcv_state->reassem_buf[rcv_state->offset], msg->data,
         msg->len);
       rcv_state->offset += msg->len;
@@ -164,7 +164,22 @@ int msg_rcv_cb(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
 
   switch (msg->type) {
     case LBM_MSG_DATA:
-      if (msg->properties != NULL) {
+      if (msg->properties == NULL) {
+        /* Fast path (not part of a fragmented messqge). */
+        if (rcv_state->collecting) {
+          /* Error, non-frag, but state is collecting (should never happen). */
+          printf("Collect error non-frag, offset=%ld, len=%lu, message_len=%ld\n", rcv_state->offset, msg->len, rcv_state->message_len);
+          rcv_state->collecting = 0;
+          rcv_state->num_bad_frags ++;
+        }
+
+        /* Deliver data message. */
+        printf("PROCESS message, buf[0]=%d, buf[%ld]=%d\n",
+          msg->data[0],
+          msg->len - 1,
+          msg->data[msg->len - 1]);
+      }
+      else {  /* msg properties */
         lbm_int32_t remaining;
         size_t prop_size = sizeof(remaining);
         int prop_type = LBM_MSG_PROPERTY_INT;
@@ -179,21 +194,6 @@ int msg_rcv_cb(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
           printf("handle messages with other properties.\n");
         }
       }  /* msg properties not null */
-      else {  /* msg properties == NULL */
-        if (rcv_state->collecting) {
-          /* Error, non-frag, but state is collecting (should never happen). */
-          printf("Collect error non-frag, offset=%ld, len=%lu, message_len=%ld\n", rcv_state->offset, msg->len, rcv_state->message_len);
-          /* Stop collecting after error. */
-          rcv_state->collecting = 0;
-          rcv_state->num_bad_frags ++;
-        }
-
-        /* Deliver data message. */
-        printf("PROCESS message, buf[0]=%d, buf[%ld]=%d\n",
-          msg->data[0],
-          msg->len - 1,
-          msg->data[msg->len - 1]);
-      }
       break;
 
     case LBM_MSG_UNRECOVERABLE_LOSS:

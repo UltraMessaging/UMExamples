@@ -66,7 +66,6 @@
       <li><b><tt><a href="ss_frag.c">ss_frag.c</a></tt></b>
         - (right-click and save as "ss_frag.c") main program.</li>
     </ul>
-    <h2>Program explanation: <tt>ss_frag.c</tt></h2>
 
     <p>The <tt>ss_frag.c</tt> file contains:</p>
     <ul>
@@ -74,9 +73,9 @@
     <li>Receive-side code (reassembles messages),</li>
     <li>Simple demonstration code.</li>
     </ul>
-    <h3>Source-Side Code</h3>
+    <h2>Source-Side Code</h2>
 	<p>At the heart of the source-side code is the function
-       <tt>smart_source_send()</tt>:</pp>
+       <tt>smart_source_send()</tt>:</p>
 	<a name="send_funct_ref_1" id="send_funct_ref_1"></a>
 <small><pre>
 <a href="ss_frag_c.slsrc.html#send_funct" target="src">00312</a>  /* Send a message, fragmenting it if necessary.
@@ -143,7 +142,7 @@
 </pre><!-- endblock send_rest_ref_1 --></small>
 
 
-    <h4>Send Buffers</h4>
+    <h3>Send Buffers</h3>
     <p>For efficiency and simplicity, two Smart Source send buffers
        are used to send messages: <tt>msgbuf_plain</tt> for small messages
        with no properties, and <tt>msgbuf_props</tt> for large fragmented
@@ -211,6 +210,137 @@
 <a href="ss_frag_c.slsrc.html#send_conf_prop" target="src">00278</a>      LBM_ERR(err);
 <a href="ss_frag_c.slsrc.html#send_conf_prop" target="src">00279</a>    }
 </pre><!-- endblock send_conf_prop_ref_1 --></small>
+
+
+    <h2>Receiver-Side Code</h2>
+	<p>At the heart of the receiver-side code is the receiver application
+       callback function <tt>smart_source_send()</tt>:</p>
+	<a name="rcv_cb_ref_1" id="rcv_cb_ref_1"></a>
+<small><pre>
+<a href="ss_frag_c.slsrc.html#rcv_cb" target="src">00158</a>  /* UM receiver callback.
+<a href="ss_frag_c.slsrc.html#rcv_cb" target="src">00159</a>   */
+<a href="ss_frag_c.slsrc.html#rcv_cb" target="src">00160</a>  int msg_rcv_cb(lbm_rcv_t *rcv, lbm_msg_t *msg, void *clientd)
+<a href="ss_frag_c.slsrc.html#rcv_cb" target="src">00161</a>  {
+</pre><!-- endblock rcv_cb_ref_1 --></small>
+
+
+    <p>If there is no message property with the message, it is a small
+       (non-fragmented) message, and can be delivered.
+       It does a sanity check first to make sure there isn't a fragmented
+       message in-progress.</p>
+	<a name="rcv_no_prop_ref_1" id="rcv_no_prop_ref_1"></a>
+<small><pre>
+<a href="ss_frag_c.slsrc.html#rcv_no_prop" target="src">00167</a>        if (msg-&gt;properties == NULL) {
+<a href="ss_frag_c.slsrc.html#rcv_no_prop" target="src">00168</a>          /* Fast path (not part of a fragmented messqge). */
+<a href="ss_frag_c.slsrc.html#rcv_no_prop" target="src">00169</a>          if (rcv_state-&gt;collecting) {
+<a href="ss_frag_c.slsrc.html#rcv_no_prop" target="src">00170</a>            /* Error, non-frag, but state is collecting (should never happen). */
+<a href="ss_frag_c.slsrc.html#rcv_no_prop" target="src">00171</a>            printf("Collect error non-frag, offset=%ld, len=%lu, message_len=%ld\n", rcv_state-&gt;offset, msg-&gt;len, rcv_state-&gt;message_len);
+<a href="ss_frag_c.slsrc.html#rcv_no_prop" target="src">00172</a>            rcv_state-&gt;collecting = 0;
+<a href="ss_frag_c.slsrc.html#rcv_no_prop" target="src">00173</a>            rcv_state-&gt;num_bad_frags ++;
+<a href="ss_frag_c.slsrc.html#rcv_no_prop" target="src">00174</a>          }
+<a href="ss_frag_c.slsrc.html#rcv_no_prop" target="src">00175</a>  
+<a href="ss_frag_c.slsrc.html#rcv_no_prop" target="src">00176</a>          /* Deliver data message. */
+<a href="ss_frag_c.slsrc.html#rcv_no_prop" target="src">00177</a>          printf("PROCESS message, buf[0]=%d, buf[%ld]=%d\n",
+<a href="ss_frag_c.slsrc.html#rcv_no_prop" target="src">00178</a>            msg-&gt;data[0],
+<a href="ss_frag_c.slsrc.html#rcv_no_prop" target="src">00179</a>            msg-&gt;len - 1,
+<a href="ss_frag_c.slsrc.html#rcv_no_prop" target="src">00180</a>            msg-&gt;data[msg-&gt;len - 1]);
+<a href="ss_frag_c.slsrc.html#rcv_no_prop" target="src">00181</a>        }
+</pre><!-- endblock rcv_no_prop_ref_1 --></small>
+
+
+    <p>Otherwise, there is a property, which we make sure is "Remain".
+	<a name="rcv_tst_prop_ref_1" id="rcv_tst_prop_ref_1"></a>
+<small><pre>
+<a href="ss_frag_c.slsrc.html#rcv_tst_prop" target="src">00187</a>          /* Found property, is it for fragmentation? */
+<a href="ss_frag_c.slsrc.html#rcv_tst_prop" target="src">00188</a>          err = lbm_msg_properties_get(msg-&gt;properties, "Remain",
+<a href="ss_frag_c.slsrc.html#rcv_tst_prop" target="src">00189</a>            &amp;remaining, &amp;prop_type, &amp;prop_size);
+<a href="ss_frag_c.slsrc.html#rcv_tst_prop" target="src">00190</a>          if (err == LBM_OK) {
+<a href="ss_frag_c.slsrc.html#rcv_tst_prop" target="src">00191</a>            handle_msg_frag(msg, rcv_state, remaining);
+<a href="ss_frag_c.slsrc.html#rcv_tst_prop" target="src">00192</a>          }
+</pre><!-- endblock rcv_tst_prop_ref_1 --></small>
+
+
+    <p>Once the message is known to be a fragment, it is passed to the
+       function <tt>handle_msg_frag()</tt> for reassembly.
+       This function has two states it can be in: collecting (in the middle
+       of a fragmented message), or not collecting (waiting for a negative
+       "Remain" property to indicate the start of a fragmented message).</p>
+    <p>If it is collecting, the newly-received message is validated to make
+       sure it is the expected next fragment.</p>
+	<a name="rcv_chk_frag_ref_1" id="rcv_chk_frag_ref_1"></a>
+<small><pre>
+<a href="ss_frag_c.slsrc.html#rcv_chk_frag" target="src">00101</a>    if (rcv_state-&gt;collecting) {
+<a href="ss_frag_c.slsrc.html#rcv_chk_frag" target="src">00102</a>      /* Make sure the fragment is OK. */
+<a href="ss_frag_c.slsrc.html#rcv_chk_frag" target="src">00103</a>      if (remaining &gt;= 0 &amp;&amp;
+<a href="ss_frag_c.slsrc.html#rcv_chk_frag" target="src">00104</a>        (rcv_state-&gt;message_len == (rcv_state-&gt;offset + msg-&gt;len + remaining)))
+<a href="ss_frag_c.slsrc.html#rcv_chk_frag" target="src">00105</a>      {
+</pre><!-- endblock rcv_chk_frag_ref_1 --></small>
+
+
+    <p>Once validated, the message content is collected.
+       If this is the last fragment in the message ("Remain"==0) then the
+       reassembled message is delivered.</p>
+	<a name="rcv_collect_ref_1" id="rcv_collect_ref_1"></a>
+<small><pre>
+<a href="ss_frag_c.slsrc.html#rcv_collect" target="src">00106</a>        /* Collect the fragment. */
+<a href="ss_frag_c.slsrc.html#rcv_collect" target="src">00107</a>        memcpy(&amp;rcv_state-&gt;reassem_buf[rcv_state-&gt;offset], msg-&gt;data,
+<a href="ss_frag_c.slsrc.html#rcv_collect" target="src">00108</a>          msg-&gt;len);
+<a href="ss_frag_c.slsrc.html#rcv_collect" target="src">00109</a>        rcv_state-&gt;offset += msg-&gt;len;
+<a href="ss_frag_c.slsrc.html#rcv_collect" target="src">00110</a>  
+<a href="ss_frag_c.slsrc.html#rcv_collect" target="src">00111</a>        if (remaining == 0) {  /* No more, deliver the data. */
+<a href="ss_frag_c.slsrc.html#rcv_collect" target="src">00112</a>          printf("PROCESS message, buf[0]=%d, buf[%ld]=%d\n",
+<a href="ss_frag_c.slsrc.html#rcv_collect" target="src">00113</a>            rcv_state-&gt;reassem_buf[0],
+<a href="ss_frag_c.slsrc.html#rcv_collect" target="src">00114</a>            rcv_state-&gt;message_len - 1,
+<a href="ss_frag_c.slsrc.html#rcv_collect" target="src">00115</a>            rcv_state-&gt;reassem_buf[rcv_state-&gt;message_len - 1]);
+<a href="ss_frag_c.slsrc.html#rcv_collect" target="src">00116</a>  
+<a href="ss_frag_c.slsrc.html#rcv_collect" target="src">00117</a>          /* No longer collecting. */
+<a href="ss_frag_c.slsrc.html#rcv_collect" target="src">00118</a>          rcv_state-&gt;collecting = 0;
+<a href="ss_frag_c.slsrc.html#rcv_collect" target="src">00119</a>        }
+</pre><!-- endblock rcv_collect_ref_1 --></small>
+
+
+    <h3>First Fragment Processing</h3>
+    <p>If <tt>handle_msg_frag()</tt> is called and the receiver state is
+       <em>not</em> collecting, then the fragment should be the first
+       fragment of a large message ("Remain" negative).</p>
+	<a name="rcv_first_frag_ref_1" id="rcv_first_frag_ref_1"></a>
+<small><pre>
+<a href="ss_frag_c.slsrc.html#rcv_first_frag" target="src">00131</a>    else {  /* not collecting */
+<a href="ss_frag_c.slsrc.html#rcv_first_frag" target="src">00132</a>      /* Not collecting a fragmented message, is this message first frag? */
+<a href="ss_frag_c.slsrc.html#rcv_first_frag" target="src">00133</a>      if (remaining &lt; 0) {
+<a href="ss_frag_c.slsrc.html#rcv_first_frag" target="src">00134</a>        /* First fragment. */
+</pre><!-- endblock rcv_first_frag_ref_1 --></small>
+
+
+    <p>Start the collection state.</p>
+	<a name="rcv_start_collect_ref_1" id="rcv_start_collect_ref_1"></a>
+<small><pre>
+<a href="ss_frag_c.slsrc.html#rcv_start_collect" target="src">00135</a>        rcv_state-&gt;collecting = 1;
+<a href="ss_frag_c.slsrc.html#rcv_start_collect" target="src">00136</a>        rcv_state-&gt;offset = 0;
+<a href="ss_frag_c.slsrc.html#rcv_start_collect" target="src">00137</a>        rcv_state-&gt;message_len = msg-&gt;len + (- remaining);
+</pre><!-- endblock rcv_start_collect_ref_1 --></small>
+
+
+    <p>To keep the algorithm general, if the fragmented message is larger
+       than the currently-allocated reassembly buffer, expand it.</p>
+	<a name="rcv_expand_ref_1" id="rcv_expand_ref_1"></a>
+<small><pre>
+<a href="ss_frag_c.slsrc.html#rcv_expand" target="src">00138</a>        /* Expand buffer if necessary. */
+<a href="ss_frag_c.slsrc.html#rcv_expand" target="src">00139</a>        if (rcv_state-&gt;message_len &gt; rcv_state-&gt;reassem_buf_size) {
+<a href="ss_frag_c.slsrc.html#rcv_expand" target="src">00140</a>          rcv_state-&gt;reassem_buf_size = rcv_state-&gt;message_len;
+<a href="ss_frag_c.slsrc.html#rcv_expand" target="src">00141</a>          rcv_state-&gt;reassem_buf = (char *)realloc(rcv_state-&gt;reassem_buf,
+<a href="ss_frag_c.slsrc.html#rcv_expand" target="src">00142</a>            rcv_state-&gt;reassem_buf_size);
+<a href="ss_frag_c.slsrc.html#rcv_expand" target="src">00143</a>        }
+</pre><!-- endblock rcv_expand_ref_1 --></small>
+
+
+    <p>Finally, collect the first fragment's data.</p>
+	<a name="rcv_collect_first_ref_1" id="rcv_collect_first_ref_1"></a>
+<small><pre>
+<a href="ss_frag_c.slsrc.html#rcv_collect_first" target="src">00145</a>        /* Collect data. */
+<a href="ss_frag_c.slsrc.html#rcv_collect_first" target="src">00146</a>        memcpy(&amp;rcv_state-&gt;reassem_buf[rcv_state-&gt;offset], msg-&gt;data, msg-&gt;len);
+<a href="ss_frag_c.slsrc.html#rcv_collect_first" target="src">00147</a>        rcv_state-&gt;offset += msg-&gt;len;
+</pre><!-- endblock rcv_collect_first_ref_1 --></small>
 
 
   </body>
