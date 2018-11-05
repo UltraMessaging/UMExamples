@@ -9,6 +9,7 @@
     <ul>
       <li><b><tt>=semlit,srcfile,ss_frag_c.slsrc,ss_frag.c=</tt></b>
         - (right-click and save as "ss_frag.c") main program.</li>
+=semlit,initialsource,ss_frag_c.slsrc.html=
     </ul>
 
     <p>The <tt>ss_frag.c</tt> file contains:</p>

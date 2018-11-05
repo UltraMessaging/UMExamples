@@ -19,7 +19,6 @@
  * THE LIKELIHOOD OF SUCH DAMAGES.
  */
 
-/* =semlit,block,includes=*/
 #include <stdio.h>
 #include <string.h>
 
@@ -35,7 +34,6 @@
 #endif
 
 #include <lbm/lbm.h>
-/* =semlit,endblock,includes=*/
 
 
 /* Application structure associated with a smart source.

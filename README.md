@@ -5,10 +5,14 @@ Go to https://ultramessaging.github.io/UMExamples/ so see them rendered
 and user-friendly.
 
 
-## Creating Examples
+## Semlit
 
 The examples use a documentation toolset called "semlit".
 Go to https://github.com/fordsfords/semlit to get it.
+Place ``semlit.sh`` and ``semlit.pl`` into your PATH.
+
+
+## Creating Examples
 
 Here is how I created the "ss_frag" example:
 
