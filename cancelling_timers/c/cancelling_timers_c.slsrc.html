@@ -68,9 +68,9 @@
 <a href="cancelling_timers.sldoc.html#struct_app_timer_ref_1" target="doc">00050</a>
 <a href="cancelling_timers.sldoc.html#struct_app_timer_ref_1" target="doc">00051</a>
 00052
-<a href="cancelling_timers.sldoc.html#int_wait_ref_1" target="doc">00053</a>
-00054
-00055
+00053
+<a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00054</a>
+<a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00055</a>
 <a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00056</a>
 <a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00057</a>
 <a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00058</a>
@@ -82,10 +82,10 @@
 <a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00064</a>
 <a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00065</a>
 <a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00066</a>
-<a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00067</a>
-<a href="cancelling_timers.sldoc.html#timer_cb_ref_1" target="doc">00068</a>
-00069
-00070
+00067
+00068
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00069</a>
+<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00070</a>
 <a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00071</a>
 <a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00072</a>
 <a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00073</a>
@@ -95,8 +95,8 @@
 <a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00077</a>
 <a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00078</a>
 <a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00079</a>
-<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00080</a>
-<a href="cancelling_timers.sldoc.html#cancel_cb_ref_1" target="doc">00081</a>
+00080
+00081
 00082
 00083
 00084
@@ -106,28 +106,28 @@
 00088
 00089
 00090
-00091
-00092
-<a href="cancelling_timers.sldoc.html#ctx_create_ref_1" target="doc">00093</a>
-<a href="cancelling_timers.sldoc.html#ctx_create_ref_1" target="doc">00094</a>
-00095
+<a href="cancelling_timers.sldoc.html#ctx_create_ref_1" target="doc">00091</a>
+<a href="cancelling_timers.sldoc.html#ctx_create_ref_1" target="doc">00092</a>
+00093
+<a href="cancelling_timers.sldoc.html#schedule_ref_1" target="doc">00094</a>
+<a href="cancelling_timers.sldoc.html#schedule_ref_1" target="doc">00095</a>
 <a href="cancelling_timers.sldoc.html#schedule_ref_1" target="doc">00096</a>
 <a href="cancelling_timers.sldoc.html#schedule_ref_1" target="doc">00097</a>
 <a href="cancelling_timers.sldoc.html#schedule_ref_1" target="doc">00098</a>
-<a href="cancelling_timers.sldoc.html#schedule_ref_1" target="doc">00099</a>
-<a href="cancelling_timers.sldoc.html#schedule_ref_1" target="doc">00100</a>
+00099
+00100
 00101
 00102
-00103
-00104
+<a href="cancelling_timers.sldoc.html#cancel_ref_1" target="doc">00103</a>
+<a href="cancelling_timers.sldoc.html#cancel_ref_1" target="doc">00104</a>
 <a href="cancelling_timers.sldoc.html#cancel_ref_1" target="doc">00105</a>
 <a href="cancelling_timers.sldoc.html#cancel_ref_1" target="doc">00106</a>
 <a href="cancelling_timers.sldoc.html#cancel_ref_1" target="doc">00107</a>
-<a href="cancelling_timers.sldoc.html#cancel_ref_1" target="doc">00108</a>
-<a href="cancelling_timers.sldoc.html#cancel_ref_1" target="doc">00109</a>
-00110
-<a href="cancelling_timers.sldoc.html#wait_ref_1" target="doc">00111</a>
-<a href="cancelling_timers.sldoc.html#wait_ref_1" target="doc">00112</a>
+00108
+<a href="cancelling_timers.sldoc.html#wait_ref_1" target="doc">00109</a>
+<a href="cancelling_timers.sldoc.html#wait_ref_1" target="doc">00110</a>
+00111
+00112
 00113
 00114
 00115
@@ -138,8 +138,6 @@
 00120
 00121
 00122
-00123
-00124
 </td><td>  /* cancelling_timers.c - see http://ultramessaging.github.io/UMExamples/cancelling_timers/c/index.html
    *
    * Copyright (c) 2005-2017 Informatica Corporation. All Rights Reserved.
@@ -191,8 +189,6 @@
       state_type_e state;
       int sync;
   } app_timer_s;
-  
-<span name="int_wait" id="int_wait"></span>  int wait = 1;
   
   
 <span name="timer_cb" id="timer_cb"></span>  /* Timer callback function */

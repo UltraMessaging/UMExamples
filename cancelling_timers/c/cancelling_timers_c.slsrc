@@ -56,10 +56,6 @@ typedef struct app_timer_s {
 } app_timer_s;
 /* =semlit,endblock,struct_app_timer=*/
 
-/* =semlit,block,int_wait=*/
-int wait = 1;
-/* =semlit,endblock,int_wait=*/
-
 
 /* =semlit,block,timer_cb=*/
 /* Timer callback function */
