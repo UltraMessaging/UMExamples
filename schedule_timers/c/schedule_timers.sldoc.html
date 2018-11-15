@@ -38,14 +38,14 @@
 <a href="schedule_timers_c.slsrc.html#timer_cb" target="src">00050</a>  int sample_timer_handler(lbm_context_t *ctx, const void *clientd)
 <a href="schedule_timers_c.slsrc.html#timer_cb" target="src">00051</a>  {
 <a href="schedule_timers_c.slsrc.html#timer_cb" target="src">00052</a>      printf("Timer executed. Set wait to 0 so application can cleanly exit\n");
-<a href="schedule_timers_c.slsrc.html#timer_cb" target="src">00053</a>      wait = 0;
+<a href="schedule_timers_c.slsrc.html#timer_cb" target="src">00053</a>      wait_flag = 0;
 <a href="schedule_timers_c.slsrc.html#timer_cb" target="src">00054</a>  
 <a href="schedule_timers_c.slsrc.html#timer_cb" target="src">00055</a>      return 0;
 <a href="schedule_timers_c.slsrc.html#timer_cb" target="src">00056</a>  }  /* sample_timer_handler */
 </pre><!-- endblock timer_cb_ref_1 --></small>
 
 
-	<p>Note that inside the callback, the global "wait" variable is set to 0, this allows the main thread to stop tight-looping and exit.</p>
+	<p>Note that inside the callback, the global "wait_flag" variable is set to 0, this allows the main thread to stop tight-looping and exit.</p>
     <h4>Scheduling the Timer Callback</h4>
 	<p>Here the application is actually scheduling the callback timer, set to be executed in 1000 milliseconds. The return value should be saved
 	by the application in the event that the application wishes to cancel the timer before it executes. Special care must be taken when cancelling
@@ -59,11 +59,11 @@
 
 
     <h4>Wait for Timer</h4>
-	<p>For the purpose of this example application, it is using the global variable "wait" as a semaphore essentially. Once the timer executes, wait
+	<p>For the purpose of this example application, it is using the global variable "wait_flag" as a semaphore essentially. Once the timer executes, wait
 	will be set to 0 and the application can cleanly exit by deleting the context.</p>
 	<a name="wait_ref_1" id="wait_ref_1"></a>
 <small><pre>
-<a href="schedule_timers_c.slsrc.html#wait" target="src">00074</a>      while (wait)
+<a href="schedule_timers_c.slsrc.html#wait" target="src">00074</a>      while (wait_flag)
 <a href="schedule_timers_c.slsrc.html#wait" target="src">00075</a>          SLEEP(1);
 </pre><!-- endblock wait_ref_1 --></small>
 

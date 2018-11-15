@@ -5,11 +5,13 @@
   </head>
   <body>
     =semlit,include,../intro.sldoc=
-    <p>There is one program source file:</p>
+    <p>There is one program source file and one test configuration file:</p>
     <ul>
       <li><b><tt>=semlit,srcfile,ss_frag_c.slsrc,ss_frag.c=</tt></b>
         - (right-click and save as "ss_frag.c") main program.</li>
 =semlit,initialsource,ss_frag_c.slsrc.html=
+      <li><b><tt>=semlit,srcfile,test_cfg.txt,test.cfg=</tt></b>
+        - (right-click and save as "test.cfg") main program.</li>
     </ul>
 
     <p>The <tt>ss_frag.c</tt> file contains:</p>

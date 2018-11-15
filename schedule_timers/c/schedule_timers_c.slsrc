@@ -48,7 +48,7 @@
 /* =semlit,endblock,error_check=*/
 
 /* =semlit,block,int_wait=*/
-int wait = 1;
+int wait_flag = 1;
 /* =semlit,endblock,int_wait=*/
 
 
@@ -57,7 +57,7 @@ int wait = 1;
 int sample_timer_handler(lbm_context_t *ctx, const void *clientd)
 {
 	printf("Timer executed. Set wait to 0 so application can cleanly exit\n");
-	wait = 0;
+	wait_flag = 0;
 
 	return 0;
 }  /* sample_timer_handler */
@@ -84,7 +84,7 @@ int main(int argc, char **argv)
 
 	/* Now wait for callback to end the wait and close the application */
 	/* =semlit,block,wait=*/
-	while (wait)
+	while (wait_flag)
 		SLEEP(1);
 	/* =semlit,endblock,wait=*/
 

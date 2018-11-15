@@ -43,14 +43,14 @@
 	}  \
 } while (0)
 
-int wait = 1;
+int wait_flag = 1;
 
 
 /* Timer callback function */
 int sample_timer_handler(lbm_context_t *ctx, const void *clientd)
 {
 	printf("Timer executed. Set wait to 0 so application can cleanly exit\n");
-	wait = 0;
+	wait_flag = 0;
 
 	return 0;
 }  /* sample_timer_handler */
@@ -71,7 +71,7 @@ int main(int argc, char **argv)
 	EX_LBM_CHK(timer_id);
 
 	/* Now wait for callback to end the wait and close the application */
-	while (wait)
+	while (wait_flag)
 		SLEEP(1);
 
 	/* Clean up */
