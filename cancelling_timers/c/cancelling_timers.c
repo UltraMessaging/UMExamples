@@ -50,8 +50,6 @@ typedef struct app_timer_s {
 	int sync;
 } app_timer_s;
 
-int wait = 1;
-
 
 /* Timer callback function */
 int sample_timer_handler(lbm_context_t *ctx, const void *clientd)

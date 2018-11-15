@@ -46,8 +46,8 @@
           <a href="../context-create">Creating a Context</a></p>
         <a name="ctx_create_ref_1" id="ctx_create_ref_1"></a>
 <small><pre>
-<a href="cancelling_timers_c.slsrc.html#ctx_create" target="src">00093</a>      err = lbm_context_create(&amp;ctx, NULL, NULL, NULL);
-<a href="cancelling_timers_c.slsrc.html#ctx_create" target="src">00094</a>      EX_LBM_CHK(err);
+<a href="cancelling_timers_c.slsrc.html#ctx_create" target="src">00091</a>      err = lbm_context_create(&amp;ctx, NULL, NULL, NULL);
+<a href="cancelling_timers_c.slsrc.html#ctx_create" target="src">00092</a>      EX_LBM_CHK(err);
 </pre><!-- endblock ctx_create_ref_1 --></small>
 
 
@@ -56,19 +56,19 @@
 	not end up being executed though, because it will be cancelled well in advance</p>
 	<a name="timer_cb_ref_1" id="timer_cb_ref_1"></a>
 <small><pre>
-<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00056</a>  /* Timer callback function */
-<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00057</a>  int sample_timer_handler(lbm_context_t *ctx, const void *clientd)
-<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00058</a>  {
-<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00059</a>      struct app_timer_s *my_timer = (struct app_timer_s *)clientd;
-<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00060</a>      if (my_timer-&gt;state != PENDING) {  
-<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00061</a>          fprintf(stderr, "ERROR: Timer executed and should have been cancelled\n");
-<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00062</a>          exit(1);
-<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00063</a>      }
+<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00054</a>  /* Timer callback function */
+<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00055</a>  int sample_timer_handler(lbm_context_t *ctx, const void *clientd)
+<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00056</a>  {
+<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00057</a>      struct app_timer_s *my_timer = (struct app_timer_s *)clientd;
+<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00058</a>      if (my_timer-&gt;state != PENDING) {  
+<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00059</a>          fprintf(stderr, "ERROR: Timer executed and should have been cancelled\n");
+<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00060</a>          exit(1);
+<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00061</a>      }
+<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00062</a>  
+<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00063</a>      fprintf(stderr, "ERROR: This timer should have been cancelled by now\n");
 <a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00064</a>  
-<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00065</a>      fprintf(stderr, "ERROR: This timer should have been cancelled by now\n");
-<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00066</a>  
-<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00067</a>      return 0;
-<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00068</a>  }  /* sample_timer_handler */
+<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00065</a>      return 0;
+<a href="cancelling_timers_c.slsrc.html#timer_cb" target="src">00066</a>  }  /* sample_timer_handler */
 </pre><!-- endblock timer_cb_ref_1 --></small>
 
 
@@ -80,17 +80,17 @@
 	will not be executed.
 	<a name="cancel_cb_ref_1" id="cancel_cb_ref_1"></a>
 <small><pre>
-<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00071</a>  int cancel_timer_cb(lbm_context_t *ctx, const void *clientd)
-<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00072</a>  {
-<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00073</a>      struct app_timer_s *my_timer = (struct app_timer_s *)clientd;
-<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00074</a>      if (my_timer-&gt;state == PENDING) {
-<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00075</a>          lbm_cancel_timer(ctx, my_timer-&gt;id, NULL);
-<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00076</a>          my_timer-&gt;state = CANCELED;
-<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00077</a>      }
-<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00078</a>      my_timer-&gt;sync = 0;
-<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00079</a>      
-<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00080</a>      return 0;
-<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00081</a>  }  /* cancel_timer_cb */
+<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00069</a>  int cancel_timer_cb(lbm_context_t *ctx, const void *clientd)
+<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00070</a>  {
+<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00071</a>      struct app_timer_s *my_timer = (struct app_timer_s *)clientd;
+<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00072</a>      if (my_timer-&gt;state == PENDING) {
+<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00073</a>          lbm_cancel_timer(ctx, my_timer-&gt;id, NULL);
+<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00074</a>          my_timer-&gt;state = CANCELED;
+<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00075</a>      }
+<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00076</a>      my_timer-&gt;sync = 0;
+<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00077</a>      
+<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00078</a>      return 0;
+<a href="cancelling_timers_c.slsrc.html#cancel_cb" target="src">00079</a>  }  /* cancel_timer_cb */
 </pre><!-- endblock cancel_cb_ref_1 --></small>
 
 
@@ -100,11 +100,11 @@
 	statee object, set to PENDING</p>
 	<a name="schedule_ref_1" id="schedule_ref_1"></a>
 <small><pre>
-<a href="cancelling_timers_c.slsrc.html#schedule" target="src">00096</a>      my_timer.state = PENDING;
-<a href="cancelling_timers_c.slsrc.html#schedule" target="src">00097</a>      if ((my_timer.id = lbm_schedule_timer(ctx, sample_timer_handler, &amp;my_timer, NULL, 10000)) == -1) {
-<a href="cancelling_timers_c.slsrc.html#schedule" target="src">00098</a>          fprintf(stderr, "%s:%d, lbm error: '%s'\n", __FILE__, __LINE__, lbm_errmsg());
-<a href="cancelling_timers_c.slsrc.html#schedule" target="src">00099</a>          exit(1);
-<a href="cancelling_timers_c.slsrc.html#schedule" target="src">00100</a>      }
+<a href="cancelling_timers_c.slsrc.html#schedule" target="src">00094</a>      my_timer.state = PENDING;
+<a href="cancelling_timers_c.slsrc.html#schedule" target="src">00095</a>      if ((my_timer.id = lbm_schedule_timer(ctx, sample_timer_handler, &amp;my_timer, NULL, 10000)) == -1) {
+<a href="cancelling_timers_c.slsrc.html#schedule" target="src">00096</a>          fprintf(stderr, "%s:%d, lbm error: '%s'\n", __FILE__, __LINE__, lbm_errmsg());
+<a href="cancelling_timers_c.slsrc.html#schedule" target="src">00097</a>          exit(1);
+<a href="cancelling_timers_c.slsrc.html#schedule" target="src">00098</a>      }
 </pre><!-- endblock schedule_ref_1 --></small>
 
 
@@ -113,11 +113,11 @@
 	callback, and pass in the state object as the client data variable</p>
 	<a name="cancel_ref_1" id="cancel_ref_1"></a>
 <small><pre>
-<a href="cancelling_timers_c.slsrc.html#cancel" target="src">00105</a>      if (my_timer.state == PENDING) {
-<a href="cancelling_timers_c.slsrc.html#cancel" target="src">00106</a>          lbm_schedule_timer(ctx, cancel_timer_cb, &amp;my_timer, NULL, 0);
-<a href="cancelling_timers_c.slsrc.html#cancel" target="src">00107</a>          /* timer might still fire at this point. */
-<a href="cancelling_timers_c.slsrc.html#cancel" target="src">00108</a>          my_timer.sync = 1;
-<a href="cancelling_timers_c.slsrc.html#cancel" target="src">00109</a>      }
+<a href="cancelling_timers_c.slsrc.html#cancel" target="src">00103</a>      if (my_timer.state == PENDING) {
+<a href="cancelling_timers_c.slsrc.html#cancel" target="src">00104</a>          lbm_schedule_timer(ctx, cancel_timer_cb, &amp;my_timer, NULL, 0);
+<a href="cancelling_timers_c.slsrc.html#cancel" target="src">00105</a>          /* timer might still fire at this point. */
+<a href="cancelling_timers_c.slsrc.html#cancel" target="src">00106</a>          my_timer.sync = 1;
+<a href="cancelling_timers_c.slsrc.html#cancel" target="src">00107</a>      }
 </pre><!-- endblock cancel_ref_1 --></small>
 
 
@@ -126,8 +126,8 @@
 	is not in this sample to maintain simple portability</p>
 	<a name="wait_ref_1" id="wait_ref_1"></a>
 <small><pre>
-<a href="cancelling_timers_c.slsrc.html#wait" target="src">00111</a>      while (my_timer.sync)
-<a href="cancelling_timers_c.slsrc.html#wait" target="src">00112</a>          SLEEP(1);
+<a href="cancelling_timers_c.slsrc.html#wait" target="src">00109</a>      while (my_timer.sync)
+<a href="cancelling_timers_c.slsrc.html#wait" target="src">00110</a>          SLEEP(1);
 </pre><!-- endblock wait_ref_1 --></small>
 
 
