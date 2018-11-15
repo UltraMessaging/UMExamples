@@ -61,11 +61,13 @@
   <li>length=800, Remain=0</li>
   <p>When the receiver sees Remain=0, it can deliver the reassembled message.</p>
 
-    <p>There is one program source file:</p>
+    <p>There is one program source file and one test configuration file:</p>
     <ul>
       <li><b><tt><a href="ss_frag.c">ss_frag.c</a></tt></b>
         - (right-click and save as "ss_frag.c") main program.</li>
 
+      <li><b><tt><a href="test.cfg">test.cfg</a></tt></b>
+        - (right-click and save as "test.cfg") main program.</li>
     </ul>
 
     <p>The <tt>ss_frag.c</tt> file contains:</p>
@@ -79,11 +81,11 @@
        <tt>smart_source_send()</tt>:</p>
 	<a name="send_funct_ref_1" id="send_funct_ref_1"></a>
 <small><pre>
-<a href="ss_frag_c.slsrc.html#send_funct" target="src">00312</a>  /* Send a message, fragmenting it if necessary.
-<a href="ss_frag_c.slsrc.html#send_funct" target="src">00313</a>   */
-<a href="ss_frag_c.slsrc.html#send_funct" target="src">00314</a>  void smart_source_send(smart_source_t *smart_source, char *buf, size_t len,
-<a href="ss_frag_c.slsrc.html#send_funct" target="src">00315</a>    int flags)
-<a href="ss_frag_c.slsrc.html#send_funct" target="src">00316</a>  {
+<a href="ss_frag_c.slsrc.html#send_funct" target="src">00313</a>  /* Send a message, fragmenting it if necessary.
+<a href="ss_frag_c.slsrc.html#send_funct" target="src">00314</a>   */
+<a href="ss_frag_c.slsrc.html#send_funct" target="src">00315</a>  void smart_source_send(smart_source_t *smart_source, char *buf, size_t len,
+<a href="ss_frag_c.slsrc.html#send_funct" target="src">00316</a>    int flags)
+<a href="ss_frag_c.slsrc.html#send_funct" target="src">00317</a>  {
 </pre><!-- endblock send_funct_ref_1 --></small>
 
 
@@ -93,13 +95,13 @@
        message without any message properties.</p>
 	<a name="send_check_ref_1" id="send_check_ref_1"></a>
 <small><pre>
-<a href="ss_frag_c.slsrc.html#send_check" target="src">00319</a>    if (len &lt;= smart_source-&gt;max_msg_len) {
-<a href="ss_frag_c.slsrc.html#send_check" target="src">00320</a>      /* Message fits in one buffer, send it. */
-<a href="ss_frag_c.slsrc.html#send_check" target="src">00321</a>      memcpy(smart_source-&gt;msgbuf_plain, buf, len);
-<a href="ss_frag_c.slsrc.html#send_check" target="src">00322</a>      err = lbm_ssrc_send_ex(smart_source-&gt;ssrc, smart_source-&gt;msgbuf_plain,
-<a href="ss_frag_c.slsrc.html#send_check" target="src">00323</a>        len, 0, NULL);
-<a href="ss_frag_c.slsrc.html#send_check" target="src">00324</a>      LBM_ERR(err);
-<a href="ss_frag_c.slsrc.html#send_check" target="src">00325</a>    }
+<a href="ss_frag_c.slsrc.html#send_check" target="src">00320</a>    if (len &lt;= smart_source-&gt;max_msg_len) {
+<a href="ss_frag_c.slsrc.html#send_check" target="src">00321</a>      /* Message fits in one buffer, send it. */
+<a href="ss_frag_c.slsrc.html#send_check" target="src">00322</a>      memcpy(smart_source-&gt;msgbuf_plain, buf, len);
+<a href="ss_frag_c.slsrc.html#send_check" target="src">00323</a>      err = lbm_ssrc_send_ex(smart_source-&gt;ssrc, smart_source-&gt;msgbuf_plain,
+<a href="ss_frag_c.slsrc.html#send_check" target="src">00324</a>        len, 0, NULL);
+<a href="ss_frag_c.slsrc.html#send_check" target="src">00325</a>      LBM_ERR(err);
+<a href="ss_frag_c.slsrc.html#send_check" target="src">00326</a>    }
 </pre><!-- endblock send_check_ref_1 --></small>
 
 
@@ -108,15 +110,15 @@
        of the remaining size after this fragment is sent.</p>
 	<a name="send_first_ref_1" id="send_first_ref_1"></a>
 <small><pre>
-<a href="ss_frag_c.slsrc.html#send_first" target="src">00336</a>      this_len = smart_source-&gt;max_msg_len;
-<a href="ss_frag_c.slsrc.html#send_first" target="src">00337</a>      remaining -= this_len;
-<a href="ss_frag_c.slsrc.html#send_first" target="src">00338</a>      /* Indicate first fragment with negative remainer. */
-<a href="ss_frag_c.slsrc.html#send_first" target="src">00339</a>      smart_source-&gt;int_value_array[0] = - remaining;
-<a href="ss_frag_c.slsrc.html#send_first" target="src">00340</a>      memcpy(smart_source-&gt;msgbuf_props, &amp;buf[offset], this_len);
-<a href="ss_frag_c.slsrc.html#send_first" target="src">00341</a>      err = lbm_ssrc_send_ex(smart_source-&gt;ssrc, smart_source-&gt;msgbuf_props,
-<a href="ss_frag_c.slsrc.html#send_first" target="src">00342</a>        this_len, 0, &amp;(smart_source-&gt;info_prop));
-<a href="ss_frag_c.slsrc.html#send_first" target="src">00343</a>      LBM_ERR(err);
-<a href="ss_frag_c.slsrc.html#send_first" target="src">00344</a>      offset += this_len;
+<a href="ss_frag_c.slsrc.html#send_first" target="src">00337</a>      this_len = smart_source-&gt;max_msg_len;
+<a href="ss_frag_c.slsrc.html#send_first" target="src">00338</a>      remaining -= this_len;
+<a href="ss_frag_c.slsrc.html#send_first" target="src">00339</a>      /* Indicate first fragment with negative remainer. */
+<a href="ss_frag_c.slsrc.html#send_first" target="src">00340</a>      smart_source-&gt;int_value_array[0] = - remaining;
+<a href="ss_frag_c.slsrc.html#send_first" target="src">00341</a>      memcpy(smart_source-&gt;msgbuf_props, &amp;buf[offset], this_len);
+<a href="ss_frag_c.slsrc.html#send_first" target="src">00342</a>      err = lbm_ssrc_send_ex(smart_source-&gt;ssrc, smart_source-&gt;msgbuf_props,
+<a href="ss_frag_c.slsrc.html#send_first" target="src">00343</a>        this_len, 0, &amp;(smart_source-&gt;info_prop));
+<a href="ss_frag_c.slsrc.html#send_first" target="src">00344</a>      LBM_ERR(err);
+<a href="ss_frag_c.slsrc.html#send_first" target="src">00345</a>      offset += this_len;
 </pre><!-- endblock send_first_ref_1 --></small>
 
 
@@ -124,22 +126,22 @@
        a positive "Remain" property.</p>
 	<a name="send_rest_ref_1" id="send_rest_ref_1"></a>
 <small><pre>
-<a href="ss_frag_c.slsrc.html#send_rest" target="src">00349</a>      /* Send rest of fragments. */
-<a href="ss_frag_c.slsrc.html#send_rest" target="src">00350</a>      while (remaining &gt; 0) {
-<a href="ss_frag_c.slsrc.html#send_rest" target="src">00351</a>        if (remaining &gt; smart_source-&gt;max_msg_len) {
-<a href="ss_frag_c.slsrc.html#send_rest" target="src">00352</a>          this_len = smart_source-&gt;max_msg_len;
-<a href="ss_frag_c.slsrc.html#send_rest" target="src">00353</a>        }
-<a href="ss_frag_c.slsrc.html#send_rest" target="src">00354</a>        else {
-<a href="ss_frag_c.slsrc.html#send_rest" target="src">00355</a>          this_len = remaining;
-<a href="ss_frag_c.slsrc.html#send_rest" target="src">00356</a>        }
-<a href="ss_frag_c.slsrc.html#send_rest" target="src">00357</a>        remaining -= this_len;
-<a href="ss_frag_c.slsrc.html#send_rest" target="src">00358</a>        smart_source-&gt;int_value_array[0] = remaining;
-<a href="ss_frag_c.slsrc.html#send_rest" target="src">00359</a>        memcpy(smart_source-&gt;msgbuf_props, &amp;buf[offset], this_len);
-<a href="ss_frag_c.slsrc.html#send_rest" target="src">00360</a>        err = lbm_ssrc_send_ex(smart_source-&gt;ssrc, smart_source-&gt;msgbuf_props,
-<a href="ss_frag_c.slsrc.html#send_rest" target="src">00361</a>          this_len, 0, &amp;(smart_source-&gt;info_prop));
-<a href="ss_frag_c.slsrc.html#send_rest" target="src">00362</a>  
-<a href="ss_frag_c.slsrc.html#send_rest" target="src">00363</a>        offset += this_len;
-<a href="ss_frag_c.slsrc.html#send_rest" target="src">00364</a>      }  /* while */
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00350</a>      /* Send rest of fragments. */
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00351</a>      while (remaining &gt; 0) {
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00352</a>        if (remaining &gt; smart_source-&gt;max_msg_len) {
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00353</a>          this_len = smart_source-&gt;max_msg_len;
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00354</a>        }
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00355</a>        else {
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00356</a>          this_len = remaining;
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00357</a>        }
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00358</a>        remaining -= this_len;
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00359</a>        smart_source-&gt;int_value_array[0] = remaining;
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00360</a>        memcpy(smart_source-&gt;msgbuf_props, &amp;buf[offset], this_len);
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00361</a>        err = lbm_ssrc_send_ex(smart_source-&gt;ssrc, smart_source-&gt;msgbuf_props,
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00362</a>          this_len, 0, &amp;(smart_source-&gt;info_prop));
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00363</a>  
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00364</a>        offset += this_len;
+<a href="ss_frag_c.slsrc.html#send_rest" target="src">00365</a>      }  /* while */
 </pre><!-- endblock send_rest_ref_1 --></small>
 
 
@@ -151,23 +153,23 @@
        <tt>smart_source_init()</tt>.</p>
 	<a name="send_buffs_ref_1" id="send_buffs_ref_1"></a>
 <small><pre>
-<a href="ss_frag_c.slsrc.html#send_buffs" target="src">00297</a>    err = lbm_ssrc_buff_get(smart_source-&gt;ssrc, &amp;smart_source-&gt;msgbuf_plain, 0);
-<a href="ss_frag_c.slsrc.html#send_buffs" target="src">00298</a>    LBM_ERR(err);
-<a href="ss_frag_c.slsrc.html#send_buffs" target="src">00299</a>    err = lbm_ssrc_buff_get(smart_source-&gt;ssrc, &amp;smart_source-&gt;msgbuf_props, 0);
-<a href="ss_frag_c.slsrc.html#send_buffs" target="src">00300</a>    LBM_ERR(err);
+<a href="ss_frag_c.slsrc.html#send_buffs" target="src">00298</a>    err = lbm_ssrc_buff_get(smart_source-&gt;ssrc, &amp;smart_source-&gt;msgbuf_plain, 0);
+<a href="ss_frag_c.slsrc.html#send_buffs" target="src">00299</a>    LBM_ERR(err);
+<a href="ss_frag_c.slsrc.html#send_buffs" target="src">00300</a>    err = lbm_ssrc_buff_get(smart_source-&gt;ssrc, &amp;smart_source-&gt;msgbuf_props, 0);
+<a href="ss_frag_c.slsrc.html#send_buffs" target="src">00301</a>    LBM_ERR(err);
 </pre><!-- endblock send_buffs_ref_1 --></small>
 
 
     <p>The message property is also initialized.</p>
 	<a name="send_props_ref_1" id="send_props_ref_1"></a>
 <small><pre>
-<a href="ss_frag_c.slsrc.html#send_props" target="src">00302</a>    /* Set up message property. */
-<a href="ss_frag_c.slsrc.html#send_props" target="src">00303</a>    smart_source-&gt;info_prop.flags = LBM_SSRC_SEND_EX_FLAG_PROPERTIES;
-<a href="ss_frag_c.slsrc.html#send_props" target="src">00304</a>    smart_source-&gt;info_prop.mprop_int_cnt = 1;
-<a href="ss_frag_c.slsrc.html#send_props" target="src">00305</a>    smart_source-&gt;info_prop.mprop_int_vals = smart_source-&gt;int_value_array;
-<a href="ss_frag_c.slsrc.html#send_props" target="src">00306</a>    smart_source-&gt;info_prop.mprop_int_keys = &amp;smart_source-&gt;key_ptr_array[0];
-<a href="ss_frag_c.slsrc.html#send_props" target="src">00307</a>    smart_source-&gt;key_ptr_array[0] = smart_source-&gt;remain_key;
-<a href="ss_frag_c.slsrc.html#send_props" target="src">00308</a>    strncpy(smart_source-&gt;remain_key, "Remain", sizeof(smart_source-&gt;remain_key));
+<a href="ss_frag_c.slsrc.html#send_props" target="src">00303</a>    /* Set up message property. */
+<a href="ss_frag_c.slsrc.html#send_props" target="src">00304</a>    smart_source-&gt;info_prop.flags = LBM_SSRC_SEND_EX_FLAG_PROPERTIES;
+<a href="ss_frag_c.slsrc.html#send_props" target="src">00305</a>    smart_source-&gt;info_prop.mprop_int_cnt = 1;
+<a href="ss_frag_c.slsrc.html#send_props" target="src">00306</a>    smart_source-&gt;info_prop.mprop_int_vals = smart_source-&gt;int_value_array;
+<a href="ss_frag_c.slsrc.html#send_props" target="src">00307</a>    smart_source-&gt;info_prop.mprop_int_keys = &amp;smart_source-&gt;key_ptr_array[0];
+<a href="ss_frag_c.slsrc.html#send_props" target="src">00308</a>    smart_source-&gt;key_ptr_array[0] = smart_source-&gt;remain_key;
+<a href="ss_frag_c.slsrc.html#send_props" target="src">00309</a>    strncpy(smart_source-&gt;remain_key, "Remain", sizeof(smart_source-&gt;remain_key));
 </pre><!-- endblock send_props_ref_1 --></small>
 
 
@@ -186,11 +188,11 @@
        is read.</p>
 	<a name="send_size_ref_1" id="send_size_ref_1"></a>
 <small><pre>
-<a href="ss_frag_c.slsrc.html#send_size" target="src">00281</a>    /* Find out the user's config for max message length. */
-<a href="ss_frag_c.slsrc.html#send_size" target="src">00282</a>    opt_len = sizeof(smart_source-&gt;max_msg_len);
-<a href="ss_frag_c.slsrc.html#send_size" target="src">00283</a>    err = lbm_src_topic_attr_getopt(src_tattr,
-<a href="ss_frag_c.slsrc.html#send_size" target="src">00284</a>      "smart_src_max_message_length", &amp;(smart_source-&gt;max_msg_len), &amp;opt_len);
-<a href="ss_frag_c.slsrc.html#send_size" target="src">00285</a>    LBM_ERR(err);
+<a href="ss_frag_c.slsrc.html#send_size" target="src">00282</a>    /* Find out the user's config for max message length. */
+<a href="ss_frag_c.slsrc.html#send_size" target="src">00283</a>    opt_len = sizeof(smart_source-&gt;max_msg_len);
+<a href="ss_frag_c.slsrc.html#send_size" target="src">00284</a>    err = lbm_src_topic_attr_getopt(src_tattr,
+<a href="ss_frag_c.slsrc.html#send_size" target="src">00285</a>      "smart_src_max_message_length", &amp;(smart_source-&gt;max_msg_len), &amp;opt_len);
+<a href="ss_frag_c.slsrc.html#send_size" target="src">00286</a>    LBM_ERR(err);
 </pre><!-- endblock send_size_ref_1 --></small>
 
 
@@ -206,10 +208,11 @@
 <a href="ss_frag_c.slsrc.html#send_conf_prop" target="src">00273</a>    if (prop_count == 0) {
 <a href="ss_frag_c.slsrc.html#send_conf_prop" target="src">00274</a>      /* No props configured, add one. */
 <a href="ss_frag_c.slsrc.html#send_conf_prop" target="src">00275</a>      prop_count = 1;
-<a href="ss_frag_c.slsrc.html#send_conf_prop" target="src">00276</a>      err = lbm_src_topic_attr_setopt(src_tattr,
-<a href="ss_frag_c.slsrc.html#send_conf_prop" target="src">00277</a>        "smart_src_message_property_int_count", &amp;prop_count, &amp;opt_len);
-<a href="ss_frag_c.slsrc.html#send_conf_prop" target="src">00278</a>      LBM_ERR(err);
-<a href="ss_frag_c.slsrc.html#send_conf_prop" target="src">00279</a>    }
+<a href="ss_frag_c.slsrc.html#send_conf_prop" target="src">00276</a>      opt_len = sizeof(prop_count);
+<a href="ss_frag_c.slsrc.html#send_conf_prop" target="src">00277</a>      err = lbm_src_topic_attr_setopt(src_tattr,
+<a href="ss_frag_c.slsrc.html#send_conf_prop" target="src">00278</a>        "smart_src_message_property_int_count", &amp;prop_count, opt_len);
+<a href="ss_frag_c.slsrc.html#send_conf_prop" target="src">00279</a>      LBM_ERR(err);
+<a href="ss_frag_c.slsrc.html#send_conf_prop" target="src">00280</a>    }
 </pre><!-- endblock send_conf_prop_ref_1 --></small>
 
 

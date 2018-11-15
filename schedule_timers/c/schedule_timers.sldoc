@@ -19,14 +19,14 @@
 	<p>The callback function defined below is the application callback that will be invoked when the scheduled timer expires. This callback will
 	be executed on the UM context thread (at least for the purpose of this example it will be executed on the context thread.</p>
 	=semlit,insert,timer_cb=
-	<p>Note that inside the callback, the global "wait" variable is set to 0, this allows the main thread to stop tight-looping and exit.</p>
+	<p>Note that inside the callback, the global "wait_flag" variable is set to 0, this allows the main thread to stop tight-looping and exit.</p>
     <h4>Scheduling the Timer Callback</h4>
 	<p>Here the application is actually scheduling the callback timer, set to be executed in 1000 milliseconds. The return value should be saved
 	by the application in the event that the application wishes to cancel the timer before it executes. Special care must be taken when cancelling
 	timer callback, for more information please see <a href="cancelling_timers/c/index.html>cancelling_timers</a>.</p>
 	=semlit,insert,schedule=
     <h4>Wait for Timer</h4>
-	<p>For the purpose of this example application, it is using the global variable "wait" as a semaphore essentially. Once the timer executes, wait
+	<p>For the purpose of this example application, it is using the global variable "wait_flag" as a semaphore essentially. Once the timer executes, wait
 	will be set to 0 and the application can cleanly exit by deleting the context.</p>
 	=semlit,insert,wait=
     <h4>Error Checking</h4>

@@ -273,8 +273,9 @@ void smart_source_init(smart_source_t *smart_source, lbm_context_t *ctx,
   if (prop_count == 0) {
     /* No props configured, add one. */
     prop_count = 1;
+    opt_len = sizeof(prop_count);
     err = lbm_src_topic_attr_setopt(src_tattr,
-      "smart_src_message_property_int_count", &prop_count, &opt_len);
+      "smart_src_message_property_int_count", &prop_count, opt_len);
     LBM_ERR(err);
   }
 

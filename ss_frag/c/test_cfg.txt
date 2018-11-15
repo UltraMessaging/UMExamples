@@ -1,0 +1,11 @@
+# test.cfg
+
+source transport lbtrm
+source smart_src_max_message_length 1400
+source smart_src_message_property_int_count 2
+source smart_src_user_buffer_count 2
+
+# The following should be uncommented and changed according to your network.
+#context resolver_multicast_address 239.101.3.1
+#context transport_lbtrm_multicast_address_low 239.101.3.10
+#context transport_lbtrm_multicast_address_high 239.101.3.14

@@ -30,6 +30,12 @@ cat bld.tmp | while read F; do :  # find each tool
     semlit.sh "$T.sldoc"
     # Don't let example maintainers edit the output files
     chmod -w *.c *.h *.java *.cs >/dev/null 2>&1
+    # Try compile (check for errors)
+    if ls *.c >/dev/null 2>&1; then :
+      echo "bld.sh: Info: gcc -I$LBM_PLATFORM/include -g -c *.c"
+      gcc $* -I$LBM_PLATFORM/include -g -c *.c
+      rm -f *.o
+    fi
     cd ..
   done
   cd ..
